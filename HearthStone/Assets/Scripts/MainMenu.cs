@@ -6,11 +6,30 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    Animator mainMenuAni;
+    public static MainMenu instance;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    [HideInInspector]
+    public Animator mainMenuAni;
+
+    [HideInInspector]
+    public Animator outSideMenuAni;
 
     Animator battleAni;
     Animator adventureAni;
     Animator meleeAni;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    EventTrigger.Entry pointerEnter;
+    EventTrigger.Entry pointerDown;
+    EventTrigger.Entry pointerExit;
+    EventTrigger.Entry pointerClick;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public GameObject battleMenuUI;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -33,28 +52,23 @@ public class MainMenu : MonoBehaviour
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    EventTrigger.Entry pointerEnter;
-    EventTrigger.Entry pointerDown;
-    EventTrigger.Entry pointerExit;
-    EventTrigger.Entry pointerClick;
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     #region[Awake]
     private void Awake()
     {
+        instance = this;
+
         mainMenuAni = GetComponent<Animator>();
 
-        battleAni = transform.Find("InSideUI").Find("Center").Find("대전").GetComponent<Animator>();
-        adventureAni = transform.Find("InSideUI").Find("Center").Find("모험").GetComponent<Animator>();
-        meleeAni = transform.Find("InSideUI").Find("Center").Find("난투").GetComponent<Animator>();
+        battleAni = transform.Find("LeftBoard").Find("Center").Find("대전").GetComponent<Animator>();
+        adventureAni = transform.Find("LeftBoard").Find("Center").Find("모험").GetComponent<Animator>();
+        meleeAni = transform.Find("LeftBoard").Find("Center").Find("난투").GetComponent<Animator>();
 
-        battleImg = transform.Find("InSideUI").Find("Center").Find("대전").GetChild(0).GetComponent<Image>();
-        adventureImg = transform.Find("InSideUI").Find("Center").Find("모험").GetChild(0).GetComponent<Image>();
-        meleeImg = transform.Find("InSideUI").Find("Center").Find("난투").GetChild(0).GetComponent<Image>();
+        battleImg = transform.Find("LeftBoard").Find("Center").Find("대전").GetChild(0).GetComponent<Image>();
+        adventureImg = transform.Find("LeftBoard").Find("Center").Find("모험").GetChild(0).GetComponent<Image>();
+        meleeImg = transform.Find("LeftBoard").Find("Center").Find("난투").GetChild(0).GetComponent<Image>();
 
         #region[battleTrigger]
-        EventTrigger battleTrigger = transform.Find("InSideUI").Find("Center").Find("대전").GetChild(0).GetComponent<EventTrigger>();
+        EventTrigger battleTrigger = transform.Find("LeftBoard").Find("Center").Find("대전").GetChild(0).GetComponent<EventTrigger>();
         pointerEnter = new EventTrigger.Entry();
         pointerEnter.eventID = EventTriggerType.PointerEnter;
         pointerEnter.callback.AddListener((data) =>
@@ -94,7 +108,7 @@ public class MainMenu : MonoBehaviour
         #endregion
 
         #region[adventureTrigger]
-        EventTrigger adventureTrigger = transform.Find("InSideUI").Find("Center").Find("모험").GetChild(0).GetComponent<EventTrigger>();
+        EventTrigger adventureTrigger = transform.Find("LeftBoard").Find("Center").Find("모험").GetChild(0).GetComponent<EventTrigger>();
         pointerEnter = new EventTrigger.Entry();
         pointerEnter.eventID = EventTriggerType.PointerEnter;
         pointerEnter.callback.AddListener((data) =>
@@ -134,7 +148,7 @@ public class MainMenu : MonoBehaviour
         #endregion
 
         #region[meleeTrigger]
-        EventTrigger meleeTrigger = transform.Find("InSideUI").Find("Center").Find("난투").GetChild(0).GetComponent<EventTrigger>();
+        EventTrigger meleeTrigger = transform.Find("LeftBoard").Find("Center").Find("난투").GetChild(0).GetComponent<EventTrigger>();
         pointerEnter = new EventTrigger.Entry();
         pointerEnter.eventID = EventTriggerType.PointerEnter;
         pointerEnter.callback.AddListener((data) =>
@@ -173,13 +187,15 @@ public class MainMenu : MonoBehaviour
         meleeTrigger.triggers.Add(pointerClick);
         #endregion
 
-        questGlowImg = transform.Find("OutSideUI").Find("퀘스트").Find("Glow").GetComponent<Image>();
-        openPacksGlowImg = transform.Find("OutSideUI").Find("팩개봉").Find("Glow").GetComponent<Image>();
-        shopGlowImg = transform.Find("OutSideUI").Find("상점").Find("Glow").GetComponent<Image>();
-        myCollectionsGlowImg = transform.Find("OutSideUI").Find("수집품").Find("Glow").GetComponent<Image>();
+        outSideMenuAni = transform.Find("OutSideMenu").GetComponent<Animator>();
+
+        questGlowImg = transform.Find("OutSideMenu").Find("퀘스트").Find("Glow").GetComponent<Image>();
+        openPacksGlowImg = transform.Find("OutSideMenu").Find("팩개봉").Find("Glow").GetComponent<Image>();
+        shopGlowImg = transform.Find("OutSideMenu").Find("상점").Find("Glow").GetComponent<Image>();
+        myCollectionsGlowImg = transform.Find("OutSideMenu").Find("수집품").Find("Glow").GetComponent<Image>();
 
         #region[questTrigger]
-        EventTrigger questTrigger = transform.Find("OutSideUI").Find("퀘스트").GetComponent<EventTrigger>();
+        EventTrigger questTrigger = transform.Find("OutSideMenu").Find("퀘스트").GetComponent<EventTrigger>();
         pointerEnter = new EventTrigger.Entry();
         pointerEnter.eventID = EventTriggerType.PointerEnter;
         pointerEnter.callback.AddListener((data) =>
@@ -216,7 +232,7 @@ public class MainMenu : MonoBehaviour
         #endregion
 
         #region[openPacksTrigger]
-        EventTrigger openPacksTrigger = transform.Find("OutSideUI").Find("팩개봉").GetComponent<EventTrigger>();
+        EventTrigger openPacksTrigger = transform.Find("OutSideMenu").Find("팩개봉").GetComponent<EventTrigger>();
         pointerEnter = new EventTrigger.Entry();
         pointerEnter.eventID = EventTriggerType.PointerEnter;
         pointerEnter.callback.AddListener((data) =>
@@ -253,7 +269,7 @@ public class MainMenu : MonoBehaviour
         #endregion
 
         #region[shopTrigger]
-        EventTrigger shopTrigger = transform.Find("OutSideUI").Find("상점").GetComponent<EventTrigger>();
+        EventTrigger shopTrigger = transform.Find("OutSideMenu").Find("상점").GetComponent<EventTrigger>();
         pointerEnter = new EventTrigger.Entry();
         pointerEnter.eventID = EventTriggerType.PointerEnter;
         pointerEnter.callback.AddListener((data) =>
@@ -290,7 +306,7 @@ public class MainMenu : MonoBehaviour
         #endregion
 
         #region[myCollectionsTrigger]
-        EventTrigger myCollectionsTrigger = transform.Find("OutSideUI").Find("수집품").GetComponent<EventTrigger>();
+        EventTrigger myCollectionsTrigger = transform.Find("OutSideMenu").Find("수집품").GetComponent<EventTrigger>();
         pointerEnter = new EventTrigger.Entry();
         pointerEnter.eventID = EventTriggerType.PointerEnter;
         pointerEnter.callback.AddListener((data) =>
@@ -360,42 +376,61 @@ public class MainMenu : MonoBehaviour
     public void ActBattleBtn()
     {
         Debug.Log("대전");
-        mainMenuAni.SetTrigger("Turn");
+        OpenBoard();
+        battleMenuUI.SetActive(true);
     }
 
     public void ActAdventureBtn()
     {
         Debug.Log("모험");
-        mainMenuAni.SetTrigger("Turn");
+        OpenBoard();
     }
 
     public void ActMeleeBtn()
     {
         Debug.Log("난투");
-        mainMenuAni.SetTrigger("Turn");
+        OpenBoard();
     }
 
     public void ActQuestBtn()
     {
         Debug.Log("퀘스트");
-        mainMenuAni.SetTrigger("Turn");
+        OpenBoard();
     }
 
     public void ActOpenPacksBtn()
     {
         Debug.Log("팩 개봉");
-        mainMenuAni.SetTrigger("Turn");
+        OpenBoard();
     }
 
     public void ActShopBtn()
     {
         Debug.Log("상점");
-        mainMenuAni.SetTrigger("Turn");
+        OpenBoard();
     }
 
     public void ActmyCollectionsBtn()
     {
         Debug.Log("수집품");
+        OpenBoard();
+    }
+
+    public void OpenBoard()
+    {
         mainMenuAni.SetTrigger("Turn");
+        StartCoroutine(ShowOutMenu(1, false));
+    }
+
+    public void CloseBoard()
+    {
+        mainMenuAni.SetTrigger("ReTurn");
+        StartCoroutine(ShowOutMenu(1,true));
+    }
+
+    private IEnumerator ShowOutMenu(float waitTime,bool state)
+    {
+        yield return new WaitForSeconds(waitTime);
+        outSideMenuAni.SetBool("In", state);
     }
 }
