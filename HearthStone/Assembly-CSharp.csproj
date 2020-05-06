@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\BattleMenu.cs" />
     <Compile Include="Assets\Scripts\MainMenu.cs" />
+    <Compile Include="Assets\Scripts\MyCollectionsMenu.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>E:/YoungMookKang/git/Unity/HearthStone/HearthStone/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
