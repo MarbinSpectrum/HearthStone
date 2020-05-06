@@ -13,8 +13,10 @@ ScriptsOnlyBuild:
     UnityEditor.Graphs.dll:
     - UnityEditor.Graphs.AnimationBlendTree.Graph
     - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.AnyStateNode
     - UnityEditor.Graphs.AnimationStateMachine.Graph
     - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.StateNode
     - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
@@ -28,6 +30,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.Image
     - UnityEngine.UI.Outline
+    - UnityEngine.UI.Shadow
     - UnityEngine.UI.Text
   sceneClasses:
     Assets/Scenes/SampleScene.unity:
@@ -39,9 +42,19 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 21
       Script: {instanceID: 0}
+    - Class: 23
+      Script: {instanceID: 0}
     - Class: 28
       Script: {instanceID: 0}
+    - Class: 33
+      Script: {instanceID: 0}
+    - Class: 43
+      Script: {instanceID: 0}
     - Class: 48
+      Script: {instanceID: 0}
+    - Class: 64
+      Script: {instanceID: 0}
+    - Class: 65
       Script: {instanceID: 0}
     - Class: 74
       Script: {instanceID: 0}
@@ -54,23 +67,25 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11196}
+      Script: {instanceID: 11172}
     - Class: 114
-      Script: {instanceID: 11366}
+      Script: {instanceID: 11342}
     - Class: 114
-      Script: {instanceID: 11406}
+      Script: {instanceID: 11382}
     - Class: 114
-      Script: {instanceID: 11618}
+      Script: {instanceID: 11594}
     - Class: 114
-      Script: {instanceID: 11822}
+      Script: {instanceID: 11726}
     - Class: 114
-      Script: {instanceID: 12738}
+      Script: {instanceID: 11798}
+    - Class: 114
+      Script: {instanceID: 12714}
+    - Class: 114
+      Script: {instanceID: 13032}
     - Class: 114
       Script: {instanceID: 13056}
     - Class: 114
-      Script: {instanceID: 13080}
-    - Class: 114
-      Script: {instanceID: 13120}
+      Script: {instanceID: 13096}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -517,4 +532,4 @@ ScriptsOnlyBuild:
   platform: 13
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
-  playerPath: E:/YoungMookKang/git/Unity/HearthStone/HearthStoneGame.apk
+  playerPath: D:/Program Files/Git/HearthStone/HearthStoneGame.apk
