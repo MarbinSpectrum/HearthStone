@@ -6,7 +6,11 @@ using UnityEngine.UI;
 
 public class BattleMenu : MonoBehaviour
 {
+    public static BattleMenu instance;
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public bool battleCollections;
 
     EventTrigger.Entry pointerEnter;
     EventTrigger.Entry pointerDown;
@@ -28,6 +32,8 @@ public class BattleMenu : MonoBehaviour
     #region[Awake]
     private void Awake()
     {
+        instance = this;
+
         goBackImg = transform.Find("뒤로").GetComponent<Image>();
         myCollectionsImg = transform.Find("수집품").GetComponent<Image>();
 
@@ -151,7 +157,17 @@ public class BattleMenu : MonoBehaviour
 
     public void ActMyCollectionsBtn()
     {
+        MainMenu.instance.ChangeBoard();
+        StartCoroutine(CloseBattleMenu(1));
+        StartCoroutine(ShowMyCollectionsMenu(0.5f));
+        battleCollections = true;
         Debug.Log("수집품");
+    }
+
+    private IEnumerator ShowMyCollectionsMenu(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        MainMenu.instance.myCollectionsMenuUI.SetActive(true);
     }
 
 }

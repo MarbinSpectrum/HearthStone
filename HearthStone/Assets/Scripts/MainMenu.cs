@@ -430,6 +430,11 @@ public class MainMenu : MonoBehaviour
         StartCoroutine(ShowOutMenu(1,true));
     }
 
+    public void ChangeBoard()
+    {
+        mainMenuAni.SetTrigger("Change");
+    }
+
     private IEnumerator ShowOutMenu(float waitTime,bool state)
     {
         yield return new WaitForSeconds(waitTime);

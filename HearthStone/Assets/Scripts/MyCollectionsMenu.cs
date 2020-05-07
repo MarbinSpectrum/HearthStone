@@ -8,6 +8,12 @@ public class MyCollectionsMenu : MonoBehaviour
 {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    Animator jobListAni;
+    Animator filterAni;
+    Animator[] costBtnAni;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     EventTrigger.Entry pointerEnter;
     EventTrigger.Entry pointerDown;
     EventTrigger.Entry pointerExit;
@@ -20,6 +26,8 @@ public class MyCollectionsMenu : MonoBehaviour
     Image filterImg;
     Image makingImg;
 
+    Image completeImg;
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public enum ButtonState { 보통, 누름 }
@@ -29,9 +37,14 @@ public class MyCollectionsMenu : MonoBehaviour
     public Sprite[] filterSprites;
     public Sprite[] makingSprites;
 
+    public Sprite[] completeSprites;
+
     #region[Awake]
     private void Awake()
     {
+        jobListAni = transform.Find("JobList").GetComponent<Animator>();
+        filterAni = transform.Find("Filter").GetComponent<Animator>();
+
         goBackImg = transform.Find("뒤로").GetComponent<Image>();
         selectJobImg = transform.Find("직업").GetComponent<Image>();
         filterImg = transform.Find("필터").GetComponent<Image>();
@@ -106,9 +119,19 @@ public class MyCollectionsMenu : MonoBehaviour
         pointerClick.eventID = EventTriggerType.PointerClick;
         pointerClick.callback.AddListener((data) =>
         {
-            ActSelectJobBtn();
+            ActSelectJobBtn(true);
         });
         selectJobTrigger.triggers.Add(pointerClick);
+        #endregion
+        #region[selectJobExitTrigger]
+        EventTrigger selectJobExitTrigger = transform.Find("JobList").Find("Blur").GetComponent<EventTrigger>();
+        pointerDown = new EventTrigger.Entry();
+        pointerDown.eventID = EventTriggerType.PointerDown;
+        pointerDown.callback.AddListener((data) =>
+        {
+            ActSelectJobBtn(false);
+        });
+        selectJobExitTrigger.triggers.Add(pointerDown);
         #endregion
 
         #region[filterTrigger]
@@ -143,7 +166,7 @@ public class MyCollectionsMenu : MonoBehaviour
         pointerClick.eventID = EventTriggerType.PointerClick;
         pointerClick.callback.AddListener((data) =>
         {
-            ActFilterJobBtn();
+            ActFilterJobBtn(true);
         });
         filterTrigger.triggers.Add(pointerClick);
         #endregion
@@ -184,6 +207,88 @@ public class MyCollectionsMenu : MonoBehaviour
         });
         makingTrigger.triggers.Add(pointerClick);
         #endregion
+
+        completeImg = transform.Find("Filter").Find("CardType").Find("완료").GetComponent<Image>();
+
+        #region[completeTrigger]
+        EventTrigger completeTrigger = transform.Find("Filter").Find("CardType").Find("완료").GetComponent<EventTrigger>();
+        pointerEnter = new EventTrigger.Entry();
+        pointerEnter.eventID = EventTriggerType.PointerEnter;
+        pointerEnter.callback.AddListener((data) =>
+        {
+            if (Input.GetMouseButton(0))
+                completeImg.sprite = completeSprites[(int)ButtonState.누름];
+        });
+        completeTrigger.triggers.Add(pointerEnter);
+
+        pointerDown = new EventTrigger.Entry();
+        pointerDown.eventID = EventTriggerType.PointerDown;
+        pointerDown.callback.AddListener((data) =>
+        {
+            if (Input.GetMouseButtonDown(0))
+                completeImg.sprite = completeSprites[(int)ButtonState.누름];
+        });
+        completeTrigger.triggers.Add(pointerDown);
+
+        pointerExit = new EventTrigger.Entry();
+        pointerExit.eventID = EventTriggerType.PointerExit;
+        pointerExit.callback.AddListener((data) =>
+        {
+            completeImg.sprite = completeSprites[(int)ButtonState.보통];
+        });
+        completeTrigger.triggers.Add(pointerExit);
+
+        pointerClick = new EventTrigger.Entry();
+        pointerClick.eventID = EventTriggerType.PointerClick;
+        pointerClick.callback.AddListener((data) =>
+        {
+            ActFilterJobBtn(false);
+        });
+        completeTrigger.triggers.Add(pointerClick);
+        #endregion
+
+        #region[costBtnTrigger]
+        costBtnAni = new Animator[transform.Find("Filter").Find("CostList").childCount];
+        for (int i = 0; i < costBtnAni.Length; i++)
+        {
+            int n = i;
+            costBtnAni[i] = transform.Find("Filter").Find("CostList").GetChild(i).GetComponent<Animator>();
+            EventTrigger costBtnTrigger = transform.Find("Filter").Find("CostList").GetChild(i).GetComponent<EventTrigger>();
+            pointerEnter = new EventTrigger.Entry();
+            pointerEnter.eventID = EventTriggerType.PointerEnter;
+            pointerEnter.callback.AddListener((data) =>
+            {
+                if (Input.GetMouseButton(0))
+                    costBtnAni[n].SetBool("Glow", true);
+            });
+            costBtnTrigger.triggers.Add(pointerEnter);
+
+            pointerDown = new EventTrigger.Entry();
+            pointerDown.eventID = EventTriggerType.PointerDown;
+            pointerDown.callback.AddListener((data) =>
+            {
+                if (Input.GetMouseButtonDown(0))
+                    costBtnAni[n].SetBool("Glow", true);
+            });
+            costBtnTrigger.triggers.Add(pointerDown);
+
+            pointerExit = new EventTrigger.Entry();
+            pointerExit.eventID = EventTriggerType.PointerExit;
+            pointerExit.callback.AddListener((data) =>
+            {
+                costBtnAni[n].SetBool("Glow", false);
+            });
+            costBtnTrigger.triggers.Add(pointerExit);
+
+            pointerClick = new EventTrigger.Entry();
+            pointerClick.eventID = EventTriggerType.PointerClick;
+            pointerClick.callback.AddListener((data) =>
+            {
+                ActFilterCostBtn(n);
+            });
+            costBtnTrigger.triggers.Add(pointerClick);
+        }
+        #endregion
     }
     #endregion
 
@@ -220,25 +325,48 @@ public class MyCollectionsMenu : MonoBehaviour
 
     public void ActGoBackBtn()
     {
-        MainMenu.instance.CloseBoard();
-        StartCoroutine(CloseBattleMenu(1));
+        if(BattleMenu.instance && BattleMenu.instance.battleCollections)
+        {
+            MainMenu.instance.ChangeBoard();
+            StartCoroutine(CloseCollectionsMenu(1));
+            StartCoroutine(ShowBattleMenu(0.5f));
+            BattleMenu.instance.battleCollections = false;
+        }
+        else
+        {
+            MainMenu.instance.CloseBoard();
+            StartCoroutine(CloseCollectionsMenu(1));
+        }
         Debug.Log("뒤로가기");
     }
 
-    private IEnumerator CloseBattleMenu(float waitTime)
+    private IEnumerator CloseCollectionsMenu(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
         gameObject.SetActive(false);
     }
 
-    public void ActSelectJobBtn()
+    private IEnumerator ShowBattleMenu(float waitTime)
     {
-        Debug.Log("직업");
+        yield return new WaitForSeconds(waitTime);
+        MainMenu.instance.battleMenuUI.SetActive(true);
     }
 
-    public void ActFilterJobBtn()
+    public void ActSelectJobBtn(bool act)
+    {
+        Debug.Log("직업");
+        jobListAni.SetBool("Show", act);
+    }
+
+    public void ActFilterJobBtn(bool act)
     {
         Debug.Log("필터");
+        filterAni.SetBool("Show", act);
+    }
+
+    public void ActFilterCostBtn(int n)
+    {
+
     }
 
     public void ActMakingBtn()
