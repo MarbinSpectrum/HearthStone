@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum TableType
 {
-    도적
+    중립,도적,드루이드
 }
 
 public class DataMng : MonoBehaviour
@@ -19,7 +19,7 @@ public class DataMng : MonoBehaviour
 
     public void Start()
     {
-        Debug.Log(ToInteger(TableType.도적, 1, "체력"));
+ 
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,9 @@ public class DataMng : MonoBehaviour
     #region[데이터 로드]
     public void LoadTable()
     {
+        Load(TableType.중립);
         Load(TableType.도적);
+        Load(TableType.드루이드);
     }
 
     public void Load(TableType table)
