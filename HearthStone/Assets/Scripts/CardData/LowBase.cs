@@ -21,9 +21,10 @@ public class LowBase
                 rowList.Add(rows[i]);
             }
 
+
         string[] subjects = rowList[0].Split(',');
-        
-        for(int r = 1; r < rowList.Count; r++)
+
+        for (int r = 1; r < rowList.Count; r++)
         {
             string[] values = rowList[r].Split(',');
             int tableID = 0;
