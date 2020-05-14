@@ -2,25 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TableType
-{
-    중립,도적,드루이드
-}
-
 public class DataMng : MonoBehaviour
 {
-    private static DataMng m_instance;
-    private Dictionary<TableType, LowBase> m_dic = new Dictionary<TableType, LowBase>();
+    public enum TableType
+    {
+        중립, 도적, 드루이드
+    }
 
+    public static DataMng instance;
+
+    private static DataMng m_instance;
+    public Dictionary<TableType, LowBase> m_dic = new Dictionary<TableType, LowBase>();
+
+    #region[Awake]
     public void Awake()
     {
+        instance = this;
         LoadTable();
     }
-
-    public void Start()
-    {
- 
-    }
+    #endregion
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

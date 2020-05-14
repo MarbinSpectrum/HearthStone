@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LowBase
 {
-    Dictionary<int, Dictionary<string, string>> m_table = new Dictionary<int, Dictionary<string, string>>();
+    public Dictionary<int, Dictionary<string, string>> m_table = new Dictionary<int, Dictionary<string, string>>();
 
     public void Load(string str)
     {

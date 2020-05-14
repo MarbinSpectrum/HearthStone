@@ -11,6 +11,7 @@ public class MyCollectionsMenu : MonoBehaviour
     Animator jobListAni;
     Animator filterAni;
     Animator[] costBtnAni;
+    Animator pageAni;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,11 +40,50 @@ public class MyCollectionsMenu : MonoBehaviour
 
     public Sprite[] completeSprites;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public class CardData
+    {
+        public DataMng.TableType cardJob; 
+        public string cardLevel;
+        public string cardName;
+        public string cardType;
+        public int cardCost;
+        public int cardAttack;
+        public int cardHp;
+        public string cardExplain;
+
+
+        public CardData(DataMng.TableType acardJob, string acardLevel ,string acardName, string acardType, int acardCost, int acardAttack, int acardHp, string acardExplain)
+        {
+            cardJob = acardJob;
+            cardLevel = acardLevel;
+            cardName = acardName;
+            cardType = acardType;
+            cardCost = acardCost;
+            cardAttack = acardAttack;
+            cardHp = acardHp;
+            cardExplain = acardExplain;
+        }
+    }
+
+    List<CardData>[] cardDatas = new List<CardData>[3];
+
+    public CardView[] nowCards = new CardView[8];
+    public CardView[] nextCards = new CardView[8];
+    int nowJobIndex = 0;
+    int nowCardIndex = 0;
+    bool nextPageFlag = false;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     #region[Awake]
     private void Awake()
     {
         jobListAni = transform.Find("JobList").GetComponent<Animator>();
         filterAni = transform.Find("Filter").GetComponent<Animator>();
+        pageAni = transform.Find("Page").GetComponent<Animator>();
 
         goBackImg = transform.Find("뒤로").GetComponent<Image>();
         selectJobImg = transform.Find("직업").GetComponent<Image>();
@@ -289,6 +329,10 @@ public class MyCollectionsMenu : MonoBehaviour
             costBtnTrigger.triggers.Add(pointerClick);
         }
         #endregion
+
+        for(int i = 0; i < cardDatas.Length; i++)
+            cardDatas[i] = new List<CardData>();
+        CardDataInput();
     }
     #endregion
 
@@ -310,6 +354,39 @@ public class MyCollectionsMenu : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    #region[내수집품설정]
+    public void CardDataInput()
+    {
+        for (int i = 0; i < 3; i++)
+            cardDatas[i].Clear();
+
+        for (int i = 0; i < 3; i++)
+            for (int j = 1; j <= DataMng.instance.m_dic[(DataMng.TableType)i].m_table.Count; j++)
+            {
+                cardDatas[i].Add(GetCardData(j, (DataMng.TableType)i));
+            }
+    }
+    #endregion
+
+    #region[카드데이터받기]
+    public CardData GetCardData(int num,DataMng.TableType job)
+    {
+        DataMng dataMng = DataMng.instance;
+
+        return new CardData
+            (
+            job,
+            dataMng.ToString(job, num, "등급"),
+            dataMng.ToString(job, num, "카드이름"),
+            dataMng.ToString(job, num, "카드종류"),
+            dataMng.ToInteger(job, num, "코스트"),
+            dataMng.ToInteger(job, num, "공격력"),
+            dataMng.ToInteger(job, num, "체력"),
+            dataMng.ToString(job, num, "카드설명")
+            );
+    }
+    #endregion
+
     #region[UpdateUI]
     public void UpdateUI()
     {
@@ -320,9 +397,76 @@ public class MyCollectionsMenu : MonoBehaviour
             filterImg.sprite = filterSprites[(int)ButtonState.보통];
             makingImg.sprite = makingSprites[(int)ButtonState.보통];
         }
+        ShowCard();
     }
     #endregion
 
+    #region[카드표시]
+    public void ShowCard()
+    {
+        if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperNext") && pageAni.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.9f && nextPageFlag)
+        {
+            nextPageFlag = false;
+            nowCardIndex += 8;
+        }
+        else if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop") && !nextPageFlag)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                nextPageFlag = true;
+                pageAni.SetTrigger("Next");
+            }
+        }
+
+
+        for (int i = 0; i < 8; i++)
+        {
+            if (cardDatas[nowJobIndex].Count <= i + nowCardIndex || i + nowCardIndex < 0)
+            {
+                nowCards[i].gameObject.SetActive(false);
+            }
+            else
+            {
+                nowCards[i].gameObject.SetActive(true);
+                if (cardDatas[nowJobIndex][i + nowCardIndex].cardType.Equals("하수인"))
+                {
+                    nowCards[i].cardType = CardType.하수인;
+                    nowCards[i].MinionsCostData = cardDatas[nowJobIndex][i + nowCardIndex].cardCost;
+                    nowCards[i].MinionsAttackData = cardDatas[nowJobIndex][i + nowCardIndex].cardAttack;
+                    nowCards[i].MinionsHpData = cardDatas[nowJobIndex][i + nowCardIndex].cardHp;
+                    nowCards[i].MinionsCardNameData = cardDatas[nowJobIndex][i + nowCardIndex].cardName;
+                    nowCards[i].MinionsCardExplainData = cardDatas[nowJobIndex][i + nowCardIndex].cardExplain;
+                }
+            }
+        }
+
+        int nextCardIndex = nowCardIndex + 8;
+
+        for (int i = 0; i < 8; i++)
+        {
+            if (cardDatas[nowJobIndex].Count <= i + nextCardIndex || i + nextCardIndex < 0)
+            {
+                nextCards[i].gameObject.SetActive(false);
+            }
+            else
+            {
+                nextCards[i].gameObject.SetActive(true);
+                if (cardDatas[nowJobIndex][i + nextCardIndex].cardType.Equals("하수인"))
+                {
+                    nextCards[i].cardType = CardType.하수인;
+                    nextCards[i].MinionsCostData = cardDatas[nowJobIndex][i + nextCardIndex].cardCost;
+                    nextCards[i].MinionsAttackData = cardDatas[nowJobIndex][i + nextCardIndex].cardAttack;
+                    nextCards[i].MinionsHpData = cardDatas[nowJobIndex][i + nextCardIndex].cardHp;
+                    nextCards[i].MinionsCardNameData = cardDatas[nowJobIndex][i + nextCardIndex].cardName;
+                    nextCards[i].MinionsCardExplainData = cardDatas[nowJobIndex][i + nextCardIndex].cardExplain;
+                }
+            }
+        }
+    }
+
+    #endregion
+
+    #region[뒤로가기버튼]
     public void ActGoBackBtn()
     {
         if(BattleMenu.instance && BattleMenu.instance.battleCollections)
@@ -351,18 +495,23 @@ public class MyCollectionsMenu : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         MainMenu.instance.battleMenuUI.SetActive(true);
     }
+    #endregion
 
+    #region[직업선택버튼]
     public void ActSelectJobBtn(bool act)
     {
         Debug.Log("직업");
         jobListAni.SetBool("Show", act);
     }
+    #endregion
 
+    #region[필터버튼]
     public void ActFilterJobBtn(bool act)
     {
         Debug.Log("필터");
         filterAni.SetBool("Show", act);
     }
+    #endregion
 
     public void ActFilterCostBtn(int n)
     {
