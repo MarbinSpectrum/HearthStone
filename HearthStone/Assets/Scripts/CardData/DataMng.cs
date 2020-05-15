@@ -38,7 +38,7 @@ public class DataMng : MonoBehaviour
                 Texture2D temp = Resources.Load("CardImg/" + name) as Texture2D;
                 if (temp)
                 {
-                    cardImg[name] = Sprite.Create(temp, new Rect(0, 0, 300, 100), new Vector2(0.5f, 0.5f));
+                    cardImg[name] = Sprite.Create(temp, new Rect(0, 0, temp.width, temp.height), new Vector2(0.5f, 0.5f));
                 }
             }
     }
