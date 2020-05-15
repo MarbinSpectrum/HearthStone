@@ -6,19 +6,21 @@ public class DataMng : MonoBehaviour
 {
     public enum TableType
     {
-        중립, 도적, 드루이드
+        중립,드루이드, 도적
     }
 
     public static DataMng instance;
 
     private static DataMng m_instance;
     public Dictionary<TableType, LowBase> m_dic = new Dictionary<TableType, LowBase>();
+    public Dictionary<string, Sprite> cardImg = new Dictionary<string, Sprite>();
 
     #region[Awake]
     public void Awake()
     {
         instance = this;
         LoadTable();
+        LoadCardImage();
     }
     #endregion
 
@@ -26,12 +28,29 @@ public class DataMng : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    #region[카드 이미지 데이터 로드]
+    public void LoadCardImage()
+    {
+        for (int i = 0; i < 3; i++)
+            for (int j = 1; j <= m_dic[(TableType)i].m_table.Count; j++)
+            {
+                string name = ToString((TableType)i, j, "카드이름");
+                Texture2D temp = Resources.Load("CardImg/" + name) as Texture2D;
+                if (temp)
+                {
+                    cardImg[name] = Sprite.Create(temp, new Rect(0, 0, 300, 100), new Vector2(0.5f, 0.5f));
+                }
+            }
+    }
+
+    #endregion
+
     #region[데이터 로드]
     public void LoadTable()
     {
-        Load(TableType.중립);
-        Load(TableType.도적);
         Load(TableType.드루이드);
+        Load(TableType.도적);
+        Load(TableType.중립);
     }
 
     public void Load(TableType table)

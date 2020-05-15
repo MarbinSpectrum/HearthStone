@@ -16,6 +16,21 @@ public class CardView : MonoBehaviour
 
     public Sprite[] num;
 
+    public Sprite[] rogueMinions;
+    public Sprite[] rogueSpell;
+    public Sprite[] rogueWeapon;
+
+    public Sprite[] druidMinions;
+    public Sprite[] druidSpell;
+    public Sprite[] druidWeapon;
+
+    public Sprite[] neutralityMinions;
+    public Sprite[] neutralitySpell;
+    public Sprite[] neutralityWeapon;
+
+    [HideInInspector] public string cardJob = "중립";
+    [HideInInspector] public string cardLevel = "기본";
+
     #region[하수인카드 정보]
     GameObject MinionsCard;
     [HideInInspector] public int MinionsCostData;
@@ -23,8 +38,7 @@ public class CardView : MonoBehaviour
     [HideInInspector] public int MinionsHpData;
     [HideInInspector] public string MinionsCardNameData;
     [HideInInspector] public string MinionsCardExplainData;
-    [HideInInspector] public Image MinionsCardLevel;
-    [HideInInspector] public Image MinionsCardImg;
+
     GameObject[] MinionsCost;
     Image[] MinionsCostImage;
     GameObject[] MinionsAttack;
@@ -33,6 +47,8 @@ public class CardView : MonoBehaviour
     Image[] MinionsHpImage;
     Text MinionsCardName;
     Text MinionsCardExplain;
+    Image MinionsCardLevel;
+    Image MinionsCardImg;
     #endregion
 
     #region[주문카드 정보]
@@ -40,12 +56,13 @@ public class CardView : MonoBehaviour
     [HideInInspector] public int SpellCostData;
     [HideInInspector] public string SpellCardNameData;
     [HideInInspector] public string SpellCardExplainData;
-    [HideInInspector] public Image SpellCardLevel;
-    [HideInInspector] public Image SpellCardImg;
+
     GameObject[] SpellCost;
     Image[] SpellCostImage;
     Text SpellCardName;
     Text SpellCardExplain;
+    Image SpellCardLevel;
+    Image SpellCardImg;
     #endregion
 
     #region[무기카드 정보]
@@ -55,8 +72,7 @@ public class CardView : MonoBehaviour
     [HideInInspector] public int WeaponHpData;
     [HideInInspector] public string WeaponCardNameData;
     [HideInInspector] public string WeaponCardExplainData;
-    [HideInInspector] public Image WeaponCardLevel;
-    [HideInInspector] public Image WeaponCardImg;
+
     GameObject[] WeaponCost;
     Image[] WeaponCostImage;
     GameObject[] WeaponAttack;
@@ -65,6 +81,8 @@ public class CardView : MonoBehaviour
     Image[] WeaponHpImage;
     Text WeaponCardName;
     Text WeaponCardExplain;
+    Image WeaponCardLevel;
+    Image WeaponCardImg;
     #endregion
 
     #region[Awake]
@@ -73,7 +91,7 @@ public class CardView : MonoBehaviour
         #region[하수인카드]
         MinionsCard = transform.Find("하수인카드").gameObject;
         MinionsCardLevel = transform.Find("하수인카드").Find("등급").GetComponent<Image>();
-        MinionsCardImg = transform.Find("하수인카드").Find("카드이미지").GetComponent<Image>();
+        MinionsCardImg = transform.Find("하수인카드").Find("이미지마스크").Find("카드이미지").GetComponent<Image>();
 
         MinionsCost = new GameObject[2];
         MinionsCostImage = new Image[2];
@@ -106,7 +124,7 @@ public class CardView : MonoBehaviour
         #region[주문카드]
         SpellCard = transform.Find("주문카드").gameObject;
         SpellCardLevel = transform.Find("주문카드").Find("등급").GetComponent<Image>();
-        SpellCardImg = transform.Find("주문카드").Find("카드이미지").GetComponent<Image>();
+        SpellCardImg = transform.Find("주문카드").Find("이미지마스크").Find("카드이미지").GetComponent<Image>();
 
         SpellCost = new GameObject[2];
         SpellCostImage = new Image[2];
@@ -123,7 +141,7 @@ public class CardView : MonoBehaviour
         #region[무기카드]
         WeaponCard = transform.Find("무기카드").gameObject;
         WeaponCardLevel = transform.Find("무기카드").Find("등급").GetComponent<Image>();
-        WeaponCardImg = transform.Find("무기카드").Find("카드이미지").GetComponent<Image>();
+        WeaponCardImg = transform.Find("무기카드").Find("이미지마스크").Find("카드이미지").GetComponent<Image>();
 
         WeaponCost = new GameObject[2];
         WeaponCostImage = new Image[2];
@@ -164,12 +182,92 @@ public class CardView : MonoBehaviour
         ShowHp();
         ShowName();
         ShowExplain();
+        ShowCardFrame();
+        ShowCardImg();
     }
     #endregion
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    #region[등급에 따른 카드 프레임표시]
+    public void ShowCardFrame()
+    {
+        int getLevel = 0;
+        switch(cardLevel)
+        {
+            case "일반":
+                getLevel = 1;
+                break;
+            case "희귀":
+                getLevel = 2;
+                break;
+            case "특별":
+                getLevel = 3;
+                break;
+            case "전설":
+                getLevel = 4;
+                break;
+            case "기본":
+            case "토큰":
+                getLevel = 0;
+                break;
+        }
+
+        #region[드루이드]
+        if (cardJob.Equals("드루이드"))
+        {
+            if(cardType == CardType.하수인)
+                MinionsCardLevel.sprite = druidMinions[getLevel];
+            else if (cardType == CardType.주문)
+                SpellCardLevel.sprite = druidSpell[getLevel];
+            else if (cardType == CardType.무기)
+                WeaponCardLevel.sprite = druidWeapon[getLevel];
+        }
+        #endregion
+
+        #region[도적]
+        else if (cardJob.Equals("도적"))
+        {
+            if (cardType == CardType.하수인)
+                MinionsCardLevel.sprite = rogueMinions[getLevel];
+            else if (cardType == CardType.주문)
+                SpellCardLevel.sprite = rogueSpell[getLevel];
+            else if (cardType == CardType.무기)
+                WeaponCardLevel.sprite = rogueWeapon[getLevel];
+        }
+        #endregion
+
+        #region[기타]
+        else
+        {
+            if (cardType == CardType.하수인)
+                MinionsCardLevel.sprite = neutralityMinions[getLevel];
+            else if (cardType == CardType.주문)
+                SpellCardLevel.sprite = neutralitySpell[getLevel];
+            else if (cardType == CardType.무기)
+                WeaponCardLevel.sprite = neutralityWeapon[getLevel];
+        }
+        #endregion
+    }
+    #endregion
+
+    #region[카드 이미지표시]
+    public void ShowCardImg()
+    {
+        try
+        {
+            if (cardType == CardType.하수인)
+                MinionsCardImg.sprite = DataMng.instance.cardImg[MinionsCardNameData];
+            else if (cardType == CardType.주문)
+                SpellCardImg.sprite = DataMng.instance.cardImg[SpellCardNameData];
+            else if (cardType == CardType.무기)
+                WeaponCardImg.sprite = DataMng.instance.cardImg[WeaponCardNameData];
+        }
+        catch { }
+    }
+    #endregion
 
     #region[ShowCard]
     public void ShowCard()

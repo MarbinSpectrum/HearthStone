@@ -15,6 +15,11 @@ public class MyCollectionsMenu : MonoBehaviour
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    Button nextArrow;
+    Button backArrow;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     EventTrigger.Entry pointerEnter;
     EventTrigger.Entry pointerDown;
     EventTrigger.Entry pointerExit;
@@ -41,6 +46,10 @@ public class MyCollectionsMenu : MonoBehaviour
     public Sprite[] completeSprites;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Text selectjobText;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public class CardData
     {
@@ -71,10 +80,12 @@ public class MyCollectionsMenu : MonoBehaviour
 
     public CardView[] nowCards = new CardView[8];
     public CardView[] nextCards = new CardView[8];
+
     int nowJobIndex = 0;
     int nowCardIndex = 0;
     bool nextPageFlag = false;
-
+    bool backPageFlag = false;
+    bool hasNextCard = false;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -84,6 +95,22 @@ public class MyCollectionsMenu : MonoBehaviour
         jobListAni = transform.Find("JobList").GetComponent<Animator>();
         filterAni = transform.Find("Filter").GetComponent<Animator>();
         pageAni = transform.Find("Page").GetComponent<Animator>();
+
+        nextArrow = transform.Find("CardArrow").Find("Next").GetComponent<Button>();
+        backArrow = transform.Find("CardArrow").Find("Back").GetComponent<Button>();
+
+        #region[nextArrow]
+        nextArrow.onClick.AddListener(() =>
+        {
+            NextPage();
+        });
+        #endregion
+        #region[backArrow]
+        backArrow.onClick.AddListener(() =>
+        {
+            BackPage();
+        });
+        #endregion
 
         goBackImg = transform.Find("뒤로").GetComponent<Image>();
         selectJobImg = transform.Find("직업").GetComponent<Image>();
@@ -330,7 +357,9 @@ public class MyCollectionsMenu : MonoBehaviour
         }
         #endregion
 
-        for(int i = 0; i < cardDatas.Length; i++)
+        selectjobText = selectJobImg.transform.Find("Text").GetComponent<Text>();
+
+        for (int i = 0; i < cardDatas.Length; i++)
             cardDatas[i] = new List<CardData>();
         CardDataInput();
     }
@@ -339,7 +368,8 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[OnEnable]
     void OnEnable()
     {
-
+        nowJobIndex = 0;
+        nowCardIndex = 0;
     }
     #endregion
 
@@ -362,9 +392,8 @@ public class MyCollectionsMenu : MonoBehaviour
 
         for (int i = 0; i < 3; i++)
             for (int j = 1; j <= DataMng.instance.m_dic[(DataMng.TableType)i].m_table.Count; j++)
-            {
-                cardDatas[i].Add(GetCardData(j, (DataMng.TableType)i));
-            }
+                if (!DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "등급").Equals("토큰"))
+                    cardDatas[i].Add(GetCardData(j, (DataMng.TableType)i));
     }
     #endregion
 
@@ -397,73 +426,208 @@ public class MyCollectionsMenu : MonoBehaviour
             filterImg.sprite = filterSprites[(int)ButtonState.보통];
             makingImg.sprite = makingSprites[(int)ButtonState.보통];
         }
+        
+        //화살표표시
+        backArrow.gameObject.SetActive(nowCardIndex != 0 || nowJobIndex != 0);
+        nextArrow.gameObject.SetActive(nowJobIndex < cardDatas.Length - 1 || hasNextCard);
+
+        //카드리스트
         ShowCard();
+
+        //직업선택
+        DataMng.TableType tableName = (DataMng.TableType)(nowJobIndex);
+        selectjobText.text = tableName.ToString();
+    }
+    #endregion
+
+    #region[카드들표시]
+    public void ShowCard()
+    {
+        if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperNext") && pageAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f && nextPageFlag)
+        {
+            nextPageFlag = false;
+            nowCardIndex += 8;
+            if (!hasNextCard)
+            {
+                nowJobIndex += 1;
+                nowCardIndex = 0;
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (cardDatas[nowJobIndex].Count <= i + nowCardIndex || i + nowCardIndex < 0)
+                    nowCards[i].gameObject.SetActive(false);
+                else
+                    CardShow(ref nowCards[i], nowJobIndex, i + nowCardIndex);
+            }
+        }
+        else if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperBack") && backPageFlag)
+        {
+            backPageFlag = false;
+
+            if (nowCardIndex < 0)
+            {
+                nowJobIndex--;
+                for (int newIndex = 0; newIndex < cardDatas[nowJobIndex].Count; newIndex += 8)
+                    nowCardIndex = newIndex;
+                int nextCardIndex = 0;
+
+                #region[다음카드 갱신]
+                for (int i = 0; i < 8; i++)
+                {
+                    if (cardDatas[nowJobIndex + 1].Count <= i + nextCardIndex || i + nextCardIndex < 0)
+                        nextCards[i].gameObject.SetActive(false);
+                    else
+                    {
+                        hasNextCard = true;
+                        CardShow(ref nextCards[i], nowJobIndex + 1, i + nextCardIndex);
+                    }
+                }
+                #endregion
+
+                #region[현재카드 갱신]
+                for (int i = 0; i < 8; i++)
+                {
+                    if (cardDatas[nowJobIndex].Count <= i + nowCardIndex || i + nowCardIndex < 0)
+                        nowCards[i].gameObject.SetActive(false);
+                    else
+                        CardShow(ref nowCards[i], nowJobIndex, i + nowCardIndex);
+                }
+                #endregion
+            }
+            else
+            {
+
+                int nextCardIndex = nowCardIndex + 8;
+
+                #region[다음카드 갱신]
+                for (int i = 0; i < 8; i++)
+                {
+                    if (cardDatas[nowJobIndex].Count <= i + nextCardIndex || i + nextCardIndex < 0)
+                        nextCards[i].gameObject.SetActive(false);
+                    else
+                    {
+                        hasNextCard = true;
+                        CardShow(ref nextCards[i], nowJobIndex, i + nextCardIndex);
+                    }
+                }
+                #endregion
+
+                #region[현재카드 갱신]
+                for (int i = 0; i < 8; i++)
+                {
+                    if (cardDatas[nowJobIndex].Count <= i + nowCardIndex || i + nowCardIndex < 0)
+                        nowCards[i].gameObject.SetActive(false);
+                    else
+                        CardShow(ref nowCards[i], nowJobIndex, i + nowCardIndex);
+                }
+                #endregion
+
+            }
+        }
+        else if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop") && !nextPageFlag)
+        {
+            hasNextCard = false;
+
+            int nextCardIndex = nowCardIndex + 8;
+
+            #region[다음카드 갱신]
+            for (int i = 0; i < 8; i++)
+            {
+                if (cardDatas[nowJobIndex].Count <= i + nextCardIndex || i + nextCardIndex < 0)
+                    nextCards[i].gameObject.SetActive(false);
+                else
+                {
+                    hasNextCard = true;
+                    CardShow(ref nextCards[i], nowJobIndex, i + nextCardIndex);
+                }
+            }
+
+            if (!hasNextCard && nowJobIndex + 1 < cardDatas.Length)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    if (cardDatas[nowJobIndex + 1].Count <= i || i < 0)
+                        nextCards[i].gameObject.SetActive(false);
+                    else
+                        CardShow(ref nextCards[i], nowJobIndex + 1, i);
+                }
+            }
+            #endregion
+
+            #region[현재카드 갱신]
+            for (int i = 0; i < 8; i++)
+            {
+                if (cardDatas[nowJobIndex].Count <= i + nowCardIndex || i + nowCardIndex < 0)
+                    nowCards[i].gameObject.SetActive(false);
+                else
+                    CardShow(ref nowCards[i], nowJobIndex, i + nowCardIndex);
+            }
+            #endregion
+        }
     }
     #endregion
 
     #region[카드표시]
-    public void ShowCard()
+    public void CardShow(ref CardView card,int nowJobIndex,int cardIndex)
     {
-        if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperNext") && pageAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99f && nextPageFlag)
+        card.gameObject.SetActive(true);
+        if (cardDatas[nowJobIndex][cardIndex].cardType.Equals("하수인"))
         {
-            nextPageFlag = false;
-            nowCardIndex += 8;
+            card.cardType = CardType.하수인;
+            card.MinionsCostData = cardDatas[nowJobIndex][cardIndex].cardCost;
+            card.MinionsAttackData = cardDatas[nowJobIndex][cardIndex].cardAttack;
+            card.MinionsHpData = cardDatas[nowJobIndex][cardIndex].cardHp;
+            card.MinionsCardNameData = cardDatas[nowJobIndex][cardIndex].cardName;
+            card.MinionsCardExplainData = cardDatas[nowJobIndex][cardIndex].cardExplain;
         }
-        else if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop") && !nextPageFlag)
+        else if (cardDatas[nowJobIndex][cardIndex].cardType.Equals("주문"))
         {
-            if (Input.GetMouseButtonDown(0))
+            card.cardType = CardType.주문;
+            card.SpellCostData = cardDatas[nowJobIndex][cardIndex].cardCost;
+            card.SpellCardNameData = cardDatas[nowJobIndex][cardIndex].cardName;
+            card.SpellCardExplainData = cardDatas[nowJobIndex][cardIndex].cardExplain;
+        }
+        else if (cardDatas[nowJobIndex][cardIndex].cardType.Equals("무기"))
+        {
+            card.cardType = CardType.무기;
+            card.WeaponCostData = cardDatas[nowJobIndex][cardIndex].cardCost;
+            card.WeaponAttackData = cardDatas[nowJobIndex][cardIndex].cardAttack;
+            card.WeaponHpData = cardDatas[nowJobIndex][cardIndex].cardHp;
+            card.WeaponCardNameData = cardDatas[nowJobIndex][cardIndex].cardName;
+            card.WeaponCardExplainData = cardDatas[nowJobIndex][cardIndex].cardExplain;
+        }
+        card.cardLevel = cardDatas[nowJobIndex][cardIndex].cardLevel;
+        DataMng.TableType tableName = (DataMng.TableType)(nowJobIndex);
+        card.cardJob = tableName.ToString();
+    }
+    #endregion
+
+    #region[카드페이지 넘기기]
+    public void NextPage()
+    {
+        if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop"))
+        {
+            if (nowJobIndex < cardDatas.Length - 1 || hasNextCard)
             {
                 nextPageFlag = true;
                 pageAni.SetTrigger("Next");
             }
-
-            int nextCardIndex = nowCardIndex + 8;
-
-            for (int i = 0; i < 8; i++)
-            {
-                if (cardDatas[nowJobIndex].Count <= i + nextCardIndex || i + nextCardIndex < 0)
-                {
-                    nextCards[i].gameObject.SetActive(false);
-                }
-                else
-                {
-                    nextCards[i].gameObject.SetActive(true);
-                    if (cardDatas[nowJobIndex][i + nextCardIndex].cardType.Equals("하수인"))
-                    {
-                        nextCards[i].cardType = CardType.하수인;
-                        nextCards[i].MinionsCostData = cardDatas[nowJobIndex][i + nextCardIndex].cardCost;
-                        nextCards[i].MinionsAttackData = cardDatas[nowJobIndex][i + nextCardIndex].cardAttack;
-                        nextCards[i].MinionsHpData = cardDatas[nowJobIndex][i + nextCardIndex].cardHp;
-                        nextCards[i].MinionsCardNameData = cardDatas[nowJobIndex][i + nextCardIndex].cardName;
-                        nextCards[i].MinionsCardExplainData = cardDatas[nowJobIndex][i + nextCardIndex].cardExplain;
-                    }
-                }
-            }
-        }
-
-
-        for (int i = 0; i < 8; i++)
-        {
-            if (cardDatas[nowJobIndex].Count <= i + nowCardIndex || i + nowCardIndex < 0)
-            {
-                nowCards[i].gameObject.SetActive(false);
-            }
-            else
-            {
-                nowCards[i].gameObject.SetActive(true);
-                if (cardDatas[nowJobIndex][i + nowCardIndex].cardType.Equals("하수인"))
-                {
-                    nowCards[i].cardType = CardType.하수인;
-                    nowCards[i].MinionsCostData = cardDatas[nowJobIndex][i + nowCardIndex].cardCost;
-                    nowCards[i].MinionsAttackData = cardDatas[nowJobIndex][i + nowCardIndex].cardAttack;
-                    nowCards[i].MinionsHpData = cardDatas[nowJobIndex][i + nowCardIndex].cardHp;
-                    nowCards[i].MinionsCardNameData = cardDatas[nowJobIndex][i + nowCardIndex].cardName;
-                    nowCards[i].MinionsCardExplainData = cardDatas[nowJobIndex][i + nowCardIndex].cardExplain;
-                }
-            }
         }
     }
 
+    public void BackPage()
+    {
+        if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop"))
+        {
+            if (nowJobIndex > 0 || nowCardIndex > 0)
+            {
+                backPageFlag = true;
+                nowCardIndex -= 8;
+                pageAni.SetTrigger("Back");
+            }
+        }
+    }
     #endregion
 
     #region[뒤로가기버튼]
