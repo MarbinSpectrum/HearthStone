@@ -404,7 +404,7 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[카드표시]
     public void ShowCard()
     {
-        if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperNext") && pageAni.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.9f && nextPageFlag)
+        if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperNext") && pageAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99f && nextPageFlag)
         {
             nextPageFlag = false;
             nowCardIndex += 8;
@@ -415,6 +415,29 @@ public class MyCollectionsMenu : MonoBehaviour
             {
                 nextPageFlag = true;
                 pageAni.SetTrigger("Next");
+            }
+
+            int nextCardIndex = nowCardIndex + 8;
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (cardDatas[nowJobIndex].Count <= i + nextCardIndex || i + nextCardIndex < 0)
+                {
+                    nextCards[i].gameObject.SetActive(false);
+                }
+                else
+                {
+                    nextCards[i].gameObject.SetActive(true);
+                    if (cardDatas[nowJobIndex][i + nextCardIndex].cardType.Equals("하수인"))
+                    {
+                        nextCards[i].cardType = CardType.하수인;
+                        nextCards[i].MinionsCostData = cardDatas[nowJobIndex][i + nextCardIndex].cardCost;
+                        nextCards[i].MinionsAttackData = cardDatas[nowJobIndex][i + nextCardIndex].cardAttack;
+                        nextCards[i].MinionsHpData = cardDatas[nowJobIndex][i + nextCardIndex].cardHp;
+                        nextCards[i].MinionsCardNameData = cardDatas[nowJobIndex][i + nextCardIndex].cardName;
+                        nextCards[i].MinionsCardExplainData = cardDatas[nowJobIndex][i + nextCardIndex].cardExplain;
+                    }
+                }
             }
         }
 
@@ -436,29 +459,6 @@ public class MyCollectionsMenu : MonoBehaviour
                     nowCards[i].MinionsHpData = cardDatas[nowJobIndex][i + nowCardIndex].cardHp;
                     nowCards[i].MinionsCardNameData = cardDatas[nowJobIndex][i + nowCardIndex].cardName;
                     nowCards[i].MinionsCardExplainData = cardDatas[nowJobIndex][i + nowCardIndex].cardExplain;
-                }
-            }
-        }
-
-        int nextCardIndex = nowCardIndex + 8;
-
-        for (int i = 0; i < 8; i++)
-        {
-            if (cardDatas[nowJobIndex].Count <= i + nextCardIndex || i + nextCardIndex < 0)
-            {
-                nextCards[i].gameObject.SetActive(false);
-            }
-            else
-            {
-                nextCards[i].gameObject.SetActive(true);
-                if (cardDatas[nowJobIndex][i + nextCardIndex].cardType.Equals("하수인"))
-                {
-                    nextCards[i].cardType = CardType.하수인;
-                    nextCards[i].MinionsCostData = cardDatas[nowJobIndex][i + nextCardIndex].cardCost;
-                    nextCards[i].MinionsAttackData = cardDatas[nowJobIndex][i + nextCardIndex].cardAttack;
-                    nextCards[i].MinionsHpData = cardDatas[nowJobIndex][i + nextCardIndex].cardHp;
-                    nextCards[i].MinionsCardNameData = cardDatas[nowJobIndex][i + nextCardIndex].cardName;
-                    nextCards[i].MinionsCardExplainData = cardDatas[nowJobIndex][i + nextCardIndex].cardExplain;
                 }
             }
         }
