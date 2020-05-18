@@ -9,8 +9,9 @@ public class CurlEf : MonoBehaviour
     public Transform _Mask;
     public Transform _GradOutter;
     public Vector3 _Pos = new Vector3(-240.0f, -470.0f, 0.0f) * 0.01f;
-    public Vector3 offset;
-    public Vector3 baseP;
+
+
+    
 
     #region[LateUpdate]
     void LateUpdate()

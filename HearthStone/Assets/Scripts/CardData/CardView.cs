@@ -480,9 +480,44 @@ public class CardView : MonoBehaviour
     #region[ShowExplain]
     void ShowExplain()
     {
-        MinionsCardExplain.text = MinionsCardExplainData;
-        SpellCardExplain.text = SpellCardExplainData;
-        WeaponCardExplain.text = WeaponCardExplainData;
+        string temp = "";
+        for(int i = 0; i < MinionsCardExplainData.Length; i++)
+        {
+            if (i < MinionsCardExplainData.Length - 1 && MinionsCardExplainData[i].Equals('\\') && MinionsCardExplainData[i + 1].Equals('n'))
+            {
+                temp += "\n";
+                i++;
+            }
+            else
+                temp += MinionsCardExplainData[i];
+        }
+        MinionsCardExplain.text = temp;
+
+        temp = "";
+        for (int i = 0; i < SpellCardExplainData.Length; i++)
+        {
+            if (i < SpellCardExplainData.Length - 1 && SpellCardExplainData[i].Equals('\\') && SpellCardExplainData[i + 1].Equals('n'))
+            {
+                temp += "\n";
+                i++;
+            }
+            else
+                temp += SpellCardExplainData[i];
+        }
+        SpellCardExplain.text = temp;
+
+        temp = "";
+        for (int i = 0; i < WeaponCardExplainData.Length; i++)
+        {
+            if (i < WeaponCardExplainData.Length - 1 && WeaponCardExplainData[i].Equals('\\') && WeaponCardExplainData[i + 1].Equals('n'))
+            {
+                temp += "\n";
+                i++;
+            }
+            else
+                temp += WeaponCardExplainData[i];
+        }
+        WeaponCardExplain.text = temp;
     }
     #endregion
 
