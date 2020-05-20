@@ -12,21 +12,21 @@ public enum CardType
 
 public class CardView : MonoBehaviour
 {
-    public CardType cardType;
+    [HideInInspector] public CardType cardType;
 
-    public Sprite[] num;
+    Sprite[] num;
 
-    public Sprite[] rogueMinions;
-    public Sprite[] rogueSpell;
-    public Sprite[] rogueWeapon;
+    Sprite[] rogueMinions;
+    Sprite[] rogueSpell;
+    Sprite[] rogueWeapon;
 
-    public Sprite[] druidMinions;
-    public Sprite[] druidSpell;
-    public Sprite[] druidWeapon;
+    Sprite[] druidMinions;
+    Sprite[] druidSpell;
+    Sprite[] druidWeapon;
 
-    public Sprite[] neutralityMinions;
-    public Sprite[] neutralitySpell;
-    public Sprite[] neutralityWeapon;
+    Sprite[] neutralityMinions;
+    Sprite[] neutralitySpell;
+    Sprite[] neutralityWeapon;
 
     [HideInInspector] public string cardJob = "중립";
     [HideInInspector] public string cardLevel = "기본";
@@ -88,6 +88,77 @@ public class CardView : MonoBehaviour
     #region[Awake]
     public void Awake()
     {
+        num = Resources.LoadAll<Sprite>("Card/Number");
+
+        #region[드루이드 카드 폼]
+        druidMinions = new Sprite[5];
+        druidMinions[0] = Resources.Load<Sprite>("Card/Druid/Druid_Card_Base");
+        druidMinions[1] = Resources.Load<Sprite>("Card/Druid/Druid_Card_Normal");
+        druidMinions[2] = Resources.Load<Sprite>("Card/Druid/Druid_Card_Rare");
+        druidMinions[3] = Resources.Load<Sprite>("Card/Druid/Druid_Card_Special");
+        druidMinions[4] = Resources.Load<Sprite>("Card/Druid/Druid_Card_Legend");
+
+        druidSpell = new Sprite[5];
+        druidSpell[0] = Resources.Load<Sprite>("Card/Druid/Druid_SpellCard_Base");
+        druidSpell[1] = Resources.Load<Sprite>("Card/Druid/Druid_SpellCard_Normal");
+        druidSpell[2] = Resources.Load<Sprite>("Card/Druid/Druid_SpellCard_Rare");
+        druidSpell[3] = Resources.Load<Sprite>("Card/Druid/Druid_SpellCard_Special");
+        druidSpell[4] = Resources.Load<Sprite>("Card/Druid/Druid_SpellCard_Legend");
+
+        druidWeapon = new Sprite[5];
+        druidWeapon[0] = Resources.Load<Sprite>("Card/Druid/Druid_WeaponCard_Base");
+        druidWeapon[1] = Resources.Load<Sprite>("Card/Druid/Druid_WeaponCard_Normal");
+        druidWeapon[2] = Resources.Load<Sprite>("Card/Druid/Druid_WeaponCard_Rare");
+        druidWeapon[3] = Resources.Load<Sprite>("Card/Druid/Druid_WeaponCard_Special");
+        druidWeapon[4] = Resources.Load<Sprite>("Card/Druid/Druid_WeaponCard_Legend");
+        #endregion
+
+        #region[도적 카드 폼]
+        rogueMinions = new Sprite[5];
+        rogueMinions[0] = Resources.Load<Sprite>("Card/Rogue/Rogue_Card_Base");
+        rogueMinions[1] = Resources.Load<Sprite>("Card/Rogue/Rogue_Card_Normal");
+        rogueMinions[2] = Resources.Load<Sprite>("Card/Rogue/Rogue_Card_Rare");
+        rogueMinions[3] = Resources.Load<Sprite>("Card/Rogue/Rogue_Card_Special");
+        rogueMinions[4] = Resources.Load<Sprite>("Card/Rogue/Rogue_Card_Legend");
+
+        rogueSpell = new Sprite[5];
+        rogueSpell[0] = Resources.Load<Sprite>("Card/Rogue/Rogue_SpellCard_Base");
+        rogueSpell[1] = Resources.Load<Sprite>("Card/Rogue/Rogue_SpellCard_Normal");
+        rogueSpell[2] = Resources.Load<Sprite>("Card/Rogue/Rogue_SpellCard_Rare");
+        rogueSpell[3] = Resources.Load<Sprite>("Card/Rogue/Rogue_SpellCard_Special");
+        rogueSpell[4] = Resources.Load<Sprite>("Card/Rogue/Rogue_SpellCard_Legend");
+
+        rogueWeapon = new Sprite[5];
+        rogueWeapon[0] = Resources.Load<Sprite>("Card/Rogue/Rogue_WeaponCard_Base");
+        rogueWeapon[1] = Resources.Load<Sprite>("Card/Rogue/Rogue_WeaponCard_Normal");
+        rogueWeapon[2] = Resources.Load<Sprite>("Card/Rogue/Rogue_WeaponCard_Rare");
+        rogueWeapon[3] = Resources.Load<Sprite>("Card/Rogue/Rogue_WeaponCard_Special");
+        rogueWeapon[4] = Resources.Load<Sprite>("Card/Rogue/Rogue_WeaponCard_Legend");
+        #endregion
+
+        #region[중립 카드 폼]
+        neutralityMinions = new Sprite[5];
+        neutralityMinions[0] = Resources.Load<Sprite>("Card/Neutrality/Card_Base");
+        neutralityMinions[1] = Resources.Load<Sprite>("Card/Neutrality/Card_Normal");
+        neutralityMinions[2] = Resources.Load<Sprite>("Card/Neutrality/Card_Rare");
+        neutralityMinions[3] = Resources.Load<Sprite>("Card/Neutrality/Card_Special");
+        neutralityMinions[4] = Resources.Load<Sprite>("Card/Neutrality/Card_Legend");
+
+        neutralitySpell = new Sprite[5];
+        neutralitySpell[0] = Resources.Load<Sprite>("Card/Neutrality/SpellCard_Base");
+        neutralitySpell[1] = Resources.Load<Sprite>("Card/Neutrality/SpellCard_Normal");
+        neutralitySpell[2] = Resources.Load<Sprite>("Card/Neutrality/SpellCard_Rare");
+        neutralitySpell[3] = Resources.Load<Sprite>("Card/Neutrality/SpellCard_Special");
+        neutralitySpell[4] = Resources.Load<Sprite>("Card/Neutrality/SpellCard_Legend");
+
+        neutralityWeapon = new Sprite[5];
+        neutralityWeapon[0] = Resources.Load<Sprite>("Card/Neutrality/WeaponCard_Base");
+        neutralityWeapon[1] = Resources.Load<Sprite>("Card/Neutrality/WeaponCard_Normal");
+        neutralityWeapon[2] = Resources.Load<Sprite>("Card/Neutrality/WeaponCard_Rare");
+        neutralityWeapon[3] = Resources.Load<Sprite>("Card/Neutrality/WeaponCard_Special");
+        neutralityWeapon[4] = Resources.Load<Sprite>("Card/Neutrality/WeaponCard_Legend");
+        #endregion
+
         #region[하수인카드]
         MinionsCard = transform.Find("하수인카드").gameObject;
         MinionsCardLevel = transform.Find("하수인카드").Find("등급").GetComponent<Image>();
@@ -203,7 +274,7 @@ public class CardView : MonoBehaviour
             case "희귀":
                 getLevel = 2;
                 break;
-            case "특별":
+            case "특급":
                 getLevel = 3;
                 break;
             case "전설":

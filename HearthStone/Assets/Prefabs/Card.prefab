@@ -162,7 +162,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6789548241241051998
 RectTransform:
   m_ObjectHideFlags: 0
@@ -227,9 +227,9 @@ RectTransform:
   m_Father: {fileID: 9137639675257942033}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 10.5, y: -4}
   m_SizeDelta: {x: 7, y: 8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3863849138194602284
@@ -721,8 +721,8 @@ MonoBehaviour:
   rogueMinions:
   - {fileID: 21300000, guid: 5449e0538e486504899ef9ea4ed3147f, type: 3}
   - {fileID: 21300000, guid: ba69bbddf7be0a742bdaead71e130c59, type: 3}
-  - {fileID: 21300000, guid: c35cf0e76b2918a4184eee043f3ebe73, type: 3}
   - {fileID: 21300000, guid: 0727854cda3833248bea5a51cb176d68, type: 3}
+  - {fileID: 21300000, guid: c35cf0e76b2918a4184eee043f3ebe73, type: 3}
   - {fileID: 21300000, guid: cae5264feea6d5745bd79f86a570b0d3, type: 3}
   rogueSpell:
   - {fileID: 21300000, guid: 83a68e50af6048f419ff5e5a08d17e1e, type: 3}
@@ -3157,9 +3157,9 @@ RectTransform:
   m_Father: {fileID: 9137639675257942033}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 3.5, y: -4}
   m_SizeDelta: {x: 7, y: 8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8838597044790207020

@@ -10,7 +10,7 @@ public class BattleMenu : MonoBehaviour
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public bool battleCollections;
+    [HideInInspector]public bool battleCollections;
 
     EventTrigger.Entry pointerEnter;
     EventTrigger.Entry pointerDown;
