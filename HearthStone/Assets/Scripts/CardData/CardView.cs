@@ -471,9 +471,35 @@ public class CardView : MonoBehaviour
     #region[ShowName]
     void ShowName()
     {
-        MinionsCardName.text = MinionsCardNameData;
-        SpellCardName.text = SpellCardNameData;
-        WeaponCardName.text = WeaponCardNameData;
+        string temp = "";
+        for (int i = 0; i < MinionsCardNameData.Length; i++)
+        {
+            if (MinionsCardNameData[i].Equals('('))
+                break;
+            else
+                temp += MinionsCardNameData[i];
+        }
+        MinionsCardName.text = temp;
+
+        temp = "";
+        for (int i = 0; i < SpellCardNameData.Length; i++)
+        {
+            if (SpellCardNameData[i].Equals('('))
+                break;
+            else
+                temp += SpellCardNameData[i];
+        }
+        SpellCardName.text = temp;
+
+        temp = "";
+        for (int i = 0; i < WeaponCardNameData.Length; i++)
+        {
+            if (WeaponCardNameData[i].Equals('('))
+                break;
+            else
+                temp += WeaponCardNameData[i];
+        }
+        WeaponCardName.text = temp;
     }
     #endregion
 

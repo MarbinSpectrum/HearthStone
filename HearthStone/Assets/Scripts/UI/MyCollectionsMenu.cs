@@ -391,9 +391,18 @@ public class MyCollectionsMenu : MonoBehaviour
             cardDatas[i].Clear();
 
         for (int i = 0; i < 3; i++)
+        {
             for (int j = 1; j <= DataMng.instance.m_dic[(DataMng.TableType)i].m_table.Count; j++)
                 if (!DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "등급").Equals("토큰"))
                     cardDatas[i].Add(GetCardData(j, (DataMng.TableType)i));
+            cardDatas[i].Sort(delegate(CardData A,CardData B)
+            {
+                if (A.cardCost > B.cardCost)
+                    return 1;
+                return -1;
+
+            });
+        }
     }
     #endregion
 
@@ -428,8 +437,8 @@ public class MyCollectionsMenu : MonoBehaviour
         }
         
         //화살표표시
-        backArrow.gameObject.SetActive(nowCardIndex != 0 || nowJobIndex != 0);
-        nextArrow.gameObject.SetActive(nowJobIndex < cardDatas.Length - 1 || hasNextCard);
+        backArrow.gameObject.SetActive(pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop") && (nowCardIndex != 0 || nowJobIndex != 0));
+        nextArrow.gameObject.SetActive(pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop") && (nowJobIndex < cardDatas.Length - 1 || hasNextCard));
 
         //카드리스트
         ShowCard();

@@ -6,7 +6,7 @@ public class DataMng : MonoBehaviour
 {
     public enum TableType
     {
-        중립,드루이드, 도적
+        드루이드, 도적, 중립
     }
 
     public static DataMng instance;
@@ -21,6 +21,7 @@ public class DataMng : MonoBehaviour
         instance = this;
         LoadTable();
         LoadCardImage();
+
     }
     #endregion
 
