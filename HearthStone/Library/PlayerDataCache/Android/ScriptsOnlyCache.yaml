@@ -43,6 +43,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.GridLayoutGroup
     - UnityEngine.UI.HorizontalLayoutGroup
     - UnityEngine.UI.Image
+    - UnityEngine.UI.InputField
     - UnityEngine.UI.Mask
     - UnityEngine.UI.Outline
     - UnityEngine.UI.Shadow
@@ -112,6 +113,8 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 12216}
     - Class: 114
+      Script: {instanceID: 12414}
+    - Class: 114
       Script: {instanceID: 12444}
     - Class: 114
       Script: {instanceID: 12448}
@@ -178,7 +181,7 @@ ScriptsOnlyBuild:
     className: TMP_Dropdown
   - hash:
       serializedVersion: 2
-      Hash: cbba9893881fc8dacf7c68cb9099b5b4
+      Hash: 5cd5b137c98f9a8b0836c41c497522db
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: CardView
@@ -376,7 +379,7 @@ ScriptsOnlyBuild:
     className: TMP_SpriteAnimator
   - hash:
       serializedVersion: 2
-      Hash: 61b32521de13b1f1aee70b340a8bb7af
+      Hash: c84bc542af9d778bfb438a7f31aa3216
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: MyCollectionsMenu
@@ -617,4 +620,4 @@ ScriptsOnlyBuild:
   platform: 13
   scenePathNames:
   - Assets/Scenes/Main.unity
-  playerPath: E:/YoungMookKang/git/Unity/HearthStone/Test.apk
+  playerPath: C:/Users/Atents/Desktop/Test.apk

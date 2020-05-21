@@ -678,6 +678,7 @@ RectTransform:
   - {fileID: 6846947805855558909}
   - {fileID: 6789548241241051998}
   - {fileID: 6031043432396149517}
+  - {fileID: 7140250354181664018}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -707,71 +708,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardType: 0
-  num:
-  - {fileID: -4288035918044431015, guid: 2e42310e6d230f14c9e111de66b14b9f, type: 3}
-  - {fileID: 7274922264133251463, guid: 2e42310e6d230f14c9e111de66b14b9f, type: 3}
-  - {fileID: 6444854464500186218, guid: 2e42310e6d230f14c9e111de66b14b9f, type: 3}
-  - {fileID: 8484659330433545107, guid: 2e42310e6d230f14c9e111de66b14b9f, type: 3}
-  - {fileID: 2864006405870961871, guid: 2e42310e6d230f14c9e111de66b14b9f, type: 3}
-  - {fileID: -2271461585372330998, guid: 2e42310e6d230f14c9e111de66b14b9f, type: 3}
-  - {fileID: 4684166370730997568, guid: 2e42310e6d230f14c9e111de66b14b9f, type: 3}
-  - {fileID: 7376203231445842152, guid: 2e42310e6d230f14c9e111de66b14b9f, type: 3}
-  - {fileID: 249788494600628417, guid: 2e42310e6d230f14c9e111de66b14b9f, type: 3}
-  - {fileID: 4044263450859038300, guid: 2e42310e6d230f14c9e111de66b14b9f, type: 3}
-  rogueMinions:
-  - {fileID: 21300000, guid: 5449e0538e486504899ef9ea4ed3147f, type: 3}
-  - {fileID: 21300000, guid: ba69bbddf7be0a742bdaead71e130c59, type: 3}
-  - {fileID: 21300000, guid: 0727854cda3833248bea5a51cb176d68, type: 3}
-  - {fileID: 21300000, guid: c35cf0e76b2918a4184eee043f3ebe73, type: 3}
-  - {fileID: 21300000, guid: cae5264feea6d5745bd79f86a570b0d3, type: 3}
-  rogueSpell:
-  - {fileID: 21300000, guid: 83a68e50af6048f419ff5e5a08d17e1e, type: 3}
-  - {fileID: 21300000, guid: c14c8092cbc321240963e041638590d7, type: 3}
-  - {fileID: 21300000, guid: f3c82fdc40bc720459fc686b6f9ddc6b, type: 3}
-  - {fileID: 21300000, guid: 2817f3699149ce04a810ba3a8c9a1ef1, type: 3}
-  - {fileID: 0}
-  rogueWeapon:
-  - {fileID: 21300000, guid: a9b30d186d65e2b47a08aaf49799762d, type: 3}
-  - {fileID: 21300000, guid: e4d1e850765d42f489c19a1ba438eab9, type: 3}
-  - {fileID: 21300000, guid: dedf3db3bb0f36c4fae4f17dac9a9f25, type: 3}
-  - {fileID: 21300000, guid: 1753b7f1699737946a2787097a4f7e96, type: 3}
-  - {fileID: 21300000, guid: a284e1171b356d44abf7a75320ea0824, type: 3}
-  druidMinions:
-  - {fileID: 21300000, guid: 4686fccf5d8d2b74fa22bd4aa12f45be, type: 3}
-  - {fileID: 21300000, guid: 62f4c5efb76ec994a902233bcf664aee, type: 3}
-  - {fileID: 21300000, guid: 7a8c5b1e5dec5164f990cc0704c11383, type: 3}
-  - {fileID: 21300000, guid: d579f412b1169534699784b08485a1e6, type: 3}
-  - {fileID: 21300000, guid: f77b5a9ce6590814ca994ed6ffbc2f31, type: 3}
-  druidSpell:
-  - {fileID: 21300000, guid: 6b8af6597f00e9b4fbf3056d15212497, type: 3}
-  - {fileID: 21300000, guid: 1514555963c0f0941a1adb10cf033501, type: 3}
-  - {fileID: 21300000, guid: fc4386cece446ac48ad40e8a064b9f21, type: 3}
-  - {fileID: 21300000, guid: 21de7fb4cc2ef4649995f973d6471506, type: 3}
-  - {fileID: 0}
-  druidWeapon:
-  - {fileID: 21300000, guid: 30be3d214fef71f409df78dee89c0c46, type: 3}
-  - {fileID: 21300000, guid: f82c56f1ec398ba43b10dd6657d69711, type: 3}
-  - {fileID: 21300000, guid: 0998aa0e63a98274c85604577276d656, type: 3}
-  - {fileID: 21300000, guid: 82d73b27122bec24da033e053351963f, type: 3}
-  - {fileID: 21300000, guid: f3121e0917d692f468bcdb4d7a4255d6, type: 3}
-  neutralityMinions:
-  - {fileID: 21300000, guid: b59afc9c3b0f6ba4997658dbe2a4dbaf, type: 3}
-  - {fileID: 21300000, guid: 1453165c49297e04d871f9874ed84a9d, type: 3}
-  - {fileID: 21300000, guid: 2729005cff48a2c418fc17b10bca8add, type: 3}
-  - {fileID: 21300000, guid: 63e471f00eaba8943bd86e444e4d3513, type: 3}
-  - {fileID: 21300000, guid: cded651b8a7fff34793e38a29b98e739, type: 3}
-  neutralitySpell:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  neutralityWeapon:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   cardJob: "\uC911\uB9BD"
   cardLevel: "\uAE30\uBCF8"
   MinionsCostData: 0
@@ -1186,6 +1122,123 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &2350554071335710539
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7140250354181664018}
+  - component: {fileID: 455350029027506054}
+  - component: {fileID: 141123296790843829}
+  - component: {fileID: 3977348179672404822}
+  m_Layer: 5
+  m_Name: EventButton
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7140250354181664018
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2350554071335710539}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2050805908735659984}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.1, y: -2.79}
+  m_SizeDelta: {x: 54.54, y: 54.92}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &455350029027506054
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2350554071335710539}
+  m_CullTransparentMesh: 0
+--- !u!114 &141123296790843829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2350554071335710539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3977348179672404822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2350554071335710539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 0
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 141123296790843829}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2641692562173451647
 GameObject:
   m_ObjectHideFlags: 0

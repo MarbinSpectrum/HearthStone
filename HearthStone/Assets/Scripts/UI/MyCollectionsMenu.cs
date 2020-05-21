@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System;
 
 public class MyCollectionsMenu : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class MyCollectionsMenu : MonoBehaviour
     Animator filterAni;
     Animator[] costBtnAni;
     Animator pageAni;
+
+    Animator cardCloseUpAni;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,9 +35,12 @@ public class MyCollectionsMenu : MonoBehaviour
     Image goBackImg;
     Image selectJobImg;
     Image filterImg;
+    Image cancleImg;
     Image makingImg;
 
     Image completeImg;
+
+    Image cancleCost;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,9 +57,12 @@ public class MyCollectionsMenu : MonoBehaviour
 
     public Sprite[] completeSprites;
 
+    Sprite[] num;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Text selectjobText;
+    Text searchCancleText;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -89,6 +98,11 @@ public class MyCollectionsMenu : MonoBehaviour
     GameObject backNotCard;
     CardView[] nextCards = new CardView[8];
     GameObject nextNotCard;
+    CardView[] closeUpCards = new CardView[8];
+
+    GameObject costCancleObject;
+    GameObject stringCancleObject;
+    GameObject cardCloseUp;
 
     int nowJobIndex = 0;
     int nowCardIndex = 0;
@@ -105,9 +119,36 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[Awake]
     private void Awake()
     {
+        num = Resources.LoadAll<Sprite>("Card/Number");
+
+        Transform closeUpCard = transform.Find("CardCloseUp");
+        for (int i = 0; i < 8; i++)
+            closeUpCards[i] = closeUpCard.Find("Card" + i).GetComponent<CardView>();
+
         Transform nowCard = transform.Find("Page").Find("NowCards");
         for (int i = 0; i < 8; i++)
+        {
             nowCards[i] = nowCard.Find("Card" + i).GetComponent<CardView>();
+            Button temp = nowCards[i].transform.Find("EventButton").GetComponent<Button>();
+            int n = i;
+            temp.onClick.AddListener(() =>
+            {
+                CardCloseUp(n);
+            });
+
+        }
+
+        #region[closeUpExitTrigger]
+        EventTrigger closeUpExitTrigger = closeUpCard.Find("Blur").GetComponent<EventTrigger>();
+        pointerDown = new EventTrigger.Entry();
+        pointerDown.eventID = EventTriggerType.PointerDown;
+        pointerDown.callback.AddListener((data) =>
+        {
+            CardCloseOut();
+        });
+        closeUpExitTrigger.triggers.Add(pointerDown);
+        #endregion
+
         nowNotCard = nowCard.Find("NotCard").gameObject;
 
         Transform backEventCard = transform.Find("Page").Find("BackEventCards");
@@ -123,9 +164,13 @@ public class MyCollectionsMenu : MonoBehaviour
         jobListAni = transform.Find("JobList").GetComponent<Animator>();
         filterAni = transform.Find("Filter").GetComponent<Animator>();
         pageAni = transform.Find("Page").GetComponent<Animator>();
+        cardCloseUpAni = transform.Find("CardCloseUp").GetComponent<Animator>();
+
 
         nextArrow = transform.Find("CardArrow").Find("Next").GetComponent<Button>();
         backArrow = transform.Find("CardArrow").Find("Back").GetComponent<Button>();
+
+        cardCloseUp = transform.Find("CardCloseUp").gameObject;
 
         #region[nextArrow]
         nextArrow.onClick.AddListener(() =>
@@ -158,6 +203,7 @@ public class MyCollectionsMenu : MonoBehaviour
         goBackImg = transform.Find("뒤로").GetComponent<Image>();
         selectJobImg = transform.Find("직업").GetComponent<Image>();
         filterImg = transform.Find("필터").GetComponent<Image>();
+        cancleImg = transform.Find("취소").GetComponent<Image>();
         makingImg = transform.Find("제작").GetComponent<Image>();
 
         searchText = transform.Find("Filter").Find("CardType").Find("입력").GetComponent<InputField>();
@@ -281,6 +327,43 @@ public class MyCollectionsMenu : MonoBehaviour
             ActFilterJobBtn(true);
         });
         filterTrigger.triggers.Add(pointerClick);
+        #endregion
+
+        #region[cancleTrigger]
+        EventTrigger cancleTrigger = transform.Find("취소").GetComponent<EventTrigger>();
+        pointerEnter = new EventTrigger.Entry();
+        pointerEnter.eventID = EventTriggerType.PointerEnter;
+        pointerEnter.callback.AddListener((data) =>
+        {
+            if (Input.GetMouseButton(0))
+                cancleImg.sprite = filterSprites[(int)ButtonState.누름];
+        });
+        cancleTrigger.triggers.Add(pointerEnter);
+
+        pointerDown = new EventTrigger.Entry();
+        pointerDown.eventID = EventTriggerType.PointerDown;
+        pointerDown.callback.AddListener((data) =>
+        {
+            if (Input.GetMouseButtonDown(0))
+                cancleImg.sprite = filterSprites[(int)ButtonState.누름];
+        });
+        cancleTrigger.triggers.Add(pointerDown);
+
+        pointerExit = new EventTrigger.Entry();
+        pointerExit.eventID = EventTriggerType.PointerExit;
+        pointerExit.callback.AddListener((data) =>
+        {
+            cancleImg.sprite = filterSprites[(int)ButtonState.보통];
+        });
+        cancleTrigger.triggers.Add(pointerExit);
+
+        pointerClick = new EventTrigger.Entry();
+        pointerClick.eventID = EventTriggerType.PointerClick;
+        pointerClick.callback.AddListener((data) =>
+        {
+            ActCancleBtn(false);
+        });
+        cancleTrigger.triggers.Add(pointerClick);
         #endregion
 
         #region[makingTrigger]
@@ -407,12 +490,19 @@ public class MyCollectionsMenu : MonoBehaviour
         for (int i = 0; i < cardDatas.Length; i++)
             cardDatas[i] = new List<CardData>();
         CardDataInput();
+
+        stringCancleObject = transform.Find("취소").Find("SearchText").gameObject;
+        searchCancleText = stringCancleObject.transform.Find("Text").GetComponent<Text>();
+
+        costCancleObject = transform.Find("취소").Find("SearchCost").gameObject;
+        cancleCost = costCancleObject.transform.Find("num").GetComponent<Image>();
     }
     #endregion
 
     #region[OnEnable]
     void OnEnable()
     {
+        StartCoroutine(CardCloseUnCard(0.1f));
         nowJobIndex = 0;
         nowCardIndex = 0;
     }
@@ -455,6 +545,7 @@ public class MyCollectionsMenu : MonoBehaviour
             });
         }
         nowCost = cost;
+
         for (int i = 0; i < 3; i++)
             if (cardDatas[i].Count > 0)
             {
@@ -492,6 +583,7 @@ public class MyCollectionsMenu : MonoBehaviour
             goBackImg.sprite = goBackSprites[(int)ButtonState.보통];
             selectJobImg.sprite = selectJobSprites[(int)ButtonState.보통];
             filterImg.sprite = filterSprites[(int)ButtonState.보통];
+            cancleImg.sprite = filterSprites[(int)ButtonState.보통];
             makingImg.sprite = makingSprites[(int)ButtonState.보통];
         }
 
@@ -502,15 +594,22 @@ public class MyCollectionsMenu : MonoBehaviour
         backArrow.gameObject.SetActive(arrowFlag && hasBackPage);
         nextArrow.gameObject.SetActive(arrowFlag && hasNextPage);
 
-        //직업선택
-        DataMng.TableType tableName = (DataMng.TableType)(nowJobIndex);
-        selectjobText.text = tableName.ToString();
 
+        //직업표시
+        bool jobTextFlag = false;
         for (int i = 0; i < cardDatas.Length; i++)
             if (cardDatas[i].Count > 0)
+            {
+                jobTextFlag = true;
                 jobButton[i].gameObject.SetActive(true);
+            }
             else
                 jobButton[i].gameObject.SetActive(false);
+
+        //직업선택
+        DataMng.TableType tableName = (DataMng.TableType)(nowJobIndex);
+        selectjobText.text = jobTextFlag ? tableName.ToString() : "";
+
     }
     #endregion
 
@@ -798,9 +897,64 @@ public class MyCollectionsMenu : MonoBehaviour
     {
         filterAni.SetBool("Show", act);
         if (!act)
-            CardDataInput(nowCost, searchText.text);
+        {
+            if(String.IsNullOrWhiteSpace(searchText.text))
+                CardDataInput(nowCost, "");
+            else
+                CardDataInput(-1, searchText.text);
+
+            if (nowCost != -1 || !String.IsNullOrWhiteSpace(searchText.text))
+            {
+                if (!String.IsNullOrWhiteSpace(searchText.text))
+                {
+                    searchCancleText.text = searchText.text;
+                    costCancleObject.SetActive(false);
+                    stringCancleObject.SetActive(true);
+                }
+                else if(nowCost != -1)
+                {
+                    cancleCost.sprite = num[nowCost];
+                    costCancleObject.SetActive(true);
+                    stringCancleObject.SetActive(false);
+                }
+                ActCancleBtn(true);
+            }
+
+        }
     }
     #endregion
+
+    #region[취소버튼]
+    public void ActCancleBtn(bool act)
+    {
+        cancleImg.gameObject.SetActive(act);
+        if (!act)
+            CardDataInput();
+        filterImg.gameObject.SetActive(!act);
+    }
+    #endregion
+
+    void CardCloseUp(int n)
+    {
+        for(int i = 0; i < 8; i++)
+            closeUpCards[i].gameObject.SetActive(false);
+        cardCloseUpAni.SetTrigger("Show");
+        CardShow(ref closeUpCards[n], nowJobIndex, nowCardIndex + n);
+        closeUpCards[n].gameObject.SetActive(true);
+    }
+
+    void CardCloseOut()
+    {
+        cardCloseUpAni.SetTrigger("Close");
+        StartCoroutine(CardCloseUnCard(0.3f));
+    }
+
+    private IEnumerator CardCloseUnCard(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        for (int i = 0; i < 8; i++)
+            closeUpCards[i].gameObject.SetActive(false);
+    }
 
     public void ActFilterCostBtn(int n)
     {
