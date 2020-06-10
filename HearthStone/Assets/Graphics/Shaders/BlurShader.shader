@@ -72,68 +72,69 @@
 				}
 				ENDCG
 			}
-			GrabPass
-			{
-			}
 
-			Pass
-			{
-				CGPROGRAM
+			//GrabPass
+			//{
+			//}
 
-				#pragma vertex vert
-				#pragma fragment frag
-				#include "UnityCG.cginc"
+			//Pass
+			//{
+			//	CGPROGRAM
 
-				struct appdata
-				{
-					float4 vertex : POSITION;
-					float2 uv : TEXCOORD0;
-					fixed4 color : COLOR;
-				};
+			//	#pragma vertex vert
+			//	#pragma fragment frag
+			//	#include "UnityCG.cginc"
 
-				struct v2f
-				{
-					float4 grabPos : TEXCOORD0;
-					float4 pos : SV_POSITION;
-					float4 vertColor : COLOR;
-				};
+			//	struct appdata
+			//	{
+			//		float4 vertex : POSITION;
+			//		float2 uv : TEXCOORD0;
+			//		fixed4 color : COLOR;
+			//	};
 
-				v2f vert(appdata v)
-				{
-					v2f o;
-					o.pos = UnityObjectToClipPos(v.vertex);
-					o.grabPos = ComputeGrabScreenPos(o.pos);
-					o.vertColor = v.color;
-					return o;
-				}
+			//	struct v2f
+			//	{
+			//		float4 grabPos : TEXCOORD0;
+			//		float4 pos : SV_POSITION;
+			//		float4 vertColor : COLOR;
+			//	};
 
-				sampler2D _GrabTexture;
-				fixed4 _GrabTexture_TexelSize;
+			//	v2f vert(appdata v)
+			//	{
+			//		v2f o;
+			//		o.pos = UnityObjectToClipPos(v.vertex);
+			//		o.grabPos = ComputeGrabScreenPos(o.pos);
+			//		o.vertColor = v.color;
+			//		return o;
+			//	}
 
-				float _Blur;
+			//	sampler2D _GrabTexture;
+			//	fixed4 _GrabTexture_TexelSize;
 
-				half4 frag(v2f i) : SV_Target
-				{
-					float blur = _Blur;
-					blur = max(1, blur);
+			//	float _Blur;
 
-					fixed4 col = (0, 0, 0, 0);
-					float weight_total = 0;
+			//	half4 frag(v2f i) : SV_Target
+			//	{
+			//		float blur = _Blur;
+			//		blur = max(1, blur);
 
-					[loop]
-					for (float y = -blur; y <= blur; y += 1)
-					{
-						float distance_normalized = abs(y / blur);
-						float weight = exp(-0.5 * pow(distance_normalized, 2) * 5.0);
-						weight_total += weight;
-						col += tex2Dproj(_GrabTexture, i.grabPos + float4(0, y * _GrabTexture_TexelSize.y, 0, 0)) * weight;
-					}
+			//		fixed4 col = (0, 0, 0, 0);
+			//		float weight_total = 0;
 
-					col /= weight_total;
-					return col;
-				}
-				ENDCG
-			}
+			//		[loop]
+			//		for (float y = -blur; y <= blur; y += 1)
+			//		{
+			//			float distance_normalized = abs(y / blur);
+			//			float weight = exp(-0.5 * pow(distance_normalized, 2) * 5.0);
+			//			weight_total += weight;
+			//			col += tex2Dproj(_GrabTexture, i.grabPos + float4(0, y * _GrabTexture_TexelSize.y, 0, 0)) * weight;
+			//		}
+
+			//		col /= weight_total;
+			//		return col;
+			//	}
+			//	ENDCG
+			//}
 
 		}
 }

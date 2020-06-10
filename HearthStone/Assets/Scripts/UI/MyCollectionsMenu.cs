@@ -7,504 +7,167 @@ using System;
 
 public class MyCollectionsMenu : MonoBehaviour
 {
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Animator jobListAni;
-    Animator filterAni;
-    Animator[] costBtnAni;
-    Animator pageAni;
-
-    Animator cardCloseUpAni;
+    public static MyCollectionsMenu instance;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Button nextArrow;
-    Button backArrow;
+    [Header("취소")]
+    public GameObject cancleBtn;
 
-    Button[] jobButton;
+    [Header("필터")]
+    public GameObject filterBtn;
+    public Animator filterAni;
+    public GameObject costCancleObject;
+    public Image cancleCost;
+    public GameObject stringCancleObject;
+    public InputField searchText;
+    public Text searchCancleText;
+    DataMng.TableType nowJob;
+    int nowCost = -1;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [Header("제작")]
+    public Animator makeAni;
+    public GameObject selectMake;
+    public GameObject nowMagicPowderMakeUI;
+    public Animator makeEffectAni;
+    public Animator removeEffectAni;
+    Image[] nowMagicPowderNumMakeUI;
 
-    EventTrigger.Entry pointerEnter;
-    EventTrigger.Entry pointerDown;
-    EventTrigger.Entry pointerExit;
-    EventTrigger.Entry pointerClick;
+    [Header("페이지넘기기")]
+    public GameObject nextArrow;
+    public GameObject backArrow;
+    public Animator pageAni;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [Header("직업버튼")]
+    public GameObject[] JobBtn;
+    public Text selectjobText;
+    public Animator jobListAni;
 
-    Image goBackImg;
-    Image selectJobImg;
-    Image filterImg;
-    Image cancleImg;
-    Image makingImg;
+    [Header("현재페이지 카드")]
+    public GameObject nowCard;
+    public GameObject nowNotCard;
+    CardView[] nowCards = new CardView[8];
 
-    Image completeImg;
+    [Header("뒷페이지 카드")]
+    public GameObject backCard;
+    public GameObject backNotCard;
+    CardView[] backCards = new CardView[8];
 
-    Image cancleCost;
+    [Header("앞페이지 카드")]
+    public GameObject nextCard;
+    public GameObject nextNotCard;
+    CardView[] nextCards = new CardView[8];
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [Header("클로우즈업 카드")]
+    public GameObject closeUpCard;
+    public GameObject basicCardUI;
+    public GameObject powderUI;
+    public Animator cardCloseUpAni;
+    CardView[] closeUpCards = new CardView[8];
+    string nowCloseUpcardName;
+    string nowCloseUpcardLevel;
+    string nowCloseUpcardType;
+    public GameObject hasCardNumUI;
+    public Text hasCardNumText;
+    int nowCloseUpCardView;
 
-    InputField searchText;
+    [Header("현재 마법가루")]
+    public GameObject nowMagicPowder;
+    Image[] nowMagicPowderNum;
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [Header("획득할 마법가루")]
+    public GameObject GetMagicPowder;
+    Image[] GetMagicPowderNum;
 
-    public enum ButtonState { 보통, 누름 }
+    [Header("소비할 마법가루")]
+    public GameObject CostMagicPowder;
+    Image[] CostMagicPowderNum;
 
-    public Sprite[] goBackSprites;
-    public Sprite[] selectJobSprites;
-    public Sprite[] filterSprites;
-    public Sprite[] makingSprites;
+    [Header("덱리스트")]
+    public Image hasDeckNum;
+    public RectTransform deckContext;
+    public DeckBtn[] deckBtn;
+    public GameObject deckListView;
+    public GameObject deckCardView;
+    public GameObject deckBannerView;
+    public DeckBtn deckBannerBtn;
+    public RectTransform deckCardContext;
+    [HideInInspector] public RectTransform newDeckPos;
+    public RectTransform deckObject;
+    bool deckCardViewFlag;
 
-    public Sprite[] completeSprites;
-
-    Sprite[] num;
+    [Header("캐릭터선택")]
+    public Animator selectCharacterAni;
+    public Animator selectCharacterOKAni;
+    public Image[] characterImg;
+    public Text characterNameTxt;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Text selectjobText;
-    Text searchCancleText;
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public class CardData
-    {
-        public DataMng.TableType cardJob; 
-        public string cardLevel;
-        public string cardName;
-        public string cardType;
-        public int cardCost;
-        public int cardAttack;
-        public int cardHp;
-        public string cardExplain;
-
-        public CardData(DataMng.TableType acardJob, string acardLevel ,string acardName, string acardType, int acardCost, int acardAttack, int acardHp, string acardExplain)
-        {
-            cardJob = acardJob;
-            cardLevel = acardLevel;
-            cardName = acardName;
-            cardType = acardType;
-            cardCost = acardCost;
-            cardAttack = acardAttack;
-            cardHp = acardHp;
-            cardExplain = acardExplain;
-        }
-    }
-
+    //카드목록표시를 위한데이터
     List<CardData>[] cardDatas = new List<CardData>[3];
-
-    CardView[] nowCards = new CardView[8];
-    GameObject nowNotCard;
-    CardView[] backCards = new CardView[8];
-    GameObject backNotCard;
-    CardView[] nextCards = new CardView[8];
-    GameObject nextNotCard;
-    CardView[] closeUpCards = new CardView[8];
-
-    GameObject costCancleObject;
-    GameObject stringCancleObject;
-    GameObject cardCloseUp;
 
     int nowJobIndex = 0;
     int nowCardIndex = 0;
 
-    int nowCost = -1;
+    //카드제조플레그
+    bool cardmakeFlag = false;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     bool hasBackPage = false;
     bool hasNextPage = false;
-    bool nextPageFlag;
-    bool backPageFlag;
+    bool nextPageFlag = false;
+    bool backPageFlag = false;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #region[Awake]
     private void Awake()
     {
-        num = Resources.LoadAll<Sprite>("Card/Number");
+        instance = this;
 
-        Transform closeUpCard = transform.Find("CardCloseUp");
-        for (int i = 0; i < 8; i++)
-            closeUpCards[i] = closeUpCard.Find("Card" + i).GetComponent<CardView>();
-
-        Transform nowCard = transform.Find("Page").Find("NowCards");
         for (int i = 0; i < 8; i++)
         {
-            nowCards[i] = nowCard.Find("Card" + i).GetComponent<CardView>();
-            Button temp = nowCards[i].transform.Find("EventButton").GetComponent<Button>();
-            int n = i;
-            temp.onClick.AddListener(() =>
-            {
-                CardCloseUp(n);
-            });
-
+            closeUpCards[i] = closeUpCard.transform.Find("Card" + i).GetComponent<CardView>();
+            nowCards[i] = nowCard.transform.Find("Card" + i).GetComponent<CardView>();
+            backCards[i] = backCard.transform.Find("Card" + i).GetComponent<CardView>();
+            nextCards[i] = nextCard.transform.Find("Card" + i).GetComponent<CardView>();
         }
 
-        #region[closeUpExitTrigger]
-        EventTrigger closeUpExitTrigger = closeUpCard.Find("Blur").GetComponent<EventTrigger>();
-        pointerDown = new EventTrigger.Entry();
-        pointerDown.eventID = EventTriggerType.PointerDown;
-        pointerDown.callback.AddListener((data) =>
-        {
-            CardCloseOut();
-        });
-        closeUpExitTrigger.triggers.Add(pointerDown);
-        #endregion
+        nowMagicPowderNum = new Image[6];
+        for (int i = 0; i < nowMagicPowderNum.Length; i++)
+            nowMagicPowderNum[i] = nowMagicPowder.transform.Find(Mathf.Pow(10,i).ToString()).GetComponent<Image>();
 
-        nowNotCard = nowCard.Find("NotCard").gameObject;
+        nowMagicPowderNumMakeUI = new Image[6];
+        for (int i = 0; i < nowMagicPowderNumMakeUI.Length; i++)
+            nowMagicPowderNumMakeUI[i] = nowMagicPowderMakeUI.transform.Find(Mathf.Pow(10, i).ToString()).GetComponent<Image>();
 
-        Transform backEventCard = transform.Find("Page").Find("BackEventCards");
-        for (int i = 0; i < 8; i++)
-            backCards[i] = backEventCard.Find("Card" + i).GetComponent<CardView>();
-        backNotCard = backEventCard.Find("NotCard").gameObject;
+        GetMagicPowderNum = new Image[4];
+        for (int i = 0; i < GetMagicPowderNum.Length; i++)
+            GetMagicPowderNum[i] = GetMagicPowder.transform.Find(Mathf.Pow(10, i).ToString()).GetComponent<Image>();
 
-        Transform nextCard = transform.Find("Page").Find("NextEventCards").Find("NextCard").Find("NextCardPage");
-        for (int i = 0; i < 8; i++)
-            nextCards[i] = nextCard.Find("Card" + i).GetComponent<CardView>();
-        nextNotCard = nextCard.Find("NotCard").gameObject;
-
-        jobListAni = transform.Find("JobList").GetComponent<Animator>();
-        filterAni = transform.Find("Filter").GetComponent<Animator>();
-        pageAni = transform.Find("Page").GetComponent<Animator>();
-        cardCloseUpAni = transform.Find("CardCloseUp").GetComponent<Animator>();
-
-
-        nextArrow = transform.Find("CardArrow").Find("Next").GetComponent<Button>();
-        backArrow = transform.Find("CardArrow").Find("Back").GetComponent<Button>();
-
-        cardCloseUp = transform.Find("CardCloseUp").gameObject;
-
-        #region[nextArrow]
-        nextArrow.onClick.AddListener(() =>
-        {
-            NextPage();
-        });
-        #endregion
-        #region[backArrow]
-        backArrow.onClick.AddListener(() =>
-        {
-            BackPage();
-        });
-        #endregion
-
-        Transform jobList = transform.Find("JobList");
-        int jobButtonCount = jobList.Find("JobBoard").childCount;
-        jobButton = new Button[jobButtonCount];
-
-        for (int i = 0; i < jobButtonCount; i++)
-        {
-            int n = i;
-            jobButton[n] = jobList.Find("JobBoard").GetChild(n).GetComponent<Button>();
-            jobButton[n].onClick.AddListener(() =>
-            {
-                MovePage(n);
-                ActSelectJobBtn(false);
-            });
-        }
-
-        goBackImg = transform.Find("뒤로").GetComponent<Image>();
-        selectJobImg = transform.Find("직업").GetComponent<Image>();
-        filterImg = transform.Find("필터").GetComponent<Image>();
-        cancleImg = transform.Find("취소").GetComponent<Image>();
-        makingImg = transform.Find("제작").GetComponent<Image>();
-
-        searchText = transform.Find("Filter").Find("CardType").Find("입력").GetComponent<InputField>();
-
-        #region[goBackTrigger]
-        EventTrigger goBackTrigger = transform.Find("뒤로").GetComponent<EventTrigger>();
-        pointerEnter = new EventTrigger.Entry();
-        pointerEnter.eventID = EventTriggerType.PointerEnter;
-        pointerEnter.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButton(0))
-                goBackImg.sprite = goBackSprites[(int)ButtonState.누름];
-        });
-        goBackTrigger.triggers.Add(pointerEnter);
-
-        pointerDown = new EventTrigger.Entry();
-        pointerDown.eventID = EventTriggerType.PointerDown;
-        pointerDown.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButtonDown(0))
-                goBackImg.sprite = goBackSprites[(int)ButtonState.누름];
-        });
-        goBackTrigger.triggers.Add(pointerDown);
-
-        pointerExit = new EventTrigger.Entry();
-        pointerExit.eventID = EventTriggerType.PointerExit;
-        pointerExit.callback.AddListener((data) =>
-        {
-            goBackImg.sprite = goBackSprites[(int)ButtonState.보통];
-        });
-        goBackTrigger.triggers.Add(pointerExit);
-
-        pointerClick = new EventTrigger.Entry();
-        pointerClick.eventID = EventTriggerType.PointerClick;
-        pointerClick.callback.AddListener((data) =>
-        {
-            ActGoBackBtn();
-        });
-        goBackTrigger.triggers.Add(pointerClick);
-        #endregion
-
-        #region[selectJobTrigger]
-        EventTrigger selectJobTrigger = transform.Find("직업").GetComponent<EventTrigger>();
-        pointerEnter = new EventTrigger.Entry();
-        pointerEnter.eventID = EventTriggerType.PointerEnter;
-        pointerEnter.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButton(0))
-                selectJobImg.sprite = selectJobSprites[(int)ButtonState.누름];
-        });
-        selectJobTrigger.triggers.Add(pointerEnter);
-
-        pointerDown = new EventTrigger.Entry();
-        pointerDown.eventID = EventTriggerType.PointerDown;
-        pointerDown.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButtonDown(0))
-                selectJobImg.sprite = selectJobSprites[(int)ButtonState.누름];
-        });
-        selectJobTrigger.triggers.Add(pointerDown);
-
-        pointerExit = new EventTrigger.Entry();
-        pointerExit.eventID = EventTriggerType.PointerExit;
-        pointerExit.callback.AddListener((data) =>
-        {
-            selectJobImg.sprite = selectJobSprites[(int)ButtonState.보통];
-        });
-        selectJobTrigger.triggers.Add(pointerExit);
-
-        pointerClick = new EventTrigger.Entry();
-        pointerClick.eventID = EventTriggerType.PointerClick;
-        pointerClick.callback.AddListener((data) =>
-        {
-            ActSelectJobBtn(true);
-        });
-        selectJobTrigger.triggers.Add(pointerClick);
-        #endregion
-        #region[selectJobExitTrigger]
-        EventTrigger selectJobExitTrigger = transform.Find("JobList").Find("Blur").GetComponent<EventTrigger>();
-        pointerDown = new EventTrigger.Entry();
-        pointerDown.eventID = EventTriggerType.PointerDown;
-        pointerDown.callback.AddListener((data) =>
-        {
-            ActSelectJobBtn(false);
-        });
-        selectJobExitTrigger.triggers.Add(pointerDown);
-        #endregion
-
-        #region[filterTrigger]
-        EventTrigger filterTrigger = transform.Find("필터").GetComponent<EventTrigger>();
-        pointerEnter = new EventTrigger.Entry();
-        pointerEnter.eventID = EventTriggerType.PointerEnter;
-        pointerEnter.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButton(0))
-                filterImg.sprite = filterSprites[(int)ButtonState.누름];
-        });
-        filterTrigger.triggers.Add(pointerEnter);
-
-        pointerDown = new EventTrigger.Entry();
-        pointerDown.eventID = EventTriggerType.PointerDown;
-        pointerDown.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButtonDown(0))
-                filterImg.sprite = filterSprites[(int)ButtonState.누름];
-        });
-        filterTrigger.triggers.Add(pointerDown);
-
-        pointerExit = new EventTrigger.Entry();
-        pointerExit.eventID = EventTriggerType.PointerExit;
-        pointerExit.callback.AddListener((data) =>
-        {
-            filterImg.sprite = filterSprites[(int)ButtonState.보통];
-        });
-        filterTrigger.triggers.Add(pointerExit);
-
-        pointerClick = new EventTrigger.Entry();
-        pointerClick.eventID = EventTriggerType.PointerClick;
-        pointerClick.callback.AddListener((data) =>
-        {
-            ActFilterJobBtn(true);
-        });
-        filterTrigger.triggers.Add(pointerClick);
-        #endregion
-
-        #region[cancleTrigger]
-        EventTrigger cancleTrigger = transform.Find("취소").GetComponent<EventTrigger>();
-        pointerEnter = new EventTrigger.Entry();
-        pointerEnter.eventID = EventTriggerType.PointerEnter;
-        pointerEnter.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButton(0))
-                cancleImg.sprite = filterSprites[(int)ButtonState.누름];
-        });
-        cancleTrigger.triggers.Add(pointerEnter);
-
-        pointerDown = new EventTrigger.Entry();
-        pointerDown.eventID = EventTriggerType.PointerDown;
-        pointerDown.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButtonDown(0))
-                cancleImg.sprite = filterSprites[(int)ButtonState.누름];
-        });
-        cancleTrigger.triggers.Add(pointerDown);
-
-        pointerExit = new EventTrigger.Entry();
-        pointerExit.eventID = EventTriggerType.PointerExit;
-        pointerExit.callback.AddListener((data) =>
-        {
-            cancleImg.sprite = filterSprites[(int)ButtonState.보통];
-        });
-        cancleTrigger.triggers.Add(pointerExit);
-
-        pointerClick = new EventTrigger.Entry();
-        pointerClick.eventID = EventTriggerType.PointerClick;
-        pointerClick.callback.AddListener((data) =>
-        {
-            ActCancleBtn(false);
-        });
-        cancleTrigger.triggers.Add(pointerClick);
-        #endregion
-
-        #region[makingTrigger]
-        EventTrigger makingTrigger = transform.Find("제작").GetComponent<EventTrigger>();
-        pointerEnter = new EventTrigger.Entry();
-        pointerEnter.eventID = EventTriggerType.PointerEnter;
-        pointerEnter.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButton(0))
-                makingImg.sprite = makingSprites[(int)ButtonState.누름];
-        });
-        makingTrigger.triggers.Add(pointerEnter);
-
-        pointerDown = new EventTrigger.Entry();
-        pointerDown.eventID = EventTriggerType.PointerDown;
-        pointerDown.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButtonDown(0))
-                makingImg.sprite = makingSprites[(int)ButtonState.누름];
-        });
-        makingTrigger.triggers.Add(pointerDown);
-
-        pointerExit = new EventTrigger.Entry();
-        pointerExit.eventID = EventTriggerType.PointerExit;
-        pointerExit.callback.AddListener((data) =>
-        {
-            makingImg.sprite = makingSprites[(int)ButtonState.보통];
-        });
-        makingTrigger.triggers.Add(pointerExit);
-
-        pointerClick = new EventTrigger.Entry();
-        pointerClick.eventID = EventTriggerType.PointerClick;
-        pointerClick.callback.AddListener((data) =>
-        {
-            ActMakingBtn();
-        });
-        makingTrigger.triggers.Add(pointerClick);
-        #endregion
-
-        completeImg = transform.Find("Filter").Find("CardType").Find("완료").GetComponent<Image>();
-
-        #region[completeTrigger]
-        EventTrigger completeTrigger = transform.Find("Filter").Find("CardType").Find("완료").GetComponent<EventTrigger>();
-        pointerEnter = new EventTrigger.Entry();
-        pointerEnter.eventID = EventTriggerType.PointerEnter;
-        pointerEnter.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButton(0))
-                completeImg.sprite = completeSprites[(int)ButtonState.누름];
-        });
-        completeTrigger.triggers.Add(pointerEnter);
-
-        pointerDown = new EventTrigger.Entry();
-        pointerDown.eventID = EventTriggerType.PointerDown;
-        pointerDown.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButtonDown(0))
-                completeImg.sprite = completeSprites[(int)ButtonState.누름];
-        });
-        completeTrigger.triggers.Add(pointerDown);
-
-        pointerExit = new EventTrigger.Entry();
-        pointerExit.eventID = EventTriggerType.PointerExit;
-        pointerExit.callback.AddListener((data) =>
-        {
-            completeImg.sprite = completeSprites[(int)ButtonState.보통];
-        });
-        completeTrigger.triggers.Add(pointerExit);
-
-        pointerClick = new EventTrigger.Entry();
-        pointerClick.eventID = EventTriggerType.PointerClick;
-        pointerClick.callback.AddListener((data) =>
-        {
-            ActFilterJobBtn(false);
-        });
-        completeTrigger.triggers.Add(pointerClick);
-        #endregion
-
-        #region[costBtnTrigger]
-        costBtnAni = new Animator[transform.Find("Filter").Find("CostList").childCount];
-        for (int i = 0; i < costBtnAni.Length; i++)
-        {
-            int n = i;
-            costBtnAni[i] = transform.Find("Filter").Find("CostList").GetChild(i).GetComponent<Animator>();
-            EventTrigger costBtnTrigger = transform.Find("Filter").Find("CostList").GetChild(i).GetComponent<EventTrigger>();
-            pointerEnter = new EventTrigger.Entry();
-            pointerEnter.eventID = EventTriggerType.PointerEnter;
-            pointerEnter.callback.AddListener((data) =>
-            {
-                if (Input.GetMouseButton(0))
-                    costBtnAni[n].SetBool("Glow", true);
-            });
-            costBtnTrigger.triggers.Add(pointerEnter);
-
-            pointerDown = new EventTrigger.Entry();
-            pointerDown.eventID = EventTriggerType.PointerDown;
-            pointerDown.callback.AddListener((data) =>
-            {
-                if (Input.GetMouseButtonDown(0))
-                    costBtnAni[n].SetBool("Glow", true);
-            });
-            costBtnTrigger.triggers.Add(pointerDown);
-
-            pointerExit = new EventTrigger.Entry();
-            pointerExit.eventID = EventTriggerType.PointerExit;
-            pointerExit.callback.AddListener((data) =>
-            {
-                costBtnAni[n].SetBool("Glow", false);
-            });
-            costBtnTrigger.triggers.Add(pointerExit);
-
-            pointerClick = new EventTrigger.Entry();
-            pointerClick.eventID = EventTriggerType.PointerClick;
-            pointerClick.callback.AddListener((data) =>
-            {
-                ActFilterCostBtn(n);
-            });
-            costBtnTrigger.triggers.Add(pointerClick);
-        }
-        #endregion
-
-        selectjobText = selectJobImg.transform.Find("Text").GetComponent<Text>();
+        CostMagicPowderNum = new Image[4];
+        for (int i = 0; i < CostMagicPowderNum.Length; i++)
+            CostMagicPowderNum[i] = CostMagicPowder.transform.Find(Mathf.Pow(10, i).ToString()).GetComponent<Image>();
 
         for (int i = 0; i < cardDatas.Length; i++)
             cardDatas[i] = new List<CardData>();
+
         CardDataInput();
-
-        stringCancleObject = transform.Find("취소").Find("SearchText").gameObject;
-        searchCancleText = stringCancleObject.transform.Find("Text").GetComponent<Text>();
-
-        costCancleObject = transform.Find("취소").Find("SearchCost").gameObject;
-        cancleCost = costCancleObject.transform.Find("num").GetComponent<Image>();
     }
     #endregion
 
     #region[OnEnable]
     void OnEnable()
     {
-        StartCoroutine(CardCloseUnCard(0.1f));
+        StartCoroutine(CardCloseUpCard(0.1f));
         nowJobIndex = 0;
         nowCardIndex = 0;
+        nowJob = DataMng.TableType.모두;
+        SoundManager.instance.PlayBGM("수집함배경음");
+        CardViewManager.instance.UpdateCardView();
     }
     #endregion
 
@@ -520,7 +183,7 @@ public class MyCollectionsMenu : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #region[내수집품설정]
-    public void CardDataInput(int cost = -1, string search = "")
+    public void CardDataInput(DataMng.TableType job = DataMng.TableType.모두,int cost = -1, string search = "",bool make = false)
     {
         for (int i = 0; i < 3; i++)
             cardDatas[i].Clear();
@@ -528,18 +191,46 @@ public class MyCollectionsMenu : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             for (int j = 1; j <= DataMng.instance.m_dic[(DataMng.TableType)i].m_table.Count; j++)
-                if (!DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "등급").Equals("토큰"))
-                    if (cost == -1 || DataMng.instance.m_dic[(DataMng.TableType)i].ToInteger(j, "코스트") == cost ||
-                        (cost == 7 && DataMng.instance.m_dic[(DataMng.TableType)i].ToInteger(j, "코스트") >= cost))
-                        if (search.Equals("") || 
-                            DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "카드이름").Contains(search) ||
-                            DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "카드설명").Contains(search))
-                            cardDatas[i].Add(GetCardData(j, (DataMng.TableType)i));
+            {
+                if(job != DataMng.TableType.모두)
+                {
+                    if (job != (DataMng.TableType)(i))
+                        continue;
+                }
+
+                if (DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "등급").Equals("토큰"))
+                    continue;
+
+                if (cost != -1)
+                {
+                    if (cost == 7)
+                    {
+                        if (DataMng.instance.m_dic[(DataMng.TableType)i].ToInteger(j, "코스트") < cost)
+                            continue;
+                    }
+                    else if (DataMng.instance.m_dic[(DataMng.TableType)i].ToInteger(j, "코스트") != cost)
+                        continue;
+                }
+
+                if (!search.Equals(""))
+                    if (!DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "카드이름").Contains(search) &&
+                        !DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "카드설명").Contains(search))
+                        continue;
+                string cardName = DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "카드이름");
+                if (!make && DataMng.instance.playData != null && DataMng.instance.playData.GetCardNum(cardName) == 0)
+                    continue;
+
+                cardDatas[i].Add(GetCardData(j, (DataMng.TableType)i));
+
+            }
+
 
             cardDatas[i].Sort(delegate(CardData A,CardData B)
             {
                 if (A.cardCost > B.cardCost)
                     return 1;
+                if (A.cardCost == B.cardCost)
+                    return A.cardName.CompareTo(B.cardName);
                 return -1;
 
             });
@@ -553,6 +244,7 @@ public class MyCollectionsMenu : MonoBehaviour
                 nowCardIndex = 0;
                 break;
             }
+        CardViewManager.instance.UpdateCardView();
     }
     #endregion
 
@@ -578,15 +270,6 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[UpdateUI]
     public void UpdateUI()
     {
-        if (Input.GetMouseButtonUp(0))
-        {
-            goBackImg.sprite = goBackSprites[(int)ButtonState.보통];
-            selectJobImg.sprite = selectJobSprites[(int)ButtonState.보통];
-            filterImg.sprite = filterSprites[(int)ButtonState.보통];
-            cancleImg.sprite = filterSprites[(int)ButtonState.보통];
-            makingImg.sprite = makingSprites[(int)ButtonState.보통];
-        }
-
         //카드리스트
         ShowCard();
 
@@ -601,14 +284,35 @@ public class MyCollectionsMenu : MonoBehaviour
             if (cardDatas[i].Count > 0)
             {
                 jobTextFlag = true;
-                jobButton[i].gameObject.SetActive(true);
+                JobBtn[i].gameObject.SetActive(true);
             }
             else
-                jobButton[i].gameObject.SetActive(false);
+                JobBtn[i].gameObject.SetActive(false);
 
         //직업선택
         DataMng.TableType tableName = (DataMng.TableType)(nowJobIndex);
         selectjobText.text = jobTextFlag ? tableName.ToString() : "";
+
+
+        int deckNum = DataMng.instance.playData.deck.Count;
+        hasDeckNum.sprite = DataMng.instance.num[deckNum];
+        deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1,9));
+
+        for (int i = 0; i < 9; i++)
+        {
+            deckBtn[i].gameObject.SetActive(i < Mathf.Min(deckNum + 1, 9));
+            deckBtn[i].hasDeck = (i < deckNum);
+        }
+        for (int i = 0; i < deckNum; i++)
+            deckBtn[i].deckNameTxt.text = DataMng.instance.playData.deck[i].name;
+
+        if(deckCardViewFlag)
+        {
+            if (deckObject.anchoredPosition.y < 0)
+                deckObject.anchoredPosition += new Vector2(0, Time.deltaTime* Mathf.Pow(Mathf.Abs(deckObject.anchoredPosition.y),1.3f));
+            else
+                deckObject.anchoredPosition = new Vector2(deckObject.anchoredPosition.x,0);
+        }
 
     }
     #endregion
@@ -734,7 +438,9 @@ public class MyCollectionsMenu : MonoBehaviour
             #endregion
         
             pageAni.SetTrigger("Next");
+            SoundManager.instance.PlaySE("페이지넘기기");
         }
+        CardViewManager.instance.UpdateCardView();
     }
 
     public void BackPage()
@@ -780,7 +486,9 @@ public class MyCollectionsMenu : MonoBehaviour
             #endregion
 
             pageAni.SetTrigger("Back");
+            SoundManager.instance.PlaySE("페이지넘기기");
         }
+        CardViewManager.instance.UpdateCardView();
     }
 
     public void MovePage(int n)
@@ -808,6 +516,7 @@ public class MyCollectionsMenu : MonoBehaviour
                 #endregion
 
                 pageAni.SetTrigger("Next");
+                SoundManager.instance.PlaySE("페이지넘기기");
             }
             else if (nowJobIndex > n)
             {
@@ -841,6 +550,7 @@ public class MyCollectionsMenu : MonoBehaviour
                 #endregion
 
                 pageAni.SetTrigger("Back");
+                SoundManager.instance.PlaySE("페이지넘기기");
             }
             else
             {
@@ -850,11 +560,12 @@ public class MyCollectionsMenu : MonoBehaviour
                 #endregion
             }
         }
+        CardViewManager.instance.UpdateCardView();
     }
     #endregion
 
-    #region[뒤로가기버튼]
-    public void ActGoBackBtn()
+    #region[뒤로가기]
+    public void ActGoBack()
     {
         if(BattleMenu.instance && BattleMenu.instance.battleCollections)
         {
@@ -868,7 +579,6 @@ public class MyCollectionsMenu : MonoBehaviour
             MainMenu.instance.CloseBoard();
             StartCoroutine(CloseCollectionsMenu(1));
         }
-        Debug.Log("뒤로가기");
     }
 
     private IEnumerator CloseCollectionsMenu(float waitTime)
@@ -899,9 +609,9 @@ public class MyCollectionsMenu : MonoBehaviour
         if (!act)
         {
             if(String.IsNullOrWhiteSpace(searchText.text))
-                CardDataInput(nowCost, "");
+                CardDataInput(nowJob ,nowCost, "", cardmakeFlag);
             else
-                CardDataInput(-1, searchText.text);
+                CardDataInput(nowJob ,-1, searchText.text, cardmakeFlag);
 
             if (nowCost != -1 || !String.IsNullOrWhiteSpace(searchText.text))
             {
@@ -913,56 +623,275 @@ public class MyCollectionsMenu : MonoBehaviour
                 }
                 else if(nowCost != -1)
                 {
-                    cancleCost.sprite = num[nowCost];
+                    cancleCost.sprite = DataMng.instance.num[nowCost];
                     costCancleObject.SetActive(true);
                     stringCancleObject.SetActive(false);
                 }
                 ActCancleBtn(true);
             }
-
         }
+
+        CardViewManager.instance.UpdateCardView();
+
+
     }
     #endregion
 
     #region[취소버튼]
     public void ActCancleBtn(bool act)
     {
-        cancleImg.gameObject.SetActive(act);
+        cancleBtn.gameObject.SetActive(act);
         if (!act)
-            CardDataInput();
-        filterImg.gameObject.SetActive(!act);
+            CardDataInput(nowJob ,- 1,"", cardmakeFlag);
+        filterBtn.gameObject.SetActive(!act);
+        CardViewManager.instance.UpdateCardView();
     }
     #endregion
 
-    void CardCloseUp(int n)
+    #region[카드 클로우즈업]
+    public void CardCloseUp(int n)
     {
+        CardViewManager.instance.UpdateCardView();
         for(int i = 0; i < 8; i++)
             closeUpCards[i].gameObject.SetActive(false);
         cardCloseUpAni.SetTrigger("Show");
+        SoundManager.instance.PlaySE("수집함카드선택");
+
         CardShow(ref closeUpCards[n], nowJobIndex, nowCardIndex + n);
+        nowCloseUpcardName = cardDatas[nowJobIndex][nowCardIndex + n].cardName;
+        nowCloseUpcardType = cardDatas[nowJobIndex][nowCardIndex + n].cardType;
+        int cardNum = DataMng.instance.playData.GetCardNum(nowCloseUpcardName);
+        hasCardNumText.text = cardNum.ToString();
+
+        int nowM = DataMng.instance.playData.magicPowder;
+        for(int i = 0; i < 6; i++)
+        {
+            nowMagicPowderNum[i].sprite = DataMng.instance.num[nowM % 10];
+            nowMagicPowderNum[i].gameObject.SetActive((nowM != 0));
+            nowM /= 10;
+        }
+        nowM = DataMng.instance.playData.magicPowder;
+        for (int i = 0; i < 6; i++)
+        {
+            nowMagicPowderNumMakeUI[i].sprite = DataMng.instance.num[nowM % 10];
+            nowMagicPowderNumMakeUI[i].gameObject.SetActive((nowM != 0));
+            nowM /= 10;
+        }
+        int temp;
+        nowCloseUpcardLevel = cardDatas[nowJobIndex][nowCardIndex + n].cardLevel;
+        temp = CardData.GetCardPowder(nowCloseUpcardLevel);
+        for (int i = 0; i < 4; i++)
+        {
+            GetMagicPowderNum[i].sprite = DataMng.instance.num[temp % 10];
+            GetMagicPowderNum[i].gameObject.SetActive((temp != 0));
+            temp /= 10;
+        }
+
+        temp = CardData.CostCardPowder(nowCloseUpcardLevel);
+        for (int i = 0; i < 4; i++)
+        {
+            CostMagicPowderNum[i].sprite = DataMng.instance.num[temp % 10];
+            CostMagicPowderNum[i].gameObject.SetActive((temp != 0));
+            temp /= 10;
+        }
+        powderUI.SetActive(!nowCloseUpcardLevel.Equals("기본"));
+        basicCardUI.SetActive(nowCloseUpcardLevel.Equals("기본"));
         closeUpCards[n].gameObject.SetActive(true);
+        nowCloseUpCardView = n;
+        nowCards[nowCloseUpCardView].hide = true;
+        StartCoroutine(ShowCardNum(cardNum,0.3f));
+        CardViewManager.instance.UpdateCardView();
+
     }
 
-    void CardCloseOut()
+    private IEnumerator ShowCardNum(int cardNum, float waitTime)
     {
-        cardCloseUpAni.SetTrigger("Close");
-        StartCoroutine(CardCloseUnCard(0.3f));
+        yield return new WaitForSeconds(waitTime);
+        hasCardNumUI.SetActive(cardNum != 0);
     }
 
-    private IEnumerator CardCloseUnCard(float waitTime)
+    public void CardCloseOut()
+    {
+        hasCardNumUI.SetActive(false);
+        cardCloseUpAni.SetTrigger("Close");
+        StartCoroutine(CardCloseUpCard(0.3f));
+        int jobtemp = nowJobIndex;
+        int cardtemp = nowCardIndex;
+        if (String.IsNullOrWhiteSpace(searchText.text))
+            CardDataInput(nowJob,nowCost, "", cardmakeFlag);
+        else
+            CardDataInput(nowJob ,- 1, searchText.text, cardmakeFlag);
+        nowJobIndex = jobtemp;
+        nowCardIndex = cardtemp;
+
+        int cardNum = DataMng.instance.playData.GetCardNum(nowCloseUpcardName);
+        if (cardNum == 0 && !cardmakeFlag)
+            for (int i = 0; i < 8; i++)
+                closeUpCards[i].gameObject.SetActive(false);
+    }
+
+    private IEnumerator CardCloseUpCard(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
         for (int i = 0; i < 8; i++)
             closeUpCards[i].gameObject.SetActive(false);
+        nowCards[nowCloseUpCardView].hide = false;
+        CardViewManager.instance.UpdateCardView();
+    }
+    #endregion
+
+    #region[카드제조]
+    public void MakeCard()
+    {
+        int cardNum = DataMng.instance.playData.GetCardNum(nowCloseUpcardName);
+        if (cardNum == 9)
+            return;
+        if (nowCloseUpcardLevel.Equals("토큰") || nowCloseUpcardLevel.Equals("기본"))
+            return;
+        if (CardData.CostCardPowder(nowCloseUpcardLevel) > DataMng.instance.playData.magicPowder)
+            return;
+
+        StartCoroutine(MakeCardEffect(cardNum,1.5f));
+        StartCoroutine(ShowCardNum(cardNum + 1, 1.5f));
     }
 
+    private IEnumerator MakeCardEffect(int cardNum, float waitTime)
+    {
+        if(nowCloseUpcardType.Equals("하수인"))
+            makeEffectAni.SetTrigger("M_CardCreate");
+        else if (nowCloseUpcardType.Equals("주문"))
+            makeEffectAni.SetTrigger("S_CardCreate");
+        else if (nowCloseUpcardType.Equals("무기"))
+            makeEffectAni.SetTrigger("W_CardCreate");
+        yield return new WaitForSeconds(waitTime);
+        DataMng.instance.playData.magicPowder -= CardData.CostCardPowder(nowCloseUpcardLevel);
+        int nowM = DataMng.instance.playData.magicPowder;
+        for (int i = 0; i < 6; i++)
+        {
+            nowMagicPowderNum[i].sprite = DataMng.instance.num[nowM % 10];
+            nowMagicPowderNum[i].gameObject.SetActive((nowM != 0));
+            nowM /= 10;
+        }
+        nowM = DataMng.instance.playData.magicPowder;
+        for (int i = 0; i < 6; i++)
+        {
+            nowMagicPowderNumMakeUI[i].sprite = DataMng.instance.num[nowM % 10];
+            nowMagicPowderNumMakeUI[i].gameObject.SetActive((nowM != 0));
+            nowM /= 10;
+        }
+        DataMng.instance.playData.SetCardNum(nowCloseUpcardName, cardNum + 1);
+        hasCardNumText.text = (cardNum + 1).ToString();
+        CardViewManager.instance.UpdateCardView();
+    }
+    #endregion
+
+    #region[카드제거]
+    public void RemoveCard()
+    {
+        int cardNum = DataMng.instance.playData.GetCardNum(nowCloseUpcardName);
+        if (cardNum == 0)
+            return;
+        if (nowCloseUpcardLevel.Equals("토큰") || nowCloseUpcardLevel.Equals("기본"))
+            return;
+        StartCoroutine(RemoveCardEffect(cardNum, 0.5f));
+        StartCoroutine(ShowCardNum(cardNum - 1, 0.5f));
+    }
+
+    private IEnumerator RemoveCardEffect(int cardNum, float waitTime)
+    {
+        removeEffectAni.SetTrigger("CardRemove");
+        yield return new WaitForSeconds(waitTime);
+        DataMng.instance.playData.magicPowder += CardData.GetCardPowder(nowCloseUpcardLevel);
+        int nowM = DataMng.instance.playData.magicPowder;
+        for (int i = 0; i < 6; i++)
+        {
+            nowMagicPowderNum[i].sprite = DataMng.instance.num[nowM % 10];
+            nowMagicPowderNum[i].gameObject.SetActive((nowM != 0));
+            nowM /= 10;
+        }
+        nowM = DataMng.instance.playData.magicPowder;
+        for (int i = 0; i < 6; i++)
+        {
+            nowMagicPowderNumMakeUI[i].sprite = DataMng.instance.num[nowM % 10];
+            nowMagicPowderNumMakeUI[i].gameObject.SetActive((nowM != 0));
+            nowM /= 10;
+        }
+        DataMng.instance.playData.SetCardNum(nowCloseUpcardName, cardNum - 1);
+        hasCardNumText.text = (cardNum - 1).ToString();
+        CardViewManager.instance.UpdateCardView();
+    }
+    #endregion
+
+    #region[코스트로 분류버튼]
     public void ActFilterCostBtn(int n)
     {
-        CardDataInput(n);
+        CardDataInput(nowJob,n, "",cardmakeFlag);
+    }
+    #endregion
+
+    #region[카드제작상태로 변경]
+    public void ChangeCardMakeMode()
+    {
+        cardmakeFlag = !cardmakeFlag;
+        CardDataInput(nowJob ,- 1, "", cardmakeFlag);
+        makeAni.SetBool("Show", cardmakeFlag);
+        selectMake.SetActive(cardmakeFlag);
+        int nowM = DataMng.instance.playData.magicPowder;
+        for (int i = 0; i < 6; i++)
+        {
+            nowMagicPowderNumMakeUI[i].sprite = DataMng.instance.num[nowM % 10];
+            nowMagicPowderNumMakeUI[i].gameObject.SetActive((nowM != 0));
+            nowM /= 10;
+        }
+    }
+    #endregion
+
+    #region[캐릭터 선택]
+    public void SelectCharacter(bool b)
+    {
+        selectCharacterAni.SetBool("Show", b);
     }
 
-    public void ActMakingBtn()
+    public void SelectCharacterOK(bool b,int n = -1)
     {
-        Debug.Log("제작");
+        selectCharacterOKAni.SetBool("Show", b);
+
+        if(n != -1)
+        {
+            for (int i = 0; i < characterImg.Length; i++)
+                characterImg[i].enabled = false;
+            characterImg[n].enabled = true;
+            switch (n)
+            {
+                case 0:
+                    characterNameTxt.text = "말퓨리온 스톰레이지";
+                    deckBannerBtn.deckNameTxt.text = "나만의 드루이드 덱";
+                    deckBannerBtn.nowCharacter = n;
+                    break;
+                case 1:
+                    characterNameTxt.text = "발리라 생귀나르";
+                    deckBannerBtn.deckNameTxt.text = "나만의 도적 덱";
+                    deckBannerBtn.nowCharacter = n;
+                    break;
+            }
+            nowJob = (DataMng.TableType)n;
+        }
     }
+
+    #endregion
+
+    #region[덱 카드 확인]
+    public void DeckCardView()
+    {
+        SelectCharacter(false);
+        SelectCharacterOK(false);
+        deckListView.SetActive(false);
+        deckCardView.SetActive(true);
+        deckBannerView.SetActive(true);
+        deckCardContext.anchoredPosition = new Vector2(deckCardContext.anchoredPosition.x, 0);
+        deckObject.anchoredPosition = new Vector2(newDeckPos.anchoredPosition.x, newDeckPos.anchoredPosition.y + deckContext.anchoredPosition.y);
+        deckCardViewFlag = true;
+        CardDataInput(nowJob,-1, "", cardmakeFlag);
+    }
+    #endregion
 }

@@ -2,12 +2,38 @@ ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
     - BattleMenu
+    - BattleToMainBtn
+    - BattleToMyCollectBtn
     - CardView
+    - CardViewManager
     - CurlEf
     - CurvedText
     - DataMng
     - MainMenu
+    - MainShowQuestBtn
+    - MainToAdventureBtn
+    - MainToBattleBtn
+    - MainToMeleeBtn
+    - MainToMyCollectBtn
+    - MainToOpenPacksBtn
+    - MainToShopBtn
+    - MyCollectionsBackPageBtn
+    - MyCollectionsCardCloseUpBtn
+    - MyCollectionsCardCloseUpExitBtn
+    - MyCollectionsCloseJobListBtn
+    - MyCollectionsFilterCancleBtn
+    - MyCollectionsFilterCompleteBtn
+    - MyCollectionsMakeCard
     - MyCollectionsMenu
+    - MyCollectionsNextPageBtn
+    - MyCollectionsRemoveCard
+    - MyCollectionsSelectCostBtn
+    - MyCollectionsSelectJobBtn
+    - MyCollectionsShowFilterBtn
+    - MyCollectionsShowJobListBtn
+    - MyCollectionsShowMakingBtn
+    - MyCollectionsToBackBtn
+    - SoundManager
     Unity.2D.Tilemap.Editor.dll:
     - UnityEditor.Tilemaps.GridPaintingState
     - UnityEditor.Tilemaps.GridPaletteBrushes
@@ -37,7 +63,6 @@ ScriptsOnlyBuild:
     - UnityEngine.EventSystems.EventSystem
     - UnityEngine.EventSystems.EventTrigger
     - UnityEngine.EventSystems.StandaloneInputModule
-    - UnityEngine.UI.Button
     - UnityEngine.UI.CanvasScaler
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.GridLayoutGroup
@@ -89,55 +114,105 @@ ScriptsOnlyBuild:
     - Class: 109
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11176}
+      Script: {instanceID: 11186}
     - Class: 114
-      Script: {instanceID: 11230}
+      Script: {instanceID: 11240}
     - Class: 114
-      Script: {instanceID: 11350}
+      Script: {instanceID: 11296}
     - Class: 114
-      Script: {instanceID: 11390}
+      Script: {instanceID: 11362}
     - Class: 114
-      Script: {instanceID: 11444}
+      Script: {instanceID: 11394}
     - Class: 114
-      Script: {instanceID: 11602}
+      Script: {instanceID: 11404}
     - Class: 114
-      Script: {instanceID: 11706}
+      Script: {instanceID: 11458}
     - Class: 114
-      Script: {instanceID: 11734}
+      Script: {instanceID: 11460}
+    - Class: 114
+      Script: {instanceID: 11468}
+    - Class: 114
+      Script: {instanceID: 11470}
+    - Class: 114
+      Script: {instanceID: 11600}
+    - Class: 114
+      Script: {instanceID: 11624}
+    - Class: 114
+      Script: {instanceID: 11728}
+    - Class: 114
+      Script: {instanceID: 11756}
     - Class: 114
       Script: {instanceID: 11806}
     - Class: 114
+      Script: {instanceID: 11808}
+    - Class: 114
       Script: {instanceID: 11832}
     - Class: 114
-      Script: {instanceID: 12128}
+      Script: {instanceID: 11834}
     - Class: 114
-      Script: {instanceID: 12216}
+      Script: {instanceID: 11860}
     - Class: 114
-      Script: {instanceID: 12414}
+      Script: {instanceID: 12066}
     - Class: 114
-      Script: {instanceID: 12444}
+      Script: {instanceID: 12108}
     - Class: 114
-      Script: {instanceID: 12448}
+      Script: {instanceID: 12160}
     - Class: 114
-      Script: {instanceID: 12462}
+      Script: {instanceID: 12182}
+    - Class: 114
+      Script: {instanceID: 12284}
+    - Class: 114
+      Script: {instanceID: 12302}
+    - Class: 114
+      Script: {instanceID: 12346}
+    - Class: 114
+      Script: {instanceID: 12416}
+    - Class: 114
+      Script: {instanceID: 12456}
     - Class: 114
       Script: {instanceID: 12486}
     - Class: 114
-      Script: {instanceID: 12654}
+      Script: {instanceID: 12490}
     - Class: 114
-      Script: {instanceID: 12728}
+      Script: {instanceID: 12504}
     - Class: 114
-      Script: {instanceID: 12896}
+      Script: {instanceID: 12512}
     - Class: 114
-      Script: {instanceID: 12998}
+      Script: {instanceID: 12530}
     - Class: 114
-      Script: {instanceID: 13048}
+      Script: {instanceID: 12690}
     - Class: 114
-      Script: {instanceID: 13072}
+      Script: {instanceID: 12700}
+    - Class: 114
+      Script: {instanceID: 12778}
+    - Class: 114
+      Script: {instanceID: 12828}
+    - Class: 114
+      Script: {instanceID: 12892}
+    - Class: 114
+      Script: {instanceID: 12950}
+    - Class: 114
+      Script: {instanceID: 12962}
+    - Class: 114
+      Script: {instanceID: 12968}
+    - Class: 114
+      Script: {instanceID: 13010}
+    - Class: 114
+      Script: {instanceID: 13020}
+    - Class: 114
+      Script: {instanceID: 13034}
+    - Class: 114
+      Script: {instanceID: 13062}
     - Class: 114
       Script: {instanceID: 13112}
     - Class: 114
-      Script: {instanceID: 13178}
+      Script: {instanceID: 13138}
+    - Class: 114
+      Script: {instanceID: 13152}
+    - Class: 114
+      Script: {instanceID: 13180}
+    - Class: 114
+      Script: {instanceID: 13246}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -181,7 +256,7 @@ ScriptsOnlyBuild:
     className: TMP_Dropdown
   - hash:
       serializedVersion: 2
-      Hash: 5cd5b137c98f9a8b0836c41c497522db
+      Hash: 3f07c7362544ca6e9685ca88ed9dbaca
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: CardView
@@ -191,6 +266,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.TextMeshPro.dll
     namespaceName: TMPro
     className: TMP_ScrollbarEventHandler
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsToBackBtn
   - hash:
       serializedVersion: 2
       Hash: c3d3430df9e3ea95e3e3d587961390fb
@@ -229,6 +310,12 @@ ScriptsOnlyBuild:
     className: TouchInputModule
   - hash:
       serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsFilterCancleBtn
+  - hash:
+      serializedVersion: 2
       Hash: 8e0313c6f5e2ce35991fec2d64f8eaab
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
@@ -251,6 +338,24 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: GridLayoutGroup
+  - hash:
+      serializedVersion: 2
+      Hash: 0cf5846204d4919db237c50e63192d9e
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: CardViewManager
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsNextPageBtn
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsShowFilterBtn
   - hash:
       serializedVersion: 2
       Hash: 8aa3d6ccbcb54ee8db6c1229854adaaa
@@ -289,13 +394,19 @@ ScriptsOnlyBuild:
     className: AspectRatioFitter
   - hash:
       serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsMakeCard
+  - hash:
+      serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: RectMask2D
   - hash:
       serializedVersion: 2
-      Hash: ef6e4ac14d3d6f08a6ef68eb045f08b7
+      Hash: c8008810c52964c8f6a4c025d186a4fb
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: MainMenu
@@ -323,6 +434,24 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: Shadow
+  - hash:
+      serializedVersion: 2
+      Hash: f4199cc90dacb2d2eaff454f627c213b
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: SoundManager
+  - hash:
+      serializedVersion: 2
+      Hash: 4a650e9913d96df2c1a7bea0dafa0f70
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MainShowQuestBtn
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MainToAdventureBtn
   - hash:
       serializedVersion: 2
       Hash: cc4274b586df3c02688bac01b88bd16c
@@ -373,13 +502,25 @@ ScriptsOnlyBuild:
     className: SignalTrack
   - hash:
       serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsBackPageBtn
+  - hash:
+      serializedVersion: 2
+      Hash: 9b41adfc3fb3d361c2f288da379882b2
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsCardCloseUpBtn
+  - hash:
+      serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Unity.TextMeshPro.dll
     namespaceName: TMPro
     className: TMP_SpriteAnimator
   - hash:
       serializedVersion: 2
-      Hash: c84bc542af9d778bfb438a7f31aa3216
+      Hash: c8b13d9ffccc1f192ba5d2274aebbaaf
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: MyCollectionsMenu
@@ -389,6 +530,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.TestRunner.dll
     namespaceName: UnityEngine.TestTools.TestRunner.Callbacks
     className: RemoteTestResultSender
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MainToBattleBtn
   - hash:
       serializedVersion: 2
       Hash: 4fd8bf02e3089425d3502e26c44ba31a
@@ -409,10 +556,34 @@ ScriptsOnlyBuild:
     className: RawImage
   - hash:
       serializedVersion: 2
+      Hash: ac4d3b6c07814c887b066969861dd95a
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsSelectJobBtn
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsFilterCompleteBtn
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsShowMakingBtn
+  - hash:
+      serializedVersion: 2
       Hash: 5ad4aa237d47ac2bab17bacb672edf7a
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: VerticalLayoutGroup
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsRemoveCard
   - hash:
       serializedVersion: 2
       Hash: 783f593b9380cf72d0f7ebfd4a0d4bcd
@@ -457,7 +628,13 @@ ScriptsOnlyBuild:
     className: Physics2DRaycaster
   - hash:
       serializedVersion: 2
-      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: BattleToMyCollectBtn
+  - hash:
+      serializedVersion: 2
+      Hash: 5c1663459fde77a37633a190bedc233f
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: DataMng
@@ -467,6 +644,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: TimelineAsset
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: BattleToMainBtn
   - hash:
       serializedVersion: 2
       Hash: ff72dc8c10adf424c7d2db293e9584e4
@@ -499,6 +682,18 @@ ScriptsOnlyBuild:
     className: BeforeAfterTestCommandState
   - hash:
       serializedVersion: 2
+      Hash: 476213d11a1cca9f955ce20a9269b925
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsSelectCostBtn
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsCardCloseUpExitBtn
+  - hash:
+      serializedVersion: 2
       Hash: c3d3430df9e3ea95e3e3d587961390fb
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
@@ -511,7 +706,37 @@ ScriptsOnlyBuild:
     className: TMP_StyleSheet
   - hash:
       serializedVersion: 2
-      Hash: 2da1795a46f2a2ac7f868333d5f169df
+      Hash: 4a650e9913d96df2c1a7bea0dafa0f70
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MainToOpenPacksBtn
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsShowJobListBtn
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MainToMeleeBtn
+  - hash:
+      serializedVersion: 2
+      Hash: 4a650e9913d96df2c1a7bea0dafa0f70
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MainToShopBtn
+  - hash:
+      serializedVersion: 2
+      Hash: d1da530ccc0e30cf7718f2fee175b669
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MyCollectionsCloseJobListBtn
+  - hash:
+      serializedVersion: 2
+      Hash: 342138a6810fe953d760ccd294ce4fec
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: BattleMenu
@@ -557,6 +782,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.TextMeshPro.dll
     namespaceName: TMPro
     className: TMP_SubMesh
+  - hash:
+      serializedVersion: 2
+      Hash: 4a650e9913d96df2c1a7bea0dafa0f70
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MainToMyCollectBtn
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
@@ -620,4 +851,4 @@ ScriptsOnlyBuild:
   platform: 13
   scenePathNames:
   - Assets/Scenes/Main.unity
-  playerPath: C:/Users/Atents/Desktop/Test.apk
+  playerPath: "C:/Users/9507y/OneDrive/\uBC14\uD0D5 \uD654\uBA74/hearth.apk"

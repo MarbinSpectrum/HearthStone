@@ -1,7 +1,55 @@
 fileFormatVersion: 2
 guid: 929bc32ea91a9354cb10bde8005c4a76
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -5841733499960621340
+    second: CardUI_0
+  - first:
+      213: 2030120591371861781
+    second: CardUI_1
+  - first:
+      213: 2105774925648652997
+    second: CardUI_2
+  - first:
+      213: -7297660531034496793
+    second: CardUI_3
+  - first:
+      213: 5668555532144908290
+    second: CardUI_4
+  - first:
+      213: 8255009601716971518
+    second: CardUI_0
+  - first:
+      213: -1218249611798421299
+    second: CardUI_1
+  - first:
+      213: 6363710270788165731
+    second: CardUI_2
+  - first:
+      213: 7869378940387162691
+    second: CardUI_3
+  - first:
+      213: -6075267797552045769
+    second: CardUI_4
+  - first:
+      213: 4083223669269821131
+    second: CardUI_5
+  - first:
+      213: 4545526520955091417
+    second: CardUI_6
+  - first:
+      213: -3075823155542184095
+    second: CardUI_7
+  - first:
+      213: 3849281596665885516
+    second: CardUI_8
+  - first:
+      213: 5955297668456263943
+    second: CardUI_9
+  - first:
+      213: 8231997287930395590
+    second: CardUI_10
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -40,7 +88,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -71,9 +119,264 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: CardUI_0
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 425
+        width: 97
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef767cfee7faf8270800000000000000
+      internalID: 8255009601716971518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardUI_1
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 433
+        width: 74
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc06ff0ce68e71fe0800000000000000
+      internalID: -1218249611798421299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardUI_2
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 428
+        width: 70
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36065df56c0705850800000000000000
+      internalID: 6363710270788165731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardUI_3
+      rect:
+        serializedVersion: 2
+        x: 386
+        y: 450
+        width: 223
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34a77b8d376a53d60800000000000000
+      internalID: 7869378940387162691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardUI_4
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 438
+        width: 229
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7316a83502050bba0800000000000000
+      internalID: -6075267797552045769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardUI_5
+      rect:
+        serializedVersion: 2
+        x: 914
+        y: 447
+        width: 229
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc67b491b468aa830800000000000000
+      internalID: 4083223669269821131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardUI_6
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 276
+        width: 107
+        height: 118
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d935ae9944f41f30800000000000000
+      internalID: 4545526520955091417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardUI_7
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 273
+        width: 84
+        height: 117
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16facfde22b7055d0800000000000000
+      internalID: -3075823155542184095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardUI_8
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 263
+        width: 212
+        height: 121
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c43f7b1c7356b6530800000000000000
+      internalID: 3849281596665885516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardUI_9
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 259
+        width: 212
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7013c0c4da775a250800000000000000
+      internalID: 5955297668456263943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardUI_10
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 261
+        width: 212
+        height: 118
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6cbf11b1beded3270800000000000000
+      internalID: 8231997287930395590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []

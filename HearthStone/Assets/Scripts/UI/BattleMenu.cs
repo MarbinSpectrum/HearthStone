@@ -10,120 +10,29 @@ public class BattleMenu : MonoBehaviour
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    [HideInInspector]public bool battleCollections;
-
-    EventTrigger.Entry pointerEnter;
-    EventTrigger.Entry pointerDown;
-    EventTrigger.Entry pointerExit;
-    EventTrigger.Entry pointerClick;
+    [HideInInspector]
+    public bool battleCollections;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    Image goBackImg;
-    Image myCollectionsImg;
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public enum ButtonState { 보통, 누름 }
-
-    public Sprite[] goBackSprites;
-    public Sprite[] myCollectionsSprites;
 
     #region[Awake]
     private void Awake()
     {
         instance = this;
-
-        goBackImg = transform.Find("뒤로").GetComponent<Image>();
-        myCollectionsImg = transform.Find("수집품").GetComponent<Image>();
-
-        #region[goBackTrigger]
-        EventTrigger goBackTrigger = transform.Find("뒤로").GetComponent<EventTrigger>();
-        pointerEnter = new EventTrigger.Entry();
-        pointerEnter.eventID = EventTriggerType.PointerEnter;
-        pointerEnter.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButton(0))
-                goBackImg.sprite = goBackSprites[(int)ButtonState.누름];
-        });
-        goBackTrigger.triggers.Add(pointerEnter);
-
-        pointerDown = new EventTrigger.Entry();
-        pointerDown.eventID = EventTriggerType.PointerDown;
-        pointerDown.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButtonDown(0))
-                goBackImg.sprite = goBackSprites[(int)ButtonState.누름];
-        });
-        goBackTrigger.triggers.Add(pointerDown);
-
-        pointerExit = new EventTrigger.Entry();
-        pointerExit.eventID = EventTriggerType.PointerExit;
-        pointerExit.callback.AddListener((data) =>
-        {
-            goBackImg.sprite = goBackSprites[(int)ButtonState.보통];
-        });
-        goBackTrigger.triggers.Add(pointerExit);
-
-        pointerClick = new EventTrigger.Entry();
-        pointerClick.eventID = EventTriggerType.PointerClick;
-        pointerClick.callback.AddListener((data) =>
-        {
-            ActGoBackBtn();
-        });
-        goBackTrigger.triggers.Add(pointerClick);
-        #endregion
-
-        #region[myCollectionsTrigger]
-        EventTrigger myCollectionsTrigger = transform.Find("수집품").GetComponent<EventTrigger>();
-        pointerEnter = new EventTrigger.Entry();
-        pointerEnter.eventID = EventTriggerType.PointerEnter;
-        pointerEnter.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButton(0))
-                myCollectionsImg.sprite = myCollectionsSprites[(int)ButtonState.누름];
-        });
-        myCollectionsTrigger.triggers.Add(pointerEnter);
-
-        pointerDown = new EventTrigger.Entry();
-        pointerDown.eventID = EventTriggerType.PointerDown;
-        pointerDown.callback.AddListener((data) =>
-        {
-            if (Input.GetMouseButtonDown(0))
-                myCollectionsImg.sprite = myCollectionsSprites[(int)ButtonState.누름];
-        });
-        myCollectionsTrigger.triggers.Add(pointerDown);
-
-        pointerExit = new EventTrigger.Entry();
-        pointerExit.eventID = EventTriggerType.PointerExit;
-        pointerExit.callback.AddListener((data) =>
-        {
-            myCollectionsImg.sprite = myCollectionsSprites[(int)ButtonState.보통];
-        });
-        myCollectionsTrigger.triggers.Add(pointerExit);
-
-        pointerClick = new EventTrigger.Entry();
-        pointerClick.eventID = EventTriggerType.PointerClick;
-        pointerClick.callback.AddListener((data) =>
-        {
-            ActMyCollectionsBtn();
-        });
-        myCollectionsTrigger.triggers.Add(pointerClick);
-        #endregion
     }
     #endregion
 
     #region[OnEnable]
     void OnEnable()
     {
-        
+        SoundManager.instance.PlayBGM("");
     }
     #endregion
 
     #region[Update]
     private void Update()
     {
-        UpdateUI();
+
     }
     #endregion
 
@@ -131,43 +40,33 @@ public class BattleMenu : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    #region[UpdateUI]
-    public void UpdateUI()
-    {
-        if (Input.GetMouseButtonUp(0))
-        {
-            goBackImg.sprite = goBackSprites[(int)ButtonState.보통];
-            myCollectionsImg.sprite = myCollectionsSprites[(int)ButtonState.보통];
-        }
-    }
-    #endregion
-
-    public void ActGoBackBtn()
+    #region[메인메뉴로 이동]
+    public void GoToMain(float waitTime)
     {
         MainMenu.instance.CloseBoard();
-        StartCoroutine(CloseBattleMenu(1));
-        Debug.Log("뒤로가기");
+        battleCollections = false;
+        StartCoroutine(CloseBattleMenu(waitTime));
     }
-
-    private IEnumerator CloseBattleMenu(float waitTime)
+    public IEnumerator CloseBattleMenu(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
         gameObject.SetActive(false);
     }
+    #endregion
 
-    public void ActMyCollectionsBtn()
+    #region[나의 콜렉션으로 이동]
+    public void GoToMyCollections(float waitTime1, float waitTime2)
     {
         MainMenu.instance.ChangeBoard();
-        StartCoroutine(CloseBattleMenu(1));
-        StartCoroutine(ShowMyCollectionsMenu(0.5f));
         battleCollections = true;
-        Debug.Log("수집품");
+        StartCoroutine(CloseBattleMenu(waitTime1));
+        StartCoroutine(ShowMyCollectionsMenu(waitTime2));
     }
 
-    private IEnumerator ShowMyCollectionsMenu(float waitTime)
+    public IEnumerator ShowMyCollectionsMenu(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
         MainMenu.instance.myCollectionsMenuUI.SetActive(true);
     }
-
+    #endregion
 }
