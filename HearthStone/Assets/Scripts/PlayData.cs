@@ -11,11 +11,13 @@ public class PlayData
     {
         [SerializeField] public string name;
         [SerializeField] public List<string> card;
+        [SerializeField] public DataMng.TableType job;
 
-        public Deck(string name, List<string> card)
+        public Deck(string name, DataMng.TableType job, List<string> card)
         {
             this.name = name;
             this.card = card;
+            this.job = job;
         }
     }
 
@@ -28,13 +30,12 @@ public class PlayData
             return;
         if (DataMng.instance != null)
         {
-            deck.Add(new Deck("도적", new List<string>() { "마음가짐" }));
-            deck.Add(new Deck("도적", new List<string>() { "마음가짐" }));
-            deck.Add(new Deck("도적", new List<string>() { "마음가짐" }));
-            deck.Add(new Deck("도적", new List<string>() { "마음가짐" }));
-            deck.Add(new Deck("도적", new List<string>() { "마음가짐" }));
-            deck.Add(new Deck("도적", new List<string>() { "마음가짐" }));
-
+            deck.Add(new Deck("도적",DataMng.TableType.도적, new List<string>() { "마음가짐" }));
+            deck.Add(new Deck("도적", DataMng.TableType.도적, new List<string>() { "마음가짐" }));
+            deck.Add(new Deck("도적", DataMng.TableType.도적, new List<string>() { "마음가짐" }));
+            deck.Add(new Deck("도적", DataMng.TableType.도적, new List<string>() { "마음가짐" }));
+            deck.Add(new Deck("도적", DataMng.TableType.도적, new List<string>() { "마음가짐" }));
+            Debug.Log("NewData");
             for (int i = 0; i < 3; i++)
                 for (int j = 1; j <= DataMng.instance.m_dic[(DataMng.TableType)i].m_table.Count; j++)
                 {
@@ -58,6 +59,7 @@ public class PlayData
         }
     }
 
+    #region[카드갯수 얻기]
     public int GetCardNum(string s)
     {
         for (int i = 0; i < hasCard.Count; i++)
@@ -86,7 +88,9 @@ public class PlayData
         }
         return 0;
     }
+    #endregion
 
+    #region[카드갯수 설정]
     public void SetCardNum(string s,int n)
     {
         for (int i = 0; i < hasCard.Count; i++)
@@ -107,7 +111,7 @@ public class PlayData
             }
         }
     }
-
+    #endregion
 
     public void Print()
     {

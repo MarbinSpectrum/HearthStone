@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class MyCollectionsDeckBtn : Btn
 {
     public Button btn;
+    public int deckN = 0;
 
     #region[Awake]
     public override void Awake()
@@ -64,8 +65,8 @@ public class MyCollectionsDeckBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        Debug.Log("덱확인");
-        //   MainMenu.instance.OpenBoard();
+        MyCollectionsMenu.instance.newDeckPos = transform.parent.GetComponent<RectTransform>();
+        MyCollectionsMenu.instance.DeckCardView(deckN);
     }
     #endregion
 }

@@ -22,7 +22,7 @@ public class MyCollectionsMenu : MonoBehaviour
     public GameObject stringCancleObject;
     public InputField searchText;
     public Text searchCancleText;
-    DataMng.TableType nowJob;
+    [HideInInspector] public DataMng.TableType nowJob;
     int nowCost = -1;
 
     [Header("제작")]
@@ -95,6 +95,8 @@ public class MyCollectionsMenu : MonoBehaviour
     [HideInInspector] public RectTransform newDeckPos;
     public RectTransform deckObject;
     bool deckCardViewFlag;
+    public CardDrag[] deckCardObject;
+    int nowDeck = -1;
 
     [Header("캐릭터선택")]
     public Animator selectCharacterAni;
@@ -293,19 +295,24 @@ public class MyCollectionsMenu : MonoBehaviour
         DataMng.TableType tableName = (DataMng.TableType)(nowJobIndex);
         selectjobText.text = jobTextFlag ? tableName.ToString() : "";
 
-
+        //덱의 수만큼 UI조절
         int deckNum = DataMng.instance.playData.deck.Count;
         hasDeckNum.sprite = DataMng.instance.num[deckNum];
         deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1,9));
 
+        //덱조절
         for (int i = 0; i < 9; i++)
         {
             deckBtn[i].gameObject.SetActive(i < Mathf.Min(deckNum + 1, 9));
             deckBtn[i].hasDeck = (i < deckNum);
         }
         for (int i = 0; i < deckNum; i++)
+        {
             deckBtn[i].deckNameTxt.text = DataMng.instance.playData.deck[i].name;
+            deckBtn[i].nowCharacter = (int)DataMng.instance.playData.deck[i].job;
+        }
 
+        //덱이 선택되었을때 애니메이션
         if(deckCardViewFlag)
         {
             if (deckObject.anchoredPosition.y < 0)
@@ -314,6 +321,24 @@ public class MyCollectionsMenu : MonoBehaviour
                 deckObject.anchoredPosition = new Vector2(deckObject.anchoredPosition.x,0);
         }
 
+        if(nowDeck != -1)
+        {
+            deckBannerBtn.deckNameTxt.text = DataMng.instance.playData.deck[nowDeck].name;
+            deckBannerBtn.nowCharacter = (int)DataMng.instance.playData.deck[nowDeck].job;
+
+            for (int i = 0; i < 30; i++)
+                deckCardObject[i].gameObject.SetActive(false);
+
+            for (int i = 0; i < DataMng.instance.playData.deck[nowDeck].card.Count; i++)
+                deckCardObject[i].gameObject.SetActive(true);
+
+            //덱의 카드 수만큼 UI조절
+            int deckCardNum = 0;
+            for (int i = 0; i < 30; i++)
+                if (deckCardObject[i].gameObject.activeSelf)
+                    deckCardNum++;
+            deckCardContext.sizeDelta = new Vector2(deckCardContext.sizeDelta.x, 85.39f * deckCardNum);
+        }
     }
     #endregion
 
@@ -865,13 +890,9 @@ public class MyCollectionsMenu : MonoBehaviour
             {
                 case 0:
                     characterNameTxt.text = "말퓨리온 스톰레이지";
-                    deckBannerBtn.deckNameTxt.text = "나만의 드루이드 덱";
-                    deckBannerBtn.nowCharacter = n;
                     break;
                 case 1:
                     characterNameTxt.text = "발리라 생귀나르";
-                    deckBannerBtn.deckNameTxt.text = "나만의 도적 덱";
-                    deckBannerBtn.nowCharacter = n;
                     break;
             }
             nowJob = (DataMng.TableType)n;
@@ -881,7 +902,7 @@ public class MyCollectionsMenu : MonoBehaviour
     #endregion
 
     #region[덱 카드 확인]
-    public void DeckCardView()
+    public void DeckCardView(int n)
     {
         SelectCharacter(false);
         SelectCharacterOK(false);
@@ -892,6 +913,7 @@ public class MyCollectionsMenu : MonoBehaviour
         deckObject.anchoredPosition = new Vector2(newDeckPos.anchoredPosition.x, newDeckPos.anchoredPosition.y + deckContext.anchoredPosition.y);
         deckCardViewFlag = true;
         CardDataInput(nowJob,-1, "", cardmakeFlag);
+        nowDeck = n;
     }
     #endregion
 }

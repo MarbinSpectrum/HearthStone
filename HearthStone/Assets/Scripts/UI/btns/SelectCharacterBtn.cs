@@ -58,7 +58,12 @@ public class SelectCharacterBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        MyCollectionsMenu.instance.DeckCardView();
+        DataMng.instance.playData.deck.Add(
+            new PlayData.Deck("나만의 " + MyCollectionsMenu.instance.nowJob.ToString() + " 덱", 
+            MyCollectionsMenu.instance.nowJob, 
+            new List<string>() { }
+            ));
+        MyCollectionsMenu.instance.DeckCardView(DataMng.instance.playData.deck.Count - 1);
     }
     #endregion
 
