@@ -24,6 +24,7 @@ public class MyCollectionsMenu : MonoBehaviour
     public Text searchCancleText;
     [HideInInspector] public DataMng.TableType nowJob;
     int nowCost = -1;
+    string nowSearch = "";
 
     [Header("제작")]
     public Animator makeAni;
@@ -95,10 +96,11 @@ public class MyCollectionsMenu : MonoBehaviour
     public RectTransform deckCardContext;
     [HideInInspector] public RectTransform newDeckPos;
     public RectTransform deckObject;
-    bool deckCardViewFlag;
+    [HideInInspector] public bool deckCardViewFlag;
     public CardDrag[] deckCardObject;
-    int nowDeck = -1;
-    
+    [HideInInspector] public int nowDeck = -1;
+    List<string> deckCardList = new List<string>();
+
     [Header("캐릭터선택")]
     public Animator selectCharacterAni;
     public Animator selectCharacterOKAni;
@@ -197,8 +199,9 @@ public class MyCollectionsMenu : MonoBehaviour
             {
                 if(job != DataMng.TableType.모두)
                 {
-                    if (job != (DataMng.TableType)(i))
-                        continue;
+                    if ((DataMng.TableType)(i) != DataMng.TableType.중립)
+                        if (job != (DataMng.TableType)(i))
+                            continue;
                 }
 
                 if (DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "등급").Equals("토큰"))
@@ -324,23 +327,53 @@ public class MyCollectionsMenu : MonoBehaviour
                 deckObject.anchoredPosition = new Vector2(deckObject.anchoredPosition.x,0);
         }
 
+        //덱보여주기
         if(nowDeck != -1)
         {
+            deckCardList.Clear();
+            for (int i = 0; i < DataMng.instance.playData.deck[nowDeck].card.Count; i++)
+                deckCardList.Add(DataMng.instance.playData.deck[nowDeck].card[i]);
+
+            deckCardList.Sort(delegate (string A, string B)
+            {
+                int costA = 0;
+                int costB = 0;
+
+                Vector2 pairA = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(A));
+                Vector2 pairB = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(B));
+               // Debug.Log(pairA == pairB);
+                costA = DataMng.instance.ToInteger((DataMng.TableType)pairA.x, (int)pairA.y, "코스트");
+                costB = DataMng.instance.ToInteger((DataMng.TableType)pairB.x, (int)pairB.y, "코스트");
+              //  Debug.Log(costA == costB);
+                if (costA > costB)
+                    return 1;
+                if (costA == costB)
+                    return A.CompareTo(B);
+                return -1;
+
+            });
+
             deckBannerBtn.deckNameTxt.text = DataMng.instance.playData.deck[nowDeck].name;
             deckBannerBtn.nowCharacter = (int)DataMng.instance.playData.deck[nowDeck].job;
 
             for (int i = 0; i < 30; i++)
-                deckCardObject[i].gameObject.SetActive(false);
-
-            for (int i = 0; i < DataMng.instance.playData.deck[nowDeck].card.Count; i++)
-                deckCardObject[i].gameObject.SetActive(true);
+            {
+                if(i < DataMng.instance.playData.deck[nowDeck].card.Count)
+                {
+                    deckCardObject[i].cardName_Data = DataMng.instance.playData.GetCardName(deckCardList[i]);
+                    deckCardObject[i].hasCardNum = DataMng.instance.playData.GetCardNumber(deckCardList[i]);
+                    deckCardObject[i].gameObject.SetActive(true);
+                }
+                else
+                    deckCardObject[i].gameObject.SetActive(false);
+            }
 
             //덱의 카드 수만큼 UI조절
             int deckCardNum = 0;
             for (int i = 0; i < 30; i++)
                 if (deckCardObject[i].gameObject.activeSelf)
                     deckCardNum++;
-            deckCardContext.sizeDelta = new Vector2(deckCardContext.sizeDelta.x, 85.39f * deckCardNum);
+            deckCardContext.sizeDelta = new Vector2(deckCardContext.sizeDelta.x, 85.39f * (deckCardNum+1));
         }
     }
     #endregion
@@ -637,9 +670,15 @@ public class MyCollectionsMenu : MonoBehaviour
         if (!act)
         {
             if(String.IsNullOrWhiteSpace(searchText.text))
-                CardDataInput(nowJob ,nowCost, "", cardmakeFlag);
+            {
+                nowSearch = "";
+                CardDataInput(nowJob ,nowCost, nowSearch, cardmakeFlag);
+            }
             else
-                CardDataInput(nowJob ,-1, searchText.text, cardmakeFlag);
+            {
+                nowSearch = searchText.text;
+                CardDataInput(nowJob ,-1, nowSearch, cardmakeFlag);
+            }
 
             if (nowCost != -1 || !String.IsNullOrWhiteSpace(searchText.text))
             {
@@ -651,6 +690,7 @@ public class MyCollectionsMenu : MonoBehaviour
                 }
                 else if(nowCost != -1)
                 {
+                    searchCancleText.text = "";
                     cancleCost.sprite = DataMng.instance.num[nowCost];
                     costCancleObject.SetActive(true);
                     stringCancleObject.SetActive(false);
@@ -670,7 +710,12 @@ public class MyCollectionsMenu : MonoBehaviour
     {
         cancleBtn.gameObject.SetActive(act);
         if (!act)
-            CardDataInput(nowJob ,- 1,"", cardmakeFlag);
+        {
+            nowCost = -1;
+            nowSearch = "";
+            searchText.text = "";
+            CardDataInput(nowJob , nowCost, nowSearch, cardmakeFlag);
+        }
         filterBtn.gameObject.SetActive(!act);
         CardViewManager.instance.UpdateCardView();
     }
@@ -855,7 +900,9 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[코스트로 분류버튼]
     public void ActFilterCostBtn(int n)
     {
-        CardDataInput(nowJob,n, "",cardmakeFlag);
+        nowSearch = "";
+        searchText.text = "";
+        CardDataInput(nowJob,n, nowSearch, cardmakeFlag);
     }
     #endregion
 
@@ -863,7 +910,8 @@ public class MyCollectionsMenu : MonoBehaviour
     public void ChangeCardMakeMode()
     {
         cardmakeFlag = !cardmakeFlag;
-        CardDataInput(nowJob ,- 1, "", cardmakeFlag);
+        CardDataInput(nowJob, nowCost, nowSearch, cardmakeFlag);
+
         makeAni.SetBool("Show", cardmakeFlag);
         selectMake.SetActive(cardmakeFlag);
         int nowM = DataMng.instance.playData.magicPowder;
@@ -917,8 +965,10 @@ public class MyCollectionsMenu : MonoBehaviour
         deckCardContext.anchoredPosition = new Vector2(deckCardContext.anchoredPosition.x, 0);
         deckObject.anchoredPosition = new Vector2(newDeckPos.anchoredPosition.x, newDeckPos.anchoredPosition.y + deckContext.anchoredPosition.y);
         deckCardViewFlag = true;
-        CardDataInput(nowJob,-1, "", cardmakeFlag);
+        ActCancleBtn(false);
         nowDeck = n;
+        if(cardmakeFlag)
+            ChangeCardMakeMode();
     }
     #endregion
 }

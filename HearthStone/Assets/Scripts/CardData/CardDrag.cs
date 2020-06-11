@@ -8,9 +8,13 @@ public class CardDrag : MonoBehaviour
     public string cardName_Data;
     public RectTransform imgRect;
     public Image cardImg;
+
     public Image cardCost;
+
     public Text cardName;
+
     public Image deckCardNum;
+    public int hasCardNum;
     public bool isDrag = false;
 
     #region[Update]
@@ -49,7 +53,10 @@ public class CardDrag : MonoBehaviour
     #region[카드코스트]
     public void CardCost()
     {
-        cardCost.sprite = DataMng.instance.num[DataMng.instance.playData.GetCardNum(cardName_Data)];
+        int cardCost_Data = 0;
+        Vector2 pair = DataMng.instance.GetPairByName(cardName_Data);
+        cardCost_Data = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+        cardCost.sprite = DataMng.instance.num[Mathf.Min(cardCost_Data, 9)];
     }
     #endregion
 
@@ -57,11 +64,12 @@ public class CardDrag : MonoBehaviour
     public void DeckCardNum()
     {
         if (isDrag)
-        {
             deckCardNum.enabled = false;
-        }
         else
+        {
+            deckCardNum.sprite = DataMng.instance.num[hasCardNum];
             deckCardNum.enabled = true;
+        }
     }
     #endregion
 

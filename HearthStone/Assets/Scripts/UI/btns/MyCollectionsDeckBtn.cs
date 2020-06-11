@@ -66,6 +66,7 @@ public class MyCollectionsDeckBtn : Btn
     public override void ActBtn()
     {
         MyCollectionsMenu.instance.newDeckPos = transform.parent.GetComponent<RectTransform>();
+        MyCollectionsMenu.instance.nowJob = (DataMng.TableType)MyCollectionsMenu.instance.deckBtn[deckN].nowCharacter;
         MyCollectionsMenu.instance.DeckCardView(deckN);
     }
     #endregion

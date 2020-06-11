@@ -260,6 +260,17 @@ public class DataMng : MonoBehaviour
     }
     #endregion
 
+    #region[데이터쌍 얻기]
+    public Vector2 GetPairByName(string s)
+    {
+        for (int i = 0; i < 3; i++)
+            for (int j = 1; j <= m_dic[(TableType)i].m_table.Count; j++)
+                if (ToString((TableType)i, j, "카드이름").Equals(s))
+                    return new Vector2(i, j);
+        return new Vector2(0, 0);
+    }
+    #endregion
+
     #region[값 얻기]
     public int ToInteger(TableType tableType, int mainKey, string subKey)
     {

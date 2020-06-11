@@ -71,9 +71,14 @@ public class MyCollectionsCardCloseUpBtn : Btn
     #region[BeginDrag]
     public virtual void BeginDrag()
     {
+        string cardName = MyCollectionsMenu.instance.cardDatas[MyCollectionsMenu.instance.nowJobIndex][MyCollectionsMenu.instance.nowCardIndex + cardNum].cardName;
+        if (DataMng.instance.playData.GetCardNum(cardName) == 0)
+            return;
         CardDragObject.instance.isDrag = true;
         MyCollectionsMenu.instance.CardShow(ref CardDragObject.instance.cardView, MyCollectionsMenu.instance.nowJobIndex, MyCollectionsMenu.instance.nowCardIndex + cardNum);
-        CardDragObject.instance.cardDrag.cardName_Data = MyCollectionsMenu.instance.cardDatas[MyCollectionsMenu.instance.nowJobIndex][MyCollectionsMenu.instance.nowCardIndex + cardNum].cardName;
+        CardDragObject.instance.cardView.gameObject.SetActive(false);
+        CardDragObject.instance.cardDrag.cardName_Data = cardName;
+       
         CardViewManager.instance.UpdateCardView();
     }
     #endregion
@@ -82,6 +87,11 @@ public class MyCollectionsCardCloseUpBtn : Btn
     public virtual void EndDrag()
     {
         CardDragObject.instance.isDrag = false;
+        if(CardDragObject.instance.inDeck)
+        {
+            string cardName = MyCollectionsMenu.instance.cardDatas[MyCollectionsMenu.instance.nowJobIndex][MyCollectionsMenu.instance.nowCardIndex + cardNum].cardName;
+            DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].AddCard(cardName);
+        }
     }
     #endregion
 
