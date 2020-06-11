@@ -70,6 +70,7 @@ public class MyCollectionsMenu : MonoBehaviour
     public GameObject hasCardNumUI;
     public Text hasCardNumText;
     int nowCloseUpCardView;
+    IEnumerator showCardNum;
 
     [Header("현재 마법가루")]
     public GameObject nowMagicPowder;
@@ -97,7 +98,7 @@ public class MyCollectionsMenu : MonoBehaviour
     bool deckCardViewFlag;
     public CardDrag[] deckCardObject;
     int nowDeck = -1;
-
+    
     [Header("캐릭터선택")]
     public Animator selectCharacterAni;
     public Animator selectCharacterOKAni;
@@ -106,10 +107,10 @@ public class MyCollectionsMenu : MonoBehaviour
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //카드목록표시를 위한데이터
-    List<CardData>[] cardDatas = new List<CardData>[3];
+    [HideInInspector] public List<CardData>[] cardDatas = new List<CardData>[3];
 
-    int nowJobIndex = 0;
-    int nowCardIndex = 0;
+    [HideInInspector] public int nowJobIndex = 0;
+    [HideInInspector] public int nowCardIndex = 0;
 
     //카드제조플레그
     bool cardmakeFlag = false;
@@ -315,8 +316,10 @@ public class MyCollectionsMenu : MonoBehaviour
         //덱이 선택되었을때 애니메이션
         if(deckCardViewFlag)
         {
-            if (deckObject.anchoredPosition.y < 0)
-                deckObject.anchoredPosition += new Vector2(0, Time.deltaTime* Mathf.Pow(Mathf.Abs(deckObject.anchoredPosition.y),1.3f));
+            if(deckObject.anchoredPosition.y < newDeckPos .anchoredPosition.y + 2.5f)
+                deckObject.anchoredPosition += new Vector2(0, Time.deltaTime * 7);
+            else if (deckObject.anchoredPosition.y < 0)
+                deckObject.anchoredPosition += new Vector2(0, Time.deltaTime* Mathf.Pow(Mathf.Abs(deckObject.anchoredPosition.y),1.2f));
             else
                 deckObject.anchoredPosition = new Vector2(deckObject.anchoredPosition.x,0);
         }
@@ -724,7 +727,8 @@ public class MyCollectionsMenu : MonoBehaviour
         closeUpCards[n].gameObject.SetActive(true);
         nowCloseUpCardView = n;
         nowCards[nowCloseUpCardView].hide = true;
-        StartCoroutine(ShowCardNum(cardNum,0.3f));
+        showCardNum = ShowCardNum(cardNum, 0.3f);
+        StartCoroutine(showCardNum);
         CardViewManager.instance.UpdateCardView();
 
     }
@@ -738,6 +742,7 @@ public class MyCollectionsMenu : MonoBehaviour
     public void CardCloseOut()
     {
         hasCardNumUI.SetActive(false);
+        StopCoroutine(showCardNum);
         cardCloseUpAni.SetTrigger("Close");
         StartCoroutine(CardCloseUpCard(0.3f));
         int jobtemp = nowJobIndex;
