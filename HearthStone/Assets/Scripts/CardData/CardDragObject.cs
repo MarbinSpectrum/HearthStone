@@ -81,6 +81,24 @@ public class CardDragObject : MonoBehaviour
             cardView.gameObject.SetActive(false);
             cardDrag.gameObject.SetActive(false);
         }
+
+        if (isDrag && inDeck)
+        {
+            if (Input.GetMouseButtonUp(0))
+            {
+               // Debug.LogError("!!");
+                string cardName = cardDrag.cardName_Data;
+                DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].AddCard(cardName);
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            viewCardEffect.Stop();
+            dragCardEffect.Stop();
+            isDrag = false;
+        }
+
     }
     #endregion
 

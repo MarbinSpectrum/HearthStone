@@ -86,12 +86,7 @@ public class MyCollectionsCardCloseUpBtn : Btn
     #region[EndDrag]
     public virtual void EndDrag()
     {
-        CardDragObject.instance.isDrag = false;
-        if(CardDragObject.instance.inDeck)
-        {
-            string cardName = MyCollectionsMenu.instance.cardDatas[MyCollectionsMenu.instance.nowJobIndex][MyCollectionsMenu.instance.nowCardIndex + cardNum].cardName;
-            DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].AddCard(cardName);
-        }
+
     }
     #endregion
 

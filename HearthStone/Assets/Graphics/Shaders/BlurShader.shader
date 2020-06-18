@@ -58,7 +58,7 @@
 					fixed4 col = (0, 0, 0, 0);
 					float weight_total = 0;
 
-					[loop]
+					//[loop]
 					for (float x = -blur; x <= blur; x += 1)
 					{
 						float distance_normalized = abs(x / blur);
@@ -68,6 +68,11 @@
 					}
 
 					col /= weight_total;
+
+
+				
+
+
 					return col;
 				}
 				ENDCG

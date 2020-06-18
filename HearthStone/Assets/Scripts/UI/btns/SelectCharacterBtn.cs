@@ -63,6 +63,8 @@ public class SelectCharacterBtn : Btn
             MyCollectionsMenu.instance.nowJob, 
             new List<string>() { }
             ));
+       // MyCollectionsMenu.instance.newDeckPos = transform.parent.GetComponent<RectTransform>();
+        MyCollectionsMenu.instance.MovePage((int)MyCollectionsMenu.instance.nowJob);
         MyCollectionsMenu.instance.DeckCardView(DataMng.instance.playData.deck.Count - 1);
     }
     #endregion

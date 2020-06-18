@@ -62,8 +62,10 @@ public class MyCollectionsToBackBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        Debug.Log("뒤로가기");
-        MyCollectionsMenu.instance.ActGoBack();
+        if (!MyCollectionsMenu.instance.deckCardViewFlag)
+            MyCollectionsMenu.instance.ActGoBack();
+        else
+            MyCollectionsMenu.instance.DeckMakeCheck(true);
     }
     #endregion
 

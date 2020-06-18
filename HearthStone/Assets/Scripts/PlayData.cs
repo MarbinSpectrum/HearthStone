@@ -29,15 +29,36 @@ public class PlayData
             {
                 string name = DataMng.instance.playData.GetCardName(card[i]);
                 int num = DataMng.instance.playData.GetCardNumber(card[i]);
+                Vector2 pair = DataMng.instance.GetPairByName(name);
+                string level = DataMng.instance.m_dic[(DataMng.TableType)pair.x].ToString((int)pair.y, "등급");
+                int maxNum = level.Equals("전설") ? 1 : 2;
                 if (name.Equals(s))
                 {
-                    if (num >= 2)
+                    if (num >= maxNum)
                         return;
                     card[i] = s + "~" + (num + 1).ToString();
                     return;
                 }
             }
             card.Add(s + "~1");
+        }
+
+        public void PopCard(string s)
+        {
+            for (int i = 0; i < card.Count; i++)
+            {
+                string name = DataMng.instance.playData.GetCardName(card[i]);
+                int num = DataMng.instance.playData.GetCardNumber(card[i]);
+                if (name.Equals(s))
+                {
+                    if (num >= 2)
+                        card[i] = s + "~" + (num - 1).ToString();
+                    else
+                        card.RemoveAt(i);
+                    return;
+                }
+            }
+
         }
 
         public int CountCardNum()

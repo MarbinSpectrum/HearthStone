@@ -64,7 +64,9 @@ public class MyCollectionsDeckMakeBtn : Btn
     public override void ActBtn()
     {
         MyCollectionsMenu.instance.SelectCharacter(true);
-        MyCollectionsMenu.instance.newDeckPos = transform.parent.GetComponent<RectTransform>();
+        Vector2 temp = transform.parent.GetComponent<RectTransform>().anchoredPosition;
+        MyCollectionsMenu.instance.newDeckPos.anchoredPosition = temp;
+        MyCollectionsMenu.instance.newDeckPos.anchoredPosition += new Vector2(0, MyCollectionsMenu.instance.deckContext.anchoredPosition.y);
     }
     #endregion
 }
