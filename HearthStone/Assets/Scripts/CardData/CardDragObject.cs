@@ -89,6 +89,7 @@ public class CardDragObject : MonoBehaviour
                // Debug.LogError("!!");
                 string cardName = cardDrag.cardName_Data;
                 DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].AddCard(cardName);
+                MyCollectionsMenu.instance.DeckSort();
             }
         }
 

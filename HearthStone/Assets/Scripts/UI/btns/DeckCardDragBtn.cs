@@ -56,6 +56,7 @@ public class DeckCardDragBtn : MonoBehaviour
 
             cardName = cardDrag.cardName_Data;
             DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].PopCard(cardName);
+            MyCollectionsMenu.instance.DeckSort();
             CardDragObject.instance.isDrag = true;
             for (int i = 0; i < MyCollectionsMenu.instance.cardDatas.Length; i++)
                 for (int j = 0; j < MyCollectionsMenu.instance.cardDatas[i].Count; j++)

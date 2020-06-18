@@ -114,6 +114,16 @@ public class MyCollectionsMenu : MonoBehaviour
     public Text heroPowerExplain;
     public RectTransform[] deckCardCostNum;
     public RectTransform[] deckCardCostBar;
+    public GameObject checkDeckDelete;
+    public Animator checkDeckDeleteAni;
+    public GameObject newCreateDeck;
+    public Animator newCreateDeckAni;
+    public DeckBtn newCreateDeckBtn;
+    public GameObject dontClick_remove;
+    int deleteDeckNum = -1;
+    TouchScreenKeyboard keyboard;
+    string keyboardText = "";
+
     [Header("캐릭터선택")]
     public Animator selectCharacterAni;
     public Animator selectCharacterOKAni;
@@ -312,21 +322,51 @@ public class MyCollectionsMenu : MonoBehaviour
         DataMng.TableType tableName = (DataMng.TableType)(nowJobIndex);
         selectjobText.text = jobTextFlag ? tableName.ToString() : "";
 
-        //덱의 수만큼 UI조절
-        int deckNum = DataMng.instance.playData.deck.Count;
-        hasDeckNum.sprite = DataMng.instance.num[deckNum];
-        deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1,9));
+        if (newCreateDeckAni.GetCurrentAnimatorStateInfo(0).IsName("BtnMoveUp"))
+        {
+            if(newCreateDeckAni.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.8f && deleteDeckNum != -1)
+            {
+                DataMng.instance.playData.deck.RemoveAt(deleteDeckNum);
+                deckBtn[deleteDeckNum].hide = false;
+                //덱의 수만큼 UI조절
+                int deckNum = DataMng.instance.playData.deck.Count;
+                hasDeckNum.sprite = DataMng.instance.num[deckNum];
+                deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1, 9));
 
-        //덱조절
-        for (int i = 0; i < 9; i++)
-        {
-            deckBtn[i].gameObject.SetActive(i < Mathf.Min(deckNum + 1, 9));
-            deckBtn[i].hasDeck = (i < deckNum);
+                //덱조절
+                for (int i = 0; i < 9; i++)
+                {
+                    deckBtn[i].gameObject.SetActive(i < Mathf.Min(deckNum + 1, 9));
+                    deckBtn[i].hasDeck = (i < deckNum);
+                }
+                for (int i = 0; i < deckNum; i++)
+                {
+                    deckBtn[i].deckNameTxt.text = DataMng.instance.playData.deck[i].name;
+                    deckBtn[i].nowCharacter = (int)DataMng.instance.playData.deck[i].job;
+                }
+                dontClick_remove.SetActive(false);
+                deleteDeckNum = -1;
+            }
         }
-        for (int i = 0; i < deckNum; i++)
+        else
         {
-            deckBtn[i].deckNameTxt.text = DataMng.instance.playData.deck[i].name;
-            deckBtn[i].nowCharacter = (int)DataMng.instance.playData.deck[i].job;
+            newCreateDeckBtn.hide = true;
+            //덱의 수만큼 UI조절
+            int deckNum = DataMng.instance.playData.deck.Count;
+            hasDeckNum.sprite = DataMng.instance.num[deckNum];
+            deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1, 9));
+
+            //덱조절
+            for (int i = 0; i < 9; i++)
+            {
+                deckBtn[i].gameObject.SetActive(i < Mathf.Min(deckNum + 1, 9));
+                deckBtn[i].hasDeck = (i < deckNum);
+            }
+            for (int i = 0; i < deckNum; i++)
+            {
+                deckBtn[i].deckNameTxt.text = DataMng.instance.playData.deck[i].name;
+                deckBtn[i].nowCharacter = (int)DataMng.instance.playData.deck[i].job;
+            }
         }
 
         //덱이 선택되었을때 애니메이션
@@ -373,6 +413,7 @@ public class MyCollectionsMenu : MonoBehaviour
                 CardDataInput(nowJob, nowCost, nowSearch, cardmakeFlag);
                 nowJobIndex = j;
                 nowCardIndex = c;
+                deckCardList.Clear();
 
             }
             else if (deckObject.anchoredPosition.y > newDeckPos.anchoredPosition.y + 2.5f)
@@ -400,28 +441,8 @@ public class MyCollectionsMenu : MonoBehaviour
         //덱보여주기
         if (nowDeck != -1)
         {
-            deckCardList.Clear();
-            for (int i = 0; i < DataMng.instance.playData.deck[nowDeck].card.Count; i++)
-                deckCardList.Add(DataMng.instance.playData.deck[nowDeck].card[i]);
-
-            deckCardList.Sort(delegate (string A, string B)
-            {
-                int costA = 0;
-                int costB = 0;
-
-                Vector2 pairA = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(A));
-                Vector2 pairB = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(B));
-               // Debug.Log(pairA == pairB);
-                costA = DataMng.instance.ToInteger((DataMng.TableType)pairA.x, (int)pairA.y, "코스트");
-                costB = DataMng.instance.ToInteger((DataMng.TableType)pairB.x, (int)pairB.y, "코스트");
-              //  Debug.Log(costA == costB);
-                if (costA > costB)
-                    return 1;
-                if (costA == costB)
-                    return A.CompareTo(B);
-                return -1;
-
-            });
+            if (deckCardList.Count == 0)
+                DeckSort();
 
             deckBannerBtn.deckNameTxt.text = DataMng.instance.playData.deck[nowDeck].name;
             deckBannerBtn.nowCharacter = (int)DataMng.instance.playData.deck[nowDeck].job;
@@ -456,6 +477,44 @@ public class MyCollectionsMenu : MonoBehaviour
 
             hasDeckCardNum[1].sprite = DataMng.instance.num[cardN % 10];
         }
+
+        if (TouchScreenKeyboard.visible == false && keyboard != null)
+        {
+            if (keyboard.done == true)
+            {
+                keyboardText = keyboard.text;
+                deckBannerBtn.deckNameTxt.text = keyboardText;
+                DataMng.instance.playData.deck[nowDeck].name = keyboardText;
+                deckBtn[nowDeck].deckNameTxt.text = keyboardText;
+                keyboard = null;
+            }
+        }
+    }
+
+    public void DeckSort()
+    {
+        deckCardList.Clear();
+        for (int i = 0; i < DataMng.instance.playData.deck[nowDeck].card.Count; i++)
+            deckCardList.Add(DataMng.instance.playData.deck[nowDeck].card[i]);
+
+        deckCardList.Sort(delegate (string A, string B)
+        {
+            int costA = 0;
+            int costB = 0;
+
+            Vector2 pairA = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(A));
+            Vector2 pairB = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(B));
+            // Debug.Log(pairA == pairB);
+            costA = DataMng.instance.ToInteger((DataMng.TableType)pairA.x, (int)pairA.y, "코스트");
+            costB = DataMng.instance.ToInteger((DataMng.TableType)pairB.x, (int)pairB.y, "코스트");
+            //  Debug.Log(costA == costB);
+            if (costA > costB)
+                return 1;
+            if (costA == costB)
+                return A.CompareTo(B);
+            return -1;
+
+        });
     }
     #endregion
 
@@ -1095,6 +1154,7 @@ public class MyCollectionsMenu : MonoBehaviour
                     if (exFlag)
                         break;
                     DataMng.instance.playData.deck[nowDeck].AddCard(cardDatas[i][j].cardName);
+                    MyCollectionsMenu.instance.DeckSort();
                 }
             if (exFlag)
                 break;
@@ -1114,6 +1174,7 @@ public class MyCollectionsMenu : MonoBehaviour
     }
     #endregion
 
+    #region[덱설정확인]
     public void DeckSetting()
     {
         if(!deckSetting.activeSelf)
@@ -1175,6 +1236,66 @@ public class MyCollectionsMenu : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         deckSetting.SetActive(b);
     }
+    #endregion
+
+    #region[덱삭제검사]
+    public void DeckDeleteCheck(bool b)
+    {
+        if(b)
+        {
+            checkDeckDelete.SetActive(true);
+            checkDeckDeleteAni.SetBool("Show", true);
+        }
+        else
+        {
+            checkDeckDeleteAni.SetBool("Show", false);
+            StartCoroutine(DeckDelete(0.1f, false));
+        }
+
+    }
+
+    private IEnumerator DeckDelete(float waitTime, bool b)
+    {
+        yield return new WaitForSeconds(waitTime);
+        checkDeckDelete.SetActive(b);
+    }
+    #endregion
+
+    #region[덱 이름설정]
+    public void DeckReName()
+    {
+        keyboard = TouchScreenKeyboard.Open(deckBannerBtn.deckNameTxt.text, TouchScreenKeyboardType.Default, false, false, false, false);
+    }
+    #endregion
+
+    #region[덱삭제]
+    public void DeckDeleteAct(int n)
+    {
+        dontClick_remove.SetActive(true);
+        StartCoroutine(DeckDeleteActCor(n));
+    }
+
+    private IEnumerator DeckDeleteActCor(int n)
+    {
+        yield return new WaitForSeconds(2);
+        deckBtn[n].hide = true;
+        Animator[] ani = new Animator[deckBtn.Length + 1];
+        for (int i = 0; i < deckBtn.Length; i++)
+            ani[i] = deckBtn[i].GetComponent<Animator>();
+        ani[9] = newCreateDeck.GetComponent<Animator>();
+        for (int i = n + 1; i < deckBtn.Length; i++)
+            ani[i].SetTrigger("MoveUp");
+        ani[9].SetTrigger("MoveUp");
+        deleteDeckNum = n;
+        dontClick_remove.SetActive(true);
+        yield return new WaitForSeconds(0.1f);
+        dontClick_remove.SetActive(true);
+        newCreateDeckBtn.hide = false;
+        if (DataMng.instance.playData.deck.Count != 9)
+            newCreateDeckBtn.hide = true;
+    }
+    #endregion
+
 }
 
 

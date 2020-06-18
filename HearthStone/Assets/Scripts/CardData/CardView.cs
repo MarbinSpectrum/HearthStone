@@ -34,6 +34,8 @@ public class CardView : MonoBehaviour
     public Material holoBlue;
     public Material holoBlueMove;
 
+    int cardN = 2;
+
     [HideInInspector] public string cardJob = "중립";
     [HideInInspector] public string cardLevel = "기본";
 
@@ -255,19 +257,20 @@ public class CardView : MonoBehaviour
     #region[LateUpdate]
     void LateUpdate()
     {
+        if (updateCard)
+        {
+            ShowCard();
+            ShowCost();
+            ShowAttack();
+            ShowHp();
+            ShowName();
+            ShowExplain();
+            ShowCardFrame();
+            ShowCardImg();
+            GetCardNum();
+            updateCard = false;
+        }
         ShowHolo();
-        if (!updateCard)
-            return;
-        ShowCard();
-        ShowCost();
-        ShowAttack();
-        ShowHp();
-        ShowName();
-        ShowExplain();
-        ShowCardFrame();
-        ShowCardImg();
-        //ShowHolo();
-        updateCard = false;
     }
     #endregion
 
@@ -638,13 +641,30 @@ public class CardView : MonoBehaviour
     }
     #endregion
 
+    #region[GetCardNum]
+    public void GetCardNum()
+    {
+        if (cardType == CardType.하수인)
+            cardN = DataMng.instance.playData.GetCardNum(MinionsCardNameData);
+        else if (cardType == CardType.주문)
+            cardN = DataMng.instance.playData.GetCardNum(SpellCardNameData);
+        else if (cardType == CardType.무기)
+            cardN = DataMng.instance.playData.GetCardNum(WeaponCardNameData);
+    }
+    #endregion
+
     #region[ShowHolo]
     void ShowHolo()
     {
         if (cardType == CardType.하수인)
         {
-            Material tempM = (DataMng.instance.playData.GetCardNum(MinionsCardNameData) == 0) ? holoBlueMove : null;
-            Material tempMa = (DataMng.instance.playData.GetCardNum(MinionsCardNameData) == 0) ? holoBlue : null;
+            if (cardN == 0 && MinionsCardImg.material == holoBlue)
+                return;
+            if (cardN != 0 && MinionsCardImg.material != holoBlue)
+                return;
+
+            Material tempM = (cardN == 0) ? holoBlueMove : null;
+            Material tempMa = (cardN == 0) ? holoBlue : null;
 
             for (int i = 0; i < MinionsCostImage.Length; i++)
                 MinionsCostImage[i].material = tempM;
@@ -657,8 +677,13 @@ public class CardView : MonoBehaviour
         }
         else if (cardType == CardType.주문)
         {
-            Material tempM = (DataMng.instance.playData.GetCardNum(SpellCardNameData) == 0) ? holoBlueMove : null;
-            Material tempMa = (DataMng.instance.playData.GetCardNum(SpellCardNameData) == 0) ? holoBlue : null;
+            if (cardN == 0 && MinionsCardImg.material == holoBlue)
+                return;
+            if (cardN != 0 && MinionsCardImg.material != holoBlue)
+                return;
+
+            Material tempM = (cardN == 0) ? holoBlueMove : null;
+            Material tempMa = (cardN == 0) ? holoBlue : null;
             for (int i = 0; i < SpellCostImage.Length; i++)
                 SpellCostImage[i].material = tempM;
             SpellCardLevel.material = tempM;
@@ -666,8 +691,13 @@ public class CardView : MonoBehaviour
         }
         else if (cardType == CardType.무기)
         {
-            Material tempM = (DataMng.instance.playData.GetCardNum(WeaponCardNameData) == 0) ? holoBlueMove : null;
-            Material tempMa = (DataMng.instance.playData.GetCardNum(WeaponCardNameData) == 0) ? holoBlue : null;
+            if (cardN == 0 && MinionsCardImg.material == holoBlue)
+                return;
+            if (cardN != 0 && MinionsCardImg.material != holoBlue)
+                return;
+
+            Material tempM = (cardN == 0) ? holoBlueMove : null;
+            Material tempMa = (cardN == 0) ? holoBlue : null;
             for (int i = 0; i < WeaponCostImage.Length; i++)
                 WeaponCostImage[i].material = tempM;
             for (int i = 0; i < WeaponAttackImage.Length; i++)

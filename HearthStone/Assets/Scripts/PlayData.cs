@@ -182,7 +182,6 @@ public class PlayData
     public void Print()
     {
         string str = JsonUtility.ToJson(new DataMng.Serialization<Deck>(deck));
-        Debug.Log(str);
         //for (int i = 0; i < hasCard.Count; i++)
         //        Debug.Log(hasCard[i]);
     }
