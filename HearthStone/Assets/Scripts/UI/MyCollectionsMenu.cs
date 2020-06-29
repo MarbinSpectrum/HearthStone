@@ -322,13 +322,36 @@ public class MyCollectionsMenu : MonoBehaviour
         DataMng.TableType tableName = (DataMng.TableType)(nowJobIndex);
         selectjobText.text = jobTextFlag ? tableName.ToString() : "";
 
-        if (newCreateDeckAni.GetCurrentAnimatorStateInfo(0).IsName("BtnMoveUp"))
+        if (deleteDeckNum != -1)
         {
-            if(newCreateDeckAni.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.8f && deleteDeckNum != -1)
+            if (newCreateDeckBtn.characterDeckRect.anchoredPosition.y < 189)
             {
+                if (DataMng.instance.playData.deck.Count == 9)
+                    newCreateDeckBtn.hide = false;
+                else
+                    newCreateDeckBtn.hide = true;
+
+                newCreateDeckBtn.characterDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime)* 400;
+                newCreateDeckBtn.newDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime) * 400;
+                for(int i = deleteDeckNum + 1; i < 9; i++)
+                {
+                    deckBtn[i].characterDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime) * 400;
+                    deckBtn[i].newDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime) * 400;
+                }
+            }
+            else
+            {
+                newCreateDeckBtn.characterDeckRect.anchoredPosition = new Vector2(0, 0);
+                newCreateDeckBtn.newDeckRect.anchoredPosition = new Vector2(0, 0);
+                for (int i = 0; i < 9; i++)
+                {
+                    deckBtn[i].characterDeckRect.anchoredPosition = new Vector2(0, 0);
+                    deckBtn[i].newDeckRect.anchoredPosition = new Vector2(0, 0);
+                }
+
                 DataMng.instance.playData.deck.RemoveAt(deleteDeckNum);
                 deckBtn[deleteDeckNum].hide = false;
-                //덱의 수만큼 UI조절
+
                 int deckNum = DataMng.instance.playData.deck.Count;
                 hasDeckNum.sprite = DataMng.instance.num[deckNum];
                 deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1, 9));
@@ -351,7 +374,7 @@ public class MyCollectionsMenu : MonoBehaviour
         else
         {
             newCreateDeckBtn.hide = true;
-            //덱의 수만큼 UI조절
+
             int deckNum = DataMng.instance.playData.deck.Count;
             hasDeckNum.sprite = DataMng.instance.num[deckNum];
             deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1, 9));
@@ -441,7 +464,7 @@ public class MyCollectionsMenu : MonoBehaviour
         //덱보여주기
         if (nowDeck != -1)
         {
-            if (deckCardList.Count == 0)
+            if (deckCardList.Count != DataMng.instance.playData.deck[nowDeck].card.Count)
                 DeckSort();
 
             deckBannerBtn.deckNameTxt.text = DataMng.instance.playData.deck[nowDeck].name;
@@ -1277,22 +1300,9 @@ public class MyCollectionsMenu : MonoBehaviour
 
     private IEnumerator DeckDeleteActCor(int n)
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         deckBtn[n].hide = true;
-        Animator[] ani = new Animator[deckBtn.Length + 1];
-        for (int i = 0; i < deckBtn.Length; i++)
-            ani[i] = deckBtn[i].GetComponent<Animator>();
-        ani[9] = newCreateDeck.GetComponent<Animator>();
-        for (int i = n + 1; i < deckBtn.Length; i++)
-            ani[i].SetTrigger("MoveUp");
-        ani[9].SetTrigger("MoveUp");
         deleteDeckNum = n;
-        dontClick_remove.SetActive(true);
-        yield return new WaitForSeconds(0.1f);
-        dontClick_remove.SetActive(true);
-        newCreateDeckBtn.hide = false;
-        if (DataMng.instance.playData.deck.Count != 9)
-            newCreateDeckBtn.hide = true;
     }
     #endregion
 

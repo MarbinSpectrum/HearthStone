@@ -12,6 +12,15 @@ public class DeckBtn : MonoBehaviour
     public bool hide;
     public int nowCharacter;
 
+    [HideInInspector] public RectTransform newDeckRect;
+    [HideInInspector] public RectTransform characterDeckRect;
+
+    public void Awake()
+    {
+        newDeckRect = newDeckBtn.GetComponent<RectTransform>();
+        characterDeckRect = characterDeckBtn.GetComponent<RectTransform>();
+    }
+
     public void Update()
     {
         if(hide)
