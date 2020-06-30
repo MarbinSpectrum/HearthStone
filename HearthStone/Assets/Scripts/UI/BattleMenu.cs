@@ -10,8 +10,15 @@ public class BattleMenu : MonoBehaviour
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    [HideInInspector]
-    public bool battleCollections;
+    [HideInInspector] public bool battleCollections;
+
+    public DeckBtn[] deckList = new DeckBtn[9];
+
+    //덱선택
+    public Animator jobSelectAni;
+    public Image[] characterImg;
+    public Text characterNameTxt;
+    int selectDeck = 0;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,13 +39,56 @@ public class BattleMenu : MonoBehaviour
     #region[Update]
     private void Update()
     {
-
+        UpdateUI();
     }
     #endregion
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    #region[UpdateUI]
+    public void UpdateUI()
+    {
+        for(int i = 0; i < 9; i++)
+        {
+            if (DataMng.instance.playData.deck.Count <= i)
+                deckList[i].hide = true;
+            else
+            {
+                deckList[i].hide = false;
+                deckList[i].deckNameTxt.text = DataMng.instance.playData.deck[i].name;
+                deckList[i].nowCharacter = (int)DataMng.instance.playData.deck[i].job;
+
+            }
+        }
+    }
+    #endregion
+
+    #region[직업선택확인]
+    public void JobSelectCheck(int n = -1)
+    {
+        jobSelectAni.SetBool("Show", (n != -1));
+        if (n != -1)
+        {
+            int jobNum = (int)DataMng.instance.playData.deck[n].job;
+            for (int i = 0; i < characterImg.Length; i++)
+                characterImg[i].enabled = false;
+            characterImg[jobNum].enabled = true;
+            switch (jobNum)
+            {
+                case 0:
+                    characterNameTxt.text = "말퓨리온 스톰레이지";
+                    break;
+                case 1:
+                    characterNameTxt.text = "발리라 생귀나르";
+                    break;
+            }
+        }
+        selectDeck = n;
+    }
+    #endregion
+
 
     #region[메인메뉴로 이동]
     public void GoToMain(float waitTime)

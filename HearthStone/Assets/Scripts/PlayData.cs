@@ -20,6 +20,18 @@ public class PlayData
             this.job = job;
         }
 
+        public int HasCardNum(string s)
+        {
+            for (int i = 0; i < card.Count; i++)
+            {
+                string name = DataMng.instance.playData.GetCardName(card[i]);
+                int num = DataMng.instance.playData.GetCardNumber(card[i]);
+                if (name.Equals(s))
+                    return num;
+            }
+            return 0;
+        }
+
         public void AddCard(string s)
         {
             if (CountCardNum() >= 30)

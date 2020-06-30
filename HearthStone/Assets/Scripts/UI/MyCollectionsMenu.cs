@@ -48,6 +48,14 @@ public class MyCollectionsMenu : MonoBehaviour
     public GameObject nowCard;
     public GameObject nowNotCard;
     CardView[] nowCards = new CardView[8];
+    public GameObject[] pageCardNum_Obj = new GameObject[8];
+    Text[] pageCardNum_Txt = new Text[8];
+    public GameObject[] pageCardLock = new GameObject[8];
+    Text[] pageCardLock_Txt = new Text[8];
+    public GameObject[] pageCardLockFrame = new GameObject[8];
+    Image[] pageCardLockFrame_Img = new Image[8];
+    public Sprite lockFrame_M;
+    public Sprite lockFrame_S;
 
     [Header("뒷페이지 카드")]
     public GameObject backCard;
@@ -158,6 +166,10 @@ public class MyCollectionsMenu : MonoBehaviour
 
         for (int i = 0; i < 8; i++)
         {
+            pageCardNum_Txt[i] = pageCardNum_Obj[i].transform.Find("Text").GetComponent<Text>();
+            pageCardLock_Txt[i] = pageCardLock[i].transform.Find("Text").GetComponent<Text>();
+            pageCardLockFrame_Img[i] = pageCardLockFrame[i].GetComponent<Image>();
+
             closeUpCards[i] = closeUpCard.transform.Find("Card" + i).GetComponent<CardView>();
             nowCards[i] = nowCard.transform.Find("Card" + i).GetComponent<CardView>();
             backCards[i] = backCard.transform.Find("Card" + i).GetComponent<CardView>();
@@ -559,9 +571,71 @@ public class MyCollectionsMenu : MonoBehaviour
         {
             int tempCardIndex = i + nowCardIndex;
             if (tempCardIndex >= Mathf.Min(nowCardIndex + 8, cardDatas[nowJobIndex].Count))
+            {
+                pageCardNum_Obj[i].SetActive(false);
                 nowCards[i].gameObject.SetActive(false);
+                pageCardLock[i].SetActive(false);
+                pageCardLockFrame[i].SetActive(false);
+            }
             else
+            {
+                string nowCardName = cardDatas[nowJobIndex][tempCardIndex].cardName;
+                int cardNum = DataMng.instance.playData.GetCardNum(nowCardName);
+                if(cardCloseUpAni.GetCurrentAnimatorStateInfo(0).IsName("CardCloseUpStop"))
+                    pageCardNum_Obj[i].SetActive(cardNum > 0);
+                else
+                    pageCardNum_Obj[i].SetActive(cardNum > 0 && i != nowCloseUpCardView);
+
+                if(nowDeck == -1)
+                {
+                    pageCardLock[i].SetActive(false);
+                    pageCardLockFrame[i].SetActive(false);
+                    pageCardNum_Txt[i].text = "X" + cardNum;
+                }
+                else
+                {
+
+                    Vector2 pair = DataMng.instance.GetPairByName(nowCardName);
+
+                    string level = DataMng.instance.m_dic[(DataMng.TableType)pair.x].ToString((int)pair.y, "등급");
+                    int maxNum = level.Equals("전설") ? 1 : 2;
+                    //덱에있는 카드수
+                    int cardInDeckNum = DataMng.instance.playData.deck[nowDeck].HasCardNum(nowCardName);
+
+                    if(Mathf.Min(maxNum,cardNum) - cardInDeckNum == 0 && cardInDeckNum != 0)
+                    {
+                        if (maxNum == 1)
+                            pageCardLock_Txt[i].text = "덱 한도:1";
+                        else if (maxNum == 2 && cardNum == 2)
+                            pageCardLock_Txt[i].text = "덱 한도:2";
+                        else if (maxNum == 2 && cardNum == 1)
+                            pageCardLock_Txt[i].text = "카드없음";
+
+                        string cardType = DataMng.instance.m_dic[(DataMng.TableType)pair.x].ToString((int)pair.y, "카드종류");
+                        Sprite lockSprite = cardType.Equals("주문") ? lockFrame_S : lockFrame_M;
+                        pageCardLockFrame_Img[i].sprite = lockSprite;
+
+                        if (cardCloseUpAni.GetCurrentAnimatorStateInfo(0).IsName("CardCloseUpStop"))
+                        {
+                            pageCardLock[i].SetActive(true);
+                            pageCardLockFrame[i].SetActive(true);
+                        }
+                        else
+                        {
+                            pageCardLock[i].SetActive(i != nowCloseUpCardView);
+                            pageCardLockFrame[i].SetActive(i != nowCloseUpCardView);
+                        }
+                    }
+                    else
+                    {
+                        pageCardNum_Txt[i].text = "X" + (cardNum - cardInDeckNum);
+                        pageCardLock[i].SetActive(false);
+                        pageCardLockFrame[i].SetActive(false);
+                    }
+                }
+
                 CardShow(ref nowCards[i], nowJobIndex, tempCardIndex);
+            }
         }
         #endregion
 
@@ -1035,6 +1109,15 @@ public class MyCollectionsMenu : MonoBehaviour
             return;
         if (nowCloseUpcardLevel.Equals("토큰") || nowCloseUpcardLevel.Equals("기본"))
             return;
+        if(nowDeck != -1)
+        {
+            if(DataMng.instance.playData.deck[nowDeck].HasCardNum(nowCloseUpcardName) > cardNum - 1)
+            {
+                DataMng.instance.playData.deck[nowDeck].PopCard(nowCloseUpcardName);
+                DeckSort();
+            }
+        }
+
         StartCoroutine(RemoveCardEffect(cardNum, 0.5f));
         StartCoroutine(ShowCardNum(cardNum - 1, 0.5f));
     }
@@ -1197,7 +1280,7 @@ public class MyCollectionsMenu : MonoBehaviour
     }
     #endregion
 
-    #region[덱설정확인]
+    #region[덱 설정확인]
     public void DeckSetting()
     {
         if(!deckSetting.activeSelf)
@@ -1261,7 +1344,7 @@ public class MyCollectionsMenu : MonoBehaviour
     }
     #endregion
 
-    #region[덱삭제검사]
+    #region[덱 삭제검사]
     public void DeckDeleteCheck(bool b)
     {
         if(b)

@@ -71,8 +71,16 @@ public class MyCollectionsCardCloseUpBtn : Btn
     #region[BeginDrag]
     public virtual void BeginDrag()
     {
+
+        if (MyCollectionsMenu.instance.nowDeck == -1)
+            return;
+
         string cardName = MyCollectionsMenu.instance.cardDatas[MyCollectionsMenu.instance.nowJobIndex][MyCollectionsMenu.instance.nowCardIndex + cardNum].cardName;
-        if (DataMng.instance.playData.GetCardNum(cardName) == 0)
+        Vector2 pair = DataMng.instance.GetPairByName(cardName);
+        string level = DataMng.instance.m_dic[(DataMng.TableType)pair.x].ToString((int)pair.y, "등급");
+        int maxNum = level.Equals("전설") ? 1 : 2;
+
+        if (Mathf.Min(maxNum,DataMng.instance.playData.GetCardNum(cardName)) - DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].HasCardNum(cardName) <= 0)
             return;
         CardDragObject.instance.isDrag = true;
         MyCollectionsMenu.instance.CardShow(ref CardDragObject.instance.cardView, MyCollectionsMenu.instance.nowJobIndex, MyCollectionsMenu.instance.nowCardIndex + cardNum);
