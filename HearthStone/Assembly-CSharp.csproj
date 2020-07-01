@@ -68,8 +68,6 @@
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\Fireball.cs" />
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\Spin.cs" />
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\Test.cs" />
-    <Compile Include="Assets\Prefabs\CursorAni.cs" />
-    <Compile Include="Assets\Prefabs\FadeCursor.cs" />
     <Compile Include="Assets\Scripts\CardData\CardData.cs" />
     <Compile Include="Assets\Scripts\CardData\CardDrag.cs" />
     <Compile Include="Assets\Scripts\CardData\CardDragObject.cs" />
@@ -85,6 +83,7 @@
     <Compile Include="Assets\Scripts\UI\MainMenu.cs" />
     <Compile Include="Assets\Scripts\UI\MyCollectionsMenu.cs" />
     <Compile Include="Assets\Scripts\UI\btns\BattleMenuDeckSelect.cs" />
+    <Compile Include="Assets\Scripts\UI\btns\BattleMenuFindBattle.cs" />
     <Compile Include="Assets\Scripts\UI\btns\BattleToMainBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\BattleToMyCollectBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\Btn.cs" />

@@ -7,6 +7,7 @@ public class DeckBtn : MonoBehaviour
     public GameObject characterDeckBtn;
     public Text deckNameTxt;
     public Image[] characterImg;
+    Image thisImg;
 
     public bool hasDeck;
     public bool hide;
@@ -19,11 +20,14 @@ public class DeckBtn : MonoBehaviour
     {
         newDeckRect = newDeckBtn.GetComponent<RectTransform>();
         characterDeckRect = characterDeckBtn.GetComponent<RectTransform>();
+        thisImg = transform.GetComponent<Image>();
     }
 
     public void Update()
     {
-        if(hide)
+        thisImg.enabled = !hide;
+
+        if (hide)
         {
             newDeckBtn.SetActive(false);
             characterDeckBtn.SetActive(false);

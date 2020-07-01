@@ -162,7 +162,15 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[Awake]
     private void Awake()
     {
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(instance);
+        }
+        else
+        {
+            Destroy(this);
+        }
 
         for (int i = 0; i < 8; i++)
         {
@@ -196,6 +204,8 @@ public class MyCollectionsMenu : MonoBehaviour
             cardDatas[i] = new List<CardData>();
 
         CardDataInput();
+
+        gameObject.SetActive(false);
     }
     #endregion
 
@@ -462,7 +472,7 @@ public class MyCollectionsMenu : MonoBehaviour
                 deckObject.anchoredPosition = new Vector2(deckObject.anchoredPosition.x, newDeckPos.anchoredPosition.y);
                 deckListView.SetActive(true);
                 deckCardView.SetActive(false);
-                deckBannerView.SetActive(false);
+                deckBannerBtn.hide = true;
                 dontClick.SetActive(false);
                 cancleBtn.gameObject.SetActive(false);
                 filterBtn.gameObject.SetActive(true);
@@ -1213,9 +1223,10 @@ public class MyCollectionsMenu : MonoBehaviour
     {
         SelectCharacter(false);
         SelectCharacterOK(false);
-        deckListView.SetActive(false);
+       // deckListView.SetActive(false);
         deckCardView.SetActive(true);
-        deckBannerView.SetActive(true);
+        deckBannerBtn.hide = false;
+        deckBannerBtn.hide = false;
         ActCancleBtn(false);
         deckCardContext.anchoredPosition = new Vector2(deckCardContext.anchoredPosition.x, 0);
         deckObject.anchoredPosition = new Vector2(newDeckPos.anchoredPosition.x, newDeckPos.anchoredPosition.y);
@@ -1241,7 +1252,10 @@ public class MyCollectionsMenu : MonoBehaviour
             }
         }
         else
+        {
             checkDeckMakeAni.SetBool("Show", false);
+            checkDeckMake.SetActive(b);
+        }
     }
     #endregion
 

@@ -18,14 +18,27 @@ public class BattleMenu : MonoBehaviour
     public Animator jobSelectAni;
     public Image[] characterImg;
     public Text characterNameTxt;
-    int selectDeck = 0;
+    [HideInInspector] public int selectDeck = 0;
+
+    //대전탐색
+    public Animator findBattleAni;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #region[Awake]
     private void Awake()
     {
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(instance);
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            Destroy(this);
+        }
+
     }
     #endregion
 
@@ -89,6 +102,13 @@ public class BattleMenu : MonoBehaviour
     }
     #endregion
 
+    #region[대전탐색]
+    public void FindBattle(bool b)
+    {
+        findBattleAni.SetBool("Find", b);
+
+    }
+    #endregion
 
     #region[메인메뉴로 이동]
     public void GoToMain(float waitTime)

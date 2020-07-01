@@ -26,7 +26,14 @@ public class MainMenu : MonoBehaviour
     private void Awake()
     {
         if (instance == null)
+        {
             instance = this;
+            DontDestroyOnLoad(instance);
+        }
+        else
+        {
+            Destroy(this);
+        }
     }
     #endregion
 
