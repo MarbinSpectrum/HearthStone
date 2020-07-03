@@ -61,6 +61,7 @@ public class MainMenu : MonoBehaviour
         if (!mainMenuAni.GetCurrentAnimatorStateInfo(0).IsName("CenterUI"))
         {
             inMainMenu = false;
+            Setting.instance.gameObject.SetActive(false);
             return;
         }
 
@@ -68,6 +69,7 @@ public class MainMenu : MonoBehaviour
         {
             inMainMenu = true;
             SoundManager.instance.PlayBGM("메인화면배경음");
+            Setting.instance.gameObject.SetActive(true);
         }
     }
     #endregion

@@ -6,8 +6,10 @@ public class RenderCamera : MonoBehaviour
 {
 
     private RenderTexture texture;
+
     [Header("Cameras")]
     public Camera camera;
+    public Material overlayMaterial;
 
     public void Awake()
     {
@@ -18,11 +20,8 @@ public class RenderCamera : MonoBehaviour
     {
         RenderTexture tempRenderTexture = RenderTexture.GetTemporary(source.width, source.height);
 
-        Graphics.Blit(texture, tempRenderTexture);
-        camera.targetTexture = texture;
-        camera.Render();
+        Graphics.Blit(source, destination, overlayMaterial);
 
 
-     
     }
 }
