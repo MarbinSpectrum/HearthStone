@@ -9,12 +9,17 @@ public class BattleUI : MonoBehaviour
 
     public Mulligan mulligan;
 
+    public GameObject playerSetEffect;
+
+    public GameObject cameraObject;
+
     private void Start()
     {
+        StartCoroutine(PlayerSetEffect(4));
+        StartCoroutine(CameraVibrationEffect(4, 12,0.5f));
         StartCoroutine(ShowEnermyText(4, "내가 대자연을 수호하겠다!"));
-        StartCoroutine(ShowMulligan(4, 1));
+        mulligan.SetGoing(4.5f);
         StartCoroutine(ShowPlayerText(6, "자연은 반드시 보호해야한다!"));
-
     }
 
     #region[등장대사]
@@ -33,11 +38,25 @@ public class BattleUI : MonoBehaviour
     }
     #endregion
 
-    #region[멀리건]
-    private IEnumerator ShowMulligan(float waitTime,int n)
+    #region[플레이어 배치 이펙트]
+    private IEnumerator PlayerSetEffect(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        mulligan.animator.SetInteger("State", n);
+        playerSetEffect.SetActive(true);
+    }
+    #endregion
+
+    #region[플레이어 배치 이펙트]
+    private IEnumerator CameraVibrationEffect(float waitTime, int n, float power = 1)
+    {
+        yield return new WaitForSeconds(waitTime);
+        Vector3 v = cameraObject.transform.position;
+        for (int i = 0; i < n; i++)
+        {
+            cameraObject.transform.position = v + Quaternion.Euler(0, 0, Random.Range(0, 360)) * new Vector3(1, 0, 0);
+            yield return new WaitForSeconds(0.01f);
+        }
+        cameraObject.transform.position = v;
     }
     #endregion
 

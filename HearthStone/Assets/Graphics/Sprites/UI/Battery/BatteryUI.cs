@@ -20,7 +20,7 @@ public class BatteryUI : MonoBehaviour
             case BatteryStatus.Full:
             case BatteryStatus.Charging:
 
-                batteryStateImg.color = batteryFrameImg.color = Color.green;
+                batteryStateImg.color = batteryFrameImg.color = Color.white; //Color.green;
                 batteryCharging.gameObject.SetActive(true);
                 batteryStateImg.fillAmount = 1f;
                 break;
@@ -29,7 +29,7 @@ public class BatteryUI : MonoBehaviour
                 if (batteryLevel < 0.1f) // 배터리가 부족하면 이미지를 빨갛게
                     batteryStateImg.color = batteryFrameImg.color = Color.red;
                 else
-                    batteryStateImg.color = batteryFrameImg.color = Color.green;
+                    batteryStateImg.color = batteryFrameImg.color = Color.white; //Color.green;
                 batteryStateImg.fillAmount = (int)(batteryLevel*4)/4f;
                 break;
         }
