@@ -1,2 +1,316 @@
-Base path: 'D:/Program Files/Unity/2019.3.7f1/Editor/Data', plugins path 'D:/Program Files/Unity/2019.3.7f1/Editor/Data/PlaybackEngines'
+Base path: 'C:/Program Files/Unity/Hub/Editor/2019.3.7f1/Editor/Data', plugins path 'C:/Program Files/Unity/Hub/Editor/2019.3.7f1/Editor/Data/PlaybackEngines'
 Cmd: initializeCompiler
+Cmd: preprocess
+  insize=3831 outsize=1521 ok=1
+Cmd: preprocess
+  insize=9825 outsize=835 ok=1
+Cmd: preprocess
+  insize=72534 outsize=3008 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=3993 outsize=635 ok=1
+Cmd: preprocess
+  insize=6839 outsize=633 ok=1
+Cmd: preprocess
+  insize=6720 outsize=634 ok=1
+Cmd: preprocess
+  insize=5567 outsize=634 ok=1
+Cmd: preprocess
+  insize=5103 outsize=635 ok=1
+Cmd: preprocess
+  insize=5312 outsize=632 ok=1
+Cmd: preprocess
+  insize=4845 outsize=631 ok=1
+Cmd: preprocess
+  insize=4558 outsize=642 ok=1
+Cmd: preprocess
+  insize=76025 outsize=3001 ok=1
+Cmd: preprocess
+  insize=3627 outsize=629 ok=1
+Cmd: preprocess
+  insize=4183 outsize=642 ok=1
+Cmd: preprocess
+  insize=7061 outsize=635 ok=1
+Cmd: preprocess
+  insize=4173 outsize=637 ok=1
+Cmd: preprocess
+  insize=75985 outsize=2994 ok=1
+Cmd: preprocess
+  insize=6705 outsize=629 ok=1
+Cmd: preprocess
+  insize=4835 outsize=627 ok=1
+Cmd: preprocess
+  insize=5093 outsize=630 ok=1
+Cmd: preprocess
+  insize=6829 outsize=629 ok=1
+Cmd: preprocess
+  insize=7051 outsize=630 ok=1
+Cmd: preprocess
+  insize=5302 outsize=627 ok=1
+Cmd: preprocess
+  insize=5557 outsize=629 ok=1
+Cmd: preprocess
+  insize=4548 outsize=636 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/PBRForwardPass.hlsl(18): Output value 'vert' is not completely initialized\nCompiling Vertex program with _ADDITIONAL_LIGHTS
+Platform defines: UNITY_NO_DXT5nm UNITY_ENABLE_REFLECTION_BUFFERS UNITY_NO_CUBEMAP_ARRAY UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 SHADER_API_DESKTOP UNITY_HARDWARE_TIER3 UNITY_COLORSPACE_GAMMA UNITY_LIGHTMAP_DLDR_ENCODING
+  api=4 type=0 insize=18356 outsize=2286 kw=_ADDITIONAL_LIGHTS pd=UNITY_NO_DXT5nm UNITY_ENABLE_REFLECTION_BUFFERS UNITY_NO_CUBEMAP_ARRAY UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 SHADER_API_DESKTOP UNITY_HARDWARE_TIER3 UNITY_COLORSPACE_GAMMA UNITY_LIGHTMAP_DLDR_ENCODING ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (123): pow(f, e) will not work for negative f, use abs(f) or conditionally handle negative values if you expect them\nCompiling Fragment program with _ADDITIONAL_LIGHTS
+Platform defines: UNITY_NO_DXT5nm UNITY_ENABLE_REFLECTION_BUFFERS UNITY_NO_CUBEMAP_ARRAY UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 SHADER_API_DESKTOP UNITY_HARDWARE_TIER3 UNITY_COLORSPACE_GAMMA UNITY_LIGHTMAP_DLDR_ENCODING
+  api=4 type=1 insize=18356 outsize=4766 kw=_ADDITIONAL_LIGHTS pd=UNITY_NO_DXT5nm UNITY_ENABLE_REFLECTION_BUFFERS UNITY_NO_CUBEMAP_ARRAY UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 SHADER_API_DESKTOP UNITY_HARDWARE_TIER3 UNITY_COLORSPACE_GAMMA UNITY_LIGHTMAP_DLDR_ENCODING ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=3983 outsize=630 ok=1
+Cmd: preprocess
+  insize=6829 outsize=629 ok=1
+Cmd: preprocess
+  insize=6705 outsize=629 ok=1
+Cmd: preprocess
+  insize=5557 outsize=629 ok=1
+Cmd: preprocess
+  insize=5093 outsize=630 ok=1
+Cmd: preprocess
+  insize=5302 outsize=627 ok=1
+Cmd: preprocess
+  insize=4835 outsize=627 ok=1
+Cmd: preprocess
+  insize=4548 outsize=636 ok=1
+Cmd: preprocess
+  insize=75985 outsize=2994 ok=1
+Cmd: preprocess
+  insize=3617 outsize=623 ok=1
+Cmd: preprocess
+  insize=4173 outsize=637 ok=1
+Cmd: preprocess
+  insize=7051 outsize=630 ok=1
+Cmd: preprocess
+  insize=4173 outsize=637 ok=1
+Cmd: preprocess
+  insize=75985 outsize=2994 ok=1
+Cmd: preprocess
+  insize=6705 outsize=629 ok=1
+Cmd: preprocess
+  insize=4835 outsize=627 ok=1
+Cmd: preprocess
+  insize=5093 outsize=630 ok=1
+Cmd: preprocess
+  insize=6829 outsize=629 ok=1
+Cmd: preprocess
+  insize=7051 outsize=630 ok=1
+Cmd: preprocess
+  insize=5302 outsize=627 ok=1
+Cmd: preprocess
+  insize=5557 outsize=629 ok=1
+Cmd: preprocess
+  insize=4548 outsize=636 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=3983 outsize=630 ok=1
+Cmd: preprocess
+  insize=6829 outsize=629 ok=1
+Cmd: preprocess
+  insize=6705 outsize=629 ok=1
+Cmd: preprocess
+  insize=5557 outsize=629 ok=1
+Cmd: preprocess
+  insize=5093 outsize=630 ok=1
+Cmd: preprocess
+  insize=5302 outsize=627 ok=1
+Cmd: preprocess
+  insize=4835 outsize=627 ok=1
+Cmd: preprocess
+  insize=4548 outsize=636 ok=1
+Cmd: preprocess
+  insize=75985 outsize=2994 ok=1
+Cmd: preprocess
+  insize=3617 outsize=623 ok=1
+Cmd: preprocess
+  insize=4173 outsize=637 ok=1
+Cmd: preprocess
+  insize=7051 outsize=630 ok=1
+Cmd: preprocess
+  insize=4173 outsize=637 ok=1
+Cmd: preprocess
+  insize=75985 outsize=2994 ok=1
+Cmd: preprocess
+  insize=6705 outsize=629 ok=1
+Cmd: preprocess
+  insize=4835 outsize=627 ok=1
+Cmd: preprocess
+  insize=5093 outsize=630 ok=1
+Cmd: preprocess
+  insize=6829 outsize=629 ok=1
+Cmd: preprocess
+  insize=7051 outsize=630 ok=1
+Cmd: preprocess
+  insize=5302 outsize=627 ok=1
+Cmd: preprocess
+  insize=5557 outsize=629 ok=1
+Cmd: preprocess
+  insize=4548 outsize=636 ok=1
+Cmd: preprocess
+  insize=72494 outsize=3003 ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=12917 outsize=1142 kw=UNITY_PASS_SHADOWCASTER pd=UNITY_NO_DXT5nm UNITY_ENABLE_REFLECTION_BUFFERS UNITY_NO_CUBEMAP_ARRAY UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 SHADER_API_DESKTOP UNITY_HARDWARE_TIER3 UNITY_COLORSPACE_GAMMA UNITY_LIGHTMAP_DLDR_ENCODING ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (475): pow(f, e) will not work for negative f, use abs(f) or conditionally handle negative values if you expect them\nCompiling Fragment program with UNITY_PASS_SHADOWCASTER
+Platform defines: UNITY_NO_DXT5nm UNITY_ENABLE_REFLECTION_BUFFERS UNITY_NO_CUBEMAP_ARRAY UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 SHADER_API_DESKTOP UNITY_HARDWARE_TIER3 UNITY_COLORSPACE_GAMMA UNITY_LIGHTMAP_DLDR_ENCODING
+  api=4 type=1 insize=12917 outsize=254 kw=UNITY_PASS_SHADOWCASTER pd=UNITY_NO_DXT5nm UNITY_ENABLE_REFLECTION_BUFFERS UNITY_NO_CUBEMAP_ARRAY UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 SHADER_API_DESKTOP UNITY_HARDWARE_TIER3 UNITY_COLORSPACE_GAMMA UNITY_LIGHTMAP_DLDR_ENCODING ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/PBRForwardPass.hlsl(18): Output value 'vert' is not completely initialized\nCompiling Vertex program with _ADDITIONAL_LIGHTS
+Platform defines: UNITY_NO_DXT5nm UNITY_ENABLE_REFLECTION_BUFFERS UNITY_NO_CUBEMAP_ARRAY UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 SHADER_API_DESKTOP UNITY_HARDWARE_TIER3 UNITY_COLORSPACE_GAMMA UNITY_LIGHTMAP_DLDR_ENCODING
+  api=4 type=0 insize=17563 outsize=2286 kw=_ADDITIONAL_LIGHTS pd=UNITY_NO_DXT5nm UNITY_ENABLE_REFLECTION_BUFFERS UNITY_NO_CUBEMAP_ARRAY UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 SHADER_API_DESKTOP UNITY_HARDWARE_TIER3 UNITY_COLORSPACE_GAMMA UNITY_LIGHTMAP_DLDR_ENCODING ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (111): pow(f, e) will not work for negative f, use abs(f) or conditionally handle negative values if you expect them\nCompiling Fragment program with _ADDITIONAL_LIGHTS
+Platform defines: UNITY_NO_DXT5nm UNITY_ENABLE_REFLECTION_BUFFERS UNITY_NO_CUBEMAP_ARRAY UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 SHADER_API_DESKTOP UNITY_HARDWARE_TIER3 UNITY_COLORSPACE_GAMMA UNITY_LIGHTMAP_DLDR_ENCODING
+  api=4 type=1 insize=17563 outsize=3174 kw=_ADDITIONAL_LIGHTS pd=UNITY_NO_DXT5nm UNITY_ENABLE_REFLECTION_BUFFERS UNITY_NO_CUBEMAP_ARRAY UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 SHADER_API_DESKTOP UNITY_HARDWARE_TIER3 UNITY_COLORSPACE_GAMMA UNITY_LIGHTMAP_DLDR_ENCODING ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=811 outsize=209 ok=1
+Cmd: preprocess
+  insize=10076 outsize=837 ok=1
+Cmd: preprocess
+  insize=3625 outsize=346 ok=1
+Cmd: preprocess
+  insize=3828 outsize=337 ok=1

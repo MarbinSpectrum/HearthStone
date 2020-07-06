@@ -1,9 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleUI : MonoBehaviour
 {
+    public static BattleUI instance;
+
+    public Image[] characterImg;
+    public Text characterNameTxt;
+    public Text jobNameTxt;
+
     public ShowPlayerText playerText;
     public ShowPlayerText enermyText;
 
@@ -13,13 +20,38 @@ public class BattleUI : MonoBehaviour
 
     public GameObject cameraObject;
 
+    public Animator[] enemyCardAni;
+    public Animator[] playerCardAni;
+
+    public void Awake()
+    {
+        instance = this;
+    }
+
     private void Start()
     {
         StartCoroutine(PlayerSetEffect(4));
         StartCoroutine(CameraVibrationEffect(4, 12,0.5f));
         StartCoroutine(ShowEnermyText(4, "내가 대자연을 수호하겠다!"));
         mulligan.SetGoing(4.5f);
-        StartCoroutine(ShowPlayerText(6, "자연은 반드시 보호해야한다!"));
+
+        int jobNum = (int)DataMng.instance.playData.deck[InGameDeck.nowDeck].job;
+        for (int i = 0; i < characterImg.Length; i++)
+            characterImg[i].enabled = false;
+        characterImg[jobNum].enabled = true;
+        switch (jobNum)
+        {
+            case 0:
+                characterNameTxt.text = "말퓨리온 스톰레이지";
+                jobNameTxt.text = "드루이드";
+                StartCoroutine(ShowPlayerText(6, "자연은 반드시 보호해야한다!"));
+                break;
+            case 1:
+                characterNameTxt.text = "발리라 생귀나르";
+                jobNameTxt.text = "도적";
+                StartCoroutine(ShowPlayerText(6, "등뒤를 조심해!"));
+                break;
+        }
     }
 
     #region[등장대사]
@@ -46,7 +78,7 @@ public class BattleUI : MonoBehaviour
     }
     #endregion
 
-    #region[플레이어 배치 이펙트]
+    #region[플레이어 배치 이펙트(진동)]
     private IEnumerator CameraVibrationEffect(float waitTime, int n, float power = 1)
     {
         yield return new WaitForSeconds(waitTime);

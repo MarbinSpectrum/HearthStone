@@ -70,7 +70,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Power: 13.929983
+    - Power: 10.98
     - Vector1_26181865: 0.3
     - Vector1_80EB675C: 0
     - Vector1_B28BE9ED: 0
@@ -99,6 +99,7 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - Color_69233A3A: {r: 2.9960785, g: 2.1176472, b: 1.2392157, a: 1}
+    - FireColor: {r: 2.9960785, g: 2.1176472, b: 1.2392157, a: 0.21568628}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

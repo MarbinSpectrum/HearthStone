@@ -34,7 +34,7 @@ public class CardView : MonoBehaviour
     public Material holoBlue;
     public Material holoBlueMove;
 
-    int cardN = 2;
+    [HideInInspector] public int cardN = 2;
 
     [HideInInspector] public string cardJob = "중립";
     [HideInInspector] public string cardLevel = "기본";
@@ -658,13 +658,13 @@ public class CardView : MonoBehaviour
     {
         if (cardType == CardType.하수인)
         {
-            if (cardN == 0 && MinionsCardImg.material == holoBlue)
+            if (cardN <= 0 && MinionsCardImg.material == holoBlue)
                 return;
-            if (cardN != 0 && MinionsCardImg.material != holoBlue)
+            if (cardN > 0 && MinionsCardImg.material != holoBlue)
                 return;
 
-            Material tempM = (cardN == 0) ? holoBlueMove : null;
-            Material tempMa = (cardN == 0) ? holoBlue : null;
+            Material tempM = (cardN <= 0) ? holoBlueMove : null;
+            Material tempMa = (cardN <= 0) ? holoBlue : null;
 
             for (int i = 0; i < MinionsCostImage.Length; i++)
                 MinionsCostImage[i].material = tempM;
@@ -677,13 +677,12 @@ public class CardView : MonoBehaviour
         }
         else if (cardType == CardType.주문)
         {
-            if (cardN == 0 && MinionsCardImg.material == holoBlue)
+            if (cardN <= 0 && SpellCardImg.material == holoBlue)
                 return;
-            if (cardN != 0 && MinionsCardImg.material != holoBlue)
+            if (cardN > 0 && SpellCardImg.material != holoBlue)
                 return;
-
-            Material tempM = (cardN == 0) ? holoBlueMove : null;
-            Material tempMa = (cardN == 0) ? holoBlue : null;
+            Material tempM = (cardN <= 0) ? holoBlueMove : null;
+            Material tempMa = (cardN <= 0) ? holoBlue : null;
             for (int i = 0; i < SpellCostImage.Length; i++)
                 SpellCostImage[i].material = tempM;
             SpellCardLevel.material = tempM;
@@ -691,13 +690,13 @@ public class CardView : MonoBehaviour
         }
         else if (cardType == CardType.무기)
         {
-            if (cardN == 0 && MinionsCardImg.material == holoBlue)
+            if (cardN <= 0 && WeaponCardImg.material == holoBlue)
                 return;
-            if (cardN != 0 && MinionsCardImg.material != holoBlue)
+            if (cardN > 0 && WeaponCardImg.material != holoBlue)
                 return;
 
-            Material tempM = (cardN == 0) ? holoBlueMove : null;
-            Material tempMa = (cardN == 0) ? holoBlue : null;
+            Material tempM = (cardN <= 0) ? holoBlueMove : null;
+            Material tempMa = (cardN <= 0) ? holoBlue : null;
             for (int i = 0; i < WeaponCostImage.Length; i++)
                 WeaponCostImage[i].material = tempM;
             for (int i = 0; i < WeaponAttackImage.Length; i++)

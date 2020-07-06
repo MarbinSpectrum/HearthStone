@@ -78,12 +78,13 @@ public class BattleMenu : MonoBehaviour
     }
     #endregion
 
-    #region[직업선택확인]
+    #region[덱선택확인]
     public void JobSelectCheck(int n = -1)
     {
         jobSelectAni.SetBool("Show", (n != -1));
         if (n != -1)
         {
+            InGameDeck.nowDeck = n;
             int jobNum = (int)DataMng.instance.playData.deck[n].job;
             for (int i = 0; i < characterImg.Length; i++)
                 characterImg[i].enabled = false;
