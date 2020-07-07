@@ -23,6 +23,8 @@ public class BattleUI : MonoBehaviour
     public Animator[] enemyCardAni;
     public Animator[] playerCardAni;
 
+    public Animator fieldShadowAni;
+
     public void Awake()
     {
         instance = this;

@@ -27,10 +27,8 @@ public class ShowPlayerText : MonoBehaviour
 
         showText.text = text;
 
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("PlayerText") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.99f)
-        {
+        if (animator.gameObject.activeSelf && animator.GetCurrentAnimatorStateInfo(0).IsName("PlayerText") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.99f)
             text_obj.SetActive(false);
-        }
     }
 
 }

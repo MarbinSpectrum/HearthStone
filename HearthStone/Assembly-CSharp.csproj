@@ -86,6 +86,7 @@
     <Compile Include="Assets\Scripts\Sound\SoundManager.cs" />
     <Compile Include="Assets\Scripts\UI\BattleMenu.cs" />
     <Compile Include="Assets\Scripts\UI\BattleUI.cs" />
+    <Compile Include="Assets\Scripts\UI\CardHand.cs" />
     <Compile Include="Assets\Scripts\UI\ChangeCardGlow.cs" />
     <Compile Include="Assets\Scripts\UI\CurlEf.cs" />
     <Compile Include="Assets\Scripts\UI\CurvedText.cs" />

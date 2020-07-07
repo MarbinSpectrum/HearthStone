@@ -713,6 +713,7 @@ MonoBehaviour:
   updateCard: 0
   holoBlue: {fileID: 2100000, guid: 9ea04bd50c0255448861f8da568b6437, type: 2}
   holoBlueMove: {fileID: 2100000, guid: 88c5c49c96275c74fb01833e2501e9f3, type: 2}
+  cardN: 2
   cardJob: "\uC911\uB9BD"
   cardLevel: "\uAE30\uBCF8"
   MinionsCostData: 0
@@ -1943,7 +1944,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 883ecfdef4cf9fd47ae7f2877c6d41f5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bb9805ad3ff1da64ab9931424498cbbb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2390,7 +2391,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:

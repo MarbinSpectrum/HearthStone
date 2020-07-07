@@ -33,13 +33,13 @@ public class Mulligan : MonoBehaviour
     {
         mulliganUI.SetActive(false);
 
-        //0 아무상태아님 //1 카드를 넣음 2카드를 뽑음
+        //0 아무상태아님 //1 카드를 넣음 // 2카드를 뽑음
         if (r == 1)
         {
             for (int i = 0; i < 4; i++)
             {
                 secondTurnCardView[i].gameObject.SetActive(cardChangeBtns[i].change);
-                CardViewManager.instance.CardShow(ref secondTurnCardView[i], ref cardView[i]);
+                CardViewManager.instance.CardShow(ref secondTurnCardView[i], cardView[i]);
                 cardView[i].gameObject.SetActive(!cardChangeBtns[i].change);
                 cardChangeBtns[i].btnImg.enabled = false;
                 cardChangeBtns[i].enabled = false;
@@ -53,7 +53,7 @@ public class Mulligan : MonoBehaviour
             for (int i = 0; i < 3; i++)
             {
                 firstTurnCardView[i].gameObject.SetActive(cardChangeBtns[i].change);
-                CardViewManager.instance.CardShow(ref firstTurnCardView[i], ref cardView[i]);
+                CardViewManager.instance.CardShow(ref firstTurnCardView[i], cardView[i]);
                 cardView[i].gameObject.SetActive(!cardChangeBtns[i].change);
                 cardChangeBtns[i].btnImg.enabled = false;
                 cardChangeBtns[i].enabled = false;
@@ -73,13 +73,14 @@ public class Mulligan : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
 
         StartCoroutine(DrawCard(0.1f));
-
+        bool changeCard = false;
         if (r == 1)
         {
             for (int i = 0; i < 3; i++)
             {
                 if (secondTurnCardView[i].gameObject.activeSelf)
                 {
+                    changeCard = true;
                     string name = "";
                     if (secondTurnCardView[i].cardType == CardType.무기)
                         name = secondTurnCardView[i].WeaponCardNameData;
@@ -94,8 +95,20 @@ public class Mulligan : MonoBehaviour
                     InGameDeck.instance.Shuffle(1000);
                 }
             }
-
             secondCardAni.SetInteger("State", 2);
+            yield return new WaitForSeconds(changeCard ? 1.5f : 0.1f);
+            CardHand.instance.nowHandNum = 4;
+            for (int i = 0; i < 4; i++)
+                CardHand.instance.CardMove(secondTurnCardView[i], cardView[i].transform.position, new Vector2(10.685f, 13.714f), 0);
+            yield return new WaitForSeconds(0.001f);
+            CardViewManager.instance.UpdateCardView();
+            for (int i = 0; i < cardView.Length; i++)
+                cardView[i].gameObject.SetActive(false);
+            firstCardAni.gameObject.SetActive(false);
+            secondCardAni.gameObject.SetActive(false);
+            yield return new WaitForSeconds(1f);
+            coinAnimator.SetInteger("State", 3);
+            BattleUI.instance.fieldShadowAni.SetInteger("State", 1);
         }
         else if (r == 2)
         {
@@ -103,6 +116,7 @@ public class Mulligan : MonoBehaviour
             {
                 if (firstTurnCardView[i].gameObject.activeSelf)
                 {
+                    changeCard = true;
                     string name = "";
                     if (firstTurnCardView[i].cardType == CardType.무기)
                         name = firstTurnCardView[i].WeaponCardNameData;
@@ -118,6 +132,20 @@ public class Mulligan : MonoBehaviour
                 }
             }
             firstCardAni.SetInteger("State", 2);
+            yield return new WaitForSeconds(changeCard ? 1.5f : 0.1f);
+            CardHand.instance.nowHandNum = 3;
+            for (int i = 0; i < 3; i++)
+                CardHand.instance.CardMove(firstTurnCardView[i], cardView[i].transform.position, new Vector2(10.685f, 13.714f), 0);
+            yield return new WaitForSeconds(0.001f);
+            CardViewManager.instance.UpdateCardView();
+            for (int i = 0; i < cardView.Length; i++)
+                cardView[i].gameObject.SetActive(false);
+            firstCardAni.gameObject.SetActive(false);
+            secondCardAni.gameObject.SetActive(false);
+            yield return new WaitForSeconds(1f);
+            coinAnimator.SetInteger("State", 3);
+            yield return new WaitForSeconds(1f);
+            BattleUI.instance.fieldShadowAni.SetInteger("State", 1);
         }
     }
 

@@ -72,7 +72,7 @@ public class CardViewManager : MonoBehaviour
         card.cardJob = ((DataMng.TableType)pair.x).ToString();
     }
 
-    public void CardShow(ref CardView card, ref CardView cardCopy)
+    public void CardShow(ref CardView card, CardView cardCopy)
     {
         string cardType = cardCopy.cardType.ToString();
 
