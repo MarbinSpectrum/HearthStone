@@ -650,6 +650,9 @@ public class CardView : MonoBehaviour
             cardN = DataMng.instance.playData.GetCardNum(SpellCardNameData);
         else if (cardType == CardType.무기)
             cardN = DataMng.instance.playData.GetCardNum(WeaponCardNameData);
+
+        if (cardLevel.Equals("토큰"))
+            cardN = 1;
     }
     #endregion
 

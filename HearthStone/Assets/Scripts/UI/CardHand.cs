@@ -86,7 +86,7 @@ public class CardHand : MonoBehaviour
                 card[i].transform.position = destinationPos;
                 card[i].transform.rotation = Quaternion.Euler(0, 0, tempAngle);
             }
-            else if (handLerp[i] < 1)
+            else 
             {
                 Vector3 nowPos = Vector3.Lerp(cardStartPos[i], destinationPos, handLerp[i]);
                 float nowAngle = Mathf.Lerp(cardStartAngle[i], tempAngle, handLerp[i]);
@@ -96,47 +96,43 @@ public class CardHand : MonoBehaviour
                     handLerp[i] += Time.deltaTime * 2;
                 else
                 {
-                    cardStartPos[i] = Vector4.zero;
+                    cardStartPos[i] = Vector3.zero;
                     handLerp[i] = 1;
                 }
 
-                card[i].localScale = new Vector3(nowSize.x, nowSize.y,0);
                 card[i].transform.position = nowPos;         
                 card[i].transform.rotation = Quaternion.Euler(0, 0, nowAngle);
+                card[i].localScale = new Vector3(nowSize.x, nowSize.y,0);
             }
         }
     }
 
-    public void CardMove(Vector3 pos, Vector2 size, float angle = 0)
+    public void CardMove(int n, Vector3 pos, Vector2 size, float angle = 0)
     {
-        for (int i = 0; i < nowHandNum; i++)
-        {
-            if(handLerp[i] == 1)
-            {
-                handLerp[i] = 0;
-                cardStartPos[i] = pos;
-                cardStartSize[i] = size;
-                cardStartAngle[i] = angle;
-                break;
-            }
-        }
+        handLerp[n] = 0;
+        cardStartPos[n] = pos;
+        cardStartSize[n] = size;
+        cardStartAngle[n] = angle;
     }
 
-    public void CardMove(CardView cardView, Vector3 pos, Vector2 size, float angle = 0)
+    public void CardMove(string name, int n, Vector3 pos, Vector2 size, float angle = 0)
     {
-        for (int i = 0; i < nowHandNum; i++)
-        {
-            if (handLerp[i] == 1)
-            {
-                handLerp[i] = 0;
-                cardStartPos[i] = pos;
-                cardStartSize[i] = size;
-                cardStartAngle[i] = angle;
-                CardViewManager.instance.CardShow(ref handCardView[i], cardView);
-                CardViewManager.instance.UpdateCardView();
-                break;
-            }
-        }
+        handLerp[n] = 0;
+        cardStartPos[n] = pos;
+        cardStartSize[n] = size;
+        cardStartAngle[n] = angle;
+        CardViewManager.instance.CardShow(ref handCardView[n], name);
+        CardViewManager.instance.UpdateCardView();
+    }
+
+    public void CardMove(CardView cardView, int n, Vector3 pos, Vector2 size, float angle = 0)
+    {
+        handLerp[n] = 0;
+        cardStartPos[n] = pos;
+        cardStartSize[n] = size;
+        cardStartAngle[n] = angle;
+        CardViewManager.instance.CardShow(ref handCardView[n], cardView);
+        CardViewManager.instance.UpdateCardView();
     }
 
     #region[OnDrawGizmosSelected]

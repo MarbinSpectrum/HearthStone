@@ -25,9 +25,13 @@ public class BattleUI : MonoBehaviour
 
     public Animator fieldShadowAni;
 
+    [HideInInspector] public bool gameStart;
+
+
     public void Awake()
     {
         instance = this;
+        gameStart = false;
     }
 
     private void Start()

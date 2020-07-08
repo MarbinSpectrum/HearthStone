@@ -15,6 +15,8 @@ public class Mulligan : MonoBehaviour
 
     public Animator coinAnimator;
     public Material coinMat;
+    public Animator createCoinCard;
+    public Transform coinCardPos;
 
     public CardChangeBtn[] cardChangeBtns;
 
@@ -99,7 +101,7 @@ public class Mulligan : MonoBehaviour
             yield return new WaitForSeconds(changeCard ? 1.5f : 0.1f);
             CardHand.instance.nowHandNum = 4;
             for (int i = 0; i < 4; i++)
-                CardHand.instance.CardMove(secondTurnCardView[i], cardView[i].transform.position, new Vector2(10.685f, 13.714f), 0);
+                CardHand.instance.CardMove(secondTurnCardView[i], i, cardView[i].transform.position, new Vector2(10.685f, 13.714f), 0);
             yield return new WaitForSeconds(0.001f);
             CardViewManager.instance.UpdateCardView();
             for (int i = 0; i < cardView.Length; i++)
@@ -108,7 +110,15 @@ public class Mulligan : MonoBehaviour
             secondCardAni.gameObject.SetActive(false);
             yield return new WaitForSeconds(1f);
             coinAnimator.SetInteger("State", 3);
+            yield return new WaitForSeconds(1f);
+            createCoinCard.SetBool("Hide", false);
+            yield return new WaitForSeconds(1.1f);
+            createCoinCard.SetBool("Hide", true);
             BattleUI.instance.fieldShadowAni.SetInteger("State", 1);
+            CardHand.instance.nowHandNum++;
+            CardHand.instance.CardMove("동전 한 닢", 4, coinCardPos.position, new Vector2(10.685f, 13.714f), 0);
+            yield return new WaitForSeconds(0.001f);
+            CardViewManager.instance.UpdateCardView();
         }
         else if (r == 2)
         {
@@ -135,7 +145,7 @@ public class Mulligan : MonoBehaviour
             yield return new WaitForSeconds(changeCard ? 1.5f : 0.1f);
             CardHand.instance.nowHandNum = 3;
             for (int i = 0; i < 3; i++)
-                CardHand.instance.CardMove(firstTurnCardView[i], cardView[i].transform.position, new Vector2(10.685f, 13.714f), 0);
+                CardHand.instance.CardMove(firstTurnCardView[i],i, cardView[i].transform.position, new Vector2(10.685f, 13.714f), 0);
             yield return new WaitForSeconds(0.001f);
             CardViewManager.instance.UpdateCardView();
             for (int i = 0; i < cardView.Length; i++)
@@ -147,6 +157,8 @@ public class Mulligan : MonoBehaviour
             yield return new WaitForSeconds(1f);
             BattleUI.instance.fieldShadowAni.SetInteger("State", 1);
         }
+        yield return new WaitForSeconds(1f);
+        BattleUI.instance.gameStart = true;
     }
 
     #region[세팅]

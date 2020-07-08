@@ -87,7 +87,7 @@
     <Compile Include="Assets\Scripts\UI\BattleMenu.cs" />
     <Compile Include="Assets\Scripts\UI\BattleUI.cs" />
     <Compile Include="Assets\Scripts\UI\CardHand.cs" />
-    <Compile Include="Assets\Scripts\UI\ChangeCardGlow.cs" />
+    <Compile Include="Assets\Scripts\UI\CardHandCheck.cs" />
     <Compile Include="Assets\Scripts\UI\CurlEf.cs" />
     <Compile Include="Assets\Scripts\UI\CurvedText.cs" />
     <Compile Include="Assets\Scripts\UI\InGameDeck.cs" />
@@ -100,11 +100,13 @@
     <Compile Include="Assets\Scripts\UI\btns\BattleToMyCollectBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\Btn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\CardChangeBtn.cs" />
+    <Compile Include="Assets\Scripts\UI\btns\CardHandBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\ChangeCardEnd.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckCardDragBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckDeleteCheck.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckReNameBtn.cs" />
+    <Compile Include="Assets\Scripts\UI\btns\HandCardCheckBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainShowQuestBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToAdventureBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToBattleBtn.cs" />
@@ -135,6 +137,7 @@
     <Compile Include="Assets\Scripts\UI\btns\MyCollectionsShowMakingBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MyCollectionsToBackBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\SelectCharacterBtn.cs" />
+    <Compile Include="Assets\Scripts\UI\멀리건\ChangeCardGlow.cs" />
     <Compile Include="Assets\Scripts\UI\멀리건\Mulligan.cs" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
     <None Include="Assets\Graphics\Sprites\UI\턴종료\턴종료.shader" />
