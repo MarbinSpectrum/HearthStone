@@ -81,7 +81,7 @@ public class CardHand : MonoBehaviour
             Vector3 destinationPos = Quaternion.Euler(0, 0, tempAngle) * Vector3.up;
             destinationPos = transform.position + (Vector3)destinationPos * range;
 
-            if (!UnityEditor.EditorApplication.isPlaying)
+            if (!Application.isPlaying)
             {
                 card[i].transform.position = destinationPos;
                 card[i].transform.rotation = Quaternion.Euler(0, 0, tempAngle);

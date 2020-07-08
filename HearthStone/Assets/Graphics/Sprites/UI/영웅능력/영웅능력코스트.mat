@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: "\uC601\uC6C5\uB2A5\uB825\uCF54\uC2A4\uD2B8"
   m_Shader: {fileID: 4800000, guid: eb0fd48778281c64e94758a2c865ea41, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0

@@ -90,7 +90,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: 100, y: -248, z: -751}
+        value: {x: 100, y: -532, z: -751}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -149,7 +149,40 @@ AnimationClip:
     path: "\uCF54\uC778"
     classID: 114
     script: {fileID: 11500000, guid: 0d61d7c34058d0649b91d55a60428ad6, type: 3}
-  m_PPtrCurves: []
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: power
+    path: "\uCF54\uC778/default"
+    classID: 114
+    script: {fileID: 11500000, guid: 0d61d7c34058d0649b91d55a60428ad6, type: 3}
+  m_PPtrCurves:
+  - curve:
+    - time: 0
+      value: {fileID: 2100000, guid: 26f1d7f891032594e872c2ac20a4f03b, type: 2}
+    attribute: coinMat
+    path: "\uCF54\uC778"
+    classID: 114
+    script: {fileID: 11500000, guid: 0d61d7c34058d0649b91d55a60428ad6, type: 3}
+  - curve:
+    - time: 0
+      value: {fileID: 2100000, guid: 26f1d7f891032594e872c2ac20a4f03b, type: 2}
+    attribute: m_Materials.Array.data[0]
+    path: "\uCF54\uC778/default"
+    classID: 23
+    script: {fileID: 0}
   m_SampleRate: 60
   m_WrapMode: 0
   m_Bounds:
@@ -173,12 +206,35 @@ AnimationClip:
       isPPtrCurve: 0
     - serializedVersion: 2
       path: 2879137313
+      attribute: 3263647957
+      script: {fileID: 11500000, guid: 0d61d7c34058d0649b91d55a60428ad6, type: 3}
+      typeID: 114
+      customType: 0
+      isPPtrCurve: 1
+    - serializedVersion: 2
+      path: 3483657955
+      attribute: 0
+      script: {fileID: 0}
+      typeID: 23
+      customType: 21
+      isPPtrCurve: 1
+    - serializedVersion: 2
+      path: 2879137313
       attribute: 2877948320
       script: {fileID: 11500000, guid: 0d61d7c34058d0649b91d55a60428ad6, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
-    pptrCurveMapping: []
+    - serializedVersion: 2
+      path: 3483657955
+      attribute: 2877948320
+      script: {fileID: 11500000, guid: 0d61d7c34058d0649b91d55a60428ad6, type: 3}
+      typeID: 114
+      customType: 0
+      isPPtrCurve: 0
+    pptrCurveMapping:
+    - {fileID: 2100000, guid: 26f1d7f891032594e872c2ac20a4f03b, type: 2}
+    - {fileID: 2100000, guid: 26f1d7f891032594e872c2ac20a4f03b, type: 2}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
@@ -242,7 +298,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -248
+        value: -532
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -556,6 +612,25 @@ AnimationClip:
       m_RotationOrder: 4
     attribute: power
     path: "\uCF54\uC778"
+    classID: 114
+    script: {fileID: 11500000, guid: 0d61d7c34058d0649b91d55a60428ad6, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: power
+    path: "\uCF54\uC778/default"
     classID: 114
     script: {fileID: 11500000, guid: 0d61d7c34058d0649b91d55a60428ad6, type: 3}
   m_EulerEditorCurves:

@@ -30,6 +30,12 @@ public class BattleUI : MonoBehaviour
 
     public void Awake()
     {
+        if (MainMenu.instance)
+            MainMenu.instance.gameObject.SetActive(false);
+        if (MyCollectionsMenu.instance)
+            MyCollectionsMenu.instance.gameObject.SetActive(false);
+        if (BattleMenu.instance)
+            BattleMenu.instance.gameObject.SetActive(false);
         instance = this;
         gameStart = false;
     }

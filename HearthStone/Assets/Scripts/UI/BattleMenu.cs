@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class BattleMenu : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class BattleMenu : MonoBehaviour
     [HideInInspector] public int selectDeck = 0;
 
     //대전탐색
+    public Animator findBattleZoomAni;
     public Animator findBattleAni;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,6 +77,12 @@ public class BattleMenu : MonoBehaviour
 
             }
         }
+
+        if(findBattleAni.gameObject.activeSelf && findBattleAni.GetCurrentAnimatorStateInfo(0).IsName("FindBattle") && findBattleAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
+        {
+            findBattleAni.gameObject.SetActive(false);
+            SceneManager.LoadScene("Battle");
+        }
     }
     #endregion
 
@@ -106,7 +114,7 @@ public class BattleMenu : MonoBehaviour
     #region[대전탐색]
     public void FindBattle(bool b)
     {
-        findBattleAni.SetBool("Find", b);
+        findBattleZoomAni.SetBool("Find", b);
 
     }
     #endregion

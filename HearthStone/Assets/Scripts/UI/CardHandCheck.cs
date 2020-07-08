@@ -1,17 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CardHandCheck : MonoBehaviour
 {
     public static CardHandCheck instance;
 
+    public Image thisImg;
+    public Sprite minionImg_legend;
+    public Sprite minionImg;
+    public Sprite spellImg;
+    public Sprite weaponImg;
 
     public CardView checkCard;
     public Transform glow;
-    public Vector2 size;
-    public enum c { sv,sw,vs,vw,ws,wv,df}
-    public c a;
+
     public void Awake()
     {
         instance = this;
@@ -21,33 +25,23 @@ public class CardHandCheck : MonoBehaviour
     public void Update()
     {
         glow.gameObject.SetActive(!checkCard.hide);
-        Vector3 v =  Vector3.zero;
-        switch (a)
-        {
-            case c.sv:
-                v = Camera.main.ScreenToViewportPoint(transform.position);
-                break;
-            case c.sw:
-                v = Camera.main.ScreenToWorldPoint(transform.position);
-                break;
-            case c.vs:
-                v = Camera.main.ViewportToScreenPoint(transform.position);
-                break;
-            case c.vw:
-                v = Camera.main.ViewportToWorldPoint(transform.position);
-                break;
-            case c.ws:
-                v = Camera.main.WorldToScreenPoint(transform.position);
-                break;
-            case c.wv:
-                v = Camera.main.WorldToViewportPoint(transform.position);
-                break;
-            default:
-                v = transform.position;
-                break;
-        }
+        glow.position = transform.position;
 
-        glow.position = new Vector3(v.x * size.x, v.y * size.y, -100);
+        if (checkCard)
+        {
+            if (checkCard.cardType == CardType.하수인)
+            {
+                if (checkCard.cardLevel.Equals("전설"))
+                    thisImg.sprite = minionImg_legend;
+                else
+                    thisImg.sprite = minionImg;
+            }
+            else if (checkCard.cardType == CardType.주문)
+                thisImg.sprite = spellImg;
+            else if (checkCard.cardType == CardType.무기)
+                thisImg.sprite = weaponImg;
+
+        }
     }
 
 }

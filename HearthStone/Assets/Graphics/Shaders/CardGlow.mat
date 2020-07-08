@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: CardGlow
-  m_Shader: {fileID: 4800000, guid: 99af555761e1f544983f2c0ad20cae18, type: 3}
-  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA _ISOUTLINEENABLED_ON
+  m_Shader: {fileID: 4800000, guid: f24a257d3d4ef204ea544a57f33479d9, type: 3}
+  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA PIXELSNAP_ON _ISOUTLINEENABLED_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -60,7 +60,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - PixelSnap: 0
+    - PixelSnap: 1
+    - _AlphaCutOff: 0.5
     - _AlphaThreshold: 0
     - _BumpScale: 1
     - _ColorMask: 15
@@ -75,7 +76,8 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OutlineSize: 4.12
+    - _OutLineSize: 0.01
+    - _OutlineSize: 10
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -89,8 +91,9 @@ Material:
     - _UseUIAlphaClip: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.07853389, g: 1, b: 0, a: 1}
+    - _Color: {r: 0, g: 1, b: 0.04619026, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
+    - _OutLineColor: {r: 0, g: 3.2111173, b: 2.807626, a: 1}
     - _OutlineColor: {r: 0.013655695, g: 2.6082377, b: 0, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}

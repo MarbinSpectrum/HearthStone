@@ -54036,7 +54036,8 @@ MonoBehaviour:
   - {fileID: 472071333}
   characterNameTxt: {fileID: 407875026}
   selectDeck: 0
-  findBattleAni: {fileID: 900492714}
+  findBattleZoomAni: {fileID: 900492714}
+  findBattleAni: {fileID: 213492056}
 --- !u!1 &708551765
 GameObject:
   m_ObjectHideFlags: 0

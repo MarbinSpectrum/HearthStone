@@ -31,6 +31,7 @@ public class Mulligan : MonoBehaviour
 
     }
 
+    #region[카드세트]
     public void MulliganCardSet()
     {
         mulliganUI.SetActive(false);
@@ -112,7 +113,7 @@ public class Mulligan : MonoBehaviour
             coinAnimator.SetInteger("State", 3);
             yield return new WaitForSeconds(1f);
             createCoinCard.SetBool("Hide", false);
-            yield return new WaitForSeconds(1.1f);
+            yield return new WaitForSeconds(2f);
             createCoinCard.SetBool("Hide", true);
             BattleUI.instance.fieldShadowAni.SetInteger("State", 1);
             CardHand.instance.nowHandNum++;
@@ -161,7 +162,6 @@ public class Mulligan : MonoBehaviour
         BattleUI.instance.gameStart = true;
     }
 
-    #region[세팅]
     public void SetGoing(float n)
     {
         StartCoroutine(DrawCard(n - 1f));
