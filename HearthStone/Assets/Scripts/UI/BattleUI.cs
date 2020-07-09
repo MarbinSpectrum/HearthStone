@@ -7,6 +7,10 @@ public class BattleUI : MonoBehaviour
 {
     public static BattleUI instance;
 
+    public MeshRenderer playerHeroPower;
+    public Material druidMat;
+    public Material rogueMat;
+
     public Image[] characterImg;
     public Text characterNameTxt;
     public Text jobNameTxt;
@@ -56,12 +60,14 @@ public class BattleUI : MonoBehaviour
             case 0:
                 characterNameTxt.text = "말퓨리온 스톰레이지";
                 jobNameTxt.text = "드루이드";
+                playerHeroPower.material = druidMat;
                 StartCoroutine(ShowPlayerText(6, "자연은 반드시 보호해야한다!"));
                 break;
             case 1:
                 characterNameTxt.text = "발리라 생귀나르";
                 jobNameTxt.text = "도적";
-                StartCoroutine(ShowPlayerText(6, "등뒤를 조심해!"));
+                playerHeroPower.material = rogueMat;
+                StartCoroutine(ShowPlayerText(6, "등...뒤를... 조심해..."));
                 break;
         }
     }

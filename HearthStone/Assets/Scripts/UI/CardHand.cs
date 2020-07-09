@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [ExecuteInEditMode]
 public class CardHand : MonoBehaviour
@@ -14,6 +15,14 @@ public class CardHand : MonoBehaviour
     List<Vector2> cardStartSize = new List<Vector2>();
     List<float> cardStartAngle = new List<float>();
     List<float> handLerp = new List<float>();
+
+    [Header("패 글로우")]
+    public List<RectTransform> card_glow = new List<RectTransform>();
+    Image[] glowImg;
+    public Sprite minionImg_legend;
+    public Sprite minionImg;
+    public Sprite spellImg;
+    public Sprite weaponImg;
 
     [Header("패의 크기")]
     public Vector2 defaultSize;
@@ -47,6 +56,12 @@ public class CardHand : MonoBehaviour
             handCardView[i] = card[i].transform.Find("Card").GetComponent<CardView>();
             handLerp.Add(1);
         }
+
+        if (card_glow.Count <= 0)
+            return;
+        glowImg = new Image[card_glow.Count];
+        for (int i = 0; i < card_glow.Count; i++)
+            glowImg[i] = card_glow[i].GetComponent<Image>();
     }
 
     public void Update()
@@ -58,6 +73,45 @@ public class CardHand : MonoBehaviour
     {
         for (int i = 0; i < card.Count; i++)
             card[i].gameObject.SetActive(i < nowHandNum);
+
+        for (int i = 0; i < card.Count; i++)
+        {
+            if (Application.isPlaying)
+            {
+                int cost = 0;
+                if (handCardView[i].cardType == CardType.무기)
+                    cost = handCardView[i].WeaponCostData;
+                else if (handCardView[i].cardType == CardType.주문)
+                    cost = handCardView[i].SpellCostData;
+                else if (handCardView[i].cardType == CardType.하수인)
+                    cost = handCardView[i].MinionsCostData;
+
+                if (handCardView[i].cardType == CardType.무기)
+                    glowImg[i].sprite = weaponImg;
+                else if (handCardView[i].cardType == CardType.주문)
+                    glowImg[i].sprite = spellImg;
+                else if (handCardView[i].cardType == CardType.하수인)
+                {
+                    if (handCardView[i].cardLevel.Equals("전설"))
+                        glowImg[i].sprite = minionImg_legend;
+                    else
+                        glowImg[i].sprite = minionImg;
+                }
+        
+                card_glow[i].gameObject.SetActive(
+                    BattleUI.instance.gameStart &&
+                    TurnManager.instance.turnAniEnd && 
+                    TurnManager.instance.turn == 턴.플레이어 && 
+                    !handCardView[i].hide && 
+                    card[i].gameObject.activeSelf && 
+                    cost <= ManaManager.instance.playerNowMana);
+
+                card_glow[i].transform.position = card[i].transform.position;
+                card_glow[i].transform.rotation = card[i].transform.rotation;
+            }
+            else
+                card_glow[i].gameObject.SetActive(false);
+        }
 
         for (int i = 0; i < nowHandNum; i++)
         {

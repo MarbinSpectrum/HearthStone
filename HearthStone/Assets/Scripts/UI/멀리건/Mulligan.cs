@@ -79,7 +79,7 @@ public class Mulligan : MonoBehaviour
         bool changeCard = false;
         if (r == 1)
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
             {
                 if (secondTurnCardView[i].gameObject.activeSelf)
                 {
@@ -146,7 +146,7 @@ public class Mulligan : MonoBehaviour
             yield return new WaitForSeconds(changeCard ? 1.5f : 0.1f);
             CardHand.instance.nowHandNum = 3;
             for (int i = 0; i < 3; i++)
-                CardHand.instance.CardMove(firstTurnCardView[i],i, cardView[i].transform.position, new Vector2(10.685f, 13.714f), 0);
+                CardHand.instance.CardMove(firstTurnCardView[i], i, cardView[i].transform.position, new Vector2(10.685f, 13.714f), 0);
             yield return new WaitForSeconds(0.001f);
             CardViewManager.instance.UpdateCardView();
             for (int i = 0; i < cardView.Length; i++)
@@ -160,6 +160,7 @@ public class Mulligan : MonoBehaviour
         }
         yield return new WaitForSeconds(1f);
         BattleUI.instance.gameStart = true;
+        TurnManager.instance.turnEndTrigger = true;
     }
 
     public void SetGoing(float n)
@@ -168,6 +169,7 @@ public class Mulligan : MonoBehaviour
         StartCoroutine(ShowMulligan(n));
 
         r = Random.Range(0, 100) > 50 ? 1 : 2;
+        TurnManager.instance.turn = (턴)(r-1);
 
         SetMulligan(r);
         StartCoroutine(SetCoin(n + 1.5f, r));

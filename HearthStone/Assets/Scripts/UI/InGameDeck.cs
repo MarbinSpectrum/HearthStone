@@ -28,6 +28,8 @@ public class InGameDeck : MonoBehaviour
 
     void Start()
     {
+
+
         for(int i = 0; i < DataMng.instance.playData.deck[nowDeck].card.Count; i++)
         {
             string name = DataMng.instance.playData.GetCardName(DataMng.instance.playData.deck[nowDeck].card[i]);
@@ -36,8 +38,5 @@ public class InGameDeck : MonoBehaviour
                 playDeck.Add(name);
         }
         Shuffle(1000);
-
-
-
     }
 }

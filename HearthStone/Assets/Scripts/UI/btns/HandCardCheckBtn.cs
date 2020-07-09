@@ -51,6 +51,7 @@ public class HandCardCheckBtn : Btn
     public override void pointerExit()
     {
         CardHandCheck.instance.checkCard.hide = true;
+        cardView.hide = false;
         CardViewManager.instance.UpdateCardView();
     }
     #endregion
@@ -59,6 +60,7 @@ public class HandCardCheckBtn : Btn
     public void pointerUp()
     {
         CardHandCheck.instance.checkCard.hide = true;
+        cardView.hide = false;
         CardViewManager.instance.UpdateCardView();
     }
     #endregion
@@ -73,6 +75,7 @@ public class HandCardCheckBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
+        cardView.hide = true;
         CardViewManager.instance.CardShow(ref CardHandCheck.instance.checkCard, cardView);
         CardHandCheck.instance.checkCard.hide = false;
         CardViewManager.instance.UpdateCardView();
