@@ -13,8 +13,10 @@ public class CardHand : MonoBehaviour
     CardView[] handCardView;
     List<Vector3> cardStartPos = new List<Vector3>();
     List<Vector2> cardStartSize = new List<Vector2>();
+    [HideInInspector] public List<bool> canUse = new List<bool>();
     List<float> cardStartAngle = new List<float>();
     List<float> handLerp = new List<float>();
+    public Animator handAni;
 
     [Header("패 글로우")]
     public List<RectTransform> card_glow = new List<RectTransform>();
@@ -28,11 +30,11 @@ public class CardHand : MonoBehaviour
     public Vector2 defaultSize;
 
     [Header("패 사이의 각도")]
-    [Range(0,90)]
+    [Range(0, 90)]
     public float angle;
 
     [Header("최대 패의 각도")]
-    [Range(30, 180)]
+    [Range(0, 180)]
     public float maxAngle;
 
     [Header("중심적까지의 거리")]
@@ -41,7 +43,9 @@ public class CardHand : MonoBehaviour
     [Header("현재패의수")]
     [Range(0, 10)]
     public int nowHandNum;
+    public Transform drawCardPos;
 
+    #region[Awake]
     private void Awake()
     {
         instance = this;
@@ -53,6 +57,7 @@ public class CardHand : MonoBehaviour
             cardStartPos.Add(Vector4.zero);
             cardStartSize.Add(Vector2.zero);
             cardStartAngle.Add(0);
+            canUse.Add(false);
             handCardView[i] = card[i].transform.Find("Card").GetComponent<CardView>();
             handLerp.Add(1);
         }
@@ -63,16 +68,24 @@ public class CardHand : MonoBehaviour
         for (int i = 0; i < card_glow.Count; i++)
             glowImg[i] = card_glow[i].GetComponent<Image>();
     }
+    #endregion
 
+    #region[Update]
     public void Update()
     {
         UpdateCardHand();
     }
+    #endregion
 
+    #region[카드 UI 업데이트]
     public void UpdateCardHand()
     {
         for (int i = 0; i < card.Count; i++)
+        {
             card[i].gameObject.SetActive(i < nowHandNum);
+            if (!card[i].gameObject.activeSelf)
+                card[i].transform.position = drawCardPos.position;
+        }
 
         for (int i = 0; i < card.Count; i++)
         {
@@ -97,17 +110,19 @@ public class CardHand : MonoBehaviour
                     else
                         glowImg[i].sprite = minionImg;
                 }
-        
+
                 card_glow[i].gameObject.SetActive(
                     BattleUI.instance.gameStart &&
-                    TurnManager.instance.turnAniEnd && 
-                    TurnManager.instance.turn == 턴.플레이어 && 
-                    !handCardView[i].hide && 
-                    card[i].gameObject.activeSelf && 
+                    TurnManager.instance.turnAniEnd &&
+                    TurnManager.instance.turn == 턴.플레이어 &&
+                    !handCardView[i].hide &&
+                    card[i].gameObject.activeSelf &&
                     cost <= ManaManager.instance.playerNowMana);
 
                 card_glow[i].transform.position = card[i].transform.position;
                 card_glow[i].transform.rotation = card[i].transform.rotation;
+
+                canUse[i] = (cost <= ManaManager.instance.playerNowMana);
             }
             else
                 card_glow[i].gameObject.SetActive(false);
@@ -140,7 +155,7 @@ public class CardHand : MonoBehaviour
                 card[i].transform.position = destinationPos;
                 card[i].transform.rotation = Quaternion.Euler(0, 0, tempAngle);
             }
-            else 
+            else
             {
                 Vector3 nowPos = Vector3.Lerp(cardStartPos[i], destinationPos, handLerp[i]);
                 float nowAngle = Mathf.Lerp(cardStartAngle[i], tempAngle, handLerp[i]);
@@ -150,17 +165,36 @@ public class CardHand : MonoBehaviour
                     handLerp[i] += Time.deltaTime * 2;
                 else
                 {
-                    cardStartPos[i] = Vector3.zero;
+                    cardStartPos[i] = destinationPos;
+                    cardStartAngle[i] = tempAngle;
+                    cardStartSize[i] = defaultSize;
                     handLerp[i] = 1;
                 }
 
-                card[i].transform.position = nowPos;         
+                card[i].transform.position = nowPos;
                 card[i].transform.rotation = Quaternion.Euler(0, 0, nowAngle);
-                card[i].localScale = new Vector3(nowSize.x, nowSize.y,0);
+                card[i].localScale = new Vector3(nowSize.x, nowSize.y, 0);
             }
         }
     }
+    #endregion
 
+    #region[카드 드로우]
+    public void DrawCard()
+    {
+        if (nowHandNum >= 10)
+            return;
+        nowHandNum++;
+        for (int i = 0; i < nowHandNum-1; i++)
+        {
+            CardMove(i, card[i].transform.position,
+                defaultSize,
+                card[i].transform.rotation.eulerAngles.z > 180 ? instance.card[i].transform.rotation.eulerAngles.z - 360 : instance.card[i].transform.rotation.eulerAngles.z);
+        }
+    }
+    #endregion
+
+    #region[카드 이동]
     public void CardMove(int n, Vector3 pos, Vector2 size, float angle = 0)
     {
         handLerp[n] = 0;
@@ -188,6 +222,50 @@ public class CardHand : MonoBehaviour
         CardViewManager.instance.CardShow(ref handCardView[n], cardView);
         CardViewManager.instance.UpdateCardView();
     }
+    #endregion
+
+    #region[카드 사용]
+    public void UseCard(int n)
+    {
+        int cost = 0;
+        if (handCardView[n].cardType == CardType.무기)
+            cost = handCardView[n].WeaponCostData;
+        else if (handCardView[n].cardType == CardType.주문)
+            cost = handCardView[n].SpellCostData;
+        else if (handCardView[n].cardType == CardType.하수인)
+            cost = handCardView[n].MinionsCostData;
+
+        ManaManager.instance.playerNowMana -= cost;
+
+        nowHandNum--;
+        for (int i = 0; i < nowHandNum; i++)
+        {
+            float fullAngle;
+            float addAngle;
+            if ((nowHandNum - 1) * angle > maxAngle)
+            {
+                fullAngle = maxAngle;
+                if (nowHandNum <= 1)
+                    addAngle = 0;
+                else
+                    addAngle = maxAngle / (nowHandNum - 1);
+            }
+            else
+            {
+                fullAngle = (nowHandNum - 1) * angle;
+                addAngle = angle;
+            }
+            float tempAngle = fullAngle / 2f;
+            tempAngle -= i * addAngle;
+            Vector3 destinationPos = Quaternion.Euler(0, 0, tempAngle) * Vector3.up;
+            destinationPos = transform.position + (Vector3)destinationPos * range;
+            int cardViewNum = (i >= n) ? i + 1 : i;
+            CardMove(handCardView[cardViewNum], i, card[cardViewNum].transform.position, defaultSize, tempAngle);
+        }
+        CardViewManager.instance.UpdateCardView(0.001f);
+
+    }
+    #endregion
 
     #region[OnDrawGizmosSelected]
     void OnDrawGizmosSelected()
@@ -204,5 +282,4 @@ public class CardHand : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + v2);
     }
     #endregion
-
 }

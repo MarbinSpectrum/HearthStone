@@ -69,6 +69,15 @@ public class Mulligan : MonoBehaviour
         CardViewManager.instance.UpdateCardView();
     }
 
+    private IEnumerator EnemyDrawCard(int n)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            EnemyCardHand.instance.DrawCard();
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
     private IEnumerator MulliganDrawCard(float waitTime)
     {
         StartCoroutine(InputCard(0.1f));
@@ -79,6 +88,7 @@ public class Mulligan : MonoBehaviour
         bool changeCard = false;
         if (r == 1)
         {
+            StartCoroutine(EnemyDrawCard(3));
             for (int i = 0; i < 4; i++)
             {
                 if (secondTurnCardView[i].gameObject.activeSelf)
@@ -116,13 +126,14 @@ public class Mulligan : MonoBehaviour
             yield return new WaitForSeconds(2f);
             createCoinCard.SetBool("Hide", true);
             BattleUI.instance.fieldShadowAni.SetInteger("State", 1);
-            CardHand.instance.nowHandNum++;
+            CardHand.instance.DrawCard();
             CardHand.instance.CardMove("동전 한 닢", 4, coinCardPos.position, new Vector2(10.685f, 13.714f), 0);
             yield return new WaitForSeconds(0.001f);
             CardViewManager.instance.UpdateCardView();
         }
         else if (r == 2)
         {
+            StartCoroutine(EnemyDrawCard(4));
             for (int i = 0; i < 3; i++)
             {
                 if (firstTurnCardView[i].gameObject.activeSelf)
@@ -168,7 +179,7 @@ public class Mulligan : MonoBehaviour
         StartCoroutine(DrawCard(n - 1f));
         StartCoroutine(ShowMulligan(n));
 
-        r = Random.Range(0, 100) > 50 ? 1 : 2;
+        r =  Random.Range(0, 100) > 50 ? 1 : 2;
         TurnManager.instance.turn = (턴)(r-1);
 
         SetMulligan(r);
@@ -205,6 +216,10 @@ public class Mulligan : MonoBehaviour
         BattleUI.instance.playerCardAni[12].SetTrigger("Draw");
         yield return new WaitForSeconds(0.5f);
         BattleUI.instance.playerCardAni[0].SetTrigger("Draw");
+        yield return new WaitForSeconds(0.5f);
+        if (r == 1)
+            BattleUI.instance.playerCardAni[6].SetTrigger("Draw");
+
     }
 
     private IEnumerator InputCard(float waitTime)

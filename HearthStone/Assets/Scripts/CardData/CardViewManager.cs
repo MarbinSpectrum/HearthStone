@@ -30,6 +30,18 @@ public class CardViewManager : MonoBehaviour
         for (int i = 0; i < cardview.Count; i++)
             cardview[i].updateCard = true;
     }
+
+    public void UpdateCardView(float waitTime)
+    {
+        StartCoroutine(UpdateCardViewEvent_C(waitTime));
+    }
+
+    IEnumerator UpdateCardViewEvent_C(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        UpdateCardView();
+    }
+
     #endregion
 
     #region[카드표시]

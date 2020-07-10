@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public class HandCardCheckBtn : Btn
 {
     public CardView cardView;
+    public int cardNum;
 
     #region[Awake]
     public override void Awake()
@@ -53,6 +54,11 @@ public class HandCardCheckBtn : Btn
         CardHandCheck.instance.checkCard.hide = true;
         cardView.hide = false;
         CardViewManager.instance.UpdateCardView();
+        if (BattleUI.instance.gameStart &&TurnManager.instance.turnAniEnd && TurnManager.instance.turn == 턴.플레이어)
+        {
+            DragCardObject.instance.ShowDragCard(CardHandCheck.instance.checkCard);
+            DragCardObject.instance.dragCardNum = cardNum;
+        }
     }
     #endregion
 
@@ -62,6 +68,7 @@ public class HandCardCheckBtn : Btn
         CardHandCheck.instance.checkCard.hide = true;
         cardView.hide = false;
         CardViewManager.instance.UpdateCardView();
+        DragCardObject.instance.HideDragCard();
     }
     #endregion
 
@@ -77,6 +84,7 @@ public class HandCardCheckBtn : Btn
     {
         cardView.hide = true;
         CardViewManager.instance.CardShow(ref CardHandCheck.instance.checkCard, cardView);
+        DragCardObject.instance.HideDragCard();
         CardHandCheck.instance.checkCard.hide = false;
         CardViewManager.instance.UpdateCardView();
         CardHandCheck.instance.transform.position = new Vector3(transform.position.x, CardHandCheck.instance.transform.position.y, CardHandCheck.instance.transform.position.z);
