@@ -117,7 +117,9 @@ public class CardHand : MonoBehaviour
                     TurnManager.instance.turn == 턴.플레이어 &&
                     !handCardView[i].hide &&
                     card[i].gameObject.activeSelf &&
-                    cost <= ManaManager.instance.playerNowMana);
+                    cost <= ManaManager.instance.playerNowMana &&
+                    ((handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대") && handAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99) ||
+                    handAni.GetCurrentAnimatorStateInfo(0).IsName("패 기본상태")));
 
                 card_glow[i].transform.position = card[i].transform.position;
                 card_glow[i].transform.rotation = card[i].transform.rotation;

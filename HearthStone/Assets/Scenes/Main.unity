@@ -99,7 +99,7 @@ LightmapSettings:
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 112000000, guid: 4f5c4b8744891a644bb6ec3232c4ba28,
     type: 2}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -25420,7 +25420,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e366343cafc92aa4286fed3b6a39b3ea, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 239cfae8202688b42a7bd7e78ad89062, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -40898,7 +40898,7 @@ PrefabInstance:
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
       propertyPath: m_RootOrder
-      value: 15
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
@@ -41241,7 +41241,7 @@ PrefabInstance:
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
       propertyPath: m_RootOrder
-      value: 12
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
@@ -42163,7 +42163,7 @@ PrefabInstance:
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
       propertyPath: m_RootOrder
-      value: 17
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
@@ -49260,7 +49260,7 @@ PrefabInstance:
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
       propertyPath: m_RootOrder
-      value: 16
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
@@ -53643,7 +53643,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e366343cafc92aa4286fed3b6a39b3ea, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 239cfae8202688b42a7bd7e78ad89062, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -54863,7 +54863,7 @@ PrefabInstance:
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
@@ -62925,7 +62925,7 @@ PrefabInstance:
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
@@ -83063,7 +83063,7 @@ PrefabInstance:
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
       propertyPath: m_RootOrder
-      value: 13
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
@@ -114132,7 +114132,7 @@ PrefabInstance:
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
       propertyPath: m_RootOrder
-      value: 14
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3451006401242064271, guid: eb4808941a3b6de40a68066e535468bd,
         type: 3}
@@ -117537,7 +117537,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e366343cafc92aa4286fed3b6a39b3ea, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 239cfae8202688b42a7bd7e78ad89062, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

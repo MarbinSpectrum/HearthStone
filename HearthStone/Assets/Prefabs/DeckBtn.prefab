@@ -363,7 +363,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9bed952c54679bb418326adf69790a92, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 79d2e8b7e8b83134094eb69dab896b28, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -469,7 +469,10 @@ MonoBehaviour:
   - {fileID: 7983974014804260881}
   - {fileID: 3817112024064373847}
   hasDeck: 0
+  hide: 0
   nowCharacter: 0
+  newDeckRect: {fileID: 0}
+  characterDeckRect: {fileID: 0}
 --- !u!1 &3550087945750961480
 GameObject:
   m_ObjectHideFlags: 0
@@ -942,6 +945,7 @@ MonoBehaviour:
   btnEvent: {fileID: 0}
   btnSprites: []
   btn: {fileID: 3447556812421048044}
+  deckN: 0
 --- !u!1 &7268896292501323970
 GameObject:
   m_ObjectHideFlags: 0
@@ -1079,7 +1083,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e366343cafc92aa4286fed3b6a39b3ea, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d223cb5ad0f54cc48a6d8513ab6b834d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
