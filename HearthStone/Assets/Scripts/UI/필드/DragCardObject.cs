@@ -10,15 +10,22 @@ public class DragCardObject : MonoBehaviour
     RectTransform rectTransform;
 
     public CardView dragCardView;
+    public CardView dropEffectCardView;
+    public Animator dropEffectAni;
     public GameObject dragPoint;
     public Image glowImg;
     public int dragCardNum = 0;
+    public bool dragCard;
+    public bool mouseInMyField;
+    public bool mouseInEnemyField;
+    public bool mouseInField;
 
     public void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         instance = this;
         dragCardView.hide = true;
+        //dropEffectCardView.hide = true;
     }
 
     public void Update()
@@ -40,11 +47,7 @@ public class DragCardObject : MonoBehaviour
                 glowImg.sprite = CardHand.instance.minionImg;
         }
         glowImg.enabled = !dragCardView.hide && CardHand.instance.canUse[dragCardNum];
-    }
-
-    public void HideDragCard()
-    {
-        dragCardView.hide = true;
+        dragCard = !dragCardView.hide;
     }
 
     public void DragAndDropCard()
@@ -54,10 +57,45 @@ public class DragCardObject : MonoBehaviour
         HideDragCard();
     }
 
+    public void HideDragCard()
+    {
+        dragCardView.hide = true;
+        mouseInMyField = false;
+        mouseInEnemyField = false;
+        mouseInField = false;
+    }
+
+    public void CheckMouseInMyField(bool b)
+    {
+        if (!dragCard)
+            return;
+        mouseInMyField = b && dragCard;
+    }
+
+    public void CheckMouseInEnemyField(bool b)
+    {
+        if (!dragCard)
+            return;
+        mouseInEnemyField = b && dragCard;
+    }
+
+    public void CheckMouseInField(bool b)
+    {
+        if (!dragCard)
+            return;
+        mouseInField = b && dragCard;
+    }
+
+    public void ShowDropEffect()
+    {
+        dropEffectAni.SetTrigger("Effect");
+    }
+
     public void ShowDragCard(CardView cardView)
     {
         dragCardView.hide = false;
         CardViewManager.instance.CardShow(ref dragCardView, cardView);
+        CardViewManager.instance.CardShow(ref dropEffectCardView, cardView);
         CardViewManager.instance.UpdateCardView(0.001f);
     }
 }

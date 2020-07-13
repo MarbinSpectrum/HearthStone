@@ -33,6 +33,7 @@ public class CardView : MonoBehaviour
 
     public Material holoBlue;
     public Material holoBlueMove;
+    public Material normalMat;
 
     [HideInInspector] public int cardN = 2;
 
@@ -666,8 +667,8 @@ public class CardView : MonoBehaviour
             if (cardN > 0 && MinionsCardImg.material != holoBlue)
                 return;
 
-            Material tempM = (cardN <= 0) ? holoBlueMove : null;
-            Material tempMa = (cardN <= 0) ? holoBlue : null;
+            Material tempM = (cardN <= 0) ? holoBlueMove : normalMat;
+            Material tempMa = (cardN <= 0) ? holoBlue : normalMat;
 
             for (int i = 0; i < MinionsCostImage.Length; i++)
                 MinionsCostImage[i].material = tempM;
@@ -684,8 +685,8 @@ public class CardView : MonoBehaviour
                 return;
             if (cardN > 0 && SpellCardImg.material != holoBlue)
                 return;
-            Material tempM = (cardN <= 0) ? holoBlueMove : null;
-            Material tempMa = (cardN <= 0) ? holoBlue : null;
+            Material tempM = (cardN <= 0) ? holoBlueMove : normalMat;
+            Material tempMa = (cardN <= 0) ? holoBlue : normalMat;
             for (int i = 0; i < SpellCostImage.Length; i++)
                 SpellCostImage[i].material = tempM;
             SpellCardLevel.material = tempM;
@@ -698,8 +699,8 @@ public class CardView : MonoBehaviour
             if (cardN > 0 && WeaponCardImg.material != holoBlue)
                 return;
 
-            Material tempM = (cardN <= 0) ? holoBlueMove : null;
-            Material tempMa = (cardN <= 0) ? holoBlue : null;
+            Material tempM = (cardN <= 0) ? holoBlueMove : normalMat;
+            Material tempMa = (cardN <= 0) ? holoBlue : normalMat;
             for (int i = 0; i < WeaponCostImage.Length; i++)
                 WeaponCostImage[i].material = tempM;
             for (int i = 0; i < WeaponAttackImage.Length; i++)

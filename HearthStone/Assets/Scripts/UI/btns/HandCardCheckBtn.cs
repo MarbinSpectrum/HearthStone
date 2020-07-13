@@ -82,6 +82,8 @@ public class HandCardCheckBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
+        if (DragCardObject.instance.dragCard)
+            return;
         cardView.hide = true;
         CardViewManager.instance.CardShow(ref CardHandCheck.instance.checkCard, cardView);
         DragCardObject.instance.HideDragCard();

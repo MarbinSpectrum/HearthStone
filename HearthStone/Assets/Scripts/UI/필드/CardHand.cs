@@ -239,6 +239,20 @@ public class CardHand : MonoBehaviour
 
         ManaManager.instance.playerNowMana -= cost;
 
+        if (handCardView[n].cardType == CardType.무기)
+        {
+
+        }
+        else if (handCardView[n].cardType == CardType.주문)
+        {
+
+        }
+        else if (handCardView[n].cardType == CardType.하수인)
+        {
+            MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData);
+            DragCardObject.instance.ShowDropEffect();
+        }
+
         nowHandNum--;
         for (int i = 0; i < nowHandNum; i++)
         {
@@ -265,7 +279,6 @@ public class CardHand : MonoBehaviour
             CardMove(handCardView[cardViewNum], i, card[cardViewNum].transform.position, defaultSize, tempAngle);
         }
         CardViewManager.instance.UpdateCardView(0.001f);
-
     }
     #endregion
 
