@@ -69,6 +69,10 @@ public class BattleMenuFindBattle : Btn
         BattleMenu.instance.JobSelectCheck(-1);
         BattleMenu.instance.selectDeck = deck;
         BattleMenu.instance.FindBattle(find);
+        if (find)
+            SoundManager.instance.PlayBGM("대전상대찾기1");
+        else
+            SoundManager.instance.StopBGM();
     }
     #endregion
 

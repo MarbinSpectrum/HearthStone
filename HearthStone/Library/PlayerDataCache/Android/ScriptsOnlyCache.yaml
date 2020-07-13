@@ -71,6 +71,7 @@ ScriptsOnlyBuild:
     - ShowManaCost
     - ShowPlayerText
     - SoundManager
+    - StartAni
     - TurnManager
     - WaterWheel
     Unity.2D.Tilemap.Editor.dll:
@@ -622,6 +623,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 15270}
     - Class: 114
       Script: {instanceID: 15422}
+    - Class: 114
+      Script: {instanceID: 152532}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -2017,6 +2020,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: PlayableTrack
+  - hash:
+      serializedVersion: 2
+      Hash: 8e3fed08b809d951b215736802738826
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: StartAni
   platform: 13
   scenePathNames:
   - Assets/Scenes/Loading.unity

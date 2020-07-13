@@ -96,9 +96,8 @@ public class PlayData
             return;
         if (DataMng.instance != null)
         {
-            deck.Add(new Deck("도적",DataMng.TableType.도적, new List<string>() { "마음가짐~2" }));
-            deck.Add(new Deck("드루이드", DataMng.TableType.드루이드, new List<string>() { "세나리우스~2" }));
-            Debug.Log("NewData");
+            //deck.Add(new Deck("도적",DataMng.TableType.도적, new List<string>() { "마음가짐~2" }));
+            //deck.Add(new Deck("드루이드", DataMng.TableType.드루이드, new List<string>() { "세나리우스~2" }));
             for (int i = 0; i < 3; i++)
                 for (int j = 1; j <= DataMng.instance.m_dic[(DataMng.TableType)i].m_table.Count; j++)
                 {

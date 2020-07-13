@@ -36,7 +36,6 @@ namespace Pinwheel.FantasyEffect
                     .Replace(PACKAGE_NAME_PLACEHOLDER, PACKAGE_NAME)
                     .Replace(WEBSITE_PLACEHOLDER, WEBSITE)
                     .Replace(PATREON_PLACEHOLDER, PATREON);
-                Debug.Log(msg);
             }
         }
 

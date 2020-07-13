@@ -49,19 +49,18 @@ public class DataMng : MonoBehaviour
     #region[OnApplicationQuit]
     private void OnApplicationQuit()
     {
-        string jsonData = ObjectToJson(playData);
-        var jtc2 = JsonToOject<PlayData>(jsonData);
-#if UNITY_EDITOR
-        CreateJsonFile(Application.dataPath, "Resources/PlayData", jsonData);
-        jtc2 = LoadJsonFile<PlayData>(Application.dataPath, "Resources/PlayData");
-#else
-        CreateJsonFile(Application.persistentDataPath, "PlayData", jsonData);
-        jtc2 = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
-#endif
-        playData = jtc2;
-        playData.Print();
+        SaveData();
     }
     #endregion
+
+    public void SaveData()
+    {
+        Debug.Log("!");
+        string jsonData = ObjectToJson(playData);
+        var jtc2 = JsonToOject<PlayData>(jsonData);
+
+        CreateJsonFile(Application.persistentDataPath, "PlayData", jsonData);
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,36 +211,32 @@ public class DataMng : MonoBehaviour
                     cardImg[name] = Sprite.Create(temp, new Rect(0, 0, temp.width, temp.height), new Vector2(0.5f, 0.5f));
             }
         SettingDragCardPos();
+        LoadPlayData();
 
-        try
+    }
+
+    void LoadPlayData()
+    {
+        string filePath = Application.persistentDataPath + "/PlayData.json";
+        //if(Application.isEditor)
+        //    filePath = Application.dataPath + "/Resources/PlayData.json";
+        if (File.Exists(filePath))
         {
-#if UNITY_EDITOR
-            var jtc2 = LoadJsonFile<PlayData>(Application.dataPath, "Resources/PlayData");
-            playData = jtc2;
-            playData.Print();
-#else
             var jtc = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
             playData = jtc;
             playData.Print();
-#endif
-
         }
-        catch
+        else
         {
+  
             playData = new PlayData(true);
             string jsonData = ObjectToJson(playData);
-            var jtc2 = JsonToOject<PlayData>(jsonData);
-#if UNITY_EDITOR
-            CreateJsonFile(Application.dataPath, "Resources/PlayData", jsonData);
-            jtc2 = LoadJsonFile<PlayData>(Application.dataPath, "Resources/PlayData");
-#else
+            var jtc = JsonToOject<PlayData>(jsonData);
             CreateJsonFile(Application.persistentDataPath, "PlayData", jsonData);
-            jtc2 = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
-#endif
-            playData = jtc2;
+            jtc = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
+            playData = jtc;
             playData.Print();
         }
-
     }
 
     IEnumerator LoadData()
@@ -271,39 +266,12 @@ public class DataMng : MonoBehaviour
         SettingDragCardPos();
         Debug.Log("카드 위치 설정 롼료");
         yield return new WaitForSeconds(0.1f);
-
-        try
-        {
-#if UNITY_EDITOR
-            var jtc2 = LoadJsonFile<PlayData>(Application.dataPath, "Resources/PlayData");
-            playData = jtc2;
-            playData.Print();
-#else
-            var jtc = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
-            playData = jtc;
-            playData.Print();
-#endif
-
-        }
-        catch
-        {
-            playData = new PlayData(true);
-            string jsonData = ObjectToJson(playData);
-            var jtc2 = JsonToOject<PlayData>(jsonData);
-#if UNITY_EDITOR
-            CreateJsonFile(Application.dataPath, "Resources/PlayData", jsonData);
-            jtc2 = LoadJsonFile<PlayData>(Application.dataPath, "Resources/PlayData");
-#else
-            CreateJsonFile(Application.persistentDataPath, "PlayData", jsonData);
-            jtc2 = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
-#endif
-            playData = jtc2;
-            playData.Print();
-        }
+        LoadPlayData();
         Debug.Log("저장 기록 로드 완료");
         if (loadingAni)
             loadingAni.enabled = true;
         yield return new WaitForSeconds(1f);
+        SoundManager.instance.PlayBGM("메인화면배경음");
         SceneManager.LoadScene("Main");
         yield return new WaitForSeconds(3f);
         Destroy(loadingAni.gameObject);

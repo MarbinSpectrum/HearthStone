@@ -77,11 +77,17 @@ public class BattleMenu : MonoBehaviour
 
             }
         }
-
-        if(findBattleAni.gameObject.activeSelf && findBattleAni.GetCurrentAnimatorStateInfo(0).IsName("FindBattle") && findBattleAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
+        if (findBattleZoomAni.GetBool("Find"))
         {
-            findBattleAni.gameObject.SetActive(false);
-            SceneManager.LoadScene("Battle");
+            if (findBattleAni.GetCurrentAnimatorStateInfo(0).IsName("FindBattle") && findBattleAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.7)
+            {
+                SoundManager.instance.StopBGM();
+            }
+            if (findBattleAni.GetCurrentAnimatorStateInfo(0).IsName("FindBattle") && findBattleAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
+            {
+                findBattleAni.gameObject.SetActive(false);
+                SceneManager.LoadScene("Battle");
+            }
         }
     }
     #endregion
@@ -115,7 +121,6 @@ public class BattleMenu : MonoBehaviour
     public void FindBattle(bool b)
     {
         findBattleZoomAni.SetBool("Find", b);
-
     }
     #endregion
 

@@ -150,7 +150,7 @@ public class CardHand : MonoBehaviour
             float tempAngle = fullAngle / 2f;
             tempAngle -= i * addAngle;
             Vector3 destinationPos = Quaternion.Euler(0, 0, tempAngle) * Vector3.up;
-            destinationPos = transform.position + (Vector3)destinationPos * range;
+            destinationPos = transform.position + (Vector3)destinationPos * range * transform.localScale.x;
 
             if (!Application.isPlaying)
             {
@@ -278,9 +278,9 @@ public class CardHand : MonoBehaviour
 
         Gizmos.color = Color.green;
 
-        Vector3 v1 = Quaternion.Euler(0, 0, -maxAngle / 2f) * Vector3.up * range;
+        Vector3 v1 = Quaternion.Euler(0, 0, -maxAngle / 2f) * Vector3.up * range * transform.localScale.x;
         Gizmos.DrawLine(transform.position, transform.position + v1);
-        Vector3 v2 = Quaternion.Euler(0, 0, maxAngle / 2f) * Vector3.up * range;
+        Vector3 v2 = Quaternion.Euler(0, 0, maxAngle / 2f) * Vector3.up * range * transform.localScale.x;
         Gizmos.DrawLine(transform.position, transform.position + v2);
     }
     #endregion

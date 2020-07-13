@@ -48,29 +48,57 @@ public class SoundManager : MonoBehaviour
     {
         StartCoroutine(PlayNewBGM(s));
     }
+
+    public void StopBGM()
+    {
+        BGM.clip = null;
+        BGM.Stop();
+    }
+
+
     private IEnumerator PlayNewBGM(string s)
     {
-        float v = BGM.volume;
-        for (int i = 0; i < 100; i++)
-        {
-            yield return new WaitForSeconds(0.01f);
-            BGM.volume -= 0.01f;
-        }
-        BGM.clip = null;
+        bool isPlayNow = false;
+        AudioClip newBGM = null;
         switch (s)
         {
             case "메인화면배경음":
-                BGM.clip = mainMenuBGM;
+                if (BGM.clip == mainMenuBGM)
+                    isPlayNow = true;
+                else
+                    newBGM = mainMenuBGM;
                 break;
             case "수집함배경음":
-                BGM.clip = myCollectMenuBGM;
+                if (BGM.clip == myCollectMenuBGM)
+                    isPlayNow = true;
+                else
+                    newBGM = myCollectMenuBGM;
                 break;
             case "대전상대찾기1":
-                BGM.clip = findBattle[0];
+                if (BGM.clip == findBattle[0])
+                    isPlayNow = true;
+                else
+                    newBGM = findBattle[0];
                 break;
         }
-        BGM.volume = v;
-        BGM.Play();
+
+        if (isPlayNow)
+        {
+
+        }
+        else
+        {
+            float v = BGM.volume;
+            for (int i = 0; i < 100; i++)
+            {
+                yield return new WaitForSeconds(0.005f);
+                BGM.volume -= 0.01f;
+            }
+            BGM.clip = null;
+            BGM.clip = newBGM;
+            BGM.volume = v;
+            BGM.Play();
+        }
     }
 
     public void PlaySE(string s)
