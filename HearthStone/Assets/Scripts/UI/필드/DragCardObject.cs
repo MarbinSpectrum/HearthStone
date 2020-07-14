@@ -7,13 +7,16 @@ public class DragCardObject : MonoBehaviour
 {
     public static DragCardObject instance;
 
-    RectTransform rectTransform;
 
     public CardView dragCardView;
-    public CardView dropEffectCardView;
-    public Animator dropEffectAni;
+    RectTransform rectTransform;
+
     public GameObject dragPoint;
+
     public Image glowImg;
+
+    public DropEffect dropEffect;
+
     public int dragCardNum = 0;
     public bool dragCard;
     public bool mouseInMyField;
@@ -32,9 +35,9 @@ public class DragCardObject : MonoBehaviour
     {
         if (!Input.GetMouseButton(0))
             HideDragCard();
+
         dragPoint.SetActive(!dragCardView.hide);
         rectTransform.anchoredPosition = Input.mousePosition;
-
         if (dragCardView.cardType == CardType.무기)
             glowImg.sprite = CardHand.instance.weaponImg;
         else if (dragCardView.cardType == CardType.주문)
@@ -46,7 +49,7 @@ public class DragCardObject : MonoBehaviour
             else
                 glowImg.sprite = CardHand.instance.minionImg;
         }
-        glowImg.enabled = !dragCardView.hide && CardHand.instance.canUse[dragCardNum];
+        glowImg.enabled = !dragCardView.hide && CardHand.instance.canUse[dragCardNum] && mouseInField;
         dragCard = !dragCardView.hide;
     }
 
@@ -86,16 +89,18 @@ public class DragCardObject : MonoBehaviour
         mouseInField = b && dragCard;
     }
 
-    public void ShowDropEffect()
+    public void ShowDropEffect(Vector2 pos)
     {
-        dropEffectAni.SetTrigger("Effect");
+        dropEffect.dropPos = pos;
+        dropEffect.dropRectTransform.anchoredPosition = Input.mousePosition;
+        dropEffect.dropEffectAni.SetTrigger("Effect");
     }
 
     public void ShowDragCard(CardView cardView)
     {
         dragCardView.hide = false;
         CardViewManager.instance.CardShow(ref dragCardView, cardView);
-        CardViewManager.instance.CardShow(ref dropEffectCardView, cardView);
+        CardViewManager.instance.CardShow(ref dropEffect.dropEffectCardView, cardView);
         CardViewManager.instance.UpdateCardView(0.001f);
     }
 }

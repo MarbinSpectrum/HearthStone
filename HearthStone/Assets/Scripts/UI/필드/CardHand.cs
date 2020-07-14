@@ -245,12 +245,11 @@ public class CardHand : MonoBehaviour
         }
         else if (handCardView[n].cardType == CardType.주문)
         {
-
+            DragCardObject.instance.ShowDropEffect(Input.mousePosition);
         }
         else if (handCardView[n].cardType == CardType.하수인)
         {
             MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData);
-            DragCardObject.instance.ShowDropEffect();
         }
 
         nowHandNum--;

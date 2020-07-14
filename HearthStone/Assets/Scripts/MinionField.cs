@@ -118,6 +118,7 @@ public class MinionField : MonoBehaviour
     }
     #endregion
 
+    #region[미니언 추가]
     public void AddMinion(int n, string name)
     {
         Debug.Log(n);
@@ -134,7 +135,10 @@ public class MinionField : MonoBehaviour
         float minX = minionDistance * (minionNum - 1) / 2f;
         Vector3 v = new Vector3(transform.position.x - minX + minionDistance * n, transform.position.y, minions[n].transform.position.z);
         minions[n].transform.position = v;
+        DragCardObject.instance.ShowDropEffect(Camera.main.WorldToScreenPoint(v));
+        Debug.Log(v);
     }
+    #endregion
 
     private void OnDrawGizmos()
     {
