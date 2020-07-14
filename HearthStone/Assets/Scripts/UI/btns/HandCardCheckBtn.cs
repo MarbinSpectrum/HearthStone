@@ -51,14 +51,7 @@ public class HandCardCheckBtn : Btn
     #region[pointerExit]
     public override void pointerExit()
     {
-        CardHandCheck.instance.checkCard.hide = true;
-        cardView.hide = false;
-        CardViewManager.instance.UpdateCardView();
-        if (BattleUI.instance.gameStart &&TurnManager.instance.turnAniEnd && TurnManager.instance.turn == 턴.플레이어)
-        {
-            DragCardObject.instance.ShowDragCard(CardHandCheck.instance.checkCard);
-            DragCardObject.instance.dragCardNum = cardNum;
-        }
+        PickUpCard();
     }
     #endregion
 
@@ -79,10 +72,26 @@ public class HandCardCheckBtn : Btn
     }
     #endregion
 
+    #region[카드 픽업]
+    public void PickUpCard()
+    {
+        CardHandCheck.instance.checkCard.hide = true;
+        cardView.hide = false;
+        CardViewManager.instance.UpdateCardView();
+        if (BattleUI.instance.gameStart && TurnManager.instance.turnAniEnd && TurnManager.instance.turn == 턴.플레이어 && CardHand.instance.canUse[cardNum])
+        {
+            DragCardObject.instance.ShowDragCard(CardHandCheck.instance.checkCard);
+            DragCardObject.instance.dragCardNum = cardNum;
+        }
+    }
+    #endregion
+
     #region[ActBtn]
     public override void ActBtn()
     {
         if (DragCardObject.instance.dragCard)
+            return;
+        if (!DragCardObject.instance.dropEffect.dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Stop"))
             return;
         cardView.hide = true;
         CardViewManager.instance.CardShow(ref CardHandCheck.instance.checkCard, cardView);

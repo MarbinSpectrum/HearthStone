@@ -390,12 +390,12 @@ TextureImporter:
       name: CardUI_11
       rect:
         serializedVersion: 2
-        x: 12
-        y: 63
-        width: 117
-        height: 158
+        x: 0
+        y: 48
+        width: 143
+        height: 190
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -411,12 +411,12 @@ TextureImporter:
       name: CardUI_12
       rect:
         serializedVersion: 2
-        x: 168
-        y: 63
-        width: 117
-        height: 158
+        x: 154
+        y: 48
+        width: 143
+        height: 190
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -437,7 +437,7 @@ TextureImporter:
         width: 55
         height: 44
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

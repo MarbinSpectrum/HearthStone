@@ -34,7 +34,7 @@ public class CardHandBtn : Btn
     #region[pointerDown]
     public override void pointerDown()
     {
-
+        ActBtn();
     }
     #endregion
 
@@ -48,7 +48,7 @@ public class CardHandBtn : Btn
     #region[pointerClick]
     public override void pointerClick()
     {
-        ActBtn();
+
     }
     #endregion
 

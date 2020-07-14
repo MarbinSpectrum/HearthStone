@@ -22,6 +22,8 @@ public class DropEffect : MonoBehaviour
     {
         if (dropEffectMat)
             dropEffectMat.SetFloat("_Alpha", alpha);
+        if (!Application.isPlaying)
+            return;
         Vector2 v = dropPos - dropRectTransform.anchoredPosition;
         v *= Time.deltaTime * 10;
         if (Vector2.Distance(Vector2.zero, v) > Vector2.Distance(Vector2.zero, v.normalized * max_speed))

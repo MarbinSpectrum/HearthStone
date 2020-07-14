@@ -28,7 +28,6 @@ public class DragCardObject : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
         instance = this;
         dragCardView.hide = true;
-        //dropEffectCardView.hide = true;
     }
 
     public void Update()
@@ -89,11 +88,18 @@ public class DragCardObject : MonoBehaviour
         mouseInField = b && dragCard;
     }
 
-    public void ShowDropEffect(Vector2 pos)
+    public void ShowDropEffectMinion(Vector2 pos,int n)
     {
         dropEffect.dropPos = pos;
         dropEffect.dropRectTransform.anchoredPosition = Input.mousePosition;
-        dropEffect.dropEffectAni.SetTrigger("Effect");
+        dropEffect.dropEffectAni.SetTrigger("Effect_Minion_" + n);
+    }
+
+    public void ShowDropEffectSpell(Vector2 pos, int n)
+    {
+        dropEffect.dropPos = pos;
+        dropEffect.dropRectTransform.anchoredPosition = Input.mousePosition;
+        dropEffect.dropEffectAni.SetTrigger("Effect_Spell_" + n);
     }
 
     public void ShowDragCard(CardView cardView)

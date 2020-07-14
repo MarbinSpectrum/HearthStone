@@ -74,6 +74,7 @@ public class CardHand : MonoBehaviour
     public void Update()
     {
         UpdateCardHand();
+        SetCardUse();
     }
     #endregion
 
@@ -118,13 +119,12 @@ public class CardHand : MonoBehaviour
                     !handCardView[i].hide &&
                     card[i].gameObject.activeSelf &&
                     cost <= ManaManager.instance.playerNowMana &&
+                    DragCardObject.instance.dropEffect.dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Stop") &&
                     ((handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대") && handAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99) ||
                     handAni.GetCurrentAnimatorStateInfo(0).IsName("패 기본상태")));
 
                 card_glow[i].transform.position = card[i].transform.position;
                 card_glow[i].transform.rotation = card[i].transform.rotation;
-
-                canUse[i] = (cost <= ManaManager.instance.playerNowMana);
             }
             else
                 card_glow[i].gameObject.SetActive(false);
@@ -176,6 +176,37 @@ public class CardHand : MonoBehaviour
                 card[i].transform.position = nowPos;
                 card[i].transform.rotation = Quaternion.Euler(0, 0, nowAngle);
                 card[i].localScale = new Vector3(nowSize.x, nowSize.y, 0);
+            }
+        }
+    }
+    #endregion
+
+    #region[카드 사용 가능 여부]
+    public void SetCardUse()
+    {
+        for (int i = 0; i < card.Count; i++)
+        {
+            if (Application.isPlaying)
+            {
+                int cost = 0;
+                if (handCardView[i].cardType == CardType.무기)
+                {
+                    cost = handCardView[i].WeaponCostData;
+                    canUse[i] = (cost <= ManaManager.instance.playerNowMana);
+
+                }
+                else if (handCardView[i].cardType == CardType.주문)
+                {
+                    cost = handCardView[i].SpellCostData;
+                    canUse[i] = (cost <= ManaManager.instance.playerNowMana);
+                }
+                else if (handCardView[i].cardType == CardType.하수인)
+                {
+                    cost = handCardView[i].MinionsCostData;
+                    canUse[i] = (cost <= ManaManager.instance.playerNowMana);
+                    canUse[i] = canUse[i] && (MinionField.instance.minionNum < 7);
+                }
+              
             }
         }
     }
@@ -245,7 +276,7 @@ public class CardHand : MonoBehaviour
         }
         else if (handCardView[n].cardType == CardType.주문)
         {
-            DragCardObject.instance.ShowDropEffect(Input.mousePosition);
+            DragCardObject.instance.ShowDropEffectSpell(Input.mousePosition, 0);
         }
         else if (handCardView[n].cardType == CardType.하수인)
         {
