@@ -24,16 +24,7 @@ public class ManaManager : MonoBehaviour
     public int enemyMaxMana;
 
     [Header("-----------------------------------------------------------")]
-    [Space]
-    [Space]
-    [Space]
-    [Space]
-    [Space]
-    [Space]
-    [Space]
-    [Space]
-    [Space]
-    [Space]
+    [Space(20)]
 
     public ShowManaCost showManaCost;
     public FieldManaCost playerManaCost;

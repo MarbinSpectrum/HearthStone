@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 
 public class MinionDrag : Btn
 {
+    public MinionObject minionObject;
 
     #region[Awake]
     public override void Awake()
@@ -41,8 +42,11 @@ public class MinionDrag : Btn
     #region[pointerDown]
     public override void pointerDown()
     {
-        DragMinionLineRenderer.instance.lineRenderer.enabled = true;
-        DragMinionLineRenderer.instance.startPos = transform.position;
+        DragLineRenderer.instance.lineRenderer.enabled = true;
+        DragLineRenderer.instance.startPos = transform.position;
+        DragLineRenderer.instance.InitMask();
+        DragLineRenderer.instance.AddMask(타겟.적영웅);
+        DragLineRenderer.instance.AddMask(타겟.적하수인);
     }
     #endregion
 
@@ -63,7 +67,10 @@ public class MinionDrag : Btn
     #region[pointerUp]
     public void pointerUp()
     {
-        DragMinionLineRenderer.instance.lineRenderer.enabled = false;
+        DragLineRenderer.instance.lineRenderer.enabled = false;
+        DragLineRenderer.instance.InitMask();
+        minionObject.transform.position = DragLineRenderer.instance.dragTargetPos;
+        //if()
     }
     #endregion
 

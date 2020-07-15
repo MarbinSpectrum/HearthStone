@@ -51,6 +51,12 @@ public class HandCardCheckBtn : Btn
     #region[pointerExit]
     public override void pointerExit()
     {
+        if (DragLineRenderer.instance.lineRenderer.enabled)
+            return;
+        if (DragCardObject.instance.dragCard)
+            return;
+        if (!DragCardObject.instance.dropEffect.dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Stop"))
+            return;
         PickUpCard();
     }
     #endregion
@@ -89,6 +95,8 @@ public class HandCardCheckBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
+        if (DragLineRenderer.instance.lineRenderer.enabled)
+            return;
         if (DragCardObject.instance.dragCard)
             return;
         if (!DragCardObject.instance.dropEffect.dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Stop"))

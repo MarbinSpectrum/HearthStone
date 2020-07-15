@@ -26,11 +26,6 @@ public class Mulligan : MonoBehaviour
     public Animator secondCardAni;
     public CardView[] secondTurnCardView;
 
-    public void Update()
-    {
-
-    }
-
     #region[카드세트]
     public void MulliganCardSet()
     {
@@ -170,6 +165,11 @@ public class Mulligan : MonoBehaviour
             BattleUI.instance.fieldShadowAni.SetInteger("State", 1);
         }
         yield return new WaitForSeconds(1f);
+        HeroManager.instance.playerHero.gameObject.SetActive(true);
+        HeroManager.instance.enemyHero.gameObject.SetActive(true);
+        HeroManager.instance.heroHpManager.playerHp.SetActive(true);
+        HeroManager.instance.heroHpManager.enemyHp.SetActive(true);
+
         BattleUI.instance.gameStart = true;
         TurnManager.instance.turnEndTrigger = true;
     }

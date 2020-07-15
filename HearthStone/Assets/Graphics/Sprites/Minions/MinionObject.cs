@@ -13,6 +13,8 @@ public class MinionObject : MonoBehaviour
     public int atk;
     int baseAtk;
 
+    public bool enemy;
+
     public bool canAttack;
 
     [HideInInspector] public bool turnStartTrigger;
@@ -108,7 +110,8 @@ public class MinionObject : MonoBehaviour
             return;
         turnStartTrigger = false;
         canAttack = true;
-        canAttackObj.SetActive(canAttack);
+        if(!enemy)
+            canAttackObj.SetActive(canAttack);
     }
     #endregion
 

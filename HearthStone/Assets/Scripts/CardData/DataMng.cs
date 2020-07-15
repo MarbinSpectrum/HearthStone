@@ -55,7 +55,6 @@ public class DataMng : MonoBehaviour
 
     public void SaveData()
     {
-        Debug.Log("!");
         string jsonData = ObjectToJson(playData);
         var jtc2 = JsonToOject<PlayData>(jsonData);
 
