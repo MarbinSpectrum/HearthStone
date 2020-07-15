@@ -52,14 +52,12 @@
             {
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
-				float gray = (col.r + col.g + col.b) / 3;
-				fixed4 new_col = col;
-				new_col = gray;
-				new_col.a = col.a;
+				col.rgb = lerp(col.rgb, (col.r + col.g + col.b)/3, _GrayPower);
 
-                UNITY_APPLY_FOG(i.fogCoord, new_col);
 
-                return new_col;
+                UNITY_APPLY_FOG(i.fogCoord, col);
+
+                return col;
             }
             ENDCG
         }
