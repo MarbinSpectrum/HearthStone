@@ -15,7 +15,7 @@ public class MinionObject : MonoBehaviour
 
     public bool enemy;
 
-    public bool canAttack;
+    public int canAttackNum;
 
     [HideInInspector] public bool turnStartTrigger;
     [HideInInspector] public bool turnEndTrigger;
@@ -24,27 +24,80 @@ public class MinionObject : MonoBehaviour
     public bool InitTrigger;
     [Header("-----------------------------------------")]
     [Space(20)]
+
+    //오브젝트 넘버
+    [HideInInspector] public int num;
+
     public SpriteRenderer[] hp_spr;
     public SpriteRenderer[] atk_spr;
     public MeshRenderer meshRenderer;
     public GameObject canAttackObj;
+    public DamageNum damageEffect;
 
     #region[Update]
     void Update()
     {
         Init();
+        UpdateTrigger();
         TurnStart();
         TurnEnd();
         UpdateStat();
+        SetObjectNum();
+        damageEffect.hpSystem = (enemy ? "적_하수인_" : "아군_하수인_") + num;
+    }
+    #endregion
+
+    #region[오브젝트 번호 탐색]
+    public void SetObjectNum()
+    {
+        if(enemy)
+        {
+            for(int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
+                if(this.Equals(EnemyMinionField.instance.minions[i]))
+                {
+                    num = i;
+                    break;
+                }
+        }
+        else
+        {
+            for (int i = 0; i < MinionField.instance.minions.Length; i++)
+                if (this.Equals(MinionField.instance.minions[i]))
+                {
+                    num = i;
+                    break;
+                }
+        }
     }
     #endregion
 
     #region[스텟 업데이트]
     public void UpdateStat()
     {
-        if (hp < 10)
+        int tempHp = Mathf.Abs(hp);
+
+        if (hp < 0)
         {
-            hp_spr[0].sprite = DataMng.instance.num[hp];
+            if (tempHp < 10)
+            {
+                hp_spr[3].gameObject.SetActive(true);
+                hp_spr[4].gameObject.SetActive(false);
+            }
+            else
+            {
+                hp_spr[3].gameObject.SetActive(false);
+                hp_spr[4].gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            hp_spr[3].gameObject.SetActive(false);
+            hp_spr[4].gameObject.SetActive(false);
+        }
+
+        if (tempHp < 10)
+        {
+            hp_spr[0].sprite = DataMng.instance.num[tempHp];
             hp_spr[0].gameObject.SetActive(true);
             hp_spr[1].gameObject.SetActive(false);
             hp_spr[2].gameObject.SetActive(false);
@@ -58,8 +111,8 @@ public class MinionObject : MonoBehaviour
         }
         else
         {
-            hp_spr[1].sprite = DataMng.instance.num[hp%10];
-            hp_spr[2].sprite = DataMng.instance.num[hp/10];
+            hp_spr[1].sprite = DataMng.instance.num[tempHp % 10];
+            hp_spr[2].sprite = DataMng.instance.num[tempHp / 10];
             hp_spr[0].gameObject.SetActive(false);
             hp_spr[1].gameObject.SetActive(true);
             hp_spr[2].gameObject.SetActive(true);
@@ -103,15 +156,21 @@ public class MinionObject : MonoBehaviour
     }
     #endregion
 
+    #region[지속적인 처리]
+    public void UpdateTrigger()
+    {
+        if (!enemy)
+            canAttackObj.SetActive(atk != 0 && canAttackNum > 0 && !MinionField.instance.MinionAttackCheck());
+    }
+    #endregion
+
     #region[턴 시작시 처리]
     public void TurnStart()
     {
         if (!turnStartTrigger)
             return;
         turnStartTrigger = false;
-        canAttack = true;
-        if(!enemy)
-            canAttackObj.SetActive(canAttack);
+        canAttackNum = 1;
     }
     #endregion
 
@@ -121,6 +180,7 @@ public class MinionObject : MonoBehaviour
         if (!turnEndTrigger)
             return;
         turnEndTrigger = false;
+        canAttackNum = 0;
     }
     #endregion
 
@@ -137,8 +197,7 @@ public class MinionObject : MonoBehaviour
         hp = baseHp;
         atk = baseAtk;
 
-        canAttack = false;
-        canAttackObj.SetActive(canAttack);
+        canAttackNum = 0;
     }
     #endregion
 }

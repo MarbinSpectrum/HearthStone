@@ -26,7 +26,14 @@ public class HeroSelect : Btn
     #region[Update]
     public override void Update()
     {
-        btnImg.raycastTarget = !DragCardObject.instance.dragCard;
+        btnImg.raycastTarget = 
+            //카드를 드래그중이 아니고
+            !DragCardObject.instance.dragCard && 
+            //적영웅이 아닌오브젝트인데 패를 축소시켰을 경우
+            ((!enemy && CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패 기본상태")) || enemy);
+
+        if (Input.GetMouseButtonUp(0))
+            SetSelect(false);
     }
     #endregion
 
@@ -52,6 +59,13 @@ public class HeroSelect : Btn
     public override void pointerExit()
     {
         SetSelect(false);
+        if(Input.GetMouseButton(0))
+        {
+            if (enemy)
+                AttackManager.instance.PopDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage);
+            else
+                AttackManager.instance.PopDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage);
+        }
     }
     #endregion
 
@@ -70,13 +84,24 @@ public class HeroSelect : Btn
     #endregion
 
     #region[영웅 선택 이펙트 설정]
-    public void SetSelect(bool b)
+    public void SetSelect(bool flag)
     {
-        if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적영웅)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군영웅)))
+        if (!flag)
         {
-            DragLineRenderer.instance.selectTarget = b;
-            DragLineRenderer.instance.dragTargetPos = transform.position;
-            select.SetActive(b);
+            DragLineRenderer.instance.selectTarget = false;
+            DragLineRenderer.instance.dragTargetPos = Vector2.zero;
+            select.SetActive(false);
+        }
+        else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적영웅)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군영웅)))
+        {
+            DragLineRenderer.instance.selectTarget = true;
+            DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
+            //MinionField.instance.minions[MinionDrag.dragMinionNum].canAttackNum--;
+            if (enemy)
+                AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, MinionField.instance.minions[MinionDrag.dragMinionNum].atk);
+            else
+                AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, 4);
+            select.SetActive(true);
         }
     }
     #endregion

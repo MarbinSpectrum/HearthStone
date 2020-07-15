@@ -11,7 +11,7 @@ public class BattleUI : MonoBehaviour
     public Material druidMat;
     public Material rogueMat;
 
-    public Image[] characterImg;
+    public GameObject[] characterImg;
     public Text characterNameTxt;
     public Text jobNameTxt;
 
@@ -53,8 +53,8 @@ public class BattleUI : MonoBehaviour
 
         int jobNum = (int)DataMng.instance.playData.deck[InGameDeck.nowDeck].job;
         for (int i = 0; i < characterImg.Length; i++)
-            characterImg[i].enabled = false;
-        characterImg[jobNum].enabled = true;
+            characterImg[i].SetActive(false);
+        characterImg[jobNum].SetActive(true);
         switch (jobNum)
         {
             case 0:

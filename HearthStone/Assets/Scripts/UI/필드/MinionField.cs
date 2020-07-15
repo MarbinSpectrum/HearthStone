@@ -13,17 +13,29 @@ public class MinionField : MonoBehaviour
     public float minionDistance;
 
     [Space(20)]
+    [Header("하수인 배치시 속도")]
     [Range(0, 1920)]
     public float min_speed;
     [Range(0, 1920)]
     public float max_speed;
+
+    [Space(20)]
+    [Header("하수인 공격시 처리")]
+    [Range(0, 1920)]
+    public float min_attack_speed;
+    [Range(0, 1920)]
+    public float max_attack_speed;
+    [Range(0, 1920)]
+    public float attack_range;
+    public float attack_delay;
+
     [Header("-----------------------------------------")]
     [Space(20)]
 
-
     public MinionObject[] minions = new MinionObject[7];
     Vector3[] minions_pos = new Vector3[7];
-
+    [HideInInspector] public Vector3[] minions_Attack_pos = new Vector3[7];
+    [HideInInspector] public float[] minions_attack_delay = new float[7];
     [HideInInspector] public int mousePos;
 
     #region[Awake]
@@ -32,6 +44,8 @@ public class MinionField : MonoBehaviour
         instance = this;
         for (int i = 0; i < minions_pos.Length; i++)
             minions_pos[i] = new Vector3();
+        for (int i = 0; i < minions_Attack_pos.Length; i++)
+            minions_Attack_pos[i] = new Vector3();
     }
     #endregion
 
@@ -66,6 +80,16 @@ public class MinionField : MonoBehaviour
     }
     #endregion
 
+    #region[미니언이 공격중인지 검사]
+    public bool MinionAttackCheck()
+    {
+        for (int i = 0; i < 7; i++)
+            if (minions_Attack_pos[i] != Vector3.zero)
+                return true;
+        return false;
+    }
+    #endregion
+
     #region[미니언 위치 설정]
     void SetPos()
     {
@@ -93,6 +117,31 @@ public class MinionField : MonoBehaviour
                 minions_pos[i] = v;
             }
         }
+
+        for (int i = 0; i < 7; i++)
+        {
+            if (minions_Attack_pos[i] != Vector3.zero)
+            {
+                if (Vector3.Distance(minions_Attack_pos[i], minions[i].transform.position) < attack_range)
+                {
+                    if (minions_attack_delay[i] < 0)
+                    {
+                        minions[i].canAttackNum--;
+                        minions_Attack_pos[i] = Vector3.zero;
+                    }
+                    else
+                    {
+                        AttackManager.instance.AttackEffectRun();
+                        minions_attack_delay[i] -= Time.deltaTime;
+                    }
+                }
+                else
+                    minions_attack_delay[i] = attack_delay;
+
+                if (minions_Attack_pos[i] != Vector3.zero)
+                    minions_pos[i] = new Vector3(minions_Attack_pos[i].x, minions_Attack_pos[i].y, transform.position.z);
+            }
+        }
     }
     #endregion
 
@@ -100,21 +149,33 @@ public class MinionField : MonoBehaviour
     void MoveMinion()
     {
         min_speed = Mathf.Min(min_speed, max_speed);
+        min_attack_speed = Mathf.Min(min_attack_speed, max_attack_speed);
         for (int i = 0; i < minionNum; i++)
         {
             minions[i].gameObject.SetActive(true);
             Vector2 v = minions_pos[i] - minions[i].transform.position;
             v *= Time.deltaTime * Vector2.Distance(minions_pos[i], minions[i].transform.position);
 
-            if (Vector2.Distance(Vector3.zero, v) > Vector2.Distance(Vector3.zero, v.normalized * Time.deltaTime * max_speed))
-                v = v.normalized * Time.deltaTime * max_speed;
-
-            if (Vector2.Distance(Vector3.zero, v) < Vector2.Distance(Vector3.zero, v.normalized * Time.deltaTime * min_speed))
-                v = v.normalized * Time.deltaTime * min_speed;
-            if (Vector2.Distance(minions_pos[i], minions[i].transform.position) < Vector2.Distance(Vector3.zero,v))
-                minions[i].transform.position = new Vector3(minions_pos[i].x, minions_pos[i].y, minions[i].transform.position.z);
-            else
-                minions[i].transform.position += new Vector3(v.x,v.y,0);
+            if(Mathf.Abs(transform.position.y - minions[i].transform.position.y) < 5)
+            {
+                if (Vector2.Distance(Vector3.zero, v) > Vector2.Distance(Vector3.zero, v.normalized * Time.deltaTime * max_speed))
+                    v = v.normalized * Time.deltaTime * max_speed;
+                if (Vector2.Distance(Vector3.zero, v) < Vector2.Distance(Vector3.zero, v.normalized * Time.deltaTime * min_speed))
+                    v = v.normalized * Time.deltaTime * min_speed;
+                if (Vector2.Distance(minions_pos[i], minions[i].transform.position) < Vector2.Distance(Vector3.zero, v))
+                    minions[i].transform.position = new Vector3(minions_pos[i].x, minions_pos[i].y, minions[i].transform.position.z);
+                else
+                    minions[i].transform.position += new Vector3(v.x, v.y, 0);
+            }
+            else if ((minions_attack_delay[i] == attack_delay) || (minions_attack_delay[i] <= 0))
+            {
+                if (Vector2.Distance(Vector3.zero, v) > Vector2.Distance(Vector3.zero, v.normalized * Time.deltaTime * max_attack_speed))
+                    v = v.normalized * Time.deltaTime * max_attack_speed;
+                if (Vector2.Distance(Vector3.zero, v) < Vector2.Distance(Vector3.zero, v.normalized * Time.deltaTime * min_attack_speed))
+                    v = v.normalized * Time.deltaTime * min_attack_speed;
+                if (Vector2.Distance(minions_pos[i], minions[i].transform.position) >= Vector2.Distance(Vector3.zero, v))
+                    minions[i].transform.position += new Vector3(v.x, v.y, 0);
+            }
         }
         for (int i = minionNum; i < minions.Length; i++)
             minions[i].gameObject.SetActive(false);

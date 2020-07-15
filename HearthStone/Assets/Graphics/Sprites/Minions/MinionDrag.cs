@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 
 public class MinionDrag : Btn
 {
+    public static int dragMinionNum;
     public MinionObject minionObject;
 
     #region[Awake]
@@ -42,6 +43,7 @@ public class MinionDrag : Btn
     #region[pointerDown]
     public override void pointerDown()
     {
+        dragMinionNum = minionObject.num;
         DragLineRenderer.instance.lineRenderer.enabled = true;
         DragLineRenderer.instance.startPos = transform.position;
         DragLineRenderer.instance.InitMask();
@@ -67,10 +69,14 @@ public class MinionDrag : Btn
     #region[pointerUp]
     public void pointerUp()
     {
+        dragMinionNum = -1;
         DragLineRenderer.instance.lineRenderer.enabled = false;
         DragLineRenderer.instance.InitMask();
-        minionObject.transform.position = DragLineRenderer.instance.dragTargetPos;
-        //if()
+        if(DragLineRenderer.instance.dragTargetPos != Vector2.zero)
+        {
+            int n = minionObject.num;
+            MinionField.instance.minions_Attack_pos[n] = new Vector3(DragLineRenderer.instance.dragTargetPos.x, DragLineRenderer.instance.dragTargetPos.y, minionObject.transform.position.z);
+        }
     }
     #endregion
 

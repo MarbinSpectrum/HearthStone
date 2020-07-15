@@ -30,8 +30,8 @@ public class MinionSelect : Btn
     {
         btnImg.raycastTarget = !DragCardObject.instance.dragCard;
         enemy = minionObject.enemy;
-        if(!Input.GetMouseButton(0))
-            SetSelect(false); ;
+        if(Input.GetMouseButtonUp(0))
+            SetSelect(false);
     }
     #endregion
 
@@ -57,6 +57,12 @@ public class MinionSelect : Btn
     public override void pointerExit()
     {
         SetSelect(false);
+        if (Input.GetMouseButton(0))
+        {
+            AttackManager.instance.PopDamageObj(minionObject.damageEffect);
+            if(MinionDrag.dragMinionNum != -1)
+                AttackManager.instance.PopDamageObj(MinionField.instance.minions[MinionDrag.dragMinionNum].damageEffect);
+        }
     }
     #endregion
 
@@ -75,16 +81,22 @@ public class MinionSelect : Btn
     #endregion
 
     #region[하수인 선택 이펙트 설정]
-    public void SetSelect(bool b)
+    public void SetSelect(bool flag)
     {
-        if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적하수인)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군하수인)))
+        if (!flag)
         {
-            DragLineRenderer.instance.selectTarget = b;
-            if (b == true)
-                DragLineRenderer.instance.dragTargetPos = transform.position;
-            else
-                DragLineRenderer.instance.dragTargetPos = Vector2.zero;
-            select.SetActive(b);
+            DragLineRenderer.instance.selectTarget = false;
+            DragLineRenderer.instance.dragTargetPos = Vector2.zero;
+            select.SetActive(false);
+        }
+        else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적하수인)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군하수인)))
+        {
+            DragLineRenderer.instance.selectTarget = true;
+            DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
+            //MinionField.instance.minions[MinionDrag.dragMinionNum].canAttackNum--;
+            AttackManager.instance.AddDamageObj(minionObject.damageEffect,MinionField.instance.minions[MinionDrag.dragMinionNum].atk);
+            AttackManager.instance.AddDamageObj(MinionField.instance.minions[MinionDrag.dragMinionNum].damageEffect, minionObject.atk);
+            select.SetActive(true);
         }
     }
     #endregion

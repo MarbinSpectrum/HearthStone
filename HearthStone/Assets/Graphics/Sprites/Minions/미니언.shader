@@ -3,11 +3,14 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+		_GrayPower("GrayPower",Range(0,1)) = 0
     }
     SubShader
     {
         Tags { "RenderType"="Opaque" }
         LOD 100
+
+		
 
         Pass
         {
@@ -35,7 +38,7 @@
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-
+			float _GrayPower;
             v2f vert (appdata v)
             {
                 v2f o;
@@ -49,10 +52,14 @@
             {
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
-                // apply fog
-                UNITY_APPLY_FOG(i.fogCoord, col);
+				float gray = (col.r + col.g + col.b) / 3;
+				fixed4 new_col = col;
+				new_col = gray;
+				new_col.a = col.a;
 
-                return col;
+                UNITY_APPLY_FOG(i.fogCoord, new_col);
+
+                return new_col;
             }
             ENDCG
         }
