@@ -64,11 +64,15 @@ public class AttackManager : MonoBehaviour
         {
             int i = s[6] - '0';
             EnemyMinionField.instance.minions[i].hp -= n;
+            if (EnemyMinionField.instance.minions[i].hp <= 0)
+                EnemyMinionField.instance.minions[i].MinionDeath();
         }
         else if (s.Contains("아군_하수인"))
         {
             int i = s[7] - '0';
             MinionField.instance.minions[i].hp -= n;
+            if (MinionField.instance.minions[i].hp <= 0)
+                MinionField.instance.minions[i].MinionDeath();
         }
         else if (s.Contains("아군_영웅"))
         {
@@ -78,5 +82,20 @@ public class AttackManager : MonoBehaviour
         {
             HeroManager.instance.heroHpManager.nowEnemyHp -= n;
         }
+        StartCoroutine(CameraVibrationEffect(0, n, 0.5f));
     }
+
+    #region[공격시 이펙트(진동)]
+    private IEnumerator CameraVibrationEffect(float waitTime, int n, float power = 1)
+    {
+        yield return new WaitForSeconds(waitTime);
+        Vector3 v = Camera.main.transform.position;
+        for (int i = 0; i < n; i++)
+        {
+            Camera.main.transform.position = v + Quaternion.Euler(0, 0, Random.Range(0, 360)) * new Vector3(1, 0, 0);
+            yield return new WaitForSeconds(0.01f);
+        }
+        Camera.main.transform.position = v;
+    }
+    #endregion
 }

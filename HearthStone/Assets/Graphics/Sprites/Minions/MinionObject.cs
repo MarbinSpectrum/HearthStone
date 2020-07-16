@@ -33,6 +33,7 @@ public class MinionObject : MonoBehaviour
     public MeshRenderer meshRenderer;
     public GameObject canAttackObj;
     public DamageNum damageEffect;
+    public Animator animator;
 
     #region[Update]
     void Update()
@@ -183,6 +184,37 @@ public class MinionObject : MonoBehaviour
         canAttackNum = 0;
     }
     #endregion
+
+    #region[미니언 죽음]
+    public void MinionDeath()
+    {
+        animator.SetTrigger("Death");
+        StartCoroutine(MinionDeath_C(1.1f));
+    }
+    private IEnumerator MinionDeath_C(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        if (!enemy)
+        {
+            MinionObject temp = this;
+            for (int i = num; i < MinionField.instance.minionNum - 1; i++)
+                MinionField.instance.minions[i] = MinionField.instance.minions[i + 1];
+            MinionField.instance.minions[MinionField.instance.minionNum - 1] = this;
+            MinionField.instance.minionNum--;
+        }
+        else
+        {
+            MinionObject temp = this;
+            for (int i = num; i < EnemyMinionField.instance.minionNum - 1; i++)
+                EnemyMinionField.instance.minions[i] = EnemyMinionField.instance.minions[i + 1];
+            EnemyMinionField.instance.minions[EnemyMinionField.instance.minionNum - 1] = this;
+            EnemyMinionField.instance.minionNum--;
+        }
+    }
+
+    #endregion
+
+
 
     #region[초기화]
     public void Init()

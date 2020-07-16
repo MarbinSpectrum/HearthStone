@@ -54,7 +54,6 @@
                 fixed4 col = tex2D(_MainTex, i.uv);
 				col.rgb = lerp(col.rgb, (col.r + col.g + col.b)/3, _GrayPower);
 
-
                 UNITY_APPLY_FOG(i.fogCoord, col);
 
                 return col;

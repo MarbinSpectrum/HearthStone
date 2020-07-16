@@ -84,7 +84,10 @@ public class MinionField : MonoBehaviour
     public bool MinionAttackCheck()
     {
         for (int i = 0; i < 7; i++)
-            if (minions_Attack_pos[i] != Vector3.zero)
+            if (minions[i].gameObject.activeSelf && minions_Attack_pos[i] != Vector3.zero)
+                return true;
+        for (int i = 0; i < 7; i++)
+            if (minions[i].gameObject.activeSelf && minions[i].animator.GetCurrentAnimatorStateInfo(0).IsName("하수인제거"))
                 return true;
         return false;
     }

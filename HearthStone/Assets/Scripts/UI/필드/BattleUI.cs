@@ -31,7 +31,6 @@ public class BattleUI : MonoBehaviour
 
     [HideInInspector] public bool gameStart;
 
-
     public void Awake()
     {
         if (MainMenu.instance)
