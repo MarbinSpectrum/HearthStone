@@ -26,5 +26,6 @@ public class MinionManager : MonoBehaviour
         }
     }
     #endregion
+
 }
 

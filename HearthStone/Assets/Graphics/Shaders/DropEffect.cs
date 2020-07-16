@@ -10,6 +10,8 @@ public class DropEffect : MonoBehaviour
     public CardView dropEffectCardView;
     public Animator dropEffectAni;
 
+    [HideInInspector] public bool effectArrive;
+
     [HideInInspector] public Vector2 dropPos;
     [Space(20)]
     [Range(0,1)]
@@ -18,6 +20,8 @@ public class DropEffect : MonoBehaviour
     public float min_speed;
     [Range(0, 1920)]
     public float max_speed;
+
+
     void Update()
     {
         if (dropEffectMat)
@@ -31,7 +35,10 @@ public class DropEffect : MonoBehaviour
         if (Vector2.Distance(Vector2.zero, v) < Vector2.Distance(Vector2.zero, v.normalized * min_speed))
             v = v.normalized * min_speed;
         if (Vector2.Distance(dropRectTransform.anchoredPosition, dropPos) < Vector2.Distance(Vector2.zero, v))
+        {
             dropRectTransform.anchoredPosition = dropPos;
+            effectArrive = true;
+        }
         else
             dropRectTransform.anchoredPosition += v;
     }

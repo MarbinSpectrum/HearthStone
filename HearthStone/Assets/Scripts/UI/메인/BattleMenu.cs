@@ -25,6 +25,9 @@ public class BattleMenu : MonoBehaviour
     public Animator findBattleZoomAni;
     public Animator findBattleAni;
 
+    //대전씬으로
+    public Animator gotoBattleFadeAni;
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #region[Awake]
@@ -79,6 +82,11 @@ public class BattleMenu : MonoBehaviour
         }
         if (findBattleZoomAni.GetBool("Find"))
         {
+            if (findBattleAni.GetCurrentAnimatorStateInfo(0).IsName("FindBattle") && findBattleAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.977f)
+            {
+                if (gotoBattleFadeAni.GetCurrentAnimatorStateInfo(0).IsName("GotoBattle_Fade_Not"))
+                    gotoBattleFadeAni.SetTrigger("Fade");
+            }
             if (findBattleAni.GetCurrentAnimatorStateInfo(0).IsName("FindBattle") && findBattleAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.7)
             {
                 SoundManager.instance.StopBGM();

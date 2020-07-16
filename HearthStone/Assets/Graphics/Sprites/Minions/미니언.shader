@@ -10,7 +10,7 @@
         Tags { "RenderType"="Opaque" }
         LOD 100
 
-		
+		cull off
 
         Pass
         {
@@ -39,6 +39,7 @@
             sampler2D _MainTex;
             float4 _MainTex_ST;
 			float _GrayPower;
+			float _FilpX;
             v2f vert (appdata v)
             {
                 v2f o;
@@ -51,7 +52,7 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
+				fixed4 col = tex2D(_MainTex, i.uv);
 				col.rgb = lerp(col.rgb, (col.r + col.g + col.b)/3, _GrayPower);
 
                 UNITY_APPLY_FOG(i.fogCoord, col);

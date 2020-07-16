@@ -20,6 +20,9 @@ public class TurnManager : MonoBehaviour
 
     public ManaManager manaManager;
     public Animator turnAni;
+    public Animator turnBtnAni;
+    public GameObject turnBtn;
+
     float time = 2;
 
     public void Awake()

@@ -57,8 +57,10 @@ public class DataMng : MonoBehaviour
     {
         string jsonData = ObjectToJson(playData);
         var jtc2 = JsonToOject<PlayData>(jsonData);
-
-        CreateJsonFile(Application.persistentDataPath, "PlayData", jsonData);
+        if (!Application.isEditor)
+            CreateJsonFile(Application.persistentDataPath, "PlayData", jsonData);
+        else
+            CreateJsonFile(Application.dataPath, "Resources/PlayData", jsonData);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,24 +219,46 @@ public class DataMng : MonoBehaviour
     void LoadPlayData()
     {
         string filePath = Application.persistentDataPath + "/PlayData.json";
-        //if(Application.isEditor)
-        //    filePath = Application.dataPath + "/Resources/PlayData.json";
-        if (File.Exists(filePath))
+        if(Application.isEditor)
         {
-            var jtc = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
-            playData = jtc;
-            playData.Print();
+            filePath = Application.dataPath + "/Resources/PlayData.json";
+            if (File.Exists(filePath))
+            {
+                var jtc = LoadJsonFile<PlayData>(Application.dataPath, "Resources/PlayData");
+                playData = jtc;
+                playData.Print();
+            }
+            else
+            {
+
+                playData = new PlayData(true);
+                string jsonData = ObjectToJson(playData);
+                var jtc = JsonToOject<PlayData>(jsonData);
+                CreateJsonFile(Application.dataPath, "Resources/PlayData", jsonData);
+                jtc = LoadJsonFile<PlayData>(Application.dataPath, "Resources/PlayData");
+                playData = jtc;
+                playData.Print();
+            }
         }
         else
         {
-  
-            playData = new PlayData(true);
-            string jsonData = ObjectToJson(playData);
-            var jtc = JsonToOject<PlayData>(jsonData);
-            CreateJsonFile(Application.persistentDataPath, "PlayData", jsonData);
-            jtc = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
-            playData = jtc;
-            playData.Print();
+            if (File.Exists(filePath))
+            {
+                var jtc = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
+                playData = jtc;
+                playData.Print();
+            }
+            else
+            {
+
+                playData = new PlayData(true);
+                string jsonData = ObjectToJson(playData);
+                var jtc = JsonToOject<PlayData>(jsonData);
+                CreateJsonFile(Application.persistentDataPath, "PlayData", jsonData);
+                jtc = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
+                playData = jtc;
+                playData.Print();
+            }
         }
     }
 

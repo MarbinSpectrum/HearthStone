@@ -101,6 +101,7 @@ public class MinionField : MonoBehaviour
         flag = flag || (DragCardObject.instance.dragCardView.cardType != CardType.하수인);   //하수인을 드래그하는게 아닐때
         flag = flag || (!DragCardObject.instance.mouseInField);   //필드로 뭔가를 드래그하는게 아닐때
 
+        //일반적인위치지정
         if (flag)
         {
             float minX = minionDistance * (minionNum - 1) / 2f;
@@ -121,11 +122,12 @@ public class MinionField : MonoBehaviour
             }
         }
 
+        //공격위치로 변경
         for (int i = 0; i < 7; i++)
         {
             if (minions_Attack_pos[i] != Vector3.zero)
             {
-                if (Vector3.Distance(minions_Attack_pos[i], minions[i].transform.position) < attack_range)
+                if (Vector2.Distance(minions_Attack_pos[i], minions[i].transform.position) < attack_range)
                 {
                     if (minions_attack_delay[i] < 0)
                     {
@@ -156,26 +158,42 @@ public class MinionField : MonoBehaviour
         for (int i = 0; i < minionNum; i++)
         {
             minions[i].gameObject.SetActive(true);
-            Vector2 v = minions_pos[i] - minions[i].transform.position;
-            v *= Time.deltaTime * Vector2.Distance(minions_pos[i], minions[i].transform.position);
 
-            if(Mathf.Abs(transform.position.y - minions[i].transform.position.y) < 5)
+            //일반적인 위치 조정
+            if(Mathf.Abs(transform.position.y - minions[i].transform.position.y) < 1)
             {
+                minions[i].transform.localPosition = new Vector3(minions[i].transform.localPosition.x, minions[i].transform.localPosition.y, -40);
+                Vector2 v = minions_pos[i] - minions[i].transform.position;
+                v *= Time.deltaTime * Vector2.Distance(minions_pos[i], minions[i].transform.position);
+
                 if (Vector2.Distance(Vector3.zero, v) > Vector2.Distance(Vector3.zero, v.normalized * Time.deltaTime * max_speed))
                     v = v.normalized * Time.deltaTime * max_speed;
                 if (Vector2.Distance(Vector3.zero, v) < Vector2.Distance(Vector3.zero, v.normalized * Time.deltaTime * min_speed))
                     v = v.normalized * Time.deltaTime * min_speed;
                 if (Vector2.Distance(minions_pos[i], minions[i].transform.position) < Vector2.Distance(Vector3.zero, v))
-                    minions[i].transform.position = new Vector3(minions_pos[i].x, minions_pos[i].y, minions[i].transform.position.z);
+                    minions[i].transform.position = new Vector3(minions_pos[i].x, minions_pos[i].y,transform.position.z);
                 else
                     minions[i].transform.position += new Vector3(v.x, v.y, 0);
             }
+            //공격시 위치이동
             else if ((minions_attack_delay[i] == attack_delay) || (minions_attack_delay[i] <= 0))
             {
+                minions[i].transform.localPosition = new Vector3(minions[i].transform.localPosition.x, minions[i].transform.localPosition.y, -140);
+                Vector2 v = minions_pos[i] - minions[i].transform.position;
+                v *= Time.deltaTime * Vector2.Distance(minions_pos[i], minions[i].transform.position);
                 if (Vector2.Distance(Vector3.zero, v) > Vector2.Distance(Vector3.zero, v.normalized * Time.deltaTime * max_attack_speed))
                     v = v.normalized * Time.deltaTime * max_attack_speed;
                 if (Vector2.Distance(Vector3.zero, v) < Vector2.Distance(Vector3.zero, v.normalized * Time.deltaTime * min_attack_speed))
                     v = v.normalized * Time.deltaTime * min_attack_speed;
+
+                if (minions_pos[i].y > minions[i].transform.position.y)
+                {
+                    if (Mathf.Abs(minions_pos[i].y - minions[i].transform.position.y) < Mathf.Abs(minions_pos[i].y - transform.position.y) * 0.95f)
+                        v = v.normalized * Time.deltaTime * max_attack_speed * 1.2f;
+                    else
+                        v = v.normalized * Time.deltaTime * min_attack_speed;
+                }
+
                 if (Vector2.Distance(minions_pos[i], minions[i].transform.position) >= Vector2.Distance(Vector3.zero, v))
                     minions[i].transform.position += new Vector3(v.x, v.y, 0);
             }
@@ -203,7 +221,16 @@ public class MinionField : MonoBehaviour
         Vector3 v = new Vector3(transform.position.x - minX + minionDistance * n, transform.position.y, minions[n].transform.position.z);
         minions[n].transform.position = v;
         DragCardObject.instance.ShowDropEffectMinion(Camera.main.WorldToScreenPoint(v),0);
+        StartCoroutine(MinionDrop(n, 0));
     }
+
+    private IEnumerator MinionDrop(int n,int spawnType)
+    {
+        while (!DragCardObject.instance.dropEffect.effectArrive)
+            yield return new WaitForSeconds(0.1f);
+        minions[n].animator.SetTrigger("NormalSpawn");
+    }
+
     #endregion
 
     #region[미니언 턴 시작시 처리]

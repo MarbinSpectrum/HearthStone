@@ -8,11 +8,14 @@ public class AttackManager : MonoBehaviour
 
     public List<DamageNum> damageObj = new List<DamageNum>();
 
+    #region[Awake]
     void Awake()
     {
         instance = this;
     }
+    #endregion
 
+    #region[CheckDamageObj]
     public bool CheckDamageObj(DamageNum obj)
     {
         for (int i = 0; i < damageObj.Count; i++)
@@ -20,7 +23,9 @@ public class AttackManager : MonoBehaviour
                 return true;
         return false;
     }
+    #endregion
 
+    #region[AddDamageObj]
     public void AddDamageObj(DamageNum obj,int n)
     {
         if (CheckDamageObj(obj))
@@ -28,12 +33,16 @@ public class AttackManager : MonoBehaviour
         obj.damage = n;
         damageObj.Add(obj);
     }
+    #endregion
 
+    #region[PopAllDamageObj]
     public void PopAllDamageObj()
     {
         damageObj.Clear();
     }
+    #endregion
 
+    #region[PopDamageObj]
     public void PopDamageObj(DamageNum obj)
     {
         if (!CheckDamageObj(obj))
@@ -47,7 +56,9 @@ public class AttackManager : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region[공격시 처리]
     public void AttackEffectRun()
     {
         for (int i = 0; i < damageObj.Count; i++)
@@ -84,6 +95,7 @@ public class AttackManager : MonoBehaviour
         }
         StartCoroutine(CameraVibrationEffect(0, n, 0.5f));
     }
+    #endregion
 
     #region[공격시 이펙트(진동)]
     private IEnumerator CameraVibrationEffect(float waitTime, int n, float power = 1)

@@ -43,9 +43,9 @@ public class DragLineRenderer : MonoBehaviour
 
         #region[선의 좌표 설정]
         lineRenderer.positionCount = 2;
-        lineRenderer.SetPosition(0, startPos);
-        lineRenderer.SetPosition(1, v);
-        arrowEnd.transform.position = v;
+        lineRenderer.SetPosition(0, new Vector3(startPos.x, startPos.y, transform.position.z));
+        lineRenderer.SetPosition(1, new Vector3(v.x, v.y,transform.position.z));
+        arrowEnd.transform.position = new Vector3(v.x, v.y, arrowEnd.transform.position.z);
         Vector2 v2 = v - startPos;
         float angle = Mathf.Atan2(v2.y, v2.x) * Mathf.Rad2Deg;
         arrowEnd.transform.rotation = Quaternion.Euler(0,0, angle);

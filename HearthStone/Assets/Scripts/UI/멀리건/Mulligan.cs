@@ -169,6 +169,9 @@ public class Mulligan : MonoBehaviour
         HeroManager.instance.enemyHero.gameObject.SetActive(true);
         HeroManager.instance.heroHpManager.playerHp.SetActive(true);
         HeroManager.instance.heroHpManager.enemyHp.SetActive(true);
+        TurnManager.instance.turnBtn.SetActive(true);
+        if (r == 1)
+            TurnManager.instance.turnBtnAni.SetTrigger("상대턴");      
 
         BattleUI.instance.gameStart = true;
         TurnManager.instance.turnEndTrigger = true;

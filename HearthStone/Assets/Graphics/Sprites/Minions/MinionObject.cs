@@ -20,13 +20,13 @@ public class MinionObject : MonoBehaviour
     [HideInInspector] public bool turnStartTrigger;
     [HideInInspector] public bool turnEndTrigger;
 
+    public List<MinionAbility> ability = new List<MinionAbility>();
+
+    //[Header("-----------------------------------------")]
     [Space(20)]
     public bool InitTrigger;
     [Header("-----------------------------------------")]
-    [Space(20)]
-
-    //오브젝트 넘버
-    [HideInInspector] public int num;
+    [Space(100)]
 
     public SpriteRenderer[] hp_spr;
     public SpriteRenderer[] atk_spr;
@@ -34,6 +34,10 @@ public class MinionObject : MonoBehaviour
     public GameObject canAttackObj;
     public DamageNum damageEffect;
     public Animator animator;
+
+
+    //오브젝트 넘버
+    [HideInInspector] public int num;
 
     #region[Update]
     void Update()
@@ -189,8 +193,9 @@ public class MinionObject : MonoBehaviour
     public void MinionDeath()
     {
         animator.SetTrigger("Death");
-        StartCoroutine(MinionDeath_C(1.1f));
+        StartCoroutine(MinionDeath_C(1f));
     }
+
     private IEnumerator MinionDeath_C(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
@@ -211,10 +216,7 @@ public class MinionObject : MonoBehaviour
             EnemyMinionField.instance.minionNum--;
         }
     }
-
     #endregion
-
-
 
     #region[초기화]
     public void Init()

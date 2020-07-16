@@ -93,6 +93,7 @@ public class DragCardObject : MonoBehaviour
         dropEffect.dropPos = pos;
         dropEffect.dropRectTransform.anchoredPosition = Input.mousePosition;
         dropEffect.dropEffectAni.SetTrigger("Effect_Minion_" + n);
+        dropEffect.effectArrive = false;
     }
 
     public void ShowDropEffectSpell(Vector2 pos, int n)
@@ -100,6 +101,7 @@ public class DragCardObject : MonoBehaviour
         dropEffect.dropPos = pos;
         dropEffect.dropRectTransform.anchoredPosition = Input.mousePosition;
         dropEffect.dropEffectAni.SetTrigger("Effect_Spell_" + n);
+        dropEffect.effectArrive = false;
     }
 
     public void ShowDragCard(CardView cardView)
