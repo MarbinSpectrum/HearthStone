@@ -22870,8 +22870,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 149368994}
-  battleMenu: {fileID: 706962360}
-  myCollectionMenu: {fileID: 692768417}
   mainMenu: {fileID: 863395709}
   main_animator: {fileID: 863395715}
 --- !u!1 &392169605
@@ -99522,7 +99520,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!224 &1441010887
 RectTransform:

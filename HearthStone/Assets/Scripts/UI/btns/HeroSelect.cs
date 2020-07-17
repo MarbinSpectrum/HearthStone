@@ -94,13 +94,23 @@ public class HeroSelect : Btn
         }
         else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적영웅)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군영웅)))
         {
-            DragLineRenderer.instance.selectTarget = true;
-            DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
-            //MinionField.instance.minions[MinionDrag.dragMinionNum].canAttackNum--;
-            if (enemy)
-                AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, MinionField.instance.minions[MinionDrag.dragMinionNum].atk);
-            else
-                AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, 4);
+            if (MinionManager.instance.CheckTaunt(enemy))
+            {
+                DragLineRenderer.instance.selectTarget = true;
+                DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
+                //MinionField.instance.minions[MinionDrag.dragMinionNum].canAttackNum--;
+
+
+                if (enemy)
+                {
+                    MinionField.instance.minions[MinionDrag.dragMinionNum].stealth = false;
+                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, MinionField.instance.minions[MinionDrag.dragMinionNum].final_atk);
+                }
+                else
+                {
+                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, 4);
+                }
+            }
             select.SetActive(true);
         }
     }

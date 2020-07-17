@@ -280,7 +280,7 @@ public class CardHand : MonoBehaviour
         }
         else if (handCardView[n].cardType == CardType.하수인)
         {
-            MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData);
+            MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData,true);
         }
 
         nowHandNum--;

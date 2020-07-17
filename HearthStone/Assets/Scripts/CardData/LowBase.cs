@@ -29,14 +29,17 @@ public class LowBase
             string[] values = rowList[r].Split(',');
             int tableID = 0;
             int.TryParse(values[0], out tableID);
-
             if (!m_table.ContainsKey(tableID))
             {
                 m_table.Add(tableID, new Dictionary<string, string>());
 
                 for(int c = 1; c < values.Length; c++)
                     if (!m_table[tableID].ContainsKey(subjects[c]))
-                        m_table[tableID].Add(subjects[c], values[c]);
+                    {
+                        string temp = subjects[c].Replace('\r', ' ').Trim();
+                        m_table[tableID].Add(temp, values[c]);
+                    }
+
             }
         }
     }

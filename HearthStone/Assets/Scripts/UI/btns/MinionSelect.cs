@@ -91,11 +91,15 @@ public class MinionSelect : Btn
         }
         else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적하수인)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군하수인)))
         {
-            DragLineRenderer.instance.selectTarget = true;
-            DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
-            //MinionField.instance.minions[MinionDrag.dragMinionNum].canAttackNum--;
-            AttackManager.instance.AddDamageObj(minionObject.damageEffect,MinionField.instance.minions[MinionDrag.dragMinionNum].atk);
-            AttackManager.instance.AddDamageObj(MinionField.instance.minions[MinionDrag.dragMinionNum].damageEffect, minionObject.atk);
+            if(!minionObject.stealth && MinionManager.instance.CheckTaunt(minionObject))
+            {
+                DragLineRenderer.instance.selectTarget = true;
+                DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
+                //MinionField.instance.minions[MinionDrag.dragMinionNum].canAttackNum--;
+                MinionField.instance.minions[MinionDrag.dragMinionNum].stealth = false;
+                AttackManager.instance.AddDamageObj(minionObject.damageEffect, MinionField.instance.minions[MinionDrag.dragMinionNum].final_atk);
+                AttackManager.instance.AddDamageObj(MinionField.instance.minions[MinionDrag.dragMinionNum].damageEffect, minionObject.final_atk);
+            }
             select.SetActive(true);
         }
     }

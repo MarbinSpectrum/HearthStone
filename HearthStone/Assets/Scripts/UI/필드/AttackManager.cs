@@ -74,15 +74,15 @@ public class AttackManager : MonoBehaviour
         if(s.Contains("적_하수인"))
         {
             int i = s[6] - '0';
-            EnemyMinionField.instance.minions[i].hp -= n;
-            if (EnemyMinionField.instance.minions[i].hp <= 0)
+            EnemyMinionField.instance.minions[i].final_hp -= n;
+            if (EnemyMinionField.instance.minions[i].final_hp <= 0)
                 EnemyMinionField.instance.minions[i].MinionDeath();
         }
         else if (s.Contains("아군_하수인"))
         {
             int i = s[7] - '0';
-            MinionField.instance.minions[i].hp -= n;
-            if (MinionField.instance.minions[i].hp <= 0)
+            MinionField.instance.minions[i].final_hp -= n;
+            if (MinionField.instance.minions[i].final_hp <= 0)
                 MinionField.instance.minions[i].MinionDeath();
         }
         else if (s.Contains("아군_영웅"))

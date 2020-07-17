@@ -4,18 +4,33 @@ using UnityEngine;
 
 public class MinionObject : MonoBehaviour
 {
-    [Header("하수인 정보")]
+    [Header("하수인 이름")]
     public string minion_name;
 
-    public int hp;
-    int baseHp;
+    [Header("체력")]
+    public int final_hp;
+    [HideInInspector] public int baseHp;
 
-    public int atk;
-    int baseAtk;
+    [Header("공격력")]
+    public int final_atk;
+    [HideInInspector] public int nowAtk;
+    [HideInInspector] public int baseAtk;
 
-    public bool enemy;
+    [Header("주문공격력")]
+    public int final_spellAtk;
+    [HideInInspector] public int nowSpell;
 
+    [Header("공격여부")]
+    //공격가능횟수
     public int canAttackNum;
+    public bool canAttack;
+
+    [Header("은신")]
+    public bool stealth;
+
+    [Header("도발")]
+    public bool taunt;
+
 
     [HideInInspector] public bool turnStartTrigger;
     [HideInInspector] public bool turnEndTrigger;
@@ -28,6 +43,7 @@ public class MinionObject : MonoBehaviour
     [Header("-----------------------------------------")]
     [Space(100)]
 
+    public bool enemy;
     public SpriteRenderer[] hp_spr;
     public SpriteRenderer[] atk_spr;
     public MeshRenderer meshRenderer;
@@ -35,9 +51,22 @@ public class MinionObject : MonoBehaviour
     public DamageNum damageEffect;
     public Animator animator;
 
-
     //오브젝트 넘버
-    [HideInInspector] public int num;
+    /*[HideInInspector]*/ public int num;
+
+    #region[Awake]
+    public void Awake()
+    {
+        MinionManager.instance.minionList.Add(this);
+    }
+    #endregion
+
+    #region[Start]
+    public void Start()
+    {
+
+    }
+    #endregion
 
     #region[Update]
     void Update()
@@ -48,7 +77,6 @@ public class MinionObject : MonoBehaviour
         TurnEnd();
         UpdateStat();
         SetObjectNum();
-        damageEffect.hpSystem = (enemy ? "적_하수인_" : "아군_하수인_") + num;
     }
     #endregion
 
@@ -73,15 +101,19 @@ public class MinionObject : MonoBehaviour
                     break;
                 }
         }
+        damageEffect.hpSystem = (enemy ? "적_하수인_" : "아군_하수인_") + num;
     }
     #endregion
 
     #region[스텟 업데이트]
     public void UpdateStat()
     {
-        int tempHp = Mathf.Abs(hp);
+        if (!canAttack)
+            canAttackNum = 0;
 
-        if (hp < 0)
+        int tempHp = Mathf.Abs(final_hp);
+
+        if (final_hp < 0)
         {
             if (tempHp < 10)
             {
@@ -106,9 +138,9 @@ public class MinionObject : MonoBehaviour
             hp_spr[0].gameObject.SetActive(true);
             hp_spr[1].gameObject.SetActive(false);
             hp_spr[2].gameObject.SetActive(false);
-            if (hp > baseHp)
+            if (final_hp > baseHp)
                 hp_spr[0].color = Color.green;
-            else if (hp < baseHp)
+            else if (final_hp < baseHp)
                 hp_spr[0].color = Color.red;
             else
                 hp_spr[0].color = Color.white;
@@ -122,38 +154,38 @@ public class MinionObject : MonoBehaviour
             hp_spr[1].gameObject.SetActive(true);
             hp_spr[2].gameObject.SetActive(true);
             for (int i = 1; i <= 2; i++)
-                if (hp > baseHp)
+                if (final_hp > baseHp)
                     hp_spr[i].color = Color.green;
-                else if (hp < baseHp)
+                else if (final_hp < baseHp)
                     hp_spr[i].color = Color.red;
                 else
                     hp_spr[i].color = Color.white;
         }
 
-        if (atk < 10)
+        if (final_atk < 10)
         {
-            atk_spr[0].sprite = DataMng.instance.num[atk];
+            atk_spr[0].sprite = DataMng.instance.num[final_atk];
             atk_spr[0].gameObject.SetActive(true);
             atk_spr[1].gameObject.SetActive(false);
             atk_spr[2].gameObject.SetActive(false);
-            if (atk > baseAtk)
+            if (final_atk > baseAtk)
                 atk_spr[0].color = Color.green;
-            else if (atk < baseAtk)
+            else if (final_atk < baseAtk)
                 atk_spr[0].color = Color.red;
             else
                 atk_spr[0].color = Color.white;
         }
         else
         {
-            atk_spr[1].sprite = DataMng.instance.num[atk % 10];
-            atk_spr[2].sprite = DataMng.instance.num[atk / 10];
+            atk_spr[1].sprite = DataMng.instance.num[final_atk % 10];
+            atk_spr[2].sprite = DataMng.instance.num[final_atk / 10];
             atk_spr[0].gameObject.SetActive(false);
             atk_spr[1].gameObject.SetActive(true);
             atk_spr[2].gameObject.SetActive(true);
             for (int i = 1; i <= 2; i++)
-                if (atk > baseAtk)
+                if (final_atk > baseAtk)
                     atk_spr[i].color = Color.green;
-                else if (atk < baseAtk)
+                else if (final_atk < baseAtk)
                     atk_spr[i].color = Color.red;
                 else
                     atk_spr[i].color = Color.white;
@@ -165,7 +197,7 @@ public class MinionObject : MonoBehaviour
     public void UpdateTrigger()
     {
         if (!enemy)
-            canAttackObj.SetActive(atk != 0 && canAttackNum > 0 && !MinionField.instance.MinionAttackCheck());
+            canAttackObj.SetActive(final_atk != 0 && canAttackNum > 0 && !MinionField.instance.MinionAttackCheck() && animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"));
     }
     #endregion
 
@@ -186,6 +218,13 @@ public class MinionObject : MonoBehaviour
             return;
         turnEndTrigger = false;
         canAttackNum = 0;
+    }
+    #endregion
+
+    #region[손에서 하수인 소환시]
+    public void CardHandMinionSpawn()
+    {
+        MinionManager.instance.SpawnMinionAbility(this);   
     }
     #endregion
 
@@ -215,6 +254,10 @@ public class MinionObject : MonoBehaviour
             EnemyMinionField.instance.minions[EnemyMinionField.instance.minionNum - 1] = this;
             EnemyMinionField.instance.minionNum--;
         }
+        abilityList.Clear();
+        taunt = false;
+        stealth = false;
+        canAttack = false;
     }
     #endregion
 
@@ -228,14 +271,18 @@ public class MinionObject : MonoBehaviour
         Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minion_name));
         baseHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
         baseAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
-        hp = baseHp;
-        atk = baseAtk;
+        final_hp = baseHp;
+        nowAtk = baseAtk;
+        nowSpell = 0;
         canAttackNum = 0;
+        canAttack = true;
 
         ////////////////////////////////////////////////////////////////////////////////////////
 
+        #region[미니언 능력 설정]
+
         abilityList.Clear();
-        string ability_string = "[선택][하수인에게_피해주기][5][0][0]";
+        string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
         char[] splitChar = { '[', ']' };
         string[] ability_Split = ability_string.Split(splitChar);
         List<string> ability_Data = new List<string>();
@@ -314,6 +361,40 @@ public class MinionObject : MonoBehaviour
                     inputType = 입력.능력;
             }
         }
+
+        #endregion
+
+        MinionManager.instance.BaseMinionAbility(this);
+
     }
+    #endregion
+
+    #region[능력발휘]
+    public void ActCondition(MinionAbility.Condition c)
+    {
+        for(int i = 0; i < abilityList.Count; i++)
+        {
+            if(abilityList[i].Condition_type == c)
+            {
+                MinionAbility.Ability a = abilityList[i].Ability_type;
+                switch(a)
+                {
+                    case MinionAbility.Ability.능력치부여:
+
+
+                        break;
+
+
+                }
+
+
+            }
+
+
+
+        }
+    }
+
+
     #endregion
 }

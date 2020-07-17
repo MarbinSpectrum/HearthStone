@@ -43,7 +43,7 @@ public class TurnManager : MonoBehaviour
                 manaManager.enemyMaxMana++;
                 manaManager.enemyMaxMana = Mathf.Min(manaManager.enemyMaxMana, 10);
                 manaManager.enemyNowMana = manaManager.enemyMaxMana;
-                MinionField.instance.MinionsTurnEndTrigger();
+                MinionManager.instance.MinionsTurnEndTrigger();
             }
             else
             {
@@ -53,7 +53,7 @@ public class TurnManager : MonoBehaviour
                 manaManager.playerMaxMana = Mathf.Min(manaManager.playerMaxMana, 10);
                 manaManager.playerNowMana = manaManager.playerMaxMana;
                 turnAni.SetTrigger("내턴");
-                MinionField.instance.MinionsTurnStartTrigger();
+                MinionManager.instance.MinionsTurnStartTrigger();
             }
         }
         CardDraw();

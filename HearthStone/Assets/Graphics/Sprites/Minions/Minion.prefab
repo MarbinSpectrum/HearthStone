@@ -15426,14 +15426,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minion_name: 
-  hp: 3
-  atk: 3
-  enemy: 0
+  final_hp: 0
+  baseHp: 0
+  final_atk: 0
+  nowAtk: 0
+  baseAtk: 0
+  final_spellAtk: 0
+  nowSpell: 0
   canAttackNum: 0
+  canAttack: 0
+  minionHide: 0
+  minionTaunt: 0
   turnStartTrigger: 0
   turnEndTrigger: 0
-  ability: []
+  abilityList: []
   InitTrigger: 0
+  enemy: 0
   hp_spr:
   - {fileID: 1056592413898121943}
   - {fileID: 1056592414058066142}
