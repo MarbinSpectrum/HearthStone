@@ -38,6 +38,8 @@ public class DropEffect : MonoBehaviour
         {
             dropRectTransform.anchoredPosition = dropPos;
             effectArrive = true;
+            if(dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Minion"))
+                dropEffectAni.SetTrigger("Exit");
         }
         else
             dropRectTransform.anchoredPosition += v;
