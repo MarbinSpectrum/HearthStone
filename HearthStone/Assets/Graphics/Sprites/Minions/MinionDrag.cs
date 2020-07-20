@@ -11,6 +11,7 @@ public class MinionDrag : Btn
 
     public GameObject select_normal;
     public GameObject select_taunt;
+    public GameObject select_legend;
 
     #region[Awake]
     public override void Awake()
@@ -40,6 +41,7 @@ public class MinionDrag : Btn
             select_taunt.SetActive(false);
             select_normal.SetActive(true);
         }
+        select_legend.SetActive(minionObject.legend);
     }
     #endregion
 

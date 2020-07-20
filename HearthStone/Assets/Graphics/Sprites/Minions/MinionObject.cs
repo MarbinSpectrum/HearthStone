@@ -10,11 +10,13 @@ public class MinionObject : MonoBehaviour
     [Header("체력")]
     public int final_hp;
     [HideInInspector] public int baseHp;
+    int flagHp;
 
     [Header("공격력")]
     public int final_atk;
     [HideInInspector] public int nowAtk;
     [HideInInspector] public int baseAtk;
+    int flagAtk;
 
     [Header("주문공격력")]
     public int final_spellAtk;
@@ -25,6 +27,10 @@ public class MinionObject : MonoBehaviour
     public int canAttackNum;
     public bool canAttack;
 
+    [Header("전설")]
+    public bool legend;
+    public GameObject legendObj;
+
     [Header("은신")]
     public bool stealth;
     public GameObject stealthObj;
@@ -32,6 +38,9 @@ public class MinionObject : MonoBehaviour
     [Header("도발")]
     public bool taunt;
     public GameObject tauntObj;
+
+
+
 
     [HideInInspector] public bool turnStartTrigger;
     [HideInInspector] public bool turnEndTrigger;
@@ -46,14 +55,16 @@ public class MinionObject : MonoBehaviour
 
     public bool enemy;
     public SpriteRenderer[] hp_spr;
+    public Animator hpAni;
     public SpriteRenderer[] atk_spr;
+    public Animator atkAni;
     public MeshRenderer meshRenderer;
     public GameObject canAttackObj;
     public DamageNum damageEffect;
     public Animator animator;
-
     //오브젝트 넘버
-    /*[HideInInspector]*/ public int num;
+    /*[HideInInspector]*/
+    public int num;
 
     #region[Awake]
     public void Awake()
@@ -206,6 +217,18 @@ public class MinionObject : MonoBehaviour
 
         tauntObj.SetActive(taunt);
         stealthObj.SetActive(stealth);
+        legendObj.SetActive(legend);
+
+        if (flagAtk != final_atk)
+        {
+            flagAtk = final_atk;
+            atkAni.SetTrigger("Change");
+        }
+        if (flagHp != final_hp)
+        {
+            flagHp = final_hp;
+            hpAni.SetTrigger("Change");
+        }
     }
     #endregion
 
@@ -279,6 +302,7 @@ public class MinionObject : MonoBehaviour
         Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minion_name));
         baseHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
         baseAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+        legend = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "등급").Equals("전설");
         final_hp = baseHp;
         nowAtk = baseAtk;
         nowSpell = 0;

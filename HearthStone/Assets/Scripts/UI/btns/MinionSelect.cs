@@ -9,6 +9,7 @@ public class MinionSelect : Btn
 
     public GameObject select_normal;
     public GameObject select_taunt;
+    public GameObject select_legend;
     bool select = false;
 
     public bool enemy;
@@ -44,6 +45,8 @@ public class MinionSelect : Btn
             select_taunt.SetActive(false);
             select_normal.SetActive(select);
         }
+        select_legend.SetActive(minionObject.legend && select);
+
     }
     #endregion
 

@@ -214,7 +214,7 @@ public class MinionManager : MonoBehaviour
             }
         }
         if(minionNum > 0)
-            GameEventManager.instance.EventAdd(1.5f);
+            GameEventManager.instance.EventAdd(1.6f);
     }
     #endregion
 }
