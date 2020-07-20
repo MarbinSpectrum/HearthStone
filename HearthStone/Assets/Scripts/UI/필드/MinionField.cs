@@ -193,7 +193,7 @@ public class MinionField : MonoBehaviour
                         float mA = Mathf.Abs(transform.position.y - minions_pos[i].y);
                         float mB = Mathf.Abs(minions_pos[i].y - minions[i].transform.position.y);
                         float mC = (mA - mB) / mA;
-                        mC = (1f - mC) * 4;
+                        mC = (1f - mC) * 2;
                         v = v.normalized * Time.deltaTime * max_attack_speed * Mathf.Max(1.2f, mC);
                     }
                     else

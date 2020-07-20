@@ -20,11 +20,13 @@ public class EnemyMinionField : MonoBehaviour
     [Header("-----------------------------------------")]
     [Space(20)]
 
-
     public MinionObject[] minions = new MinionObject[7];
     Vector3[] minions_pos = new Vector3[7];
     public Transform AI_MousePos;
     [HideInInspector] public int mousePos;
+
+    List<int> spawnList = new List<int>();
+    bool spawnNow;
 
     #region[Awake]
     private void Awake()
@@ -128,7 +130,6 @@ public class EnemyMinionField : MonoBehaviour
     {
         if (minionNum == 7)
             return;
-
         MinionObject temp = minions[6];
         for (int i = 5; i >= n; i--)
             minions[i + 1] = minions[i];
@@ -143,10 +144,10 @@ public class EnemyMinionField : MonoBehaviour
         Vector3 v = new Vector3(transform.position.x - minX + minionDistance * n, transform.position.y, minions[n].transform.position.z);
         minions[n].transform.position = v;
         if (cardHandSpawn)
-            DragCardObject.instance.ShowDropEffectMinion(Camera.main.WorldToScreenPoint(v),0);
+            DragCardObject.instance.ShowDropEffectMinion(Camera.main.WorldToScreenPoint(v), 0);
         StartCoroutine(MinionDrop(n, 0, cardHandSpawn));
     }
-     
+
     private IEnumerator MinionDrop(int n, int spawnType, bool cardHandSpawn)
     {
         while (!minions[n].animator.gameObject.activeSelf)

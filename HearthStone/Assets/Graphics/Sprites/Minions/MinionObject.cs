@@ -262,6 +262,7 @@ public class MinionObject : MonoBehaviour
             EnemyMinionField.instance.minionNum--;
         }
         abilityList.Clear();
+        canAttackNum = 0;
         taunt = false;
         stealth = false;
         canAttack = false;

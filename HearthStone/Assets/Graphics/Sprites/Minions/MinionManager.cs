@@ -44,7 +44,8 @@ public class MinionManager : MonoBehaviour
     public void MinionsTurnStartTrigger()
     {
         for (int i = 0; i < minionList.Count; i++)
-            minionList[i].turnStartTrigger = true;
+            if(minionList[i].gameObject.activeSelf)
+                minionList[i].turnStartTrigger = true;
     }
     #endregion
 
@@ -52,7 +53,8 @@ public class MinionManager : MonoBehaviour
     public void MinionsTurnEndTrigger()
     {
         for (int i = 0; i < minionList.Count; i++)
-            minionList[i].turnEndTrigger = true;
+            if (minionList[i].gameObject.activeSelf)
+                minionList[i].turnEndTrigger = true;
     }
     #endregion
 
@@ -163,6 +165,7 @@ public class MinionManager : MonoBehaviour
     #region[하수인 소환시 효과]
     public void SpawnMinionAbility(MinionObject minionObject)
     {
+        int minionNum = 0;
         for (int j = 0; j < minionObject.abilityList.Count; j++)
         {
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.전투의함성)
@@ -186,16 +189,32 @@ public class MinionManager : MonoBehaviour
                     //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
                     bool enemy = (int)minionObject.abilityList[j].Ability_data.z == 1 ? false : true;
                     string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
-                    int spawnIndex = minionObject.num + 1;
-                    if(enemy)
-                        EnemyMinionField.instance.AddMinion(spawnIndex, minion_name,false);
+                    if (enemy)
+                    {
+                        int spawnIndex = 0;
+                        bool flag = false;
+                        for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
+                            if (EnemyMinionField.instance.minions[i].gameObject.activeSelf)
+                            {
+                                flag = true;
+                                spawnIndex = Mathf.Max(spawnIndex, EnemyMinionField.instance.minions[i].num);
+                            }
+                        if(flag)
+                            spawnIndex++;
+                        spawnIndex += minionNum;
+                        EnemyMinionField.instance.AddMinion(spawnIndex, minion_name, false);
+                    }
                     else
+                    {
+                        int spawnIndex = minionObject.num + minionNum;
                         MinionField.instance.AddMinion(spawnIndex, minion_name,false);
+                    }
+                    minionNum++;
                 }
             }
         }
-
-
+        if(minionNum > 0)
+            GameEventManager.instance.EventAdd(1.5f);
     }
     #endregion
 }
