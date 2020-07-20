@@ -149,6 +149,8 @@ public class EnemyMinionField : MonoBehaviour
      
     private IEnumerator MinionDrop(int n, int spawnType, bool cardHandSpawn)
     {
+        while (!minions[n].animator.gameObject.activeSelf)
+            yield return new WaitForSeconds(0.001f);
         if (cardHandSpawn)
         {
             while (!DragCardObject.instance.dropEffect.effectArrive)

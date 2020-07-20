@@ -189,7 +189,13 @@ public class MinionField : MonoBehaviour
                 if (minions_pos[i].y > minions[i].transform.position.y)
                 {
                     if (Mathf.Abs(minions_pos[i].y - minions[i].transform.position.y) < Mathf.Abs(minions_pos[i].y - transform.position.y) * 0.95f)
-                        v = v.normalized * Time.deltaTime * max_attack_speed * 1.2f;
+                    {
+                        float mA = Mathf.Abs(transform.position.y - minions_pos[i].y);
+                        float mB = Mathf.Abs(minions_pos[i].y - minions[i].transform.position.y);
+                        float mC = (mA - mB) / mA;
+                        mC = (1f - mC) * 4;
+                        v = v.normalized * Time.deltaTime * max_attack_speed * Mathf.Max(1.2f, mC);
+                    }
                     else
                         v = v.normalized * Time.deltaTime * min_attack_speed;
                 }
@@ -209,6 +215,7 @@ public class MinionField : MonoBehaviour
     {
         if (minionNum == 7)
             return;
+        GameEventManager.instance.EventAdd(1.5f);
 
         MinionObject temp = minions[6];
         for (int i = 5; i >= n; i--)
@@ -230,18 +237,20 @@ public class MinionField : MonoBehaviour
 
     private IEnumerator MinionDrop(int n,int spawnType,bool cardHandSpawn)
     {
+        while (!minions[n].animator.gameObject.activeSelf)
+            yield return new WaitForSeconds(0.001f);
         if (cardHandSpawn)
         {
             while (!DragCardObject.instance.dropEffect.effectArrive)
                 yield return new WaitForSeconds(0.1f);
             minions[n].animator.SetTrigger("NormalSpawn");
             while (!minions[n].animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"))
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.001f);
             minions[n].CardHandMinionSpawn();
         }
         else
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
             minions[n].animator.SetTrigger("NormalSpawn");
         }
     }

@@ -27,10 +27,11 @@ public class MinionObject : MonoBehaviour
 
     [Header("은신")]
     public bool stealth;
+    public GameObject stealthObj;
 
     [Header("도발")]
     public bool taunt;
-
+    public GameObject tauntObj;
 
     [HideInInspector] public bool turnStartTrigger;
     [HideInInspector] public bool turnEndTrigger;
@@ -108,9 +109,6 @@ public class MinionObject : MonoBehaviour
     #region[스텟 업데이트]
     public void UpdateStat()
     {
-        if (!canAttack)
-            canAttackNum = 0;
-
         int tempHp = Mathf.Abs(final_hp);
 
         if (final_hp < 0)
@@ -197,7 +195,17 @@ public class MinionObject : MonoBehaviour
     public void UpdateTrigger()
     {
         if (!enemy)
-            canAttackObj.SetActive(final_atk != 0 && canAttackNum > 0 && !MinionField.instance.MinionAttackCheck() && animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"));
+            canAttackObj.SetActive(
+                !GameEventManager.instance.EventCheck() && 
+                final_atk != 0 && 
+                TurnManager.instance.turn == 턴.플레이어 && 
+                canAttack && 
+                canAttackNum > 0 && 
+                !MinionField.instance.MinionAttackCheck() && 
+                animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"));
+
+        tauntObj.SetActive(taunt);
+        stealthObj.SetActive(stealth);
     }
     #endregion
 
@@ -217,7 +225,6 @@ public class MinionObject : MonoBehaviour
         if (!turnEndTrigger)
             return;
         turnEndTrigger = false;
-        canAttackNum = 0;
     }
     #endregion
 
@@ -232,7 +239,7 @@ public class MinionObject : MonoBehaviour
     public void MinionDeath()
     {
         animator.SetTrigger("Death");
-        StartCoroutine(MinionDeath_C(1f));
+        StartCoroutine(MinionDeath_C(1.25f));
     }
 
     private IEnumerator MinionDeath_C(float waitTime)

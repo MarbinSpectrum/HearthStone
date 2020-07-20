@@ -6,7 +6,11 @@ using UnityEngine.EventSystems;
 public class MinionDrag : Btn
 {
     public static int dragMinionNum;
+
     public MinionObject minionObject;
+
+    public GameObject select_normal;
+    public GameObject select_taunt;
 
     #region[Awake]
     public override void Awake()
@@ -26,6 +30,16 @@ public class MinionDrag : Btn
     public override void Update()
     {
         btnImg.raycastTarget = !DragCardObject.instance.dragCard;
+        if (minionObject.taunt)
+        {
+            select_taunt.SetActive(true);
+            select_normal.SetActive(false);
+        }
+        else
+        {
+            select_taunt.SetActive(false);
+            select_normal.SetActive(true);
+        }
     }
     #endregion
 

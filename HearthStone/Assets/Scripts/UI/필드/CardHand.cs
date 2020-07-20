@@ -113,6 +113,7 @@ public class CardHand : MonoBehaviour
                 }
 
                 card_glow[i].gameObject.SetActive(
+                    !GameEventManager.instance.EventCheck() &&
                     BattleUI.instance.gameStart &&
                     TurnManager.instance.turnAniEnd &&
                     TurnManager.instance.turn == 턴.플레이어 &&

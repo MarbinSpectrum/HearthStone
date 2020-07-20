@@ -48,7 +48,7 @@ public class TurnManager : MonoBehaviour
             else
             {
                 time = 1;
-                turn = 턴.플레이어;
+                turn = 턴.플레이어;              
                 manaManager.playerMaxMana++;
                 manaManager.playerMaxMana = Mathf.Min(manaManager.playerMaxMana, 10);
                 manaManager.playerNowMana = manaManager.playerMaxMana;

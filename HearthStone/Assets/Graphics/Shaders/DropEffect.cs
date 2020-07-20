@@ -41,7 +41,10 @@ public class DropEffect : MonoBehaviour
             if(dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Minion"))
                 dropEffectAni.SetTrigger("Exit");
         }
-        else
+        else if (dropRectTransform.anchoredPosition != dropPos)
+        {
+            effectArrive = false;
             dropRectTransform.anchoredPosition += v;
+        }
     }
 }

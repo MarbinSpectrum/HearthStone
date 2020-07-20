@@ -5,28 +5,24 @@ using UnityEngine.EventSystems;
 
 public class HandCardCheckBtn : Btn
 {
-    public static bool MouseIn = false;
     public CardView cardView;
     public int cardNum;
+    public bool select;
 
     #region[Awake]
     public override void Awake()
     {
         AddEvent();
-        EventTrigger.Entry pUp = new EventTrigger.Entry();
-        pUp.eventID = EventTriggerType.PointerUp;
-        pUp.callback.AddListener((data) =>
-        {
-            pointerUp();
-        });
-        btnEvent.triggers.Add(pUp);
     }
     #endregion
 
     #region[Update]
     public override void Update()
     {
-
+        cardView.hide = select || (DragCardObject.instance.dragCard && DragCardObject.instance.dragCardNum == cardNum);
+        CardViewManager.instance.UpdateCardView();
+        if (Input.GetMouseButtonUp(0))
+            pointerUp();
     }
     #endregion
 
@@ -52,7 +48,7 @@ public class HandCardCheckBtn : Btn
     #region[pointerExit]
     public override void pointerExit()
     {
-        MouseIn = false;
+        select = false;
         if (DragLineRenderer.instance.lineRenderer.enabled)
             return;
         if (DragCardObject.instance.dragCard)
@@ -61,20 +57,18 @@ public class HandCardCheckBtn : Btn
             return;
 
         CardHandCheck.instance.checkCard.hide = true;
-        cardView.hide = false;
         CardViewManager.instance.UpdateCardView(0.001f);
-
-        StartCoroutine(PickUpCard());
+        PickUpCard();
     }
     #endregion
 
     #region[pointerUp]
     public void pointerUp()
     {
-        CardHandCheck.instance.checkCard.hide = true;
-        cardView.hide = false;
-        CardViewManager.instance.UpdateCardView();
+        select = false;
         DragCardObject.instance.HideDragCard();
+        CardHandCheck.instance.checkCard.hide = true;
+        CardViewManager.instance.UpdateCardView(0.001f);
     }
     #endregion
 
@@ -86,34 +80,13 @@ public class HandCardCheckBtn : Btn
     #endregion
 
     #region[카드 픽업]
-    //public void PickUpCard()
-    //{
-    //    CardHandCheck.instance.checkCard.hide = true;
-    //    cardView.hide = false;
-    //    CardViewManager.instance.UpdateCardView();
-    //    if (BattleUI.instance.gameStart && TurnManager.instance.turnAniEnd && TurnManager.instance.turn == 턴.플레이어 && CardHand.instance.canUse[cardNum])
-    //    {
-    //        DragCardObject.instance.ShowDragCard(CardHandCheck.instance.checkCard);
-    //        DragCardObject.instance.dragCardNum = cardNum;
-    //    }
-    //}
-
-    private IEnumerator PickUpCard()
+    public void PickUpCard()
     {
-        yield return new WaitForSeconds(0.001f);
-        //if (!MouseIn && BattleUI.instance.gameStart && TurnManager.instance.turnAniEnd && TurnManager.instance.turn == 턴.플레이어 && CardHand.instance.canUse[cardNum])
-        //{
-        //    DragCardObject.instance.ShowDragCard(CardHandCheck.instance.checkCard);
-        //    DragCardObject.instance.dragCardNum = cardNum;
-        //    cardView.hide = true;
-        //    CardViewManager.instance.UpdateCardView(0.001f);
-        //}
         CardHandCheck.instance.checkCard.hide = true;
-        cardView.hide = false;
         CardViewManager.instance.UpdateCardView();
-        if (BattleUI.instance.gameStart && TurnManager.instance.turnAniEnd && TurnManager.instance.turn == 턴.플레이어 && CardHand.instance.canUse[cardNum])
+        if (!GameEventManager.instance.EventCheck() && BattleUI.instance.gameStart && TurnManager.instance.turnAniEnd && TurnManager.instance.turn == 턴.플레이어 && CardHand.instance.canUse[cardNum])
         {
-            DragCardObject.instance.ShowDragCard(CardHandCheck.instance.checkCard);
+            DragCardObject.instance.ShowDragCard(cardView);
             DragCardObject.instance.dragCardNum = cardNum;
         }
     }
@@ -129,8 +102,8 @@ public class HandCardCheckBtn : Btn
             return;
         if (!DragCardObject.instance.dropEffect.dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Stop"))
             return;
-        MouseIn = true;
-        cardView.hide = true;
+        select = true;
+        //cardView.hide = true;
         CardViewManager.instance.CardShow(ref CardHandCheck.instance.checkCard, cardView);
         DragCardObject.instance.HideDragCard();
         CardHandCheck.instance.checkCard.hide = false;

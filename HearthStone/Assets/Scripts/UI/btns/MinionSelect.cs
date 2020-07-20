@@ -7,7 +7,9 @@ public class MinionSelect : Btn
 {
     public MinionObject minionObject;
 
-    public GameObject select;
+    public GameObject select_normal;
+    public GameObject select_taunt;
+    bool select = false;
 
     public bool enemy;
 
@@ -32,6 +34,16 @@ public class MinionSelect : Btn
         enemy = minionObject.enemy;
         if(Input.GetMouseButtonUp(0))
             SetSelect(false);
+        if (minionObject.taunt)
+        {
+            select_taunt.SetActive(select);
+            select_normal.SetActive(false);
+        }
+        else
+        {
+            select_taunt.SetActive(false);
+            select_normal.SetActive(select);
+        }
     }
     #endregion
 
@@ -87,7 +99,7 @@ public class MinionSelect : Btn
         {
             DragLineRenderer.instance.selectTarget = false;
             DragLineRenderer.instance.dragTargetPos = Vector2.zero;
-            select.SetActive(false);
+            select = false;
         }
         else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적하수인)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군하수인)))
         {
@@ -100,7 +112,7 @@ public class MinionSelect : Btn
                 AttackManager.instance.AddDamageObj(minionObject.damageEffect, MinionField.instance.minions[MinionDrag.dragMinionNum].final_atk);
                 AttackManager.instance.AddDamageObj(MinionField.instance.minions[MinionDrag.dragMinionNum].damageEffect, minionObject.final_atk);
             }
-            select.SetActive(true);
+            select = true;
         }
     }
     #endregion
