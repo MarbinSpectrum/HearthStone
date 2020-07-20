@@ -147,7 +147,10 @@ public class MinionManager : MonoBehaviour
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.도발)
                     minionObject.taunt = true;
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.돌진)
+                {
                     minionObject.canAttackNum = 1;
+                    Debug.Log("돌진");
+                }
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.은신)
                     minionObject.stealth = true;
             }

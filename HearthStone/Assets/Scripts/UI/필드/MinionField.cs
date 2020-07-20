@@ -223,19 +223,27 @@ public class MinionField : MonoBehaviour
         float minX = minionDistance * (minionNum - 1) / 2f;
         Vector3 v = new Vector3(transform.position.x - minX + minionDistance * n, transform.position.y, minions[n].transform.position.z);
         minions[n].transform.position = v;
-        DragCardObject.instance.ShowDropEffectMinion(Camera.main.WorldToScreenPoint(v),0);
+        if(cardHandSpawn)
+            DragCardObject.instance.ShowDropEffectMinion(Camera.main.WorldToScreenPoint(v),0);
         StartCoroutine(MinionDrop(n, 0, cardHandSpawn));
     }
 
     private IEnumerator MinionDrop(int n,int spawnType,bool cardHandSpawn)
     {
-        while (!DragCardObject.instance.dropEffect.effectArrive)
-            yield return new WaitForSeconds(0.1f);
-        minions[n].animator.SetTrigger("NormalSpawn");
-        while (!minions[n].animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"))
-            yield return new WaitForSeconds(0.1f);
         if (cardHandSpawn)
+        {
+            while (!DragCardObject.instance.dropEffect.effectArrive)
+                yield return new WaitForSeconds(0.1f);
+            minions[n].animator.SetTrigger("NormalSpawn");
+            while (!minions[n].animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"))
+                yield return new WaitForSeconds(0.1f);
             minions[n].CardHandMinionSpawn();
+        }
+        else
+        {
+            yield return new WaitForSeconds(1f);
+            minions[n].animator.SetTrigger("NormalSpawn");
+        }
     }
 
     #endregion

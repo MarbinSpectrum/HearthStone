@@ -73,7 +73,7 @@ public class TurnManager : MonoBehaviour
                 {
                     if (EnemyCardHand.instance.nowHandNum >= 10)
                     {
-                        Debug.Log("(컴퓨터) : 카드가 너무많아!!");
+                       // Debug.Log("(컴퓨터) : 카드가 너무많아!!");
                     }
                     else
                     {

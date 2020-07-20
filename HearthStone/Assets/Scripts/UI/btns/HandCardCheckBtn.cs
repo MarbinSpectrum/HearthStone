@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 
 public class HandCardCheckBtn : Btn
 {
+    public static bool MouseIn = false;
     public CardView cardView;
     public int cardNum;
 
@@ -51,13 +52,19 @@ public class HandCardCheckBtn : Btn
     #region[pointerExit]
     public override void pointerExit()
     {
+        MouseIn = false;
         if (DragLineRenderer.instance.lineRenderer.enabled)
             return;
         if (DragCardObject.instance.dragCard)
             return;
         if (!DragCardObject.instance.dropEffect.dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Stop"))
             return;
-        PickUpCard();
+
+        CardHandCheck.instance.checkCard.hide = true;
+        cardView.hide = false;
+        CardViewManager.instance.UpdateCardView(0.001f);
+
+        StartCoroutine(PickUpCard());
     }
     #endregion
 
@@ -79,8 +86,28 @@ public class HandCardCheckBtn : Btn
     #endregion
 
     #region[카드 픽업]
-    public void PickUpCard()
+    //public void PickUpCard()
+    //{
+    //    CardHandCheck.instance.checkCard.hide = true;
+    //    cardView.hide = false;
+    //    CardViewManager.instance.UpdateCardView();
+    //    if (BattleUI.instance.gameStart && TurnManager.instance.turnAniEnd && TurnManager.instance.turn == 턴.플레이어 && CardHand.instance.canUse[cardNum])
+    //    {
+    //        DragCardObject.instance.ShowDragCard(CardHandCheck.instance.checkCard);
+    //        DragCardObject.instance.dragCardNum = cardNum;
+    //    }
+    //}
+
+    private IEnumerator PickUpCard()
     {
+        yield return new WaitForSeconds(0.001f);
+        //if (!MouseIn && BattleUI.instance.gameStart && TurnManager.instance.turnAniEnd && TurnManager.instance.turn == 턴.플레이어 && CardHand.instance.canUse[cardNum])
+        //{
+        //    DragCardObject.instance.ShowDragCard(CardHandCheck.instance.checkCard);
+        //    DragCardObject.instance.dragCardNum = cardNum;
+        //    cardView.hide = true;
+        //    CardViewManager.instance.UpdateCardView(0.001f);
+        //}
         CardHandCheck.instance.checkCard.hide = true;
         cardView.hide = false;
         CardViewManager.instance.UpdateCardView();
@@ -90,6 +117,7 @@ public class HandCardCheckBtn : Btn
             DragCardObject.instance.dragCardNum = cardNum;
         }
     }
+
     #endregion
 
     #region[ActBtn]
@@ -101,6 +129,7 @@ public class HandCardCheckBtn : Btn
             return;
         if (!DragCardObject.instance.dropEffect.dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Stop"))
             return;
+        MouseIn = true;
         cardView.hide = true;
         CardViewManager.instance.CardShow(ref CardHandCheck.instance.checkCard, cardView);
         DragCardObject.instance.HideDragCard();
