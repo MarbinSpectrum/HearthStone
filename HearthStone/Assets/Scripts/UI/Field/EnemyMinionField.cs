@@ -130,6 +130,8 @@ public class EnemyMinionField : MonoBehaviour
     {
         if (minionNum == 7)
             return;
+        if (cardHandSpawn)
+            GameEventManager.instance.EventAdd(2f);
         MinionObject temp = minions[6];
         for (int i = 5; i >= n; i--)
             minions[i + 1] = minions[i];
@@ -160,10 +162,12 @@ public class EnemyMinionField : MonoBehaviour
             while (!minions[n].animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"))
                 yield return new WaitForSeconds(0.1f);
             minions[n].CardHandMinionSpawn();
+            if (GameEventManager.instance.GetEventValue() > 1.5f)
+                GameEventManager.instance.EventSet(1.5f);
         }
         else
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
             minions[n].animator.SetTrigger("NormalSpawn");
         }
     }

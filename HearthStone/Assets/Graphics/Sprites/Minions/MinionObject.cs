@@ -39,9 +39,6 @@ public class MinionObject : MonoBehaviour
     public bool taunt;
     public GameObject tauntObj;
 
-
-
-
     [HideInInspector] public bool turnStartTrigger;
     [HideInInspector] public bool turnEndTrigger;
 

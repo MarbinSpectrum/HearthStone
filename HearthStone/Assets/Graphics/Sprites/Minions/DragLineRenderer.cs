@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public enum 타겟 { 아군하수인,아군영웅,적하수인,적영웅};
+public enum 타겟 { 아군하수인,아군영웅,적하수인,적영웅,실행주체};
 
 public class DragLineRenderer : MonoBehaviour
 {
@@ -18,11 +18,12 @@ public class DragLineRenderer : MonoBehaviour
     public GameObject arrowEnd;
     public GameObject arrowImg;
     public GameObject arrowTarget;
-
     [HideInInspector] public bool selectTarget;
     [HideInInspector] public Vector2 startPos;
     [HideInInspector] public int targetMask;
     [HideInInspector] public Vector2 dragTargetPos;
+
+    [HideInInspector] public GameObject activeObj;
 
     private void Awake()
     {
@@ -49,7 +50,7 @@ public class DragLineRenderer : MonoBehaviour
         Vector2 v2 = v - startPos;
         float angle = Mathf.Atan2(v2.y, v2.x) * Mathf.Rad2Deg;
         arrowEnd.transform.rotation = Quaternion.Euler(0,0, angle);
-        arrowEnd.SetActive(lineRenderer.enabled);
+        arrowEnd.SetActive(lineRenderer.enabled && Vector2.Distance(v, startPos) > Mathf.Abs(pointDis));
         #endregion
 
         #region[화살표 설정]
@@ -57,7 +58,14 @@ public class DragLineRenderer : MonoBehaviour
         arrowImg.transform.localScale = new Vector3(18, Mathf.Max(Mathf.Min(MaxValue, MaxValue * sy), MinValue), 1);
         #endregion
 
-        arrowTarget.SetActive(selectTarget);
+        arrowTarget.SetActive(selectTarget && Vector2.Distance(v, startPos) > Mathf.Abs(pointDis));
+    }
+
+    public bool CheckActObj(GameObject obj)
+    {
+        if(activeObj)
+            return obj.Equals(activeObj);
+        return false;
     }
 
     public void InitMask()

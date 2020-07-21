@@ -8,7 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: "\uC601\uC6C5\uB2A5\uB825\uCF54\uC2A4\uD2B8"
-  m_Shader: {fileID: 4800000, guid: eb0fd48778281c64e94758a2c865ea41, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 00f3ae6e2274fb64b9f4ad88847fd197,
+    type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -19,6 +20,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - OverImg:
+        m_Texture: {fileID: 2800000, guid: 5666f981ea8baa240b05af057321531f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _AlphaTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -53,6 +58,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - PixelSnap: 0
+    - Vector1_71E59CCE: 0.25
     - _AlphaClip: 0
     - _Blend: 0
     - _ColorMask: 15

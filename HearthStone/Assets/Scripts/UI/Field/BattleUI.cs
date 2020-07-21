@@ -29,6 +29,9 @@ public class BattleUI : MonoBehaviour
 
     public Animator fieldShadowAni;
 
+    public Animator grayFilterAni;
+    public GameObject grayFilter;
+
     [HideInInspector] public bool gameStart;
 
     public void Awake()

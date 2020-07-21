@@ -15,6 +15,11 @@ public class GameEventManager : MonoBehaviour
         Event = false;
     }
 
+    public float GetEventValue()
+    {
+        return time;
+    }
+
     public bool EventCheck()
     {
         return Event;
@@ -23,6 +28,21 @@ public class GameEventManager : MonoBehaviour
     public void EventAdd(float t)
     {
         time += t;
+    }
+
+    public void EventSub(float t)
+    {
+        time -= t;
+    }
+
+    public void EventStop()
+    {
+        time = 0;
+    }
+
+    public void EventSet(float t)
+    {
+        time = t;
     }
 
     private void Update()

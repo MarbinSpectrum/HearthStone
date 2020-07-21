@@ -94,13 +94,13 @@ public class HeroSelect : Btn
         }
         else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적영웅)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군영웅)))
         {
+            if (!DragLineRenderer.instance.CheckMask(타겟.실행주체))
+                if (DragLineRenderer.instance.CheckActObj(gameObject))
+                    return;
             if (MinionManager.instance.CheckTaunt(enemy))
             {
                 DragLineRenderer.instance.selectTarget = true;
                 DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
-                //MinionField.instance.minions[MinionDrag.dragMinionNum].canAttackNum--;
-
-
                 if (enemy)
                 {
                     MinionField.instance.minions[MinionDrag.dragMinionNum].stealth = false;

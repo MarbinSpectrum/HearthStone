@@ -10,6 +10,7 @@ public class EnemyCardHand : MonoBehaviour
 
     [Header("패 오브젝트")]
     public List<RectTransform> card = new List<RectTransform>();
+    List<Image> cardImg = new List<Image>();
     List<Vector3> cardStartPos = new List<Vector3>();
     List<Vector2> cardStartSize = new List<Vector2>();
     List<float> cardStartAngle = new List<float>();
@@ -45,6 +46,7 @@ public class EnemyCardHand : MonoBehaviour
         instance = this;
         for (int i = 0; i < card.Count; i++)
         {
+            cardImg.Add(card[i].GetComponent<Image>());
             cardStartPos.Add(Vector4.zero);
             cardStartSize.Add(Vector2.zero);
             cardStartAngle.Add(0);

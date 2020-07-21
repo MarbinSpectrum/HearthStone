@@ -106,12 +106,13 @@ public class MinionSelect : Btn
         }
         else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적하수인)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군하수인)))
         {
-            if(!minionObject.stealth && MinionManager.instance.CheckTaunt(minionObject))
+            if (!DragLineRenderer.instance.CheckMask(타겟.실행주체))
+                if (DragLineRenderer.instance.CheckActObj(gameObject))
+                    return;
+            if (!minionObject.stealth && MinionManager.instance.CheckTaunt(minionObject))
             {
                 DragLineRenderer.instance.selectTarget = true;
                 DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
-                //MinionField.instance.minions[MinionDrag.dragMinionNum].canAttackNum--;
-                MinionField.instance.minions[MinionDrag.dragMinionNum].stealth = false;
                 AttackManager.instance.AddDamageObj(minionObject.damageEffect, MinionField.instance.minions[MinionDrag.dragMinionNum].final_atk);
                 AttackManager.instance.AddDamageObj(MinionField.instance.minions[MinionDrag.dragMinionNum].damageEffect, minionObject.final_atk);
             }

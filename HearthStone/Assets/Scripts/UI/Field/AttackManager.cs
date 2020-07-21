@@ -71,7 +71,7 @@ public class AttackManager : MonoBehaviour
 
     public void DamageRun(string s,int n)
     {
-        if(s.Contains("적_하수인"))
+        if (s.Contains("적_하수인"))
         {
             int i = s[6] - '0';
             EnemyMinionField.instance.minions[i].final_hp -= n;
