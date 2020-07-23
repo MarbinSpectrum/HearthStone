@@ -5775,7 +5775,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3279854775045466382}
   m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.563, z: 0}
   m_LocalScale: {x: -1, y: 5, z: 1}
   m_Children:
   - {fileID: 1056592413633567032}
@@ -16481,6 +16481,7 @@ MonoBehaviour:
   turnEndTrigger: 0
   abilityList: []
   InitTrigger: 0
+  gotoHandTrigger: 0
   enemy: 0
   hp_spr:
   - {fileID: 1056592413898121943}

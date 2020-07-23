@@ -174,7 +174,7 @@ public class CardView : MonoBehaviour
         #region[하수인카드]
         MinionsCard = transform.Find("하수인카드").gameObject;
         MinionsCardLevel = transform.Find("하수인카드").Find("등급").GetComponent<Image>();
-        MinionsCardImg = transform.Find("하수인카드").Find("이미지마스크").Find("카드이미지").GetComponent<Image>();
+        MinionsCardImg = transform.Find("하수인카드").Find("카드이미지").GetComponent<Image>();
 
         MinionsCost = new GameObject[2];
         MinionsCostImage = new Image[2];
@@ -207,7 +207,7 @@ public class CardView : MonoBehaviour
         #region[주문카드]
         SpellCard = transform.Find("주문카드").gameObject;
         SpellCardLevel = transform.Find("주문카드").Find("등급").GetComponent<Image>();
-        SpellCardImg = transform.Find("주문카드").Find("이미지마스크").Find("카드이미지").GetComponent<Image>();
+        SpellCardImg = transform.Find("주문카드").Find("카드이미지").GetComponent<Image>();
 
         SpellCost = new GameObject[2];
         SpellCostImage = new Image[2];
@@ -224,7 +224,7 @@ public class CardView : MonoBehaviour
         #region[무기카드]
         WeaponCard = transform.Find("무기카드").gameObject;
         WeaponCardLevel = transform.Find("무기카드").Find("등급").GetComponent<Image>();
-        WeaponCardImg = transform.Find("무기카드").Find("이미지마스크").Find("카드이미지").GetComponent<Image>();
+        WeaponCardImg = transform.Find("무기카드").Find("카드이미지").GetComponent<Image>();
 
         WeaponCost = new GameObject[2];
         WeaponCostImage = new Image[2];

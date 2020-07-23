@@ -58,6 +58,8 @@ public class CardHandBtn : Btn
         if (!BattleUI.instance.gameStart)
             return;
 
+        if (GameEventManager.instance.EventCheck())
+            return;
         if (closeUp)
             btnAni.SetTrigger("확대");
         else

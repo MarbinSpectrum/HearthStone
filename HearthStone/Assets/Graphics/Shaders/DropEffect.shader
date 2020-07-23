@@ -12,7 +12,7 @@
 		[HideInInspector]_StencilReadMask("Stencil Read Mask", Float) = 255
 
 		[HideInInspector]_ColorMask("Color Mask", Float) = 15
-
+		_Lerp("Lerp",Range(0,1)) = 1
         [Toggle(UNITY_UI_ALPHACLIP)] _UseUIAlphaClip("Use Alpha Clip", Float) = 0
     }
 
@@ -80,7 +80,7 @@
                 float4 _ClipRect;
                 float4 _MainTex_ST;
 				float _Alpha;
-
+				float _Lerp;
                 v2f vert(appdata_t v)
                 {
                     v2f OUT;
@@ -98,7 +98,7 @@
                 fixed4 frag(v2f IN) : SV_Target
                 {
                     half4 color = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd) * IN.color;
-
+					half4 baseColor = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd);
                     #ifdef UNITY_UI_CLIP_RECT
                     color.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
                     #endif
@@ -114,7 +114,7 @@
 					color += _Color;
 
 					color.a = tempA;
-
+					color.rgb = lerp(baseColor.rgb, color.rgb, _Lerp);
 
                     return color;
                 }

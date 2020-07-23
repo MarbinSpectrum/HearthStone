@@ -14,6 +14,8 @@ public class DropEffect : MonoBehaviour
 
     [HideInInspector] public Vector2 dropPos;
     [Space(20)]
+    [Range(0, 1)]
+    public float lerp;
     [Range(0,1)]
     public float alpha;
     [Range(0, 1920)]
@@ -25,7 +27,10 @@ public class DropEffect : MonoBehaviour
     void Update()
     {
         if (dropEffectMat)
+        {
             dropEffectMat.SetFloat("_Alpha", alpha);
+            dropEffectMat.SetFloat("_Lerp", lerp);
+        }
         if (!Application.isPlaying)
             return;
         Vector2 v = dropPos - dropRectTransform.anchoredPosition;

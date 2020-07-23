@@ -47,6 +47,9 @@ public class MinionObject : MonoBehaviour
     //[Header("-----------------------------------------")]
     [Space(20)]
     public bool InitTrigger;
+
+    public bool gotoHandTrigger;
+
     [Header("-----------------------------------------")]
     [Space(100)]
 
@@ -86,6 +89,7 @@ public class MinionObject : MonoBehaviour
         TurnEnd();
         UpdateStat();
         SetObjectNum();
+        GoToHand();
     }
     #endregion
 
@@ -252,6 +256,48 @@ public class MinionObject : MonoBehaviour
     public void CardHandMinionSpawn()
     {
         MinionManager.instance.SpawnMinionAbility(this);   
+    }
+    #endregion
+
+    #region[하수인 패로 되돌리기]
+    void GoToHand()
+    {
+        if (gotoHandTrigger)
+        {
+            gotoHandTrigger = false;
+            if (!enemy)
+            {
+                StartCoroutine(GotoHand_PlayerMinion());
+            }
+        }
+    }
+
+    private IEnumerator GotoHand_PlayerMinion()
+    {
+        animator.SetTrigger("GoHand");
+        DragCardObject.instance.GotoHandEffect(Camera.main.WorldToScreenPoint(transform.position),minion_name);
+        while (!animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환안됨"))
+        {
+            GameEventManager.instance.EventSet(1f);
+            yield return new WaitForSeconds(0.001f);
+        }
+
+        MinionObject temp = this;
+        for (int i = num; i < MinionField.instance.minionNum - 1; i++)
+            MinionField.instance.minions[i] = MinionField.instance.minions[i + 1];
+        MinionField.instance.minions[MinionField.instance.minionNum - 1] = temp;
+        MinionField.instance.minionNum--;
+
+        for (int i = 0; i < BattleUI.instance.playerCardAni.Length; i++)
+        {
+            if (BattleUI.instance.playerCardAni[i].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
+            {
+                CardHand.instance.DrawCard();
+                CardHand.instance.CardMove(minion_name, CardHand.instance.nowHandNum - 1, transform.position, CardHand.instance.defaultSize, 0);
+                CardViewManager.instance.UpdateCardView();
+                break;
+            }
+        }
     }
     #endregion
 

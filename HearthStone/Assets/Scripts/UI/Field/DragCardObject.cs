@@ -103,6 +103,27 @@ public class DragCardObject : MonoBehaviour
         dropEffect.effectArrive = false;
     }
 
+    public void GotoHandEffect(Vector2 pos,string s)
+    {
+        dropEffect.dropPos = pos;
+        dropEffect.dropRectTransform.anchoredPosition = dropEffect.dropPos;
+        ShowDragCard(s);
+        if (CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대"))
+            dropEffect.dropEffectAni.SetTrigger("GoHand");
+        else
+            dropEffect.dropEffectAni.SetTrigger("GoHand_Small");
+        dropEffect.effectArrive = false;
+    }
+
+    public void ShowDragCard(string s)
+    {
+        //cardView.hide = true;
+        dragCardView.hide = false;
+        CardViewManager.instance.CardShow(ref dragCardView, s);
+        CardViewManager.instance.CardShow(ref dropEffect.dropEffectCardView, s);
+        CardViewManager.instance.UpdateCardView(0.001f);
+    }
+
     public void ShowDragCard(CardView cardView)
     {
         //cardView.hide = true;

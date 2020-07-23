@@ -27,7 +27,6 @@ public class CanSelect : MonoBehaviour
             select_legend.SetActive(false);
             return;
         }
-        Debug.Log(DragLineRenderer.instance.CheckActObj(minionObject.gameObject));
         if ((!minionObject.enemy && !DragLineRenderer.instance.CheckMask(타겟.아군하수인)) || (minionObject.enemy && !DragLineRenderer.instance.CheckMask(타겟.적하수인)))
         {
             select_taunt.SetActive(false);
