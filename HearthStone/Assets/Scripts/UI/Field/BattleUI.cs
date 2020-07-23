@@ -32,8 +32,12 @@ public class BattleUI : MonoBehaviour
     public Animator grayFilterAni;
     public GameObject grayFilter;
 
+    public RectTransform selectMinion;
+    public Text selectMinionTxt;
+
     [HideInInspector] public bool gameStart;
 
+    #region[Awake]
     public void Awake()
     {
         if (MainMenu.instance)
@@ -45,7 +49,9 @@ public class BattleUI : MonoBehaviour
         instance = this;
         gameStart = false;
     }
+    #endregion
 
+    #region[Start]
     private void Start()
     {
         StartCoroutine(PlayerSetEffect(4));
@@ -73,6 +79,7 @@ public class BattleUI : MonoBehaviour
                 break;
         }
     }
+    #endregion
 
     #region[등장대사]
     private IEnumerator ShowPlayerText(float waitTime,string s)

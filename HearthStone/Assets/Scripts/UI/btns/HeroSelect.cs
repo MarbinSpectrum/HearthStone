@@ -44,7 +44,8 @@ public class HeroSelect : Btn
     #region[pointerEnter]
     public override void pointerEnter()
     {
-        SetSelect(true);
+        if (Input.GetMouseButton(0))
+            SetSelect(true);
     }
     #endregion
 

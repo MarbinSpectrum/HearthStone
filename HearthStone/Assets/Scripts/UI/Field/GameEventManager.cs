@@ -7,7 +7,7 @@ public class GameEventManager : MonoBehaviour
     public static GameEventManager instance;
 
     bool Event;
-    float time = 0;
+    public float time = 0;
 
     void Awake()
     {

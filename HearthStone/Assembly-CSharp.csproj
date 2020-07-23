@@ -94,6 +94,7 @@
     <Compile Include="Assets\Graphics\Sprites\Minions\MinionManager.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\MinionObject.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\ObjectVibration.cs" />
+    <Compile Include="Assets\Graphics\Sprites\Minions\SelectMinionBtn.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\SetMinionRenderer.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\Battery\BatteryUI.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\BigBell\BigBell.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Assets\Scripts\UI\Field\InGameDeck.cs" />
     <Compile Include="Assets\Scripts\UI\Field\ManaManager.cs" />
     <Compile Include="Assets\Scripts\UI\Field\MinionField.cs" />
+    <Compile Include="Assets\Scripts\UI\Field\SelectMinionEvent.cs" />
     <Compile Include="Assets\Scripts\UI\Field\ShowManaCost.cs" />
     <Compile Include="Assets\Scripts\UI\Field\TurnChangeBtn.cs" />
     <Compile Include="Assets\Scripts\UI\Field\TurnManager.cs" />

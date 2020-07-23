@@ -96,6 +96,8 @@ public class HandCardCheckBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
+        if (GameEventManager.instance.EventCheck())
+            return;
         if (!BattleUI.instance.gameStart)
             return;
         if (DragLineRenderer.instance.lineRenderer.enabled)
