@@ -4,6 +4,7 @@
     {
         [PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
         [HDR]_Color("Tint", Color) = (1,1,1,1)
+        [HDR]_BaseColor("BaseTint", Color) = (1,1,1,1)
 		_Alpha("Alpha", Range(0,1)) = 1
 		[HideInInspector]_StencilComp("Stencil Comparison", Float) = 8
 		[HideInInspector]_Stencil("Stencil ID", Float) = 0
@@ -76,6 +77,7 @@
 
                 sampler2D _MainTex;
                 fixed4 _Color;
+                fixed4 _BaseColor;
                 fixed4 _TextureSampleAdd;
                 float4 _ClipRect;
                 float4 _MainTex_ST;
@@ -91,14 +93,13 @@
 
                     OUT.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
 
-                    OUT.color = v.color * _Color;
+                    OUT.color = v.color * lerp(_BaseColor, _Color, _Lerp);
                     return OUT;
                 }
 
                 fixed4 frag(v2f IN) : SV_Target
                 {
                     half4 color = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd) * IN.color;
-					half4 baseColor = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd);
                     #ifdef UNITY_UI_CLIP_RECT
                     color.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
                     #endif
@@ -110,11 +111,14 @@
 					color.a = min(_Alpha, color.a);
 					float tempA = color.a;
 
-					color = (color.r + color.g + color.b) / 3;
-					color += _Color;
+                    half4 colorA = (color.r + color.g + color.b) / 3;
+                    colorA += _Color;
+                    colorA.a = tempA;
 
-					color.a = tempA;
-					color.rgb = lerp(baseColor.rgb, color.rgb, _Lerp);
+                    half4 colorB = color;
+					colorB.a = tempA;
+
+                    color = lerp(colorB, colorA, _Lerp);
 
                     return color;
                 }

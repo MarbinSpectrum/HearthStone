@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: DropEffect
   m_Shader: {fileID: 4800000, guid: e979f2e65f2630547a214b752028d1ce, type: 3}
-  m_ShaderKeywords: UNITY_UI_ALPHACLIP
+  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA UNITY_UI_ALPHACLIP
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 1
@@ -50,4 +50,5 @@ Material:
     - _UseUIAlphaClip: 1
     m_Colors:
     - Color_8AF24D67: {r: 0, g: 1.0045338, b: 1.5157166, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 0, g: 0.5598835, b: 2.6082377, a: 1}

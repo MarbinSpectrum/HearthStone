@@ -91,6 +91,9 @@ public class MinionManager : MonoBehaviour
         for (int k = 0; k < minionList.Count; k++)
         {
             Vector3 AddStat = Vector3.zero;
+            for (int i = 0; i < minionList[k].buffList.Count; i++)
+                AddStat += (Vector3)minionList[k].buffList[i];
+
             for (int i = 0; i < minionList.Count; i++)
             {
                 if (minionList[k].enemy == minionList[i].enemy)
@@ -119,7 +122,7 @@ public class MinionManager : MonoBehaviour
                 }
             }
             minionList[k].final_atk = minionList[k].nowAtk + (int)AddStat.x;
-            //final_hp = nowHp;   //체력의 지속버프 처리라는게 이상함
+           // minionList[k].final_hp = minionList[k].nowHp + (int)AddStat.y;
             minionList[k].final_spellAtk = minionList[k].nowSpell + (int)AddStat.z;
         }
     }
@@ -378,11 +381,13 @@ public class MinionManager : MonoBehaviour
             return;
         selectMinionEvent = false;
         eventMininon.gotoHandTrigger = true;
-        GameEventManager.instance.EventAdd(1.5f);
+        GameEventManager.instance.EventAdd(1.4f);
         BattleUI.instance.grayFilterAni.SetBool("On", false);
         BattleUI.instance.selectMinion.gameObject.SetActive(false);
-        ManaManager.instance.playerNowMana += 1;
-        Debug.LogError("회복 코스트설정해라!!");
+        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(eventMininon.minion_name));
+        int mana = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+        ManaManager.instance.playerNowMana += mana;
+
     }
 
     public void MinionSelect(MinionObject minionObject)
@@ -390,7 +395,7 @@ public class MinionManager : MonoBehaviour
         if (!selectMinionEvent)
             return;
         selectMinionEvent = false;
-        GameEventManager.instance.EventAdd(0.5f);
+        GameEventManager.instance.EventAdd(0.4f);
         BattleUI.instance.grayFilterAni.SetBool("On", false);
         BattleUI.instance.selectMinion.gameObject.SetActive(false);
         switch (eventMininon.abilityList[eventNum].Ability_type)
@@ -415,14 +420,13 @@ public class MinionManager : MonoBehaviour
                 break;
             case MinionAbility.Ability.해당턴동안_능력치부여:
             case MinionAbility.Ability.능력치부여:
-                minionObject.nowAtk += (int)eventMininon.abilityList[eventNum].Ability_data.x;
-                minionObject.baseAtk += (int)eventMininon.abilityList[eventNum].Ability_data.x;
-                minionObject.baseHp += (int)eventMininon.abilityList[eventNum].Ability_data.y;
-                minionObject.baseHp += (int)eventMininon.abilityList[eventNum].Ability_data.y;
-                minionObject.nowSpell += (int)eventMininon.abilityList[eventNum].Ability_data.z;
+                Vector4 buff = new Vector4((int)eventMininon.abilityList[eventNum].Ability_data.x, (int)eventMininon.abilityList[eventNum].Ability_data.y, (int)eventMininon.abilityList[eventNum].Ability_data.z, 1);
+                if(eventMininon.abilityList[eventNum].Ability_type == MinionAbility.Ability.능력치부여)
+                    buff -= new Vector4(0, 0, 0, 1);
+                minionObject.buffList.Add(buff);
+                minionObject.final_hp += (int)minionObject.abilityList[eventNum].Ability_data.y;
                 break;
         }
-        Debug.LogError("능력치부여 마저 구현해라!!");
     }
 
     string GetText(MinionAbility.Ability ability)

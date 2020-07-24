@@ -43,6 +43,8 @@ public class MinionObject : MonoBehaviour
     [HideInInspector] public bool turnEndTrigger;
 
     public List<MinionAbility> abilityList = new List<MinionAbility>();
+    /// <summary> x(공격력) y(체력) z(주문공격력) w(한턴동안만 유지되는 여부) </summary>
+    [HideInInspector] public List<Vector4> buffList = new List<Vector4>();
 
     //[Header("-----------------------------------------")]
     [Space(20)]
@@ -248,6 +250,15 @@ public class MinionObject : MonoBehaviour
     {
         if (!turnEndTrigger)
             return;
+        for(int i = 0; i < buffList.Count; i++)
+        {
+            if(buffList[i].w == 1)
+            {
+                buffList.RemoveAt(i);
+                i = 0;
+            }
+        }
+
         turnEndTrigger = false;
     }
     #endregion
@@ -328,6 +339,7 @@ public class MinionObject : MonoBehaviour
             EnemyMinionField.instance.minionNum--;
         }
         abilityList.Clear();
+        buffList.Clear();
         canAttackNum = 0;
         taunt = false;
         stealth = false;
@@ -346,6 +358,7 @@ public class MinionObject : MonoBehaviour
         baseHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
         baseAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
         legend = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "등급").Equals("전설");
+        buffList.Clear();
         final_hp = baseHp;
         nowAtk = baseAtk;
         nowSpell = 0;

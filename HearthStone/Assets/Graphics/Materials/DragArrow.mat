@@ -10,7 +10,7 @@ Material:
   m_Name: DragArrow
   m_Shader: {fileID: -6465566751694194690, guid: 828675eadaf267a42823afdb2c480271,
     type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
