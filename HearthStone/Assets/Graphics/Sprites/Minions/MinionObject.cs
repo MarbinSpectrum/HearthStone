@@ -250,16 +250,13 @@ public class MinionObject : MonoBehaviour
     {
         if (!turnEndTrigger)
             return;
-        for(int i = 0; i < buffList.Count; i++)
-        {
-            if(buffList[i].w == 1)
-            {
-                buffList.RemoveAt(i);
-                i = 0;
-            }
-        }
-
         turnEndTrigger = false;
+
+        //버프제거
+        for(int i = 0; i < buffList.Count; i++)
+            if (buffList[i].w == 1)
+                buffList[i] = Vector4.zero;
+
     }
     #endregion
 
