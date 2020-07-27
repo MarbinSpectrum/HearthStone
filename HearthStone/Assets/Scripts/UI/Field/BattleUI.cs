@@ -48,6 +48,7 @@ public class BattleUI : MonoBehaviour
             BattleMenu.instance.gameObject.SetActive(false);
         instance = this;
         gameStart = false;
+        GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
     }
     #endregion
 

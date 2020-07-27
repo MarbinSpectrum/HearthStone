@@ -43,6 +43,7 @@ public class TurnManager : MonoBehaviour
             turnAniEnd = false;
             if (turn == 턴.플레이어)
             {
+                CardHand.instance.useCardNum = 0;
                 time = 0.5f;
                 turn = 턴.상대방;
                 manaManager.enemyMaxMana++;

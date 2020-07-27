@@ -165,13 +165,15 @@ public class MinionManager : MonoBehaviour
     int eventNum;
     public void SpawnMinionAbility(MinionObject minionObject)
     {
+        //전투의 함성 및 연계
+
         BattlecryEventList.Clear();
 
         #region[대상선택이 필요한 이벤트]
         bool selectMinionEvent = false;
         for (int j = 0; j < minionObject.abilityList.Count; j++)
         {
-            if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.전투의함성)
+            if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.전투의함성 || (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.연계 && CheckCombo()))
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.빙결시키기)
                     BattlecryEventList.Add(j);
@@ -193,6 +195,8 @@ public class MinionManager : MonoBehaviour
                     BattlecryEventList.Add(j);
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인의_생명력회복)
                     BattlecryEventList.Add(j);
+                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.피해주기)
+                    BattlecryEventList.Add(j);
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인에게_피해주기)
                     BattlecryEventList.Add(j);
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.대상의_공격력_생명력_교환)
@@ -206,7 +210,7 @@ public class MinionManager : MonoBehaviour
         #region[대상선택이 필요 없는 이벤트]
         for (int j = 0; j < minionObject.abilityList.Count; j++)
         {
-            if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.전투의함성)
+            if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.전투의함성 || (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.연계 && CheckCombo()))
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
                     BattlecryEventList.Add(j);
@@ -219,7 +223,7 @@ public class MinionManager : MonoBehaviour
         #region[하수인 소환 이벤트]
         for (int j = 0; j < minionObject.abilityList.Count; j++)
         {
-            if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.전투의함성)
+            if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.전투의함성 || (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.연계 && CheckCombo()))
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
                     BattlecryEventList.Add(j);
@@ -229,6 +233,13 @@ public class MinionManager : MonoBehaviour
         #endregion
 
         StartCoroutine(BattlecryEvent(minionObject));
+    }
+    #endregion
+
+    #region[연계인지 검사]
+    bool CheckCombo()
+    {
+        return CardHand.instance.useCardNum > 1;
     }
     #endregion
 
@@ -265,6 +276,8 @@ public class MinionManager : MonoBehaviour
             else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인의_생명력회복)
                 NowEvent = 1;
             else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인에게_피해주기)
+                NowEvent = 1;
+            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.피해주기)
                 NowEvent = 1;
             else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.대상의_공격력_생명력_교환)
                 NowEvent = 1;
@@ -307,7 +320,6 @@ public class MinionManager : MonoBehaviour
                     BattleUI.instance.selectMinion.gameObject.SetActive(true);
                     DragLineRenderer.instance.activeObj = minionObject.gameObject;
                     SetSelectMask(minionObject.abilityList[j].Ability_type);
-                    BattleUI.instance.selectMinion.anchoredPosition = Camera.main.WorldToScreenPoint(minionObject.transform.position);
                     BattleUI.instance.selectMinionTxt.text = GetText(minionObject.abilityList[j].Ability_type);
 
                     while (selectMinionEvent)
@@ -396,6 +408,7 @@ public class MinionManager : MonoBehaviour
         Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(eventMininon.minion_name));
         int mana = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
         ManaManager.instance.playerNowMana += mana;
+        CardHand.instance.useCardNum--;
 
     }
     #endregion
@@ -425,12 +438,21 @@ public class MinionManager : MonoBehaviour
             case MinionAbility.Ability.적군하수인_주인의패로되돌리기:
                 break;
             case MinionAbility.Ability.침묵시키기:
+                minionObject.abilityList.Clear();
+                minionObject.buffList.Clear();
+                Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minionObject.minion_name));
+                minionObject.baseHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
+                minionObject.baseAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+                minionObject.taunt = false;
+                minionObject.stealth = false;
                 break;
             case MinionAbility.Ability.하수인의_생명력회복:
                 minionObject.final_hp += (int)minionObject.abilityList[eventNum].Ability_data.y;
                 break;
+            case MinionAbility.Ability.피해주기:
             case MinionAbility.Ability.하수인에게_피해주기:
                 AttackManager.instance.AddDamageObj(minionObject.damageEffect, (int)eventMininon.abilityList[eventNum].Ability_data.x);
+                AttackManager.instance.AttackEffectRun();
                 break;
             case MinionAbility.Ability.대상의_공격력_생명력_교환:
                 int temp = minionObject.final_hp;
@@ -449,6 +471,29 @@ public class MinionManager : MonoBehaviour
                     buff -= new Vector4(0, 0, 0, 1);
                 minionObject.buffList.Add(buff);
                 minionObject.final_hp += (int)minionObject.abilityList[eventNum].Ability_data.y;
+                break;
+        }
+    }
+
+    public void HeroSelect(bool enemy)
+    {
+        if (!selectMinionEvent)
+            return;
+        selectMinionEvent = false;
+        GameEventManager.instance.EventAdd(0.3f);
+        BattleUI.instance.grayFilterAni.SetBool("On", false);
+        BattleUI.instance.selectMinion.gameObject.SetActive(false);
+        switch (eventMininon.abilityList[eventNum].Ability_type)
+        {
+
+            case MinionAbility.Ability.빙결시키기:
+                break;
+            case MinionAbility.Ability.생명력회복:
+                break;
+            case MinionAbility.Ability.피해주기:
+            case MinionAbility.Ability.영웅에게_피해주기:
+                break;
+            case MinionAbility.Ability.영웅의_생명력회복:
                 break;
         }
     }
@@ -506,6 +551,13 @@ public class MinionManager : MonoBehaviour
                 DragLineRenderer.instance.AddMask(타겟.적하수인);
                 DragLineRenderer.instance.AddMask(타겟.아군하수인);
                 break;
+            case MinionAbility.Ability.피해주기:
+                DragLineRenderer.instance.InitMask();
+                DragLineRenderer.instance.AddMask(타겟.적영웅);
+                DragLineRenderer.instance.AddMask(타겟.아군영웅);
+                DragLineRenderer.instance.AddMask(타겟.적하수인);
+                DragLineRenderer.instance.AddMask(타겟.아군하수인);
+                break;
             case MinionAbility.Ability.대상의_공격력_생명력_교환:
                 DragLineRenderer.instance.InitMask();
                 DragLineRenderer.instance.AddMask(타겟.적하수인);
@@ -553,5 +605,7 @@ public class MinionManager : MonoBehaviour
     #endregion
 
     #endregion
+
+
 }
 

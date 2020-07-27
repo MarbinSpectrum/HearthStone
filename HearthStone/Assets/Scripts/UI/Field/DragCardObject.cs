@@ -10,6 +10,7 @@ public class DragCardObject : MonoBehaviour
 
     public CardView dragCardView;
     RectTransform rectTransform;
+    public RectTransform parentsRectTransform;
 
     public GameObject dragPoint;
 
@@ -28,6 +29,7 @@ public class DragCardObject : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
         instance = this;
         dragCardView.hide = true;
+        parentsRectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
     }
 
     public void Update()
@@ -36,7 +38,16 @@ public class DragCardObject : MonoBehaviour
             HideDragCard();
 
         dragPoint.SetActive(!dragCardView.hide);
-        rectTransform.anchoredPosition = Input.mousePosition;
+
+        if(dragCardView.hide)
+            rectTransform.anchoredPosition = new Vector2(-10000,-10000);
+        else
+        {
+            Vector2 v = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            rectTransform.transform.position = v;
+        }
+
+
         if (dragCardView.cardType == CardType.무기)
             glowImg.sprite = CardHand.instance.weaponImg;
         else if (dragCardView.cardType == CardType.주문)
@@ -91,14 +102,16 @@ public class DragCardObject : MonoBehaviour
     public void ShowDropEffectMinion(Vector2 pos,int n)
     {
         dropEffect.dropPos = pos;
-        dropEffect.dropRectTransform.anchoredPosition = Input.mousePosition;
+        Vector2 v = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        dropEffect.dropRectTransform.transform.position = v;
         dropEffect.dropEffectAni.SetTrigger("Effect_Minion_" + n);
     }
 
     public void ShowDropEffectSpell(Vector2 pos, int n)
     {
         dropEffect.dropPos = pos;
-        dropEffect.dropRectTransform.anchoredPosition = Input.mousePosition;
+        Vector2 v = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        dropEffect.dropRectTransform.transform.position = v;
         dropEffect.dropEffectAni.SetTrigger("Effect_Spell_" + n);
         dropEffect.effectArrive = false;
     }

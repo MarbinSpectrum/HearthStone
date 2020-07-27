@@ -290,6 +290,11 @@ public class MinionObject : MonoBehaviour
             yield return new WaitForSeconds(0.001f);
         }
 
+        abilityList.Clear();
+        buffList.Clear();
+        taunt = false;
+        stealth = false;
+
         MinionObject temp = this;
         for (int i = num; i < MinionField.instance.minionNum - 1; i++)
             MinionField.instance.minions[i] = MinionField.instance.minions[i + 1];

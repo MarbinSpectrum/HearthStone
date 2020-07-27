@@ -10,6 +10,7 @@ public class Setting : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
     }
     #endregion
 }

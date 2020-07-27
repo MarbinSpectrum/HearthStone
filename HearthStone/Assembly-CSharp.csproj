@@ -101,6 +101,7 @@
     <Compile Include="Assets\Graphics\Sprites\UI\Water Wheel\WaterWheel.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\시작영상\StartAni.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\영웅초상화\PlayerSet.cs" />
+    <Compile Include="Assets\Graphics\Sprites\UI\영웅초상화\SelectHeroBtn.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\코인\SetCoinMat.cs" />
     <Compile Include="Assets\Scenes\미니언능력생성기\CreateAbility.cs" />
     <Compile Include="Assets\Scripts\CardData\CardData.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Assets\Scripts\UI\Field\ShowManaCost.cs" />
     <Compile Include="Assets\Scripts\UI\Field\TurnChangeBtn.cs" />
     <Compile Include="Assets\Scripts\UI\Field\TurnManager.cs" />
+    <Compile Include="Assets\Scripts\UI\HeroCanSelect.cs" />
     <Compile Include="Assets\Scripts\UI\Main\BattleMenu.cs" />
     <Compile Include="Assets\Scripts\UI\Main\MainMenu.cs" />
     <Compile Include="Assets\Scripts\UI\Main\MyCollectionsMenu.cs" />

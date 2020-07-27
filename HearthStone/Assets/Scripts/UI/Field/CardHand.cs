@@ -45,6 +45,11 @@ public class CardHand : MonoBehaviour
     public int nowHandNum;
     public Transform drawCardPos;
 
+    public Material glowNormalMat;
+    public Material glowComboMat;
+
+    [HideInInspector] public int useCardNum = 0;
+
     #region[Awake]
     private void Awake()
     {
@@ -124,11 +129,17 @@ public class CardHand : MonoBehaviour
                     ((handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대") && handAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99) ||
                     handAni.GetCurrentAnimatorStateInfo(0).IsName("패 기본상태")));
 
-                card_glow[i].transform.position = card[i].transform.position;
-                card_glow[i].transform.rotation = card[i].transform.rotation;
+                if (useCardNum > 0 && handCardView[i].cardType == CardType.무기 && handCardView[i].WeaponCardExplainData.Contains("연계"))
+                    glowImg[i].material = glowComboMat;
+                else if (useCardNum > 0 && handCardView[i].cardType == CardType.주문 && handCardView[i].SpellCardExplainData.Contains("연계"))
+                    glowImg[i].material = glowComboMat;
+                else if (useCardNum > 0 && handCardView[i].cardType == CardType.하수인 && handCardView[i].MinionsCardExplainData.Contains("연계"))
+                    glowImg[i].material = glowComboMat;
+                else
+                    glowImg[i].material = glowNormalMat;
             }
             else
-                card_glow[i].gameObject.SetActive(false);
+                card_glow[i].gameObject.SetActive(true);
         }
 
         for (int i = 0; i < nowHandNum; i++)
@@ -273,14 +284,16 @@ public class CardHand : MonoBehaviour
 
         if (handCardView[n].cardType == CardType.무기)
         {
-
+            useCardNum++;
         }
         else if (handCardView[n].cardType == CardType.주문)
         {
+            useCardNum++;
             DragCardObject.instance.ShowDropEffectSpell(Input.mousePosition, 0);
         }
         else if (handCardView[n].cardType == CardType.하수인)
         {
+            useCardNum++;
             MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData,true);
         }
 
