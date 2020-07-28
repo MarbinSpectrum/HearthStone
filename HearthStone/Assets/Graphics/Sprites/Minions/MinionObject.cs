@@ -31,6 +31,14 @@ public class MinionObject : MonoBehaviour
     public bool legend;
     public GameObject legendObj;
 
+    [Header("침묵")]
+    public bool silence;
+    public GameObject silenceObj;
+
+    [Header("빙결")]
+    public bool freeze;
+    public GameObject freezeObj;
+
     [Header("은신")]
     public bool stealth;
     public GameObject stealthObj;
@@ -214,13 +222,16 @@ public class MinionObject : MonoBehaviour
                 final_atk != 0 && 
                 TurnManager.instance.turn == 턴.플레이어 && 
                 canAttack && 
-                canAttackNum > 0 && 
+                canAttackNum > 0 &&
+                !freeze &&
                 !MinionField.instance.MinionAttackCheck() && 
                 animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"));
 
         tauntObj.SetActive(taunt);
         stealthObj.SetActive(stealth);
         legendObj.SetActive(legend);
+        freezeObj.SetActive(freeze);
+        silenceObj.SetActive(silence);
 
         if (flagAtk != final_atk)
         {
@@ -242,6 +253,8 @@ public class MinionObject : MonoBehaviour
             return;
         turnStartTrigger = false;
         canAttackNum = 1;
+
+        freeze = false;
     }
     #endregion
 
@@ -256,7 +269,6 @@ public class MinionObject : MonoBehaviour
         for(int i = 0; i < buffList.Count; i++)
             if (buffList[i].w == 1)
                 buffList[i] = Vector4.zero;
-
     }
     #endregion
 
@@ -345,7 +357,27 @@ public class MinionObject : MonoBehaviour
         canAttackNum = 0;
         taunt = false;
         stealth = false;
+        silence = false;
+        freeze = false;
         canAttack = false;
+    }
+    #endregion
+
+    #region[침묵]
+    public void ActSilence()
+    {
+        abilityList.Clear();
+        buffList.Clear();
+        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minion_name));
+        baseHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
+        final_hp = Mathf.Min(baseHp, final_hp);
+        baseAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+        nowAtk = Mathf.Min(baseAtk, nowAtk);
+        taunt = false;
+        stealth = false;
+        freeze = false;
+
+        silence = true;
     }
     #endregion
 
@@ -355,6 +387,7 @@ public class MinionObject : MonoBehaviour
         if (!InitTrigger)
             return;
         InitTrigger = false;
+
         meshRenderer.material = MinionManager.instance.minionMaterial[minion_name];
         Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minion_name));
         baseHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
@@ -366,6 +399,11 @@ public class MinionObject : MonoBehaviour
         nowSpell = 0;
         canAttackNum = 0;
         canAttack = true;
+        taunt = false;
+        stealth = false;
+        silence = false;
+        freeze = false;
+        canAttack = false;
 
         ////////////////////////////////////////////////////////////////////////////////////////
 

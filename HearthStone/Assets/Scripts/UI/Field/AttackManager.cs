@@ -93,7 +93,7 @@ public class AttackManager : MonoBehaviour
         {
             HeroManager.instance.heroHpManager.nowEnemyHp -= n;
         }
-        StartCoroutine(CameraVibrationEffect(0, n, 0.5f));
+        StartCoroutine(CameraVibrationEffect(0, 10, Mathf.Min(15,n)));
     }
     #endregion
 
