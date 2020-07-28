@@ -403,7 +403,6 @@ public class MinionObject : MonoBehaviour
         stealth = false;
         silence = false;
         freeze = false;
-        canAttack = false;
 
         ////////////////////////////////////////////////////////////////////////////////////////
 

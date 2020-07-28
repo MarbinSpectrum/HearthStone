@@ -458,7 +458,7 @@ public class MinionManager : MonoBehaviour
                 break;
             case MinionAbility.Ability.생명력회복:
             case MinionAbility.Ability.하수인의_생명력회복:
-                minionObject.final_hp += (int)minionObject.abilityList[eventNum].Ability_data.y;
+                minionObject.final_hp += (int)eventMininon.abilityList[eventNum].Ability_data.x;
                 minionObject.final_hp = Mathf.Min(minionObject.final_hp, minionObject.baseHp);
                 break;
             case MinionAbility.Ability.피해주기:
@@ -482,7 +482,7 @@ public class MinionManager : MonoBehaviour
                 if(eventMininon.abilityList[eventNum].Ability_type == MinionAbility.Ability.능력치부여)
                     buff -= new Vector4(0, 0, 0, 1);
                 minionObject.buffList.Add(buff);
-                minionObject.final_hp += (int)minionObject.abilityList[eventNum].Ability_data.y;
+                minionObject.final_hp += (int)eventMininon.abilityList[eventNum].Ability_data.y;
                 break;
         }
     }
