@@ -1,2 +1,0 @@
-E:\YoungMookKang\git\Unity\HearthStone\HearthStone\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache
-E:\YoungMookKang\git\Unity\HearthStone\HearthStone\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
