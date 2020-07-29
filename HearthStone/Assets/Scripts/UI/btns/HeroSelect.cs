@@ -87,6 +87,9 @@ public class HeroSelect : Btn
     #region[영웅 선택 이펙트 설정]
     public void SetSelect(bool flag)
     {
+        if (MinionManager.instance.selectMinionEvent)
+            return;
+
         if (!flag)
         {
             DragLineRenderer.instance.selectTarget = false;
@@ -95,6 +98,8 @@ public class HeroSelect : Btn
         }
         else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적영웅)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군영웅)))
         {
+
+
             if (!DragLineRenderer.instance.CheckMask(타겟.실행주체))
                 if (DragLineRenderer.instance.CheckActObj(gameObject))
                     return;

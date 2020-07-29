@@ -23,7 +23,7 @@ public class MinionAbility
         무기장착시,
         조건없음,
         조건을_만족하는_하수인선택,
-        //data3이 1이면 공격력 -1이면 체력
+        //data3이 1이면 공격력 2이면 체력 3이면 도발
         //data2이 -1이면 이하   1이면 이상  0이면 같을때
         //data1이 판별수치로 사용됨 //(data1 = 7 data2 = 1 data3 = 1) ==> 공격력 7이상 하수인 선택
         필드에_하수인이_일정수일때,
@@ -79,7 +79,7 @@ public class MinionAbility
         침묵시키기,
         공격불가,
         카드뽑기, 확률_카드뽑기,
-        하수인의_생명력회복, 영웅의_생명력회복, 생명력회복,
+        하수인의_생명력회복, 하수인의_생명력설정, 영웅의_생명력회복, 영웅의_생명력설정, 생명력회복,
         능력치를얻음, 능력치부여, 무작위_능력치부여, 해당턴동안_능력치부여,
         대상의_공격력_생명력_교환,
         무기의_공격력만큼능력부여,
@@ -141,6 +141,12 @@ public class MinionAbility
         if (a == Ability.무작위_능력치부여)
             return true;
         if (a == Ability.해당턴동안_능력치부여)
+            return true;
+        if (a == Ability.하수인의_생명력설정)
+            return true;
+        if (a == Ability.영웅의_생명력설정)
+            return true;
+        if (a == Ability.무작위_패_버리기)
             return true;
         return false;
     }

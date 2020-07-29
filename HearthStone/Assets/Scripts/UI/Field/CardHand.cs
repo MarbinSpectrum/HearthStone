@@ -297,6 +297,16 @@ public class CardHand : MonoBehaviour
             MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData,true);
         }
 
+        RemoveCard(n);
+    }
+    #endregion
+
+    #region[카드 사용]
+    public void RemoveCard(int n)
+    {
+        if (nowHandNum <= 0)
+            return;
+
         nowHandNum--;
         for (int i = 0; i < nowHandNum; i++)
         {

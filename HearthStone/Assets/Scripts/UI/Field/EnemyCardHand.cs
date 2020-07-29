@@ -137,6 +137,40 @@ public class EnemyCardHand : MonoBehaviour
         }
     }
 
+    #region[카드 사용]
+    public void RemoveCard(int n)
+    {
+        if (nowHandNum <= 0)
+            return;
+
+        nowHandNum--;
+        for (int i = 0; i < nowHandNum; i++)
+        {
+            float fullAngle;
+            float addAngle;
+            if ((nowHandNum - 1) * angle > maxAngle)
+            {
+                fullAngle = maxAngle;
+                if (nowHandNum <= 1)
+                    addAngle = 0;
+                else
+                    addAngle = maxAngle / (nowHandNum - 1);
+            }
+            else
+            {
+                fullAngle = (nowHandNum - 1) * angle;
+                addAngle = angle;
+            }
+            float tempAngle = fullAngle / 2f;
+            tempAngle -= i * addAngle;
+            Vector3 destinationPos = Quaternion.Euler(0, 0, tempAngle) * Vector3.up;
+            destinationPos = transform.position + (Vector3)destinationPos * range;
+            int cardViewNum = (i >= n) ? i + 1 : i;
+        }
+        CardViewManager.instance.UpdateCardView(0.001f);
+    }
+    #endregion
+
     public void CardMove(int n, Vector3 pos, Vector2 size, float angle = 0)
     {
         handLerp[n] = 0;

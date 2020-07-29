@@ -41,6 +41,8 @@ public class TurnManager : MonoBehaviour
         {
             turnEndTrigger = false;
             turnAniEnd = false;
+            HeroManager.instance.playerFreeze--;
+            HeroManager.instance.enemyFreeze--;
             if (turn == 턴.플레이어)
             {
                 CardHand.instance.useCardNum = 0;
@@ -54,7 +56,7 @@ public class TurnManager : MonoBehaviour
             else
             {
                 time = 1;
-                turn = 턴.플레이어;              
+                turn = 턴.플레이어;
                 manaManager.playerMaxMana++;
                 manaManager.playerMaxMana = Mathf.Min(manaManager.playerMaxMana, 10);
                 manaManager.playerNowMana = manaManager.playerMaxMana;

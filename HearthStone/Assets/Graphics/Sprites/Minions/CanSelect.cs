@@ -46,6 +46,26 @@ public class CanSelect : MonoBehaviour
             return;
         }
 
+        if ((!minionObject.enemy && !DragLineRenderer.instance.CheckMask(타겟.아군하수인)) || (minionObject.enemy && !DragLineRenderer.instance.CheckMask(타겟.적하수인)))
+        {
+            select_taunt.gameObject.SetActive(false);
+            select_normal.gameObject.SetActive(false);
+            select_legend.gameObject.SetActive(false);
+            selectBtn.gameObject.SetActive(false);
+            return;
+        }
+
+        if(MinionManager.instance.selectMinionEvent)
+            if (MinionManager.instance.eventMininon)
+                if(!MinionManager.instance.CheckConditionMinion(minionObject, MinionManager.instance.eventMininon, MinionManager.instance.eventNum))
+                {
+                    select_taunt.gameObject.SetActive(false);
+                    select_normal.gameObject.SetActive(false);
+                    select_legend.gameObject.SetActive(false);
+                    selectBtn.gameObject.SetActive(false);
+                    return;
+                }
+
         if (minionObject.taunt)
         {
             select_taunt.gameObject.SetActive(true);
@@ -56,6 +76,7 @@ public class CanSelect : MonoBehaviour
             select_taunt.gameObject.SetActive(false);
             select_normal.gameObject.SetActive(true);
         }
+
         selectBtn.gameObject.SetActive(true);
         select_legend.gameObject.SetActive(minionObject.legend);
     }
