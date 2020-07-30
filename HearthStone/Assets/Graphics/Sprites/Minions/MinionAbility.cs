@@ -79,7 +79,7 @@ public class MinionAbility
         침묵시키기,
         공격불가,
         카드뽑기, 확률_카드뽑기,
-        하수인의_생명력회복, 영웅의_생명력회복, 생명력회복,
+        하수인의_생명력회복, 하수인의_생명력설정, 영웅의_생명력회복, 영웅의_생명력설정, 생명력회복,
         능력치를얻음, 능력치부여, 무작위_능력치부여, 해당턴동안_능력치부여,
         대상의_공격력_생명력_교환,
         무기의_공격력만큼능력부여,
@@ -126,9 +126,15 @@ public class MinionAbility
             return true;
         if (a == Ability.확률_카드뽑기)
             return true;
+        if (a == Ability.무작위_패_버리기)
+            return true;
         if (a == Ability.하수인의_생명력회복)
             return true;
+        if (a == Ability.하수인의_생명력설정)
+            return true;
         if (a == Ability.영웅의_생명력회복)
+            return true;
+        if (a == Ability.영웅의_생명력설정)
             return true;
         if (a == Ability.생명력회복)
             return true;

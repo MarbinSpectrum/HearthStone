@@ -12,6 +12,10 @@ public class HeroManager : MonoBehaviour
     public HeroHpManager heroHpManager;
     public Image playerHero;
     public Image enemyHero;
+    public GameObject playerFreezeObj;
+    public GameObject enemyFreezeObj;
+    private int playerFreezeCount = 0;
+    private int enemyFreezeCount = 0;
 
     private void Awake()
     {
@@ -20,7 +24,23 @@ public class HeroManager : MonoBehaviour
 
     void Update()
     {
+        playerFreezeObj.SetActive(playerFreezeCount > 0);
+        enemyFreezeObj.SetActive(enemyFreezeCount > 0);
+
         playerHero.raycastTarget = !CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대");
         enemyHero.raycastTarget = !DragCardObject.instance.dragCard;
+    }
+    public void SetFreeze(bool enemy)
+    {
+        if (enemy)
+            enemyFreezeCount = 2;
+        else
+            playerFreezeCount = 2;
+    }
+
+    public void MeltFreeze()
+    {
+        enemyFreezeCount--;
+        playerFreezeCount--;
     }
 }

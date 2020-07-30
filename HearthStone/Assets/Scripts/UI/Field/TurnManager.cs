@@ -43,6 +43,7 @@ public class TurnManager : MonoBehaviour
             turnAniEnd = false;
             if (turn == 턴.플레이어)
             {
+                HeroManager.instance.MeltFreeze();
                 CardHand.instance.useCardNum = 0;
                 time = 0.5f;
                 turn = 턴.상대방;
@@ -53,6 +54,7 @@ public class TurnManager : MonoBehaviour
             }
             else
             {
+                HeroManager.instance.MeltFreeze();
                 time = 1;
                 turn = 턴.플레이어;              
                 manaManager.playerMaxMana++;

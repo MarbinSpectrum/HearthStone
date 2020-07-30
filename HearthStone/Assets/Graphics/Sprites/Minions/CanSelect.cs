@@ -37,6 +37,16 @@ public class CanSelect : MonoBehaviour
             return;
         }
 
+        if(MinionManager.instance.eventMininon)
+            if(!MinionManager.instance.CheckConditionMinion(minionObject,MinionManager.instance.eventMininon,MinionManager.instance.eventNum))
+            {
+                select_taunt.gameObject.SetActive(false);
+                select_normal.gameObject.SetActive(false);
+                select_legend.gameObject.SetActive(false);
+                selectBtn.gameObject.SetActive(false);
+                return;
+            }
+
         if ((!minionObject.enemy && !DragLineRenderer.instance.CheckMask(타겟.아군하수인)) || (minionObject.enemy && !DragLineRenderer.instance.CheckMask(타겟.적하수인)))
         {
             select_taunt.gameObject.SetActive(false);

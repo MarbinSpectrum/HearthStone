@@ -36,8 +36,10 @@ public class MinionObject : MonoBehaviour
     public GameObject silenceObj;
 
     [Header("빙결")]
-    public bool freeze;
+    bool freeze;
     public GameObject freezeObj;
+    public bool freezeTrigger;
+    int freezeCount = 0;
 
     [Header("은신")]
     public bool stealth;
@@ -97,6 +99,7 @@ public class MinionObject : MonoBehaviour
         UpdateTrigger();
         TurnStart();
         TurnEnd();
+        FreezeUpdate();
         UpdateStat();
         SetObjectNum();
         GoToHand();
@@ -252,9 +255,8 @@ public class MinionObject : MonoBehaviour
         if (!turnStartTrigger)
             return;
         turnStartTrigger = false;
+        freezeCount--;
         canAttackNum = 1;
-
-        freeze = false;
     }
     #endregion
 
@@ -264,9 +266,9 @@ public class MinionObject : MonoBehaviour
         if (!turnEndTrigger)
             return;
         turnEndTrigger = false;
-
+        freezeCount--;
         //버프제거
-        for(int i = 0; i < buffList.Count; i++)
+        for (int i = 0; i < buffList.Count; i++)
             if (buffList[i].w == 1)
                 buffList[i] = Vector4.zero;
     }
@@ -352,6 +354,13 @@ public class MinionObject : MonoBehaviour
             EnemyMinionField.instance.minions[EnemyMinionField.instance.minionNum - 1] = this;
             EnemyMinionField.instance.minionNum--;
         }
+        MinionRemoveProcess();
+    }
+    #endregion
+
+    #region[소멸 프로세스]
+    public void MinionRemoveProcess()
+    {
         abilityList.Clear();
         buffList.Clear();
         canAttackNum = 0;
@@ -360,6 +369,17 @@ public class MinionObject : MonoBehaviour
         silence = false;
         freeze = false;
         canAttack = false;
+    }
+    #endregion
+
+    #region[빙결]
+    public void FreezeUpdate()
+    {
+        freeze = freezeCount > 0;
+        if (!freezeTrigger)
+            return;
+        freezeTrigger = false;
+        freezeCount = 2;
     }
     #endregion
 
@@ -469,13 +489,13 @@ public class MinionObject : MonoBehaviour
                         temp.Ability_data = new Vector3(value, temp.Ability_data.y, temp.Ability_data.z);
                         break;
                     case 4:
-                        temp.Condition_data = new Vector3(temp.Ability_data.x, temp.Ability_data.y, value);
+                        temp.Condition_data = new Vector3(temp.Condition_data.x, temp.Condition_data.y, value);
                         break;
                     case 5:
-                        temp.Condition_data = new Vector3(temp.Ability_data.x, value, temp.Ability_data.z);
+                        temp.Condition_data = new Vector3(temp.Condition_data.x, value, temp.Condition_data.z);
                         break;
                     case 6:
-                        temp.Condition_data = new Vector3(value, temp.Ability_data.y, temp.Ability_data.z);
+                        temp.Condition_data = new Vector3(value, temp.Condition_data.y, temp.Condition_data.z);
                         break;
                 }
                 dataNum--;
