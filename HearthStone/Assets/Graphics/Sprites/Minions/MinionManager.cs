@@ -216,7 +216,8 @@ public class MinionManager : MonoBehaviour
         #region[대상선택이 필요 없는 이벤트]
         for (int j = 0; j < minionObject.abilityList.Count; j++)
         {
-            if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.전투의함성 || 
+            if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.전투의함성 ||
+                minionObject.abilityList[j].Condition_type == MinionAbility.Condition.필드에_하수인이_일정수일때 ||
                 (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.연계 && CheckCombo()))
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
@@ -226,6 +227,8 @@ public class MinionManager : MonoBehaviour
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_패_버리기)
                     BattlecryEventList.Add(j);
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.모든하수인처치)
+                    BattlecryEventList.Add(j);
+                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_하수인뺏기)
                     BattlecryEventList.Add(j);
             }
         }
@@ -364,6 +367,11 @@ public class MinionManager : MonoBehaviour
                 NowEvent = 5;
             #endregion
 
+            #region[무작위 하수인뺏기]
+            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_하수인뺏기)
+                NowEvent = 6;
+            #endregion
+
             #region[이벤트 처리]
             if (NowEvent == 1)
             {
@@ -416,25 +424,27 @@ public class MinionManager : MonoBehaviour
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
                 bool enemy = (int)minionObject.abilityList[j].Ability_data.z == 1 ? false : true;
                 string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
-                if (enemy)
+                if ((enemy && !minionObject.enemy) || (!enemy && minionObject.enemy))
                 {
-                    int spawnIndex = 0;
-                    bool flag = false;
-                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                        if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                        {
-                            flag = true;
-                            spawnIndex = Mathf.Max(spawnIndex, EnemyMinionField.instance.minions[m].num);
-                        }
-                    if (flag)
-                        spawnIndex++;
-                    spawnIndex += minionNum;
-                    EnemyMinionField.instance.AddMinion(spawnIndex, minion_name, false);
+                    //int spawnIndex = 0;
+                    //bool flag = false;
+                    //for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                    //    if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                    //    {
+                    //        flag = true;
+                    //        spawnIndex = Mathf.Max(spawnIndex, EnemyMinionField.instance.minions[m].num);
+                    //    }
+                    //if (flag)
+                    //    spawnIndex++;
+                    //spawnIndex += minionNum;
+                    //EnemyMinionField.instance.AddMinion(spawnIndex, minion_name, false);
+                    EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
                 }
                 else
                 {
-                    int spawnIndex = minionObject.num + minionNum;
-                    MinionField.instance.AddMinion(spawnIndex, minion_name, false);
+                    //int spawnIndex = minionObject.num + minionNum;
+                    //MinionField.instance.AddMinion(spawnIndex, minion_name, false);
+                    MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
                 }
                 minionNum++;
             }
@@ -492,6 +502,8 @@ public class MinionManager : MonoBehaviour
 
                 yield return new WaitForSeconds(1.25f);
 
+                GameEventManager.instance.EventAdd(2.5f);
+
                 #region[아군하수인효과]
                 if (!minionObject.enemy)
                 {
@@ -507,20 +519,20 @@ public class MinionManager : MonoBehaviour
                     for (int m = 0; m < removeMinionList.Count; m++)
                     {
                         MinionField.instance.minions[pos] = removeMinionList[m];
-                        MinionField.instance.minions[pos].MinionRemoveProcess();
+                        DeathMinionAbility(MinionField.instance.minions[pos]);
+                        //MinionField.instance.minions[pos].MinionRemoveProcess();
                         pos++;
                     }
                     MinionField.instance.minionNum = 1;
                     removeMinionList.Clear();
-
-                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                        EnemyMinionField.instance.minions[m].MinionRemoveProcess();
-                    EnemyMinionField.instance.minionNum = 1;
                     #endregion
 
                     #region[적군필드상황정리]
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                    {
+                        DeathMinionAbility(EnemyMinionField.instance.minions[m]);
                         EnemyMinionField.instance.minions[m].MinionRemoveProcess();
+                    }
                     EnemyMinionField.instance.minionNum = 0;
                     #endregion
                 }
@@ -541,24 +553,114 @@ public class MinionManager : MonoBehaviour
                     for (int m = 0; m < removeMinionList.Count; m++)
                     {
                         EnemyMinionField.instance.minions[pos] = removeMinionList[m];
+                        DeathMinionAbility(EnemyMinionField.instance.minions[pos]);
                         EnemyMinionField.instance.minions[pos].MinionRemoveProcess();
                         pos++;
                     }
                     EnemyMinionField.instance.minionNum = 1;
                     removeMinionList.Clear();
-
-                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                        EnemyMinionField.instance.minions[m].MinionRemoveProcess();
-                    EnemyMinionField.instance.minionNum = 1;
                     #endregion
 
                     #region[아군필드상황정리]
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                    {
+                        DeathMinionAbility(MinionField.instance.minions[m]);
                         MinionField.instance.minions[m].MinionRemoveProcess();
+                    }
                     MinionField.instance.minionNum = 0;
                     #endregion
                 }
                 #endregion
+
+            }
+            else if (NowEvent == 6)
+            {
+                if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.필드에_하수인이_일정수일때)
+                {
+                    bool conditionCheck = false;
+                    int targetMinionNum = 0;
+                    for (int m = 0; m < minionList.Count; m++)
+                    {
+                        if(minionList[m].gameObject.activeSelf)
+                        {
+                            if (minionList[m].enemy && (minionObject.abilityList[j].Condition_data.z == 0 || minionObject.abilityList[j].Condition_data.z == -1))
+                                targetMinionNum++;
+                            else if (!minionList[m].enemy && (minionObject.abilityList[j].Condition_data.z == 0 || minionObject.abilityList[j].Condition_data.z == 1))
+                                targetMinionNum++;
+                        }
+                    }
+
+                    if (minionObject.abilityList[j].Condition_data.y > 0 && targetMinionNum >= minionObject.abilityList[j].Condition_data.x)
+                        conditionCheck = true;
+                    else if (minionObject.abilityList[j].Condition_data.y < 0 && targetMinionNum <= minionObject.abilityList[j].Condition_data.x)
+                        conditionCheck = true;
+                    else if (minionObject.abilityList[j].Condition_data.y == 0 && targetMinionNum == minionObject.abilityList[j].Condition_data.x)
+                        conditionCheck = true;
+
+                    if(conditionCheck)
+                    {
+                        string minion_name = "데스윙";
+
+                        List<MinionObject> randomMinion = new List<MinionObject>();
+
+                        if(minionObject.enemy)
+                        {
+                            for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                                if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                    randomMinion.Add(MinionField.instance.minions[m]);
+                            if (EnemyMinionField.instance.minionNum >= 7)
+                                randomMinion.Clear();
+                        }
+                        else
+                        {
+                            for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                                if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                    randomMinion.Add(EnemyMinionField.instance.minions[m]);
+                            if (MinionField.instance.minionNum >= 7)
+                                randomMinion.Clear();
+                        }
+
+                        if(randomMinion.Count > 0)
+                        {
+                            int r = Random.Range(0, randomMinion.Count);
+                            minion_name = randomMinion[r].minion_name;
+
+                            MinionObject temp = randomMinion[r];
+                            if (minionObject.enemy)
+                            {
+                                for (int m = randomMinion[r].num; m < MinionField.instance.minions.Length - 1; m++)
+                                    MinionField.instance.minions[m] = MinionField.instance.minions[m + 1];
+                                MinionField.instance.minionNum--;
+                                MinionField.instance.minions[MinionField.instance.minions.Length - 1] = temp;
+                            }
+                            else
+                            {
+                                for (int m = randomMinion[r].num; m < EnemyMinionField.instance.minions.Length - 1; m++)
+                                    EnemyMinionField.instance.minions[m] = EnemyMinionField.instance.minions[m + 1];
+                                EnemyMinionField.instance.minionNum--;
+                                EnemyMinionField.instance.minions[EnemyMinionField.instance.minions.Length - 1] = temp;
+                            }
+
+                            if (minionObject.enemy)
+                            {
+                                int index = EnemyMinionField.instance.minionNum;
+                                EnemyMinionField.instance.AddMinion(index, minion_name, false);
+                                yield return new WaitForSeconds(0.5f);
+                                MinionCopy(randomMinion[r], EnemyMinionField.instance.minions[index]);
+                            }
+                            else
+                            {
+                                int index = MinionField.instance.minionNum;
+                                MinionField.instance.AddMinion(index, minion_name, false);
+                                yield return new WaitForSeconds(0.5f);
+                                MinionCopy(randomMinion[r], MinionField.instance.minions[index]);
+                            }
+                            minionNum++;
+                            randomMinion[r].MinionRemoveProcess();
+                        }
+                    }
+                }
+
             }
             #endregion
         }
@@ -757,6 +859,247 @@ public class MinionManager : MonoBehaviour
 
     #endregion
 
+    #region[하수인 제거시 효과]
+    public void DeathMinionAbility(MinionObject minionObject)
+    {
+        Queue<MinionAbility> DeathrattleEventQueue = new Queue<MinionAbility>();
+
+        #region[하수인 소환 이벤트]
+        for (int j = 0; j < minionObject.abilityList.Count; j++)
+        {
+            if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.죽음의메아리)
+            {
+                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
+                {
+                    MinionAbility minionAbility = new MinionAbility(minionObject.abilityList[j].Condition_type, minionObject.abilityList[j].Condition_data, minionObject.abilityList[j].Ability_type, minionObject.abilityList[j].Ability_data);
+                    DeathrattleEventQueue.Enqueue(minionAbility);
+                }
+            }
+        }
+        #endregion
+
+        #region[먼저처리되는이벤트]
+        for (int j = 0; j < minionObject.abilityList.Count; j++)
+        {
+            if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.죽음의메아리)
+            {
+                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
+                {
+                    MinionAbility minionAbility = new MinionAbility(minionObject.abilityList[j].Condition_type, minionObject.abilityList[j].Condition_data, minionObject.abilityList[j].Ability_type, minionObject.abilityList[j].Ability_data);
+                    DeathrattleEventQueue.Enqueue(minionAbility);
+                }
+                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_하수인뺏기)
+                {
+                    MinionAbility minionAbility = new MinionAbility(minionObject.abilityList[j].Condition_type, minionObject.abilityList[j].Condition_data, minionObject.abilityList[j].Ability_type, minionObject.abilityList[j].Ability_data);
+                    DeathrattleEventQueue.Enqueue(minionAbility);
+                }
+            }
+        }
+        #endregion
+
+        StartCoroutine(DeathrattleEvent(DeathrattleEventQueue, minionObject.enemy));
+    }
+    #endregion
+
+    #region[죽음의 메아리 이벤트]
+    private IEnumerator DeathrattleEvent(Queue<MinionAbility> deathrattleEventQueue, bool minion_enemy)
+    {
+        while (GameEventManager.instance.GetEventValue() > 0.1f)
+            yield return new WaitForSeconds(0.001f);
+        GameEventManager.instance.EventAdd(0.1f);
+        int NowEvent = 0;
+        int minionNum = 0;
+
+        while (deathrattleEventQueue.Count > 0)
+        {
+            MinionAbility temp = deathrattleEventQueue.Dequeue();
+
+            #region[하수인 소환 이벤트]
+            if (temp.Ability_type == MinionAbility.Ability.하수인소환)
+                NowEvent = 3;
+            #endregion
+
+            #region[카드관련 이벤트]
+            else if (temp.Ability_type == MinionAbility.Ability.카드뽑기)
+                NowEvent = 4;
+            else if (temp.Ability_type == MinionAbility.Ability.무작위_패_버리기)
+                NowEvent = 4;
+            #endregion
+
+            #region[무작위 하수인뺏기]
+            else if (temp.Ability_type == MinionAbility.Ability.무작위_하수인뺏기)
+                NowEvent = 6;
+            #endregion
+
+            #region[이벤트 처리]
+            if (NowEvent == 3)
+            {
+                //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
+                bool enemy = (int)temp.Ability_data.z == 1 ? false : true;
+                string minion_name = DataMng.instance.ToString((DataMng.TableType)temp.Ability_data.x, (int)temp.Ability_data.y, "카드이름");
+                if ((enemy && !minion_enemy) || (!enemy && minion_enemy))
+                {
+                    //int spawnIndex = 0;
+                    //bool flag = false;
+                    //for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                    //    if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                    //    {
+                    //        flag = true;
+                    //        spawnIndex = Mathf.Max(spawnIndex, EnemyMinionField.instance.minions[m].num);
+                    //    }
+                    //if (flag)
+                    //    spawnIndex++;
+                    //spawnIndex += minionNum;
+                    //EnemyMinionField.instance.AddMinion(spawnIndex, minion_name, false);
+                    EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
+                }
+                else 
+                {
+                    MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
+                }
+                minionNum++;
+            }
+            else if (NowEvent == 4)
+            {
+                if (temp.Ability_type == MinionAbility.Ability.카드뽑기)
+                {
+                    if (minion_enemy)
+                    {
+                        EnemyCardHand.instance.DrawCard();
+                    }
+                    else
+                    {
+                        for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
+                        {
+                            if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
+                            {
+                                BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
+                                CardHand.instance.DrawCard();
+                                string s = InGameDeck.instance.playDeck[0];
+                                InGameDeck.instance.playDeck.RemoveAt(0);
+                                CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
+                                CardViewManager.instance.UpdateCardView(0.001f);
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if (temp.Ability_type == MinionAbility.Ability.무작위_패_버리기)
+                {
+                    for (int c = 0; c < temp.Ability_data.x; c++)
+                    {
+                        if (!minion_enemy)
+                        {
+                            if (CardHand.instance.nowHandNum <= 0)
+                                break;
+                            int r = Random.Range(0, CardHand.instance.nowHandNum);
+                            CardHand.instance.CardRemove(r);
+                        }
+                        else
+                        {
+                            if (EnemyCardHand.instance.nowHandNum <= 0)
+                                break;
+                            int r = Random.Range(0, EnemyCardHand.instance.nowHandNum);
+                            EnemyCardHand.instance.CardRemove(r);
+                        }
+                    }
+                }
+            }
+            else if (NowEvent == 6)
+            {
+                string minion_name = "데스윙";
+                yield return new WaitForSeconds(1f);
+                List<MinionObject> randomMinion = new List<MinionObject>();
+
+                if (minion_enemy)
+                {
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            randomMinion.Add(MinionField.instance.minions[m]);
+                    if (EnemyMinionField.instance.minionNum >= 7)
+                        randomMinion.Clear();
+                }
+                else
+                {
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                        if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            randomMinion.Add(EnemyMinionField.instance.minions[m]);
+                    if (MinionField.instance.minionNum >= 7)
+                        randomMinion.Clear();
+                }
+
+                if (randomMinion.Count > 0)
+                {
+                    int r = Random.Range(0, randomMinion.Count);
+                    minion_name = randomMinion[r].minion_name;
+
+                    MinionObject tempMinion = randomMinion[r];
+                    if (minion_enemy)
+                    {
+                        for (int m = randomMinion[r].num; m < MinionField.instance.minions.Length - 1; m++)
+                            MinionField.instance.minions[m] = MinionField.instance.minions[m + 1];
+                        MinionField.instance.minionNum--;
+                        MinionField.instance.minions[MinionField.instance.minions.Length - 1] = tempMinion;
+                    }
+                    else
+                    {
+                        for (int m = randomMinion[r].num; m < EnemyMinionField.instance.minions.Length - 1; m++)
+                            EnemyMinionField.instance.minions[m] = EnemyMinionField.instance.minions[m + 1];
+                        EnemyMinionField.instance.minionNum--;
+                        EnemyMinionField.instance.minions[EnemyMinionField.instance.minions.Length - 1] = tempMinion;
+                    }
+
+                    if (minion_enemy)
+                    {
+                        int index = EnemyMinionField.instance.minionNum;
+                        EnemyMinionField.instance.AddMinion(index, minion_name, false);
+                        yield return new WaitForSeconds(0.5f);
+                        MinionCopy(randomMinion[r], EnemyMinionField.instance.minions[index]);
+                    }
+                    else
+                    {
+                        int index = MinionField.instance.minionNum;
+                        MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
+                        yield return new WaitForSeconds(0.5f);
+                        MinionCopy(randomMinion[r], MinionField.instance.minions[index]);
+                    }
+                    randomMinion[r].MinionRemoveProcess();
+                    minionNum++;
+                }
+            }
+            #endregion
+
+        }
+
+        if (minionNum > 0)
+            GameEventManager.instance.EventAdd(1.5f);
+    }
+
+    #endregion
+
+    void MinionCopy(MinionObject copyMinionObject, MinionObject pasteMinionObject)
+    {
+        pasteMinionObject.final_hp = copyMinionObject.final_hp;
+        pasteMinionObject.baseHp = copyMinionObject.baseHp;
+        pasteMinionObject.nowAtk = copyMinionObject.nowAtk;
+        pasteMinionObject.final_spellAtk = copyMinionObject.final_spellAtk;
+        pasteMinionObject.nowSpell = copyMinionObject.nowSpell;
+        pasteMinionObject.legend = copyMinionObject.legend;
+        pasteMinionObject.silence = copyMinionObject.silence;
+        pasteMinionObject.freezeCount = copyMinionObject.freezeCount;
+        pasteMinionObject.stealth = copyMinionObject.stealth;
+        pasteMinionObject.taunt = copyMinionObject.taunt;
+        pasteMinionObject.abilityList.Clear();
+        for(int i = 0; i < copyMinionObject.abilityList.Count; i++)
+        {
+            MinionAbility minionAbility = new MinionAbility(copyMinionObject.abilityList[i].Condition_type, copyMinionObject.abilityList[i].Condition_data, copyMinionObject.abilityList[i].Ability_type, copyMinionObject.abilityList[i].Ability_data);
+            pasteMinionObject.abilityList.Add(minionAbility);
+        }
+        pasteMinionObject.buffList.Clear();
+        for (int i = 0; i < copyMinionObject.buffList.Count; i++)
+            pasteMinionObject.buffList.Add(copyMinionObject.buffList[i]);
+
+    }
 
 }
 

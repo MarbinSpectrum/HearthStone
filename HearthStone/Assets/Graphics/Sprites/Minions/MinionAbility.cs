@@ -7,6 +7,15 @@ public enum 입력 { 조건, 능력, 수치 };
 [System.Serializable]
 public class MinionAbility
 {
+    public MinionAbility() { }
+    public MinionAbility(Condition condition_type, Vector3 condition_data, Ability ability_type, Vector3 ability_data)
+    {
+        Condition_type = condition_type;
+        Condition_data = condition_data;
+        Ability_type = ability_type;
+        Ability_data = ability_data;
+    }
+
     #region[발동 조건]
     public enum Condition
     {
@@ -85,7 +94,7 @@ public class MinionAbility
         무기의_공격력만큼능력부여,
         하수인처치, 모든하수인처치,
         아군하수인_주인의패로되돌리기, 적군하수인_주인의패로되돌리기, 모든_하수인_주인의패로되돌리기,
-        무작위_패_버리기,
+        무작위_패_버리기, 무작위_하수인뺏기,
         버그
     }
 

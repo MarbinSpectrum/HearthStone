@@ -39,7 +39,7 @@ public class MinionObject : MonoBehaviour
     bool freeze;
     public GameObject freezeObj;
     public bool freezeTrigger;
-    int freezeCount = 0;
+    [HideInInspector] public int freezeCount = 0;
 
     [Header("은신")]
     public bool stealth;
@@ -354,6 +354,7 @@ public class MinionObject : MonoBehaviour
             EnemyMinionField.instance.minions[EnemyMinionField.instance.minionNum - 1] = this;
             EnemyMinionField.instance.minionNum--;
         }
+        MinionManager.instance.DeathMinionAbility(this);
         MinionRemoveProcess();
     }
     #endregion
@@ -367,6 +368,7 @@ public class MinionObject : MonoBehaviour
         taunt = false;
         stealth = false;
         silence = false;
+        freezeCount = 0;
         freeze = false;
         canAttack = false;
     }

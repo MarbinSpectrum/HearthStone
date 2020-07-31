@@ -661,6 +661,9 @@ public class CardView : MonoBehaviour
     #region[ShowHolo]
     void ShowHolo()
     {
+        if (BattleUI.instance)
+            return;
+
         if (cardType == CardType.하수인)
         {
             if (cardN <= 0 && MinionsCardImg.material == holoBlue)
