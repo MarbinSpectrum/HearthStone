@@ -1077,7 +1077,8 @@ public class MinionManager : MonoBehaviour
 
     #endregion
 
-    void MinionCopy(MinionObject copyMinionObject, MinionObject pasteMinionObject)
+    #region[미니언 상태 복사]
+    public void MinionCopy(MinionObject copyMinionObject, MinionObject pasteMinionObject)
     {
         pasteMinionObject.final_hp = copyMinionObject.final_hp;
         pasteMinionObject.baseHp = copyMinionObject.baseHp;
@@ -1100,6 +1101,7 @@ public class MinionManager : MonoBehaviour
             pasteMinionObject.buffList.Add(copyMinionObject.buffList[i]);
 
     }
+    #endregion
 
 }
 
