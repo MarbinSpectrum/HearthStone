@@ -35,6 +35,9 @@ public class BattleUI : MonoBehaviour
     public RectTransform selectMinion;
     public Text selectMinionTxt;
 
+    public Animator chooseOneDruid;
+    public CardView []chooseCardView;
+
     [HideInInspector] public bool gameStart;
 
     #region[Awake]

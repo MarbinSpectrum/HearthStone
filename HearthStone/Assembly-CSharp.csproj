@@ -94,6 +94,7 @@
     <Compile Include="Assets\Graphics\Sprites\Minions\MinionManager.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\MinionObject.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\ObjectVibration.cs" />
+    <Compile Include="Assets\Graphics\Sprites\Minions\SelectChooseOne.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\SelectMinionBtn.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\SetMinionRenderer.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\Battery\BatteryUI.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Assets\Graphics\Sprites\UI\영웅초상화\SelectHeroBtn.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\코인\SetCoinMat.cs" />
     <Compile Include="Assets\Scenes\미니언능력생성기\CreateAbility.cs" />
+    <Compile Include="Assets\Scenes\주문능력생성기\CreateSpellAbility.cs" />
     <Compile Include="Assets\Scripts\CardData\CardData.cs" />
     <Compile Include="Assets\Scripts\CardData\CardDrag.cs" />
     <Compile Include="Assets\Scripts\CardData\CardDragObject.cs" />
@@ -142,6 +144,8 @@
     <Compile Include="Assets\Scripts\UI\Main\Setting.cs" />
     <Compile Include="Assets\Scripts\UI\Mulligan\ChangeCardGlow.cs" />
     <Compile Include="Assets\Scripts\UI\Mulligan\Mulligan.cs" />
+    <Compile Include="Assets\Scripts\UI\Spell\SpellAbility.cs" />
+    <Compile Include="Assets\Scripts\UI\Spell\SpellManager.cs" />
     <Compile Include="Assets\Scripts\UI\btns\BattleMenuDeckSelect.cs" />
     <Compile Include="Assets\Scripts\UI\btns\BattleMenuFindBattle.cs" />
     <Compile Include="Assets\Scripts\UI\btns\BattleToMainBtn.cs" />

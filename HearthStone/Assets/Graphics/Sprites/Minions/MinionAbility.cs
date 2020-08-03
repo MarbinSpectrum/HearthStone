@@ -22,6 +22,8 @@ public class MinionAbility
         전투의함성,
         죽음의메아리,
         선택,
+        //data1 직업데이터(0 드루이드 1 도적 2 중립)
+        //data2 선택카드번호
         연계,
         주문시전,
         피해를_받을때마다,
@@ -67,6 +69,8 @@ public class MinionAbility
             return true;
         if (c == Condition.필드에_하수인이_일정수일때)
             return true;
+        if (c == Condition.선택)
+            return true;
         return false;
     }
     #endregion
@@ -86,15 +90,18 @@ public class MinionAbility
         은신,
         빙결시키기,
         침묵시키기,
+        죽음,
         공격불가,
         카드뽑기, 확률_카드뽑기,
         하수인의_생명력회복, 하수인의_생명력설정, 영웅의_생명력회복, 영웅의_생명력설정, 생명력회복,
-        능력치를얻음, 능력치부여, 무작위_능력치부여, 해당턴동안_능력치부여,
+        능력치를얻음, 능력치부여, 무작위_능력치부여, 해당턴동안_능력치부여,다른모두에게_능력치부여,
+        연계횟수만큼능력치부여,
         대상의_공격력_생명력_교환,
         무기의_공격력만큼능력부여,
         하수인처치, 모든하수인처치,
         아군하수인_주인의패로되돌리기, 적군하수인_주인의패로되돌리기, 모든_하수인_주인의패로되돌리기,
         무작위_패_버리기, 무작위_하수인뺏기,
+        변신,
         버그
     }
 
@@ -156,6 +163,10 @@ public class MinionAbility
         if (a == Ability.무작위_능력치부여)
             return true;
         if (a == Ability.해당턴동안_능력치부여)
+            return true;
+        if (a == Ability.다른모두에게_능력치부여)
+            return true;
+        if (a == Ability.변신)
             return true;
         return false;
     }

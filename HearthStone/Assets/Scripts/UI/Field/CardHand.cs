@@ -290,6 +290,7 @@ public class CardHand : MonoBehaviour
         {
             useCardNum++;
             DragCardObject.instance.ShowDropEffectSpell(Input.mousePosition, 0);
+            SpellManager.instance.RunSpell(handCardView[n].SpellCardNameData);
         }
         else if (handCardView[n].cardType == CardType.하수인)
         {
