@@ -37,6 +37,7 @@ public class MinionField : MonoBehaviour
     [HideInInspector] public Vector3[] minions_Attack_pos = new Vector3[7];
     [HideInInspector] public float[] minions_attack_delay = new float[7];
     [HideInInspector] public int mousePos;
+    [HideInInspector] public bool setMinionPos = true;
 
     #region[Awake]
     private void Awake()
@@ -96,6 +97,8 @@ public class MinionField : MonoBehaviour
     #region[미니언 위치 설정]
     void SetPos()
     {
+        if (!setMinionPos)
+            return;
         //새로 설치할 미니언에 따른 위치 설정
         bool flag = (minionNum == 7);   //미니언을 설치할 위치가 없을때
         flag = flag || (DragCardObject.instance.dragCardView.cardType != CardType.하수인);   //하수인을 드래그하는게 아닐때

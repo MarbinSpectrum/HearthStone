@@ -27,6 +27,7 @@ public class EnemyMinionField : MonoBehaviour
 
     List<int> spawnList = new List<int>();
     bool spawnNow;
+    [HideInInspector] public bool setMinionPos = true;
 
     #region[Awake]
     private void Awake()
@@ -102,6 +103,8 @@ public class EnemyMinionField : MonoBehaviour
     #region[미니언 이동]
     void MoveMinion()
     {
+        if (!setMinionPos)
+            return;
         min_speed = Mathf.Min(min_speed, max_speed);
         for (int i = 0; i < minionNum; i++)
         {

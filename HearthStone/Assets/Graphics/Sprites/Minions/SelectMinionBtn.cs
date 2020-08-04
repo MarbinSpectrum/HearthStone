@@ -56,10 +56,20 @@ public class SelectMinionBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        if (!DragLineRenderer.instance.CheckActObj(minionObject.gameObject))
-            MinionManager.instance.MinionSelect(minionObject);
+        if(!SpellManager.instance.selectSpellEvent)
+        {
+            if (!DragLineRenderer.instance.CheckActObj(minionObject.gameObject))
+                MinionManager.instance.MinionSelect(minionObject);
+            else
+                MinionManager.instance.MinionSelectCancle();
+        }
         else
-            MinionManager.instance.MinionSelectCancle();
+        {
+            if (!DragLineRenderer.instance.CheckActObj(minionObject.gameObject))
+                SpellManager.instance.MinionSelect(minionObject);
+            else
+                SpellManager.instance.MinionSelectCancle();
+        }
     }
     #endregion
 

@@ -55,7 +55,10 @@ public class SelectChooseOne : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        MinionManager.instance.selectChoose = eventNum;
+        if (MinionManager.instance.selectChoose == -1)
+            MinionManager.instance.selectChoose = eventNum;
+        else if (SpellManager.instance.selectChoose == -1)
+            SpellManager.instance.selectChoose = eventNum;
         BattleUI.instance.chooseOneDruid.SetBool("Hide", true);
     }
     #endregion

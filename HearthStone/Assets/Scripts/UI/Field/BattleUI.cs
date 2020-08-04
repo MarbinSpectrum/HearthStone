@@ -38,6 +38,9 @@ public class BattleUI : MonoBehaviour
     public Animator chooseOneDruid;
     public CardView []chooseCardView;
 
+    public GameObject playerSpellPos;
+    public GameObject enemySpellPos;
+
     [HideInInspector] public bool gameStart;
 
     #region[Awake]

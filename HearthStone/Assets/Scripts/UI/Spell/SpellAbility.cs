@@ -17,12 +17,12 @@ public class SpellAbility
     public enum Condition
     {
         조건없음,
-        피해입지않은하수인,
         선택,
         //data1 직업데이터(0 드루이드 1 도적 2 중립)
         //data2 선택카드번호
         연계,       
         연계시_작동안함,
+        피해입지않은하수인,
         버그
     }
 

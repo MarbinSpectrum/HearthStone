@@ -55,7 +55,10 @@ public class SelectHeroBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        MinionManager.instance.HeroSelect(enemy);
+        if (!SpellManager.instance.selectSpellEvent)
+            MinionManager.instance.HeroSelect(enemy);
+        else
+            SpellManager.instance.HeroSelect(enemy);
     }
     #endregion
 

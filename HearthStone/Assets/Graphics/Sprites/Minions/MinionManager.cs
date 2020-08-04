@@ -36,6 +36,93 @@ public class MinionManager : MonoBehaviour
     }
     #endregion
 
+    #region[하수인 능력 파싱]
+    public List<MinionAbility> MinionAbilityParsing(string ability_string)
+    {
+        List<MinionAbility> abilityList = new List<MinionAbility>();
+        char[] splitChar = { '[', ']' };
+        string[] ability_Split = ability_string.Split(splitChar);
+        List<string> ability_Data = new List<string>();
+        for (int i = 0; i < ability_Split.Length; i++)
+            if (ability_Split[i].Length != 0)
+                ability_Data.Add(ability_Split[i]);
+
+        입력 inputType = 입력.조건;
+        MinionAbility temp = null;
+        int dataNum = 0;
+        for (int i = 0; i < ability_Data.Count; i++)
+        {
+            if (inputType == 입력.조건)
+            {
+                temp = new MinionAbility();
+
+                MinionAbility.Condition condition = MinionAbility.GetCondition(ability_Data[i]);
+                temp.Condition_type = condition;
+
+                if (MinionAbility.CheckDataCondition(condition))
+                {
+                    inputType = 입력.수치;
+                    dataNum = 6;
+                }
+                else
+                    inputType = 입력.능력;
+            }
+            else if (inputType == 입력.능력)
+            {
+                MinionAbility.Ability ability = MinionAbility.GetAbility(ability_Data[i]);
+                temp.Ability_type = ability;
+
+                if (MinionAbility.CheckDataAbility(ability))
+                {
+                    inputType = 입력.수치;
+                    dataNum = 3;
+                }
+                else
+                {
+                    inputType = 입력.조건;
+                    abilityList.Add(temp);
+                }
+            }
+            else if (inputType == 입력.수치)
+            {
+                int value = 0;
+                int.TryParse(ability_Data[i], out value);
+                switch (dataNum)
+                {
+                    case 1:
+                        temp.Ability_data = new Vector3(temp.Ability_data.x, temp.Ability_data.y, value);
+                        break;
+                    case 2:
+                        temp.Ability_data = new Vector3(temp.Ability_data.x, value, temp.Ability_data.z);
+                        break;
+                    case 3:
+                        temp.Ability_data = new Vector3(value, temp.Ability_data.y, temp.Ability_data.z);
+                        break;
+                    case 4:
+                        temp.Condition_data = new Vector3(temp.Condition_data.x, temp.Condition_data.y, value);
+                        break;
+                    case 5:
+                        temp.Condition_data = new Vector3(temp.Condition_data.x, value, temp.Condition_data.z);
+                        break;
+                    case 6:
+                        temp.Condition_data = new Vector3(value, temp.Condition_data.y, temp.Condition_data.z);
+                        break;
+                }
+                dataNum--;
+                if (dataNum == 0)
+                {
+                    inputType = 입력.조건;
+                    abilityList.Add(temp);
+                }
+                else if (dataNum == 3)
+                    inputType = 입력.능력;
+            }
+        }
+
+        return abilityList;
+    }
+    #endregion
+
     #region[미니언 턴 시작시 처리]
     public void MinionsTurnStartTrigger()
     {
@@ -399,6 +486,8 @@ public class MinionManager : MonoBehaviour
     }
     #endregion
 
+    [HideInInspector] public bool selectMinionEvent;
+
     #region[전투의 함성 이벤트]
     private IEnumerator BattlecryEvent(MinionObject minionObject)
     {
@@ -558,10 +647,10 @@ public class MinionManager : MonoBehaviour
                 {
                     for (int draw = 0; draw < minionObject.abilityList[j].Ability_data.x; draw++)
                     {
-                        if (minionObject.enemy)
-                        {
+                        //0이면 발동한 플레이어가 뽑고 
+                        //1이면 상대플레이어가 카드를 뽑음
+                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
-                        }
                         else
                         {
                             for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
@@ -808,8 +897,6 @@ public class MinionManager : MonoBehaviour
         if (minionNum > 0)
             GameEventManager.instance.EventAdd(2);
     }
-
-    [HideInInspector] public bool selectMinionEvent;
 
     #region[대상 선택 취소]
     public void MinionSelectCancle()
@@ -1202,10 +1289,10 @@ public class MinionManager : MonoBehaviour
                 {
                     for(int draw = 0; draw < minionObject.abilityList[j].Ability_data.x; draw++)
                     {
-                        if (minionObject.enemy)
-                        {
+                        //0이면 발동한 플레이어가 뽑고 
+                        //1이면 상대플레이어가 카드를 뽑음
+                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
-                        }
                         else
                         {
                             for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
@@ -1546,10 +1633,10 @@ public class MinionManager : MonoBehaviour
                 {
                     for (int draw = 0; draw < temp.Ability_data.x; draw++)
                     {
-                        if (minion_enemy)
-                        {
+                        //0이면 발동한 플레이어가 뽑고 
+                        //1이면 상대플레이어가 카드를 뽑음
+                        if ((minion_enemy && (temp.Ability_data.y == 0)) || (!minion_enemy && (temp.Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
-                        }
                         else
                         {
                             for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
@@ -1592,6 +1679,7 @@ public class MinionManager : MonoBehaviour
             else if (NowEvent == 6)
             {
                 string minion_name = "데스윙";
+                GameEventManager.instance.EventAdd(1f);
                 yield return new WaitForSeconds(1f);
                 List<MinionObject> randomMinion = new List<MinionObject>();
 
