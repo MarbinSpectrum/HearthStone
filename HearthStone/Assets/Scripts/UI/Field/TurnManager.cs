@@ -81,9 +81,9 @@ public class TurnManager : MonoBehaviour
             if (CardHand.instance.canUse[i])
                 canUseCard = true;
 
-        if(canAttack || canUseCard || !BattleUI.instance.gameStart)
+        if(canAttack || canUseCard || !BattleUI.instance.gameStart || GameEventManager.instance.EventCheck())
             turnBtnMat.SetColor("_ImgColor", normalStateColor);
-        else if(BattleUI.instance.gameStart && !GameEventManager.instance.EventCheck() && turn == 턴.플레이어)
+        else if(BattleUI.instance.gameStart && turn == 턴.플레이어)
             turnBtnMat.SetColor("_ImgColor", glowStateColor);
     }
 

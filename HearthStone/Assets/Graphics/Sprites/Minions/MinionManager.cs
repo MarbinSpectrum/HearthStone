@@ -631,13 +631,30 @@ public class MinionManager : MonoBehaviour
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
                 bool enemy = (int)minionObject.abilityList[j].Ability_data.z == 1 ? false : true;
                 string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
+                string minion_ability = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "명령어");
                 if ((enemy && !minionObject.enemy) || (!enemy && minionObject.enemy))
                 {
+                    int index = EnemyMinionField.instance.minionNum;
                     EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
+                    if (minion_name.Equals("나무정령"))
+                    {
+                        yield return new WaitForSeconds(0.5f);
+                        EnemyMinionField.instance.minions[index].abilityList.Clear();
+                        EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
+                        BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                    }
                 }
                 else
                 {
+                    int index = MinionField.instance.minionNum;
                     MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
+                    if(minion_name.Equals("나무정령"))
+                    {
+                        yield return new WaitForSeconds(0.5f);
+                        MinionField.instance.minions[index].abilityList.Clear();
+                        MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
+                        BaseMinionAbility(MinionField.instance.minions[index]);
+                    }
                 }
                 minionNum++;
             }
@@ -700,7 +717,7 @@ public class MinionManager : MonoBehaviour
 
                 yield return new WaitForSeconds(1.25f);
 
-                GameEventManager.instance.EventAdd(2.5f);
+                GameEventManager.instance.EventSet(2.5f);
 
                 #region[아군하수인효과]
                 if (!minionObject.enemy)
@@ -895,7 +912,7 @@ public class MinionManager : MonoBehaviour
         }
 
         if (minionNum > 0)
-            GameEventManager.instance.EventAdd(2);
+            GameEventManager.instance.EventSet(1.5f);
     }
 
     #region[대상 선택 취소]
@@ -1273,13 +1290,30 @@ public class MinionManager : MonoBehaviour
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
                 bool enemy = (int)minionObject.abilityList[j].Ability_data.z == 1 ? false : true;
                 string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
+                string minion_ability = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "명령어");
                 if ((enemy && !minionObject.enemy) || (!enemy && minionObject.enemy))
                 {
+                    int index = EnemyMinionField.instance.minionNum;
                     EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
+                    if (minion_name.Equals("나무정령"))
+                    {
+                        yield return new WaitForSeconds(0.1f);
+                        EnemyMinionField.instance.minions[index].abilityList.Clear();
+                        EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
+                        BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                    }
                 }
                 else
                 {
+                    int index = MinionField.instance.minionNum;
                     MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
+                    if (minion_name.Equals("나무정령"))
+                    {
+                        yield return new WaitForSeconds(0.1f);
+                        MinionField.instance.minions[index].abilityList.Clear();
+                        MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
+                        BaseMinionAbility(MinionField.instance.minions[index]);
+                    }
                 }
                 minionNum++;
             }
@@ -1342,7 +1376,7 @@ public class MinionManager : MonoBehaviour
 
                 yield return new WaitForSeconds(1.25f);
 
-                GameEventManager.instance.EventAdd(2.5f);
+                GameEventManager.instance.EventSet(2.5f);
 
                 #region[아군하수인효과]
                 if (!minionObject.enemy)
@@ -1617,13 +1651,30 @@ public class MinionManager : MonoBehaviour
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
                 bool enemy = (int)temp.Ability_data.z == 1 ? false : true;
                 string minion_name = DataMng.instance.ToString((DataMng.TableType)temp.Ability_data.x, (int)temp.Ability_data.y, "카드이름");
+                string minion_ability = DataMng.instance.ToString((DataMng.TableType)temp.Ability_data.x, (int)temp.Ability_data.y, "명령어");
                 if ((enemy && !minion_enemy) || (!enemy && minion_enemy))
                 {
+                    int index = EnemyMinionField.instance.minionNum;
                     EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
+                    if (minion_name.Equals("나무정령"))
+                    {
+                        yield return new WaitForSeconds(0.1f);
+                        EnemyMinionField.instance.minions[index].abilityList.Clear();
+                        EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
+                        BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                    }
                 }
                 else 
                 {
+                    int index = MinionField.instance.minionNum;
                     MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
+                    if (minion_name.Equals("나무정령"))
+                    {
+                        yield return new WaitForSeconds(0.1f);
+                        MinionField.instance.minions[index].abilityList.Clear();
+                        MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
+                        BaseMinionAbility(MinionField.instance.minions[index]);
+                    }
                 }
                 minionNum++;
             }
@@ -1679,7 +1730,7 @@ public class MinionManager : MonoBehaviour
             else if (NowEvent == 6)
             {
                 string minion_name = "데스윙";
-                GameEventManager.instance.EventAdd(1f);
+                GameEventManager.instance.EventSet(1f);
                 yield return new WaitForSeconds(1f);
                 List<MinionObject> randomMinion = new List<MinionObject>();
 
@@ -1744,7 +1795,7 @@ public class MinionManager : MonoBehaviour
         }
 
         if (minionNum > 0)
-            GameEventManager.instance.EventAdd(1.5f);
+            GameEventManager.instance.EventSet(1.5f);
     }
 
     #endregion

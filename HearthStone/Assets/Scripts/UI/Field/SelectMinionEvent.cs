@@ -53,7 +53,10 @@ public class SelectMinionEvent : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        MinionManager.instance.MinionSelectCancle();
+        if (!SpellManager.instance.selectSpellEvent)
+            MinionManager.instance.MinionSelectCancle();
+        else
+            SpellManager.instance.MinionSelectCancle();
     }
     #endregion
 
