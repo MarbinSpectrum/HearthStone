@@ -965,6 +965,7 @@ public class MinionManager : MonoBehaviour
                 break;
             case MinionAbility.Ability.피해주기:
             case MinionAbility.Ability.하수인에게_피해주기:
+                AttackManager.instance.PopAllDamageObj();
                 AttackManager.instance.AddDamageObj(minionObject.damageEffect, (int)eventMininon.abilityList[eventNum].Ability_data.x);
                 AttackManager.instance.AttackEffectRun();
                 break;
@@ -1004,7 +1005,8 @@ public class MinionManager : MonoBehaviour
                 break;
             case MinionAbility.Ability.피해주기:
             case MinionAbility.Ability.영웅에게_피해주기:
-                if(enemy)
+                AttackManager.instance.PopAllDamageObj();
+                if (enemy)
                     AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)eventMininon.abilityList[eventNum].Ability_data.x);
                 else
                     AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)eventMininon.abilityList[eventNum].Ability_data.x);
@@ -1498,34 +1500,34 @@ public class MinionManager : MonoBehaviour
                         {
                             int r = Random.Range(0, randomMinion.Count);
                             minion_name = randomMinion[r].minion_name;
-
                             MinionObject temp = randomMinion[r];
+
                             if (minionObject.enemy)
                             {
                                 for (int m = randomMinion[r].num; m < MinionField.instance.minions.Length - 1; m++)
                                     MinionField.instance.minions[m] = MinionField.instance.minions[m + 1];
-                                MinionField.instance.minionNum--;
                                 MinionField.instance.minions[MinionField.instance.minions.Length - 1] = temp;
+                                MinionField.instance.minionNum--;
                             }
                             else
                             {
                                 for (int m = randomMinion[r].num; m < EnemyMinionField.instance.minions.Length - 1; m++)
                                     EnemyMinionField.instance.minions[m] = EnemyMinionField.instance.minions[m + 1];
-                                EnemyMinionField.instance.minionNum--;
                                 EnemyMinionField.instance.minions[EnemyMinionField.instance.minions.Length - 1] = temp;
+                                EnemyMinionField.instance.minionNum--;
                             }
 
                             if (minionObject.enemy)
                             {
                                 int index = EnemyMinionField.instance.minionNum;
-                                EnemyMinionField.instance.AddMinion(index, minion_name, false);
+                                EnemyMinionField.instance.AddMinion(index, minion_name, false, 1);
                                 yield return new WaitForSeconds(0.5f);
                                 MinionCopy(randomMinion[r], EnemyMinionField.instance.minions[index]);
                             }
                             else
                             {
                                 int index = MinionField.instance.minionNum;
-                                MinionField.instance.AddMinion(index, minion_name, false);
+                                MinionField.instance.AddMinion(index, minion_name, false, 1);
                                 yield return new WaitForSeconds(0.5f);
                                 MinionCopy(randomMinion[r], MinionField.instance.minions[index]);
                             }
@@ -1546,7 +1548,7 @@ public class MinionManager : MonoBehaviour
             }
             else if (NowEvent == 8)
             {
-                if(minionObject.enemy)
+                if (minionObject.enemy)
                 {
                     for(int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if(!EnemyMinionField.instance.minions[m].Equals(minionObject) && EnemyMinionField.instance.minions[m].gameObject.activeSelf)
@@ -1730,7 +1732,7 @@ public class MinionManager : MonoBehaviour
             else if (NowEvent == 6)
             {
                 string minion_name = "데스윙";
-                GameEventManager.instance.EventSet(1f);
+                GameEventManager.instance.EventSet(1.75f);
                 yield return new WaitForSeconds(1f);
                 List<MinionObject> randomMinion = new List<MinionObject>();
 
@@ -1757,32 +1759,33 @@ public class MinionManager : MonoBehaviour
                     minion_name = randomMinion[r].minion_name;
 
                     MinionObject tempMinion = randomMinion[r];
+
                     if (minion_enemy)
                     {
                         for (int m = randomMinion[r].num; m < MinionField.instance.minions.Length - 1; m++)
                             MinionField.instance.minions[m] = MinionField.instance.minions[m + 1];
-                        MinionField.instance.minionNum--;
                         MinionField.instance.minions[MinionField.instance.minions.Length - 1] = tempMinion;
+                        MinionField.instance.minionNum--;
                     }
                     else
                     {
                         for (int m = randomMinion[r].num; m < EnemyMinionField.instance.minions.Length - 1; m++)
                             EnemyMinionField.instance.minions[m] = EnemyMinionField.instance.minions[m + 1];
-                        EnemyMinionField.instance.minionNum--;
                         EnemyMinionField.instance.minions[EnemyMinionField.instance.minions.Length - 1] = tempMinion;
+                        EnemyMinionField.instance.minionNum--;
                     }
 
                     if (minion_enemy)
                     {
                         int index = EnemyMinionField.instance.minionNum;
-                        EnemyMinionField.instance.AddMinion(index, minion_name, false);
+                        EnemyMinionField.instance.AddMinion(index, minion_name, false, 1);
                         yield return new WaitForSeconds(0.5f);
                         MinionCopy(randomMinion[r], EnemyMinionField.instance.minions[index]);
                     }
                     else
                     {
                         int index = MinionField.instance.minionNum;
-                        MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
+                        MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false, 1);
                         yield return new WaitForSeconds(0.5f);
                         MinionCopy(randomMinion[r], MinionField.instance.minions[index]);
                     }

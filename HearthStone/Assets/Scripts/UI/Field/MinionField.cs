@@ -214,7 +214,7 @@ public class MinionField : MonoBehaviour
     #endregion
 
     #region[미니언 추가]
-    public void AddMinion(int n, string name, bool cardHandSpawn)
+    public void AddMinion(int n, string name, bool cardHandSpawn, int spawnAni = 0)
     {
         if (minionNum == 7)
             return;
@@ -236,7 +236,7 @@ public class MinionField : MonoBehaviour
         minions[n].transform.position = v;
         if(cardHandSpawn)
             DragCardObject.instance.ShowDropEffectMinion(Camera.main.WorldToScreenPoint(v),0);
-        StartCoroutine(MinionDrop(n, 0, cardHandSpawn));
+        StartCoroutine(MinionDrop(n, spawnAni, cardHandSpawn));
     }
 
     private IEnumerator MinionDrop(int n,int spawnType,bool cardHandSpawn)
@@ -247,7 +247,10 @@ public class MinionField : MonoBehaviour
         {
             while (!DragCardObject.instance.dropEffect.effectArrive)
                 yield return new WaitForSeconds(0.1f);
-            minions[n].animator.SetTrigger("NormalSpawn");
+            if(spawnType == 0)
+                minions[n].animator.SetTrigger("NormalSpawn");
+            else if (spawnType == 1)
+                minions[n].animator.SetTrigger("SetSpawn");
             while (!minions[n].animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"))
                 yield return new WaitForSeconds(0.001f);
             minions[n].CardHandMinionSpawn();
@@ -257,7 +260,10 @@ public class MinionField : MonoBehaviour
         else
         {
             yield return new WaitForSeconds(0.5f);
-            minions[n].animator.SetTrigger("NormalSpawn");
+            if (spawnType == 0)
+                minions[n].animator.SetTrigger("NormalSpawn");
+            else if (spawnType == 1)
+                minions[n].animator.SetTrigger("SetSpawn");
         }
     }
 

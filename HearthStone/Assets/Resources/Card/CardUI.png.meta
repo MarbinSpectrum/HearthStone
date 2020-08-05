@@ -65,6 +65,9 @@ TextureImporter:
   - first:
       213: 5923937055286640709
     second: CardUI_15
+  - first:
+      213: -8251169249559592868
+    second: CardUI_16
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -485,7 +488,7 @@ TextureImporter:
         width: 225
         height: 164
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -493,6 +496,27 @@ TextureImporter:
       bones: []
       spriteID: 540422c8d5d063250800000000000000
       internalID: 5923937055286640709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardUI_16
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 269
+        width: 96
+        height: 107
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c50cf5ab845fd7d80800000000000000
+      internalID: -8251169249559592868
       vertices: []
       indices: 
       edges: []

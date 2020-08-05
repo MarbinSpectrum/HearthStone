@@ -55,6 +55,9 @@ public class ManaManager : MonoBehaviour
             enemyManaCost.nowMana = enemyNowMana;
             enemyManaCost.maxMana = enemyMaxMana;
         }
+
+        playerMaxMana = Mathf.Min(playerMaxMana, 10);
+        enemyMaxMana = Mathf.Min(enemyMaxMana, 10);
     }
     #endregion
 }

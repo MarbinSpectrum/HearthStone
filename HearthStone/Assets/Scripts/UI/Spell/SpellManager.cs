@@ -12,7 +12,12 @@ public class SpellManager : MonoBehaviour
         대상선택,
         카드뽑기,
         적군광역피해,아군광역피해,광역피해,
-        하수인소환
+        모든하수인주인의패로,
+        하수인소환,
+        하수인들에게_은신부여,
+        하수인들에게_능력부여,
+        하수인들에게_능력치부여,
+        마나획득,마나수정획득
     }
 
     public void Awake()
@@ -56,7 +61,6 @@ public class SpellManager : MonoBehaviour
             {
                 SpellAbility.Ability ability = SpellAbility.GetAbility(ability_Data[i]);
                 temp.Ability_type = ability;
-
                 if (SpellAbility.CheckDataAbility(ability))
                 {
                     inputType = 입력.수치;
@@ -113,9 +117,9 @@ public class SpellManager : MonoBehaviour
     {
         targetMinion = null;
         targetHero = -1;
+        spellSelectCancle = false;
         Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(name));
         string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
-
         List<SpellAbility> spellList = SpellParsing(ability_string);
         nowSpellName = name;
         StartCoroutine(SpellEvent(spellList, enemy));
@@ -168,24 +172,30 @@ public class SpellManager : MonoBehaviour
                 return EventType.아군광역피해;
             case SpellAbility.Ability.모든_하수인_피해주기:
                 return EventType.광역피해;
+            case SpellAbility.Ability.모든_하수인_주인의패로되돌리기:
+                return EventType.모든하수인주인의패로;
             case SpellAbility.Ability.하수인소환:
                 return EventType.하수인소환;
             case SpellAbility.Ability.모든하수인에게_은신부여:
+                return EventType.하수인들에게_은신부여;
             case SpellAbility.Ability.모든하수인에게_능력부여:
+                return EventType.하수인들에게_능력부여;
+            case SpellAbility.Ability.모든하수인에게_능력치부여:
+                return EventType.하수인들에게_능력치부여;
             case SpellAbility.Ability.카드뽑기:
                 return EventType.카드뽑기;
+            case SpellAbility.Ability.마나수정획득:
+                return EventType.마나수정획득;
+            case SpellAbility.Ability.마나획득:
+                return EventType.마나획득;
             case SpellAbility.Ability.방어도얻기:
             case SpellAbility.Ability.영웅공격력얻기:
             case SpellAbility.Ability.무기에_공격력부여:
             case SpellAbility.Ability.다음카드비용감소:
             case SpellAbility.Ability.다음주문카드비용감소:
-            case SpellAbility.Ability.모든하수인에게_능력치부여:
             case SpellAbility.Ability.모든하수인처치:
-            case SpellAbility.Ability.모든_하수인_주인의패로되돌리기:
             case SpellAbility.Ability.무작위_패_버리기:
             case SpellAbility.Ability.무작위_하수인뺏기:
-            case SpellAbility.Ability.마나수정획득:
-            case SpellAbility.Ability.마나획득:
             case SpellAbility.Ability.다음턴에다시가져오기:
                 return EventType.없음;
             default:
@@ -436,6 +446,7 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.피해주기:
             case SpellAbility.Ability.하수인에게_피해주기:
             case SpellAbility.Ability.피해받지않은하수인에게_피해주기:
+                AttackManager.instance.PopAllDamageObj();
                 AttackManager.instance.AddDamageObj(minionObject.damageEffect, (int)nowSpellAbility.Ability_data.x);
                 AttackManager.instance.AttackEffectRun();
                 break;
@@ -671,17 +682,24 @@ public class SpellManager : MonoBehaviour
     #endregion
 
     #region[대상 선택 취소]
+    bool spellSelectCancle = false;
     public void MinionSelectCancle()
     {
         if (!MinionManager.instance.selectMinionEvent)
             return;
         MinionManager.instance.selectMinionEvent = false;
         selectSpellEvent = false;
+        spellSelectCancle = true;
         GameEventManager.instance.EventAdd(1.4f);
         BattleUI.instance.grayFilterAni.SetBool("On", false);
         BattleUI.instance.selectMinion.gameObject.SetActive(false);
         Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(nowSpellName));
         int mana = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+        string cardName = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드이름");
+        int n = CardHand.instance.nowHandNum;
+        CardHand.instance.DrawCard();
+        CardHand.instance.CardMove(cardName, n,BattleUI.instance.playerSpellPos.transform.position, new Vector2(10.685f, 13.714f), 0);
+        CardViewManager.instance.UpdateCardView(0.001f);
         ManaManager.instance.playerNowMana += mana;
         CardHand.instance.useCardNum--;
 
@@ -772,7 +790,9 @@ public class SpellManager : MonoBehaviour
 
             foreach (SpellAbility ability in nowEvent)
             {
-                yield return new WaitForSeconds(1f);
+                if (spellSelectCancle)
+                    break;
+                yield return new WaitForSeconds(0.25f);
                 if (CheckEvent(ability) == EventType.대상선택)
                 {
                     if (targetMinion == null && targetHero == -1)
@@ -780,7 +800,6 @@ public class SpellManager : MonoBehaviour
                         SetSelectMask(ability.Ability_type);
 
                         bool targetExistence = false;
-
                         selectSpellEvent = true;
 
                         for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
@@ -1018,6 +1037,83 @@ public class SpellManager : MonoBehaviour
                             MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
                         }
                     }             
+                }
+                else if(CheckEvent(ability) == EventType.하수인들에게_은신부여)
+                {
+                    if(enemy)
+                    {
+                        for(int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                EnemyMinionField.instance.minions[m].stealth = true;
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                MinionField.instance.minions[m].stealth = true;
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_능력부여)
+                {
+                    string ability_string = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
+                    List<MinionAbility> abilityList = MinionManager.instance.MinionAbilityParsing(ability_string);
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                for (int a = 0; a < abilityList.Count; a++)
+                                    EnemyMinionField.instance.minions[m].abilityList.Add(abilityList[a]);
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                for (int a = 0; a < abilityList.Count; a++)
+                                    MinionField.instance.minions[m].abilityList.Add(abilityList[a]);
+                    }
+                }
+                else if(CheckEvent(ability) == EventType.하수인들에게_능력치부여)
+                {
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                EnemyMinionField.instance.minions[m].nowAtk += (int)ability.Ability_data.x;
+                                EnemyMinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                                EnemyMinionField.instance.minions[m].nowSpell += (int)ability.Ability_data.z;
+                            }
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                MinionField.instance.minions[m].nowAtk += (int)ability.Ability_data.x;
+                                MinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                                MinionField.instance.minions[m].nowSpell += (int)ability.Ability_data.z;
+                            }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.마나획득)
+                {
+                    if (enemy)
+                        ManaManager.instance.enemyNowMana += (int)ability.Ability_data.x;
+                    else
+                        ManaManager.instance.playerNowMana += (int)ability.Ability_data.x;
+                }
+                else if (CheckEvent(ability) == EventType.마나수정획득)
+                {
+                    if (enemy)
+                        ManaManager.instance.enemyMaxMana += (int)ability.Ability_data.x;
+                    else
+                        ManaManager.instance.playerMaxMana += (int)ability.Ability_data.x;
+                }
+                else if (CheckEvent(ability) == EventType.모든하수인주인의패로)
+                {
+                    for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+                        if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                            MinionManager.instance.minionList[m].gotoHandTrigger = true;
                 }
             }
          
