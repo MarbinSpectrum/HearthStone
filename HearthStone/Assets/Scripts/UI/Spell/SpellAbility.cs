@@ -72,7 +72,7 @@ public class SpellAbility
         모든하수인에게_능력부여,
         카드뽑기,//카드뽑는수 //뽑는대상(자신(0),적(1))
         방어도얻기,영웅공격력얻기,무기에_공격력부여,
-
+        무기장착,//무기의번호
         다음카드비용감소, 다음주문카드비용감소,
         하수인의_생명력회복, 하수인의_생명력설정, 영웅의_생명력회복, 영웅의_생명력설정, 생명력회복,
         능력치부여, 모든하수인에게_능력치부여,해당턴동안_능력치부여,
@@ -136,6 +136,7 @@ public class SpellAbility
             case Ability.무기에_공격력부여:
             case Ability.적에게피해주기:
             case Ability.다른모든_적군에게_피해주기:
+            case Ability.무기장착:
                 return true;
             default:
                 Debug.Log(a.ToString() + " : 설정값에 등록이안됨!!");

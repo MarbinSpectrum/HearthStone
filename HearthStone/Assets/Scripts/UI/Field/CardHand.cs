@@ -285,6 +285,7 @@ public class CardHand : MonoBehaviour
         if (handCardView[n].cardType == CardType.무기)
         {
             useCardNum++;
+            SpellManager.instance.RunSpell(handCardView[n].WeaponCardNameData);
         }
         else if (handCardView[n].cardType == CardType.주문)
         {

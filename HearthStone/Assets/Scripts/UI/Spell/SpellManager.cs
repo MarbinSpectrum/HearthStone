@@ -18,7 +18,8 @@ public class SpellManager : MonoBehaviour
         하수인들에게_능력부여,
         하수인들에게_능력치부여,
         마나획득,마나수정획득,
-        공격력획득,방어도획득
+        공격력획득,방어도획득,
+        무기장착,무기공격력부여
     }
 
     public void Awake()
@@ -195,7 +196,10 @@ public class SpellManager : MonoBehaviour
                 return EventType.방어도획득;
             case SpellAbility.Ability.영웅공격력얻기:
                 return EventType.공격력획득;
+            case SpellAbility.Ability.무기장착:
+                return EventType.무기장착;
             case SpellAbility.Ability.무기에_공격력부여:
+                return EventType.무기공격력부여;
             case SpellAbility.Ability.다음카드비용감소:
             case SpellAbility.Ability.다음주문카드비용감소:
             case SpellAbility.Ability.무작위_패_버리기:
@@ -1192,6 +1196,37 @@ public class SpellManager : MonoBehaviour
                         HeroManager.instance.heroAtkManager.enemyAtk += (int)ability.Ability_data.x;
                     else
                         HeroManager.instance.heroAtkManager.playerAtk += (int)ability.Ability_data.x;
+                }
+                else if (CheckEvent(ability) == EventType.무기장착)
+                {
+                    if (enemy)
+                    {
+                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+                        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
+                        int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
+                        int weaponAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+                        HeroManager.instance.heroAtkManager.enemyWeaponName = weapon_name;
+                        HeroManager.instance.heroAtkManager.enemyWeaponDurability = weaponHp;
+                        HeroManager.instance.heroAtkManager.enemyWeaponAtk = weaponAtk;
+                    }
+                    else
+                    {
+                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+                        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
+                        int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
+                        int weaponAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+                        HeroManager.instance.heroAtkManager.playerWeaponName = weapon_name;
+                        HeroManager.instance.heroAtkManager.playerWeaponDurability = weaponHp;
+                        HeroManager.instance.heroAtkManager.playerWeaponAtk = weaponAtk;
+
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.무기공격력부여)
+                {
+                    if (enemy)
+                        HeroManager.instance.heroAtkManager.enemyWeaponAtk += (int)ability.Ability_data.x;
+                    else
+                        HeroManager.instance.heroAtkManager.playerWeaponAtk += (int)ability.Ability_data.x;
                 }
             }
          
