@@ -87,11 +87,33 @@ public class AttackManager : MonoBehaviour
         }
         else if (s.Contains("아군_영웅"))
         {
-            HeroManager.instance.heroHpManager.nowPlayerHp -= n;
+            if (HeroManager.instance.heroHpManager.playerShield > 0)
+            {
+                int temp = n;
+                temp -= HeroManager.instance.heroHpManager.playerShield;
+                HeroManager.instance.heroHpManager.playerShield -= n;
+                temp = Mathf.Max(temp, 0);
+                HeroManager.instance.heroHpManager.nowPlayerHp -= temp;
+                if (HeroManager.instance.heroHpManager.playerShield <= 0)
+                    HeroManager.instance.heroHpManager.playerShieldAni.SetBool("Break", true);
+            }
+            else
+                HeroManager.instance.heroHpManager.nowEnemyHp -= n;
         }
         else if (s.Contains("적_영웅"))
         {
-            HeroManager.instance.heroHpManager.nowEnemyHp -= n;
+            if(HeroManager.instance.heroHpManager.enemyShield > 0)
+            {
+                int temp = n;
+                temp -= HeroManager.instance.heroHpManager.enemyShield;
+                HeroManager.instance.heroHpManager.enemyShield -= n;
+                temp = Mathf.Max(temp, 0);
+                HeroManager.instance.heroHpManager.nowEnemyHp -= temp;
+                if (HeroManager.instance.heroHpManager.enemyShield <= 0)
+                    HeroManager.instance.heroHpManager.enemyShieldAni.SetBool("Break", true);
+            }
+            else
+                HeroManager.instance.heroHpManager.nowEnemyHp -= n;
         }
         StartCoroutine(CameraVibrationEffect(0, 10, Mathf.Min(15,n)));
     }

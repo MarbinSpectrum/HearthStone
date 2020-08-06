@@ -124,19 +124,19 @@ public class MinionManager : MonoBehaviour
     #endregion
 
     #region[미니언 턴 시작시 처리]
-    public void MinionsTurnStartTrigger()
+    public void MinionsTurnStartTrigger(bool enemy)
     {
         for (int i = 0; i < minionList.Count; i++)
-            if(minionList[i].gameObject.activeSelf)
+            if(minionList[i].gameObject.activeSelf && minionList[i].enemy == enemy)
                 minionList[i].turnStartTrigger = true;
     }
     #endregion
 
     #region[미니언 턴 종료시 처리]
-    public void MinionsTurnEndTrigger()
+    public void MinionsTurnEndTrigger(bool enemy)
     {
         for (int i = 0; i < minionList.Count; i++)
-            if (minionList[i].gameObject.activeSelf)
+            if (minionList[i].gameObject.activeSelf && minionList[i].enemy == enemy)
                 minionList[i].turnEndTrigger = true;
     }
     #endregion
@@ -1650,6 +1650,9 @@ public class MinionManager : MonoBehaviour
             #region[이벤트 처리]
             if (NowEvent == 3)
             {
+                GameEventManager.instance.EventSet(0.5f);
+                yield return new WaitForSeconds(0.5f);
+
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
                 bool enemy = (int)temp.Ability_data.z == 1 ? false : true;
                 string minion_name = DataMng.instance.ToString((DataMng.TableType)temp.Ability_data.x, (int)temp.Ability_data.y, "카드이름");
@@ -1732,8 +1735,7 @@ public class MinionManager : MonoBehaviour
             else if (NowEvent == 6)
             {
                 string minion_name = "데스윙";
-                GameEventManager.instance.EventSet(1.75f);
-                yield return new WaitForSeconds(1f);
+
                 List<MinionObject> randomMinion = new List<MinionObject>();
 
                 if (minion_enemy)
@@ -1755,6 +1757,9 @@ public class MinionManager : MonoBehaviour
 
                 if (randomMinion.Count > 0)
                 {
+                    GameEventManager.instance.EventSet(1.75f);
+                    yield return new WaitForSeconds(1f);
+
                     int r = Random.Range(0, randomMinion.Count);
                     minion_name = randomMinion[r].minion_name;
 

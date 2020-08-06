@@ -10,6 +10,7 @@ public class HeroManager : MonoBehaviour
     [Space(30)]
 
     public HeroHpManager heroHpManager;
+    public HeroAtkManager heroAtkManager;
     public Image playerHero;
     public Image enemyHero;
     public GameObject playerFreezeObj;

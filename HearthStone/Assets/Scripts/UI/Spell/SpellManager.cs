@@ -12,12 +12,13 @@ public class SpellManager : MonoBehaviour
         대상선택,
         카드뽑기,
         적군광역피해,아군광역피해,광역피해,
-        모든하수인주인의패로,
+        모든하수인주인의패로,모든하수인처치,
         하수인소환,
         하수인들에게_은신부여,
         하수인들에게_능력부여,
         하수인들에게_능력치부여,
-        마나획득,마나수정획득
+        마나획득,마나수정획득,
+        공격력획득,방어도획득
     }
 
     public void Awake()
@@ -174,6 +175,8 @@ public class SpellManager : MonoBehaviour
                 return EventType.광역피해;
             case SpellAbility.Ability.모든_하수인_주인의패로되돌리기:
                 return EventType.모든하수인주인의패로;
+            case SpellAbility.Ability.모든하수인처치:
+                return EventType.모든하수인처치;
             case SpellAbility.Ability.하수인소환:
                 return EventType.하수인소환;
             case SpellAbility.Ability.모든하수인에게_은신부여:
@@ -189,11 +192,12 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.마나획득:
                 return EventType.마나획득;
             case SpellAbility.Ability.방어도얻기:
+                return EventType.방어도획득;
             case SpellAbility.Ability.영웅공격력얻기:
+                return EventType.공격력획득;
             case SpellAbility.Ability.무기에_공격력부여:
             case SpellAbility.Ability.다음카드비용감소:
             case SpellAbility.Ability.다음주문카드비용감소:
-            case SpellAbility.Ability.모든하수인처치:
             case SpellAbility.Ability.무작위_패_버리기:
             case SpellAbility.Ability.무작위_하수인뺏기:
             case SpellAbility.Ability.다음턴에다시가져오기:
@@ -1107,13 +1111,87 @@ public class SpellManager : MonoBehaviour
                     if (enemy)
                         ManaManager.instance.enemyMaxMana += (int)ability.Ability_data.x;
                     else
-                        ManaManager.instance.playerMaxMana += (int)ability.Ability_data.x;
+                    {
+                        if (ManaManager.instance.playerMaxMana >= 10)
+                        {
+                            GameEventManager.instance.EventAdd(1.4f);
+                            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName("넘치는마나"));
+                            string cardName = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드이름");
+                            int n = CardHand.instance.nowHandNum;
+                            CardHand.instance.DrawCard();
+                            CardHand.instance.CardMove(cardName, n, BattleUI.instance.playerSpellPos.transform.position, new Vector2(10.685f, 13.714f), 0);
+                            CardViewManager.instance.UpdateCardView(0.001f);
+                        }
+                        else
+                        {
+                            ManaManager.instance.playerMaxMana += (int)ability.Ability_data.x;
+                        }
+                    }
                 }
                 else if (CheckEvent(ability) == EventType.모든하수인주인의패로)
                 {
                     for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
                         if (MinionManager.instance.minionList[m].gameObject.activeSelf)
                             MinionManager.instance.minionList[m].gotoHandTrigger = true;
+                }
+                else if (CheckEvent(ability) == EventType.모든하수인처치)
+                {
+                    for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+                        if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                            MinionManager.instance.minionList[m].animator.SetTrigger("Death");
+
+                    yield return new WaitForSeconds(1.25f);
+
+                    GameEventManager.instance.EventSet(2.5f);
+
+                    #region[아군필드상황정리]
+                    List<MinionObject> removeMinionList = new List<MinionObject>();
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        removeMinionList.Add(MinionField.instance.minions[m]);
+
+                    int pos = 0;
+                    for (int m = 0; m < removeMinionList.Count; m++)
+                    {
+                        MinionField.instance.minions[pos] = removeMinionList[m];
+                        MinionManager.instance.DeathMinionAbility(MinionField.instance.minions[pos]);
+                        pos++;
+                    }
+                    MinionField.instance.minionNum = 0;
+                    removeMinionList.Clear();
+                    #endregion
+
+                    #region[적군필드상황정리]
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                    {
+                        MinionManager.instance.DeathMinionAbility(EnemyMinionField.instance.minions[m]);
+                        EnemyMinionField.instance.minions[m].MinionRemoveProcess();
+                    }
+                    EnemyMinionField.instance.minionNum = 0;
+                    #endregion
+                }
+                else if (CheckEvent(ability) == EventType.방어도획득)
+                {
+                    if (enemy)
+                    {
+                        if (HeroManager.instance.heroHpManager.enemyShield < 0)
+                            HeroManager.instance.heroHpManager.enemyShield = 0;
+                        HeroManager.instance.heroHpManager.enemyShield += (int)ability.Ability_data.x;
+                        HeroManager.instance.heroHpManager.enemyShieldAni.SetBool("Break", false);
+                    }
+                    else
+                    {
+                        if (HeroManager.instance.heroHpManager.playerShield < 0)
+                            HeroManager.instance.heroHpManager.playerShield = 0;
+                        HeroManager.instance.heroHpManager.playerShield += (int)ability.Ability_data.x;
+                        HeroManager.instance.heroHpManager.playerShieldAni.SetBool("Break", false);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.공격력획득)
+                {
+                    if (enemy)
+                        HeroManager.instance.heroAtkManager.enemyAtk += (int)ability.Ability_data.x;
+                    else
+                        HeroManager.instance.heroAtkManager.playerAtk += (int)ability.Ability_data.x;
                 }
             }
          

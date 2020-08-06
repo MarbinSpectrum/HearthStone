@@ -128,6 +128,7 @@
     <Compile Include="Assets\Scripts\UI\Field\EnemyMinionField.cs" />
     <Compile Include="Assets\Scripts\UI\Field\FieldManaCost.cs" />
     <Compile Include="Assets\Scripts\UI\Field\GameEventManager.cs" />
+    <Compile Include="Assets\Scripts\UI\Field\HeroAtkManager.cs" />
     <Compile Include="Assets\Scripts\UI\Field\HeroHpManager.cs" />
     <Compile Include="Assets\Scripts\UI\Field\HeroManager.cs" />
     <Compile Include="Assets\Scripts\UI\Field\InGameDeck.cs" />
