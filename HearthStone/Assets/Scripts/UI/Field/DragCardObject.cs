@@ -107,6 +107,14 @@ public class DragCardObject : MonoBehaviour
         dropEffect.dropEffectAni.SetTrigger("Effect_Minion_" + n);
     }
 
+    public void ShowDropEffecWeapon(Vector2 pos, int n)
+    {
+        dropEffect.dropPos = pos;
+        Vector2 v = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        dropEffect.dropRectTransform.transform.position = v;
+        dropEffect.dropEffectAni.SetTrigger("Effect_Minion_" + n);
+    }
+
     public void ShowDropEffectSpell(Vector2 pos, int n)
     {
         dropEffect.dropPos = pos;

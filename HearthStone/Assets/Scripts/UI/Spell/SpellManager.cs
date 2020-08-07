@@ -729,7 +729,12 @@ public class SpellManager : MonoBehaviour
             if (a.Condition_type > b.Condition_type)
                 return 1;
             else
-                return -1;
+            {
+                if(a.Ability_type == SpellAbility.Ability.무기장착)
+                    return +1;
+                else
+                    return -1;
+            }
         });
 
         bool checkCombo = false;
@@ -1211,6 +1216,11 @@ public class SpellManager : MonoBehaviour
                     }
                     else
                     {
+                        Vector2 v = Camera.main.WorldToScreenPoint(HeroManager.instance.heroAtkManager.playerWeapon.transform.position);
+                        DragCardObject.instance.ShowDropEffecWeapon(v, 0);
+                        while (!DragCardObject.instance.dropEffect.effectArrive)
+                            yield return new WaitForSeconds(0.1f);
+
                         string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
                         Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
                         int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
