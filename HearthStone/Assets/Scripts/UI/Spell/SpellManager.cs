@@ -28,7 +28,7 @@ public class SpellManager : MonoBehaviour
     }
 
     #region[스펠 능력 파싱]
-    List<SpellAbility> SpellParsing(string ability_string)
+    public List<SpellAbility> SpellParsing(string ability_string)
     {
         List<SpellAbility> abilityList = new List<SpellAbility>();
 
@@ -135,7 +135,7 @@ public class SpellManager : MonoBehaviour
     #endregion
 
     #region[이벤트 타입]
-    EventType CheckEvent(SpellAbility spellAbility)
+    public EventType CheckEvent(SpellAbility spellAbility)
     {
         switch(spellAbility.Ability_type)
         {
@@ -1204,6 +1204,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.무기장착)
                 {
+                    GameEventManager.instance.EventAdd(1f);
                     if (enemy)
                     {
                         string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
@@ -1216,6 +1217,7 @@ public class SpellManager : MonoBehaviour
                     }
                     else
                     {
+                        CardHand.instance.handAni.SetTrigger("축소");
                         Vector2 v = Camera.main.WorldToScreenPoint(HeroManager.instance.heroAtkManager.playerWeapon.transform.position);
                         DragCardObject.instance.ShowDropEffecWeapon(v, 0);
                         while (!DragCardObject.instance.dropEffect.effectArrive)

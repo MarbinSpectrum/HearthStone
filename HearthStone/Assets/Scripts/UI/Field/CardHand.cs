@@ -126,7 +126,8 @@ public class CardHand : MonoBehaviour
                     card[i].gameObject.activeSelf &&
                     cost <= ManaManager.instance.playerNowMana &&
                     DragCardObject.instance.dropEffect.dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Stop") &&
-                    ((handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대") && handAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99) ||
+                    ((handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대중") && handAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99) ||
+                    handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대") ||
                     handAni.GetCurrentAnimatorStateInfo(0).IsName("패 기본상태")));
 
                 if (useCardNum > 0 && handCardView[i].cardType == CardType.무기 && handCardView[i].WeaponCardExplainData.Contains("연계"))

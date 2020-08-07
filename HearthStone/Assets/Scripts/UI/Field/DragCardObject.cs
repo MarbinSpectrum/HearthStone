@@ -24,6 +24,8 @@ public class DragCardObject : MonoBehaviour
     public bool mouseInEnemyField;
     public bool mouseInField;
 
+    public bool dragSelectCard;
+
     public void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -47,7 +49,6 @@ public class DragCardObject : MonoBehaviour
             rectTransform.transform.position = v;
         }
 
-
         if (dragCardView.cardType == CardType.무기)
             glowImg.sprite = CardHand.instance.weaponImg;
         else if (dragCardView.cardType == CardType.주문)
@@ -60,7 +61,50 @@ public class DragCardObject : MonoBehaviour
                 glowImg.sprite = CardHand.instance.minionImg;
         }
         glowImg.enabled = !dragCardView.hide && CardHand.instance.canUse[dragCardNum] && mouseInField;
+
         dragCard = !dragCardView.hide;
+
+        List<SpellAbility> spellList = new List<SpellAbility>();
+
+        if ((dragCardView.cardType == CardType.무기 || dragCardView.cardType == CardType.주문) && dragCard)
+        {
+            string cardName = dragCardView.cardType == CardType.주문 ? dragCardView.SpellCardNameData : dragCardView.WeaponCardNameData;
+            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(cardName));
+            string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
+            spellList = SpellManager.instance.SpellParsing(ability_string);
+            spellList.Sort((a, b) =>
+            {
+                if (a.Condition_type > b.Condition_type)
+                    return 1;
+                else
+                {
+                    if (a.Ability_type == SpellAbility.Ability.무기장착)
+                        return +1;
+                    else
+                        return -1;
+                }
+            });
+            for (int i = 0; i < spellList.Count; i++)
+                if (spellList[i].Condition_type != SpellAbility.Condition.선택 && SpellManager.instance.CheckEvent(spellList[i]) == SpellManager.EventType.대상선택)
+                {
+                    dragSelectCard = true;
+                    CardHand.instance.handAni.SetBool("패내리기", true);
+                    DragLineRenderer.instance.activeObj = gameObject;
+                    DragLineRenderer.instance.lineRenderer.enabled = true;
+                    DragLineRenderer.instance.startPos = BattleUI.instance.playerSpellPos.transform.position;
+                    SpellManager.instance.SetSelectMask(spellList[i].Ability_type);
+                    break;
+                }
+        }
+        else if(dragSelectCard)
+        {
+            CardHand.instance.handAni.SetBool("패내리기", false);
+            DragLineRenderer.instance.InitMask();
+            dragSelectCard = false;
+            DragLineRenderer.instance.lineRenderer.enabled = false;
+        }
+        dragCardView.gameObject.SetActive(!dragSelectCard);
+        glowImg.gameObject.SetActive(!dragSelectCard);
     }
 
     public void DragAndDropCard()

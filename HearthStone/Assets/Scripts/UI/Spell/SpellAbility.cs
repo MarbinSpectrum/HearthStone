@@ -138,6 +138,9 @@ public class SpellAbility
             case Ability.다른모든_적군에게_피해주기:
             case Ability.무기장착:
                 return true;
+            case Ability.도발부여:
+            case Ability.하수인처치:
+                return false;
             default:
                 Debug.Log(a.ToString() + " : 설정값에 등록이안됨!!");
                 return false;

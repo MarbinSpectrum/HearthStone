@@ -31,7 +31,7 @@ public class MinionSelect : Btn
     #region[Update]
     public override void Update()
     {
-        btnImg.raycastTarget = !DragCardObject.instance.dragCard;
+        btnImg.raycastTarget = !DragCardObject.instance.dragCard || (DragCardObject.instance.dragCard && DragCardObject.instance.dragSelectCard);
         enemy = minionObject.enemy;
         if(Input.GetMouseButtonUp(0))
             SetSelect(false);

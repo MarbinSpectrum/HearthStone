@@ -26,12 +26,11 @@ public class HeroSelect : Btn
     #region[Update]
     public override void Update()
     {
-        btnImg.raycastTarget = 
+        btnImg.raycastTarget =
             //카드를 드래그중이 아니고
-            !DragCardObject.instance.dragCard && 
+            (!DragCardObject.instance.dragCard || (DragCardObject.instance.dragCard && DragCardObject.instance.dragSelectCard)) && 
             //적영웅이 아닌오브젝트인데 패를 축소시켰을 경우
-            ((!enemy && CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패 기본상태")) || enemy);
-
+            ((!enemy && (CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패 기본상태") || CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패아래로내리기"))) || enemy);
         if (Input.GetMouseButtonUp(0))
             SetSelect(false);
     }
