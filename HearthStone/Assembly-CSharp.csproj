@@ -131,6 +131,7 @@
     <Compile Include="Assets\Scripts\UI\Field\HeroAtkManager.cs" />
     <Compile Include="Assets\Scripts\UI\Field\HeroHpManager.cs" />
     <Compile Include="Assets\Scripts\UI\Field\HeroManager.cs" />
+    <Compile Include="Assets\Scripts\UI\Field\HeroPowerManager.cs" />
     <Compile Include="Assets\Scripts\UI\Field\InGameDeck.cs" />
     <Compile Include="Assets\Scripts\UI\Field\ManaManager.cs" />
     <Compile Include="Assets\Scripts\UI\Field\MinionField.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="Assets\Scripts\UI\btns\DeckDeleteCheck.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckReNameBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\HandCardCheckBtn.cs" />
+    <Compile Include="Assets\Scripts\UI\btns\HeroDrag.cs" />
     <Compile Include="Assets\Scripts\UI\btns\HeroSelect.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainShowQuestBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToAdventureBtn.cs" />

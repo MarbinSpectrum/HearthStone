@@ -76,12 +76,16 @@ public class BattleUI : MonoBehaviour
                 characterNameTxt.text = "말퓨리온 스톰레이지";
                 jobNameTxt.text = "드루이드";
                 playerHeroPower.material = druidMat;
+                HeroManager.instance.heroPowerManager.SetHeroPower("말퓨리온", false);
+                HeroManager.instance.heroPowerManager.SetHeroPower("말퓨리온", true);
                 StartCoroutine(ShowPlayerText(6, "자연은 반드시 보호해야한다!"));
                 break;
             case 1:
                 characterNameTxt.text = "발리라 생귀나르";
                 jobNameTxt.text = "도적";
                 playerHeroPower.material = rogueMat;
+                HeroManager.instance.heroPowerManager.SetHeroPower("발리라", false);
+                HeroManager.instance.heroPowerManager.SetHeroPower("말퓨리온", true);
                 StartCoroutine(ShowPlayerText(6, "등...뒤를... 조심해..."));
                 break;
         }

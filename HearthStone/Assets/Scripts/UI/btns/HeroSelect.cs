@@ -66,6 +66,11 @@ public class HeroSelect : Btn
             else
                 AttackManager.instance.PopDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage);
         }
+        if (DragCardObject.instance.dragSelectCard)
+        {
+            SpellManager.instance.targetHero = -1;
+            SpellManager.instance.targetMinion = null;
+        }
     }
     #endregion
 
@@ -100,19 +105,40 @@ public class HeroSelect : Btn
             if (!DragLineRenderer.instance.CheckMask(타겟.실행주체))
                 if (DragLineRenderer.instance.CheckActObj(gameObject))
                     return;
-            if (MinionManager.instance.CheckTaunt(enemy))
+            if (!DragCardObject.instance.dragSelectCard)
+            {
+                if (MinionManager.instance.CheckTaunt(enemy))
+                {
+                    DragLineRenderer.instance.selectTarget = true;
+                    DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
+                    if (enemy)
+                    {
+                        if (MinionDrag.dragMinionNum != -1)
+                        {
+                            MinionField.instance.minions[MinionDrag.dragMinionNum].stealth = false;
+                            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, MinionField.instance.minions[MinionDrag.dragMinionNum].final_atk);
+                        }
+                        else
+                        {
+                            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, HeroManager.instance.heroAtkManager.playerFinalAtk);
+                        }
+                    }
+                    else
+                    {
+                        AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, 4);
+                    }
+                }
+            }
+            else
             {
                 DragLineRenderer.instance.selectTarget = true;
                 DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
                 if (enemy)
-                {
-                    MinionField.instance.minions[MinionDrag.dragMinionNum].stealth = false;
-                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, MinionField.instance.minions[MinionDrag.dragMinionNum].final_atk);
-                }
+                    SpellManager.instance.targetHero = 2;
                 else
-                {
-                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, 4);
-                }
+                    SpellManager.instance.targetHero = 1;
+                SpellManager.instance.targetMinion = null;
+
             }
             select.SetActive(true);
         }

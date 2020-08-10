@@ -11,15 +11,16 @@ public class SpellManager : MonoBehaviour
         없음 = -1,
         대상선택,
         카드뽑기,
-        적군광역피해,아군광역피해,광역피해,
-        모든하수인주인의패로,모든하수인처치,
+        적군광역피해, 아군광역피해, 광역피해,
+        모든하수인주인의패로, 모든하수인처치,
         하수인소환,
         하수인들에게_은신부여,
         하수인들에게_능력부여,
         하수인들에게_능력치부여,
-        마나획득,마나수정획득,
-        공격력획득,방어도획득,
-        무기장착,무기공격력부여
+        하수인들에게_해당턴_능력치부여,
+        마나획득, 마나수정획득,
+        공격력획득, 방어도획득,
+        무기장착, 무기공격력부여
     }
 
     public void Awake()
@@ -115,7 +116,8 @@ public class SpellManager : MonoBehaviour
     }
     #endregion
 
-    public void RunSpell(string name,bool enemy = false)
+    #region[대상이 아닌]
+    public void RunSpell(string name, bool enemy = false)
     {
         targetMinion = null;
         targetHero = -1;
@@ -126,6 +128,1607 @@ public class SpellManager : MonoBehaviour
         nowSpellName = name;
         StartCoroutine(SpellEvent(spellList, enemy));
     }
+    [HideInInspector] public int selectChoose;
+    [HideInInspector] public SpellAbility nowSpellAbility;
+    [HideInInspector] public string nowSpellName;
+    [HideInInspector] public bool selectSpellEvent;
+
+    private IEnumerator SpellEvent(List<SpellAbility> spellList, bool enemy)
+    {
+        while (GameEventManager.instance.GetEventValue() > 0.1f)
+            yield return new WaitForSeconds(0.001f);
+        GameEventManager.instance.EventAdd(0.1f);
+        spellList.Sort((a, b) =>
+        {
+            if (a.Condition_type > b.Condition_type)
+                return 1;
+            else
+            {
+                if (a.Ability_type == SpellAbility.Ability.무기장착)
+                    return +1;
+                else
+                    return -1;
+            }
+        });
+
+        bool checkCombo = false;
+        List<SpellAbility> chooseOneList = new List<SpellAbility>();
+        for (int i = 0; i < spellList.Count; i++)
+        {
+            List<SpellAbility> nowEvent = new List<SpellAbility>();
+
+            if (spellList[i].Condition_type == SpellAbility.Condition.선택)
+                chooseOneList.Add(spellList[i]);
+            else if (CheckCombo() && spellList[i].Condition_type == SpellAbility.Condition.연계)
+                checkCombo = true;
+            else if (checkCombo && spellList[i].Condition_type == SpellAbility.Condition.연계시_작동안함)
+                continue;
+
+            #region[조건에 따른 주문처리]
+            if (spellList[i].Condition_type == SpellAbility.Condition.선택)
+            {
+                if (i + 1 >= spellList.Count || spellList[i + 1].Condition_type != SpellAbility.Condition.선택)
+                {
+                    List<Vector3> chooseOneData = new List<Vector3>();
+                    foreach (SpellAbility chooseAbility in chooseOneList)
+                    {
+                        Vector3 data = chooseAbility.Condition_data;
+                        if (!chooseOneData.Contains(data))
+                            chooseOneData.Add(data);
+                    }
+
+                    BattleUI.instance.chooseOneDruid.SetBool("Hide", false);
+
+                    for (int j = 0; j < 2; j++)
+                    {
+                        string ChooseName = DataMng.instance.ToString((DataMng.TableType)chooseOneData[j].x, (int)chooseOneData[j].y, "카드이름");
+                        CardViewManager.instance.CardShow(ref BattleUI.instance.chooseCardView[j], ChooseName);
+                        CardViewManager.instance.UpdateCardView(0.001f);
+                    }
+
+                    selectChoose = -1;
+
+                    while (selectChoose == -1)
+                    {
+                        GameEventManager.instance.EventSet(1f);
+                        yield return new WaitForSeconds(0.001f);
+                    }
+
+                    foreach (SpellAbility chooseAbility in chooseOneList)
+                    {
+                        if (chooseAbility.Condition_data.y == chooseOneData[selectChoose].y)
+                            nowEvent.Add(chooseAbility);
+                    }
+                }
+            }
+            else if (CheckCombo() && spellList[i].Condition_type == SpellAbility.Condition.연계)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            else if (!checkCombo && spellList[i].Condition_type == SpellAbility.Condition.연계시_작동안함)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            else if (spellList[i].Condition_type == SpellAbility.Condition.조건없음)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            #endregion
+
+            foreach (SpellAbility ability in nowEvent)
+            {
+                if (spellSelectCancle)
+                    break;
+                yield return new WaitForSeconds(0.25f);
+                if (CheckEvent(ability) == EventType.대상선택)
+                {
+                    if (targetMinion == null && targetHero == -1)
+                    {
+                        SetSelectMask(ability.Ability_type);
+
+                        bool targetExistence = false;
+                        selectSpellEvent = true;
+
+                        for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+                            if ((DragLineRenderer.instance.CheckMask(타겟.아군하수인) && !MinionManager.instance.minionList[m].enemy) ||
+                                (DragLineRenderer.instance.CheckMask(타겟.적하수인) && MinionManager.instance.minionList[m].enemy))
+                                if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                                    targetExistence = targetExistence || CheckConditionMinion(MinionManager.instance.minionList[m], ability);
+
+                        if (DragLineRenderer.instance.CheckMask(타겟.아군영웅))
+                            targetExistence = true;
+                        if (DragLineRenderer.instance.CheckMask(타겟.적영웅))
+                            targetExistence = true;
+                        if (DragLineRenderer.instance.CheckMask(타겟.실행주체))
+                            targetExistence = true;
+
+                        if (targetExistence)
+                        {
+                            if (DragLineRenderer.instance.CheckMask(타겟.아군영웅) || DragLineRenderer.instance.CheckMask(타겟.적영웅))
+                                CardHand.instance.handAni.SetTrigger("축소");
+                            MinionManager.instance.selectMinionEvent = true;
+                            nowSpellAbility = ability;
+                            BattleUI.instance.grayFilterAni.SetBool("On", true);
+                            BattleUI.instance.selectMinion.gameObject.SetActive(true);
+                            DragLineRenderer.instance.activeObj = BattleUI.instance.playerSpellPos;
+                            BattleUI.instance.selectMinionTxt.text = GetText(ability.Ability_type);
+
+                            while (MinionManager.instance.selectMinionEvent)
+                            {
+                                GameEventManager.instance.EventSet(1f);
+                                yield return new WaitForSeconds(0.001f);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        nowSpellAbility = ability;
+                        MinionManager.instance.selectMinionEvent = true;
+                        if (targetMinion != null)
+                            MinionSelect(targetMinion);
+                        else if (targetHero != -1)
+                            HeroSelect(targetHero == 2);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.카드뽑기)
+                {
+                    for (int draw = 0; draw < ability.Ability_data.x; draw++)
+                    {
+                        //0이면 발동한 플레이어가 뽑고 
+                        //1이면 상대플레이어가 카드를 뽑음
+                        if ((enemy && (ability.Ability_data.y == 0)) || (!enemy && (ability.Ability_data.y == 1)))
+                            EnemyCardHand.instance.DrawCard();
+                        else
+                        {
+                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
+                            {
+                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
+                                {
+                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
+                                    CardHand.instance.DrawCard();
+                                    string s = InGameDeck.instance.playDeck[0];
+                                    InGameDeck.instance.playDeck.RemoveAt(0);
+                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
+                                    CardViewManager.instance.UpdateCardView(0.001f);
+                                    break;
+                                }
+                            }
+                        }
+                        GameEventManager.instance.EventAdd(0.5f);
+                        yield return new WaitForSeconds(0.5f);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.아군광역피해)
+                {
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(EnemyMinionField.instance.minions[m]);
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(EnemyMinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(EnemyMinionField.instance.minions[m]);
+
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        EnemyMinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = true;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (!MinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(MinionField.instance.minions[m]);
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(MinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(MinionField.instance.minions[m]);
+
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        MinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = false;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.적군광역피해)
+                {
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    if (!enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(EnemyMinionField.instance.minions[m]);
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(EnemyMinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(EnemyMinionField.instance.minions[m]);
+
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        EnemyMinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = true;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (!MinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(MinionField.instance.minions[m]);
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(MinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(MinionField.instance.minions[m]);
+
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        MinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = false;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.광역피해)
+                {
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                        if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            emptyList.Add(EnemyMinionField.instance.minions[m]);
+                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            deathList.Add(EnemyMinionField.instance.minions[m]);
+                        else
+                            survivalList.Add(EnemyMinionField.instance.minions[m]);
+
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                        if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                    AttackManager.instance.AttackEffectRun();
+                    EnemyMinionField.instance.setMinionPos = false;
+                    reArrangementEnemy = true;
+                    ReArrangement();
+                    Invoke("SetMinionPos", 1.25f);
+
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        if (!MinionField.instance.minions[m].gameObject.activeSelf)
+                            emptyList.Add(MinionField.instance.minions[m]);
+                        else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            deathList.Add(MinionField.instance.minions[m]);
+                        else
+                            survivalList.Add(MinionField.instance.minions[m]);
+
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                    AttackManager.instance.AttackEffectRun();
+                    MinionField.instance.setMinionPos = false;
+                    reArrangementEnemy = false;
+                    ReArrangement();
+                    Invoke("SetMinionPos", 1.25f);
+
+                    GameEventManager.instance.EventSet(2f);
+                }
+                else if (CheckEvent(ability) == EventType.하수인소환)
+                {
+                    //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
+                    bool enemyFlag = (int)ability.Ability_data.z == 1 ? false : true;
+                    string minion_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+                    string minion_ability = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
+                    if ((enemyFlag && !enemy) || (!enemyFlag && enemy))
+                    {
+                        int index = EnemyMinionField.instance.minionNum;
+                        EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
+                        if (minion_name.Equals("나무정령"))
+                        {
+                            yield return new WaitForSeconds(0.5f);
+                            EnemyMinionField.instance.minions[index].abilityList.Clear();
+                            EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                            MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                        }
+                    }
+                    else
+                    {
+                        int index = MinionField.instance.minionNum;
+                        MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
+                        if (minion_name.Equals("나무정령"))
+                        {
+                            yield return new WaitForSeconds(0.5f);
+                            MinionField.instance.minions[index].abilityList.Clear();
+                            MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                            MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
+                        }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_은신부여)
+                {
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                EnemyMinionField.instance.minions[m].stealth = true;
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                MinionField.instance.minions[m].stealth = true;
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_능력부여)
+                {
+                    string ability_string = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
+                    List<MinionAbility> abilityList = MinionManager.instance.MinionAbilityParsing(ability_string);
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                for (int a = 0; a < abilityList.Count; a++)
+                                    EnemyMinionField.instance.minions[m].abilityList.Add(abilityList[a]);
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                for (int a = 0; a < abilityList.Count; a++)
+                                    MinionField.instance.minions[m].abilityList.Add(abilityList[a]);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_능력치부여)
+                {
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                EnemyMinionField.instance.minions[m].nowAtk += (int)ability.Ability_data.x;
+                                EnemyMinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                                EnemyMinionField.instance.minions[m].nowSpell += (int)ability.Ability_data.z;
+                            }
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                MinionField.instance.minions[m].nowAtk += (int)ability.Ability_data.x;
+                                MinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                                MinionField.instance.minions[m].nowSpell += (int)ability.Ability_data.z;
+                            }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.마나획득)
+                {
+                    if (enemy)
+                        ManaManager.instance.enemyNowMana += (int)ability.Ability_data.x;
+                    else
+                        ManaManager.instance.playerNowMana += (int)ability.Ability_data.x;
+                }
+                else if (CheckEvent(ability) == EventType.마나수정획득)
+                {
+                    if (enemy)
+                        ManaManager.instance.enemyMaxMana += (int)ability.Ability_data.x;
+                    else
+                    {
+                        if (ManaManager.instance.playerMaxMana >= 10)
+                        {
+                            GameEventManager.instance.EventAdd(1.4f);
+                            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName("넘치는마나"));
+                            string cardName = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드이름");
+                            int n = CardHand.instance.nowHandNum;
+                            CardHand.instance.DrawCard();
+                            CardHand.instance.CardMove(cardName, n, BattleUI.instance.playerSpellPos.transform.position, new Vector2(10.685f, 13.714f), 0);
+                            CardViewManager.instance.UpdateCardView(0.001f);
+                        }
+                        else
+                        {
+                            ManaManager.instance.playerMaxMana += (int)ability.Ability_data.x;
+                        }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.모든하수인주인의패로)
+                {
+                    for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+                        if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                            MinionManager.instance.minionList[m].gotoHandTrigger = true;
+                }
+                else if (CheckEvent(ability) == EventType.모든하수인처치)
+                {
+                    for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+                        if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                            MinionManager.instance.minionList[m].animator.SetTrigger("Death");
+
+                    yield return new WaitForSeconds(1.25f);
+
+                    GameEventManager.instance.EventSet(2.5f);
+
+                    #region[아군필드상황정리]
+                    List<MinionObject> removeMinionList = new List<MinionObject>();
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        removeMinionList.Add(MinionField.instance.minions[m]);
+
+                    int pos = 0;
+                    for (int m = 0; m < removeMinionList.Count; m++)
+                    {
+                        MinionField.instance.minions[pos] = removeMinionList[m];
+                        MinionManager.instance.DeathMinionAbility(MinionField.instance.minions[pos]);
+                        pos++;
+                    }
+                    MinionField.instance.minionNum = 0;
+                    removeMinionList.Clear();
+                    #endregion
+
+                    #region[적군필드상황정리]
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                    {
+                        MinionManager.instance.DeathMinionAbility(EnemyMinionField.instance.minions[m]);
+                        EnemyMinionField.instance.minions[m].MinionRemoveProcess();
+                    }
+                    EnemyMinionField.instance.minionNum = 0;
+                    #endregion
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_해당턴_능력치부여)
+                {
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                Vector4 buff = new Vector4((int)ability.Ability_data.x, (int)ability.Ability_data.y, (int)ability.Ability_data.z, 1);
+                                EnemyMinionField.instance.minions[m].buffList.Add(buff);
+                                EnemyMinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                            }
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                Vector4 buff = new Vector4((int)ability.Ability_data.x, (int)ability.Ability_data.y, (int)ability.Ability_data.z, 1);
+                                MinionField.instance.minions[m].buffList.Add(buff);
+                                MinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                            }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.방어도획득)
+                {
+                    if (enemy)
+                    {
+                        if (HeroManager.instance.heroHpManager.enemyShield < 0)
+                            HeroManager.instance.heroHpManager.enemyShield = 0;
+                        HeroManager.instance.heroHpManager.enemyShield += (int)ability.Ability_data.x;
+                        HeroManager.instance.heroHpManager.enemyShieldAni.SetBool("Break", false);
+                    }
+                    else
+                    {
+                        if (HeroManager.instance.heroHpManager.playerShield < 0)
+                            HeroManager.instance.heroHpManager.playerShield = 0;
+                        HeroManager.instance.heroHpManager.playerShield += (int)ability.Ability_data.x;
+                        HeroManager.instance.heroHpManager.playerShieldAni.SetBool("Break", false);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.공격력획득)
+                {
+                    if (enemy)
+                        HeroManager.instance.heroAtkManager.enemyAtk += (int)ability.Ability_data.x;
+                    else
+                        HeroManager.instance.heroAtkManager.playerAtk += (int)ability.Ability_data.x;
+                }
+                else if (CheckEvent(ability) == EventType.무기장착)
+                {
+                    GameEventManager.instance.EventAdd(1f);
+                    if (enemy)
+                    {
+                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+                        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
+                        int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
+                        int weaponAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+                        HeroManager.instance.heroAtkManager.enemyWeaponName = weapon_name;
+                        HeroManager.instance.heroAtkManager.enemyWeaponDurability = weaponHp;
+                        HeroManager.instance.heroAtkManager.enemyWeaponAtk = weaponAtk;
+                    }
+                    else
+                    {
+                        CardHand.instance.handAni.SetTrigger("축소");
+                        Vector2 v = Camera.main.WorldToScreenPoint(HeroManager.instance.heroAtkManager.playerWeapon.transform.position - new Vector3(0, 50, 0));
+                        DragCardObject.instance.ShowDropEffecWeapon(v, 0);
+                        while (!DragCardObject.instance.dropEffect.effectArrive)
+                            yield return new WaitForSeconds(0.1f);
+
+                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+                        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
+                        int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
+                        int weaponAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+                        HeroManager.instance.heroAtkManager.playerWeaponName = weapon_name;
+                        HeroManager.instance.heroAtkManager.playerWeaponDurability = weaponHp;
+                        HeroManager.instance.heroAtkManager.playerWeaponAtk = weaponAtk;
+
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.무기공격력부여)
+                {
+                    if (enemy)
+                        HeroManager.instance.heroAtkManager.enemyWeaponAtk += (int)ability.Ability_data.x;
+                    else
+                        HeroManager.instance.heroAtkManager.playerWeaponAtk += (int)ability.Ability_data.x;
+                }
+            }
+
+        }
+
+        selectSpellEvent = false;
+
+    }
+    #endregion
+
+    #region[하수인대상선택]
+    public void RunSpellTargetMinion(string name,int handNum, MinionObject minionObject, bool enemy)
+    {
+        targetMinion = null;
+        targetHero = -1;
+        spellSelectCancle = false;
+        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(name));
+        string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
+        List<SpellAbility> spellList = SpellParsing(ability_string);
+        nowSpellName = name;
+        int cost = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+        ManaManager.instance.playerNowMana -= cost;
+        CardHand.instance.useCardNum++;
+        CardHand.instance.CardRemove(handNum);
+        StartCoroutine(RunSpellTargetMinion(spellList, minionObject, enemy));
+    }
+    private IEnumerator RunSpellTargetMinion(List<SpellAbility> spellList, MinionObject minionObject,bool enemy)
+    {
+        spellList.Sort((a, b) =>
+        {
+            if (a.Condition_type > b.Condition_type)
+                return 1;
+            else
+            {
+                if (a.Ability_type == SpellAbility.Ability.무기장착)
+                    return +1;
+                else
+                    return -1;
+            }
+        });
+
+        bool checkCombo = false;
+        List<SpellAbility> chooseOneList = new List<SpellAbility>();
+        for (int i = 0; i < spellList.Count; i++)
+        {
+            List<SpellAbility> nowEvent = new List<SpellAbility>();
+
+            if (spellList[i].Condition_type == SpellAbility.Condition.선택)
+                chooseOneList.Add(spellList[i]);
+            else if (CheckCombo() && spellList[i].Condition_type == SpellAbility.Condition.연계)
+                checkCombo = true;
+            else if (checkCombo && spellList[i].Condition_type == SpellAbility.Condition.연계시_작동안함)
+                continue;
+
+            #region[조건에 따른 주문처리]
+            if (spellList[i].Condition_type == SpellAbility.Condition.선택)
+            {
+                if (i + 1 >= spellList.Count || spellList[i + 1].Condition_type != SpellAbility.Condition.선택)
+                {
+                    List<Vector3> chooseOneData = new List<Vector3>();
+                    foreach (SpellAbility chooseAbility in chooseOneList)
+                    {
+                        Vector3 data = chooseAbility.Condition_data;
+                        if (!chooseOneData.Contains(data))
+                            chooseOneData.Add(data);
+                    }
+
+                    BattleUI.instance.chooseOneDruid.SetBool("Hide", false);
+
+                    for (int j = 0; j < 2; j++)
+                    {
+                        string ChooseName = DataMng.instance.ToString((DataMng.TableType)chooseOneData[j].x, (int)chooseOneData[j].y, "카드이름");
+                        CardViewManager.instance.CardShow(ref BattleUI.instance.chooseCardView[j], ChooseName);
+                        CardViewManager.instance.UpdateCardView(0.001f);
+                    }
+
+                    selectChoose = -1;
+
+                    while (selectChoose == -1)
+                    {
+                        GameEventManager.instance.EventSet(1f);
+                        yield return new WaitForSeconds(0.001f);
+                    }
+
+                    foreach (SpellAbility chooseAbility in chooseOneList)
+                    {
+                        if (chooseAbility.Condition_data.y == chooseOneData[selectChoose].y)
+                            nowEvent.Add(chooseAbility);
+                    }
+                }
+            }
+            else if (CheckCombo() && spellList[i].Condition_type == SpellAbility.Condition.연계)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            else if (!checkCombo && spellList[i].Condition_type == SpellAbility.Condition.연계시_작동안함)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            else if (spellList[i].Condition_type == SpellAbility.Condition.조건없음)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            #endregion
+
+            foreach (SpellAbility ability in nowEvent)
+            {
+                yield return new WaitForSeconds(0.25f);
+                nowSpellAbility = ability;
+                if (CheckEvent(ability) == EventType.대상선택)
+                {
+                    MinionManager.instance.selectMinionEvent = true;
+                    selectSpellEvent = true;
+                    MinionSelect(minionObject);
+                }
+                else if (CheckEvent(ability) == EventType.카드뽑기)
+                {
+                    for (int draw = 0; draw < ability.Ability_data.x; draw++)
+                    {
+                        //0이면 발동한 플레이어가 뽑고 
+                        //1이면 상대플레이어가 카드를 뽑음
+                        if ((enemy && (ability.Ability_data.y == 0)) || (!enemy && (ability.Ability_data.y == 1)))
+                            EnemyCardHand.instance.DrawCard();
+                        else
+                        {
+                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
+                            {
+                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
+                                {
+                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
+                                    CardHand.instance.DrawCard();
+                                    string s = InGameDeck.instance.playDeck[0];
+                                    InGameDeck.instance.playDeck.RemoveAt(0);
+                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
+                                    CardViewManager.instance.UpdateCardView(0.001f);
+                                    break;
+                                }
+                            }
+                        }
+                        GameEventManager.instance.EventAdd(0.5f);
+                        yield return new WaitForSeconds(0.5f);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.아군광역피해)
+                {
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(EnemyMinionField.instance.minions[m]);
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(EnemyMinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(EnemyMinionField.instance.minions[m]);
+
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        EnemyMinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = true;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (!MinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(MinionField.instance.minions[m]);
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(MinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(MinionField.instance.minions[m]);
+
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        MinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = false;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.적군광역피해)
+                {
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    if (!enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(EnemyMinionField.instance.minions[m]);
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(EnemyMinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(EnemyMinionField.instance.minions[m]);
+
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        EnemyMinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = true;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (!MinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(MinionField.instance.minions[m]);
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(MinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(MinionField.instance.minions[m]);
+
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        MinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = false;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.광역피해)
+                {
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                        if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            emptyList.Add(EnemyMinionField.instance.minions[m]);
+                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            deathList.Add(EnemyMinionField.instance.minions[m]);
+                        else
+                            survivalList.Add(EnemyMinionField.instance.minions[m]);
+
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                        if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                    AttackManager.instance.AttackEffectRun();
+                    EnemyMinionField.instance.setMinionPos = false;
+                    reArrangementEnemy = true;
+                    ReArrangement();
+                    Invoke("SetMinionPos", 1.25f);
+
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        if (!MinionField.instance.minions[m].gameObject.activeSelf)
+                            emptyList.Add(MinionField.instance.minions[m]);
+                        else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            deathList.Add(MinionField.instance.minions[m]);
+                        else
+                            survivalList.Add(MinionField.instance.minions[m]);
+
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                    AttackManager.instance.AttackEffectRun();
+                    MinionField.instance.setMinionPos = false;
+                    reArrangementEnemy = false;
+                    ReArrangement();
+                    Invoke("SetMinionPos", 1.25f);
+
+                    GameEventManager.instance.EventSet(2f);
+                }
+                else if (CheckEvent(ability) == EventType.하수인소환)
+                {
+                    //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
+                    bool enemyFlag = (int)ability.Ability_data.z == 1 ? false : true;
+                    string minion_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+                    string minion_ability = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
+                    if ((enemyFlag && !enemy) || (!enemyFlag && enemy))
+                    {
+                        int index = EnemyMinionField.instance.minionNum;
+                        EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
+                        if (minion_name.Equals("나무정령"))
+                        {
+                            yield return new WaitForSeconds(0.5f);
+                            EnemyMinionField.instance.minions[index].abilityList.Clear();
+                            EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                            MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                        }
+                    }
+                    else
+                    {
+                        int index = MinionField.instance.minionNum;
+                        MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
+                        if (minion_name.Equals("나무정령"))
+                        {
+                            yield return new WaitForSeconds(0.5f);
+                            MinionField.instance.minions[index].abilityList.Clear();
+                            MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                            MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
+                        }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_은신부여)
+                {
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                EnemyMinionField.instance.minions[m].stealth = true;
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                MinionField.instance.minions[m].stealth = true;
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_능력부여)
+                {
+                    string ability_string = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
+                    List<MinionAbility> abilityList = MinionManager.instance.MinionAbilityParsing(ability_string);
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                for (int a = 0; a < abilityList.Count; a++)
+                                    EnemyMinionField.instance.minions[m].abilityList.Add(abilityList[a]);
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                for (int a = 0; a < abilityList.Count; a++)
+                                    MinionField.instance.minions[m].abilityList.Add(abilityList[a]);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_능력치부여)
+                {
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                EnemyMinionField.instance.minions[m].nowAtk += (int)ability.Ability_data.x;
+                                EnemyMinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                                EnemyMinionField.instance.minions[m].nowSpell += (int)ability.Ability_data.z;
+                            }
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                MinionField.instance.minions[m].nowAtk += (int)ability.Ability_data.x;
+                                MinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                                MinionField.instance.minions[m].nowSpell += (int)ability.Ability_data.z;
+                            }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.마나획득)
+                {
+                    if (enemy)
+                        ManaManager.instance.enemyNowMana += (int)ability.Ability_data.x;
+                    else
+                        ManaManager.instance.playerNowMana += (int)ability.Ability_data.x;
+                }
+                else if (CheckEvent(ability) == EventType.마나수정획득)
+                {
+                    if (enemy)
+                        ManaManager.instance.enemyMaxMana += (int)ability.Ability_data.x;
+                    else
+                    {
+                        if (ManaManager.instance.playerMaxMana >= 10)
+                        {
+                            GameEventManager.instance.EventAdd(1.4f);
+                            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName("넘치는마나"));
+                            string cardName = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드이름");
+                            int n = CardHand.instance.nowHandNum;
+                            CardHand.instance.DrawCard();
+                            CardHand.instance.CardMove(cardName, n, BattleUI.instance.playerSpellPos.transform.position, new Vector2(10.685f, 13.714f), 0);
+                            CardViewManager.instance.UpdateCardView(0.001f);
+                        }
+                        else
+                        {
+                            ManaManager.instance.playerMaxMana += (int)ability.Ability_data.x;
+                        }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.모든하수인주인의패로)
+                {
+                    for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+                        if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                            MinionManager.instance.minionList[m].gotoHandTrigger = true;
+                }
+                else if (CheckEvent(ability) == EventType.모든하수인처치)
+                {
+                    for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+                        if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                            MinionManager.instance.minionList[m].animator.SetTrigger("Death");
+
+                    yield return new WaitForSeconds(1.25f);
+
+                    GameEventManager.instance.EventSet(2.5f);
+
+                    #region[아군필드상황정리]
+                    List<MinionObject> removeMinionList = new List<MinionObject>();
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        removeMinionList.Add(MinionField.instance.minions[m]);
+
+                    int pos = 0;
+                    for (int m = 0; m < removeMinionList.Count; m++)
+                    {
+                        MinionField.instance.minions[pos] = removeMinionList[m];
+                        MinionManager.instance.DeathMinionAbility(MinionField.instance.minions[pos]);
+                        pos++;
+                    }
+                    MinionField.instance.minionNum = 0;
+                    removeMinionList.Clear();
+                    #endregion
+
+                    #region[적군필드상황정리]
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                    {
+                        MinionManager.instance.DeathMinionAbility(EnemyMinionField.instance.minions[m]);
+                        EnemyMinionField.instance.minions[m].MinionRemoveProcess();
+                    }
+                    EnemyMinionField.instance.minionNum = 0;
+                    #endregion
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_해당턴_능력치부여)
+                {
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                Vector4 buff = new Vector4((int)ability.Ability_data.x, (int)ability.Ability_data.y, (int)ability.Ability_data.z, 1);
+                                EnemyMinionField.instance.minions[m].buffList.Add(buff);
+                                EnemyMinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                            }
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                Vector4 buff = new Vector4((int)ability.Ability_data.x, (int)ability.Ability_data.y, (int)ability.Ability_data.z, 1);
+                                MinionField.instance.minions[m].buffList.Add(buff);
+                                MinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                            }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.방어도획득)
+                {
+                    if (enemy)
+                    {
+                        if (HeroManager.instance.heroHpManager.enemyShield < 0)
+                            HeroManager.instance.heroHpManager.enemyShield = 0;
+                        HeroManager.instance.heroHpManager.enemyShield += (int)ability.Ability_data.x;
+                        HeroManager.instance.heroHpManager.enemyShieldAni.SetBool("Break", false);
+                    }
+                    else
+                    {
+                        if (HeroManager.instance.heroHpManager.playerShield < 0)
+                            HeroManager.instance.heroHpManager.playerShield = 0;
+                        HeroManager.instance.heroHpManager.playerShield += (int)ability.Ability_data.x;
+                        HeroManager.instance.heroHpManager.playerShieldAni.SetBool("Break", false);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.공격력획득)
+                {
+                    if (enemy)
+                        HeroManager.instance.heroAtkManager.enemyAtk += (int)ability.Ability_data.x;
+                    else
+                        HeroManager.instance.heroAtkManager.playerAtk += (int)ability.Ability_data.x;
+                }
+                else if (CheckEvent(ability) == EventType.무기장착)
+                {
+                    GameEventManager.instance.EventAdd(1f);
+                    if (enemy)
+                    {
+                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+                        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
+                        int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
+                        int weaponAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+                        HeroManager.instance.heroAtkManager.enemyWeaponName = weapon_name;
+                        HeroManager.instance.heroAtkManager.enemyWeaponDurability = weaponHp;
+                        HeroManager.instance.heroAtkManager.enemyWeaponAtk = weaponAtk;
+                    }
+                    else
+                    {
+                        CardHand.instance.handAni.SetTrigger("축소");
+                        Vector2 v = Camera.main.WorldToScreenPoint(HeroManager.instance.heroAtkManager.playerWeapon.transform.position - new Vector3(0, 50, 0));
+                        DragCardObject.instance.ShowDropEffecWeapon(v, 0);
+                        while (!DragCardObject.instance.dropEffect.effectArrive)
+                            yield return new WaitForSeconds(0.1f);
+
+                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+                        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
+                        int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
+                        int weaponAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+                        HeroManager.instance.heroAtkManager.playerWeaponName = weapon_name;
+                        HeroManager.instance.heroAtkManager.playerWeaponDurability = weaponHp;
+                        HeroManager.instance.heroAtkManager.playerWeaponAtk = weaponAtk;
+
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.무기공격력부여)
+                {
+                    if (enemy)
+                        HeroManager.instance.heroAtkManager.enemyWeaponAtk += (int)ability.Ability_data.x;
+                    else
+                        HeroManager.instance.heroAtkManager.playerWeaponAtk += (int)ability.Ability_data.x;
+                }
+            }
+        }
+
+        selectSpellEvent = false;
+    }
+    #endregion
+
+    #region[영웅대상선택]
+    public void RunSpellTargetHero(string name, int handNum, bool runHero, bool tarHero)
+    {
+        targetMinion = null;
+        targetHero = -1;
+        spellSelectCancle = false;
+        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(name));
+        string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
+        List<SpellAbility> spellList = SpellParsing(ability_string);
+        nowSpellName = name;
+        int cost = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+        ManaManager.instance.playerNowMana -= cost;
+        CardHand.instance.useCardNum++;
+        CardHand.instance.CardRemove(handNum);
+        StartCoroutine(RunSpellTargetHero(spellList, runHero, tarHero));
+    }
+    private IEnumerator RunSpellTargetHero(List<SpellAbility> spellList, bool runHero,bool tarHero)
+    {
+        bool enemy = runHero;
+        while (GameEventManager.instance.GetEventValue() > 0.1f)
+            yield return new WaitForSeconds(0.001f);
+        GameEventManager.instance.EventAdd(0.1f);
+        spellList.Sort((a, b) =>
+        {
+            if (a.Condition_type > b.Condition_type)
+                return 1;
+            else
+            {
+                if (a.Ability_type == SpellAbility.Ability.무기장착)
+                    return +1;
+                else
+                    return -1;
+            }
+        });
+
+        bool checkCombo = false;
+        List<SpellAbility> chooseOneList = new List<SpellAbility>();
+        for (int i = 0; i < spellList.Count; i++)
+        {
+            List<SpellAbility> nowEvent = new List<SpellAbility>();
+
+            if (spellList[i].Condition_type == SpellAbility.Condition.선택)
+                chooseOneList.Add(spellList[i]);
+            else if (CheckCombo() && spellList[i].Condition_type == SpellAbility.Condition.연계)
+                checkCombo = true;
+            else if (checkCombo && spellList[i].Condition_type == SpellAbility.Condition.연계시_작동안함)
+                continue;
+
+            #region[조건에 따른 주문처리]
+            if (spellList[i].Condition_type == SpellAbility.Condition.선택)
+            {
+                if (i + 1 >= spellList.Count || spellList[i + 1].Condition_type != SpellAbility.Condition.선택)
+                {
+                    List<Vector3> chooseOneData = new List<Vector3>();
+                    foreach (SpellAbility chooseAbility in chooseOneList)
+                    {
+                        Vector3 data = chooseAbility.Condition_data;
+                        if (!chooseOneData.Contains(data))
+                            chooseOneData.Add(data);
+                    }
+
+                    BattleUI.instance.chooseOneDruid.SetBool("Hide", false);
+
+                    for (int j = 0; j < 2; j++)
+                    {
+                        string ChooseName = DataMng.instance.ToString((DataMng.TableType)chooseOneData[j].x, (int)chooseOneData[j].y, "카드이름");
+                        CardViewManager.instance.CardShow(ref BattleUI.instance.chooseCardView[j], ChooseName);
+                        CardViewManager.instance.UpdateCardView(0.001f);
+                    }
+
+                    selectChoose = -1;
+
+                    while (selectChoose == -1)
+                    {
+                        GameEventManager.instance.EventSet(1f);
+                        yield return new WaitForSeconds(0.001f);
+                    }
+
+                    foreach (SpellAbility chooseAbility in chooseOneList)
+                    {
+                        if (chooseAbility.Condition_data.y == chooseOneData[selectChoose].y)
+                            nowEvent.Add(chooseAbility);
+                    }
+                }
+            }
+            else if (CheckCombo() && spellList[i].Condition_type == SpellAbility.Condition.연계)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            else if (!checkCombo && spellList[i].Condition_type == SpellAbility.Condition.연계시_작동안함)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            else if (spellList[i].Condition_type == SpellAbility.Condition.조건없음)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            #endregion
+
+            foreach (SpellAbility ability in nowEvent)
+            {
+                if (spellSelectCancle)
+                    break;
+                yield return new WaitForSeconds(0.25f);
+                if (CheckEvent(ability) == EventType.대상선택)
+                {
+                    MinionManager.instance.selectMinionEvent = true;
+                    selectSpellEvent = true;
+                    nowSpellAbility = ability;
+                    HeroSelect(tarHero);
+                }
+                else if (CheckEvent(ability) == EventType.카드뽑기)
+                {
+                    for (int draw = 0; draw < ability.Ability_data.x; draw++)
+                    {
+                        //0이면 발동한 플레이어가 뽑고 
+                        //1이면 상대플레이어가 카드를 뽑음
+                        if ((enemy && (ability.Ability_data.y == 0)) || (!enemy && (ability.Ability_data.y == 1)))
+                            EnemyCardHand.instance.DrawCard();
+                        else
+                        {
+                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
+                            {
+                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
+                                {
+                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
+                                    CardHand.instance.DrawCard();
+                                    string s = InGameDeck.instance.playDeck[0];
+                                    InGameDeck.instance.playDeck.RemoveAt(0);
+                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
+                                    CardViewManager.instance.UpdateCardView(0.001f);
+                                    break;
+                                }
+                            }
+                        }
+                        GameEventManager.instance.EventAdd(0.5f);
+                        yield return new WaitForSeconds(0.5f);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.아군광역피해)
+                {
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(EnemyMinionField.instance.minions[m]);
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(EnemyMinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(EnemyMinionField.instance.minions[m]);
+
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        EnemyMinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = true;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (!MinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(MinionField.instance.minions[m]);
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(MinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(MinionField.instance.minions[m]);
+
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        MinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = false;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.적군광역피해)
+                {
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    if (!enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(EnemyMinionField.instance.minions[m]);
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(EnemyMinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(EnemyMinionField.instance.minions[m]);
+
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        EnemyMinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = true;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (!MinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(MinionField.instance.minions[m]);
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                                deathList.Add(MinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(MinionField.instance.minions[m]);
+
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                        AttackManager.instance.AttackEffectRun();
+                        MinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = false;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.광역피해)
+                {
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                        if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            emptyList.Add(EnemyMinionField.instance.minions[m]);
+                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            deathList.Add(EnemyMinionField.instance.minions[m]);
+                        else
+                            survivalList.Add(EnemyMinionField.instance.minions[m]);
+
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                        if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                    AttackManager.instance.AttackEffectRun();
+                    EnemyMinionField.instance.setMinionPos = false;
+                    reArrangementEnemy = true;
+                    ReArrangement();
+                    Invoke("SetMinionPos", 1.25f);
+
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        if (!MinionField.instance.minions[m].gameObject.activeSelf)
+                            emptyList.Add(MinionField.instance.minions[m]);
+                        else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            deathList.Add(MinionField.instance.minions[m]);
+                        else
+                            survivalList.Add(MinionField.instance.minions[m]);
+
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                    AttackManager.instance.AttackEffectRun();
+                    MinionField.instance.setMinionPos = false;
+                    reArrangementEnemy = false;
+                    ReArrangement();
+                    Invoke("SetMinionPos", 1.25f);
+
+                    GameEventManager.instance.EventSet(2f);
+                }
+                else if (CheckEvent(ability) == EventType.하수인소환)
+                {
+                    //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
+                    bool enemyFlag = (int)ability.Ability_data.z == 1 ? false : true;
+                    string minion_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+                    string minion_ability = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
+                    if ((enemyFlag && !enemy) || (!enemyFlag && enemy))
+                    {
+                        int index = EnemyMinionField.instance.minionNum;
+                        EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
+                        if (minion_name.Equals("나무정령"))
+                        {
+                            yield return new WaitForSeconds(0.5f);
+                            EnemyMinionField.instance.minions[index].abilityList.Clear();
+                            EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                            MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                        }
+                    }
+                    else
+                    {
+                        int index = MinionField.instance.minionNum;
+                        MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
+                        if (minion_name.Equals("나무정령"))
+                        {
+                            yield return new WaitForSeconds(0.5f);
+                            MinionField.instance.minions[index].abilityList.Clear();
+                            MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                            MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
+                        }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_은신부여)
+                {
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                EnemyMinionField.instance.minions[m].stealth = true;
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                MinionField.instance.minions[m].stealth = true;
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_능력부여)
+                {
+                    string ability_string = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
+                    List<MinionAbility> abilityList = MinionManager.instance.MinionAbilityParsing(ability_string);
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                for (int a = 0; a < abilityList.Count; a++)
+                                    EnemyMinionField.instance.minions[m].abilityList.Add(abilityList[a]);
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                for (int a = 0; a < abilityList.Count; a++)
+                                    MinionField.instance.minions[m].abilityList.Add(abilityList[a]);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_능력치부여)
+                {
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                EnemyMinionField.instance.minions[m].nowAtk += (int)ability.Ability_data.x;
+                                EnemyMinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                                EnemyMinionField.instance.minions[m].nowSpell += (int)ability.Ability_data.z;
+                            }
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                MinionField.instance.minions[m].nowAtk += (int)ability.Ability_data.x;
+                                MinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                                MinionField.instance.minions[m].nowSpell += (int)ability.Ability_data.z;
+                            }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.마나획득)
+                {
+                    if (enemy)
+                        ManaManager.instance.enemyNowMana += (int)ability.Ability_data.x;
+                    else
+                        ManaManager.instance.playerNowMana += (int)ability.Ability_data.x;
+                }
+                else if (CheckEvent(ability) == EventType.마나수정획득)
+                {
+                    if (enemy)
+                        ManaManager.instance.enemyMaxMana += (int)ability.Ability_data.x;
+                    else
+                    {
+                        if (ManaManager.instance.playerMaxMana >= 10)
+                        {
+                            GameEventManager.instance.EventAdd(1.4f);
+                            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName("넘치는마나"));
+                            string cardName = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드이름");
+                            int n = CardHand.instance.nowHandNum;
+                            CardHand.instance.DrawCard();
+                            CardHand.instance.CardMove(cardName, n, BattleUI.instance.playerSpellPos.transform.position, new Vector2(10.685f, 13.714f), 0);
+                            CardViewManager.instance.UpdateCardView(0.001f);
+                        }
+                        else
+                        {
+                            ManaManager.instance.playerMaxMana += (int)ability.Ability_data.x;
+                        }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.모든하수인주인의패로)
+                {
+                    for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+                        if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                            MinionManager.instance.minionList[m].gotoHandTrigger = true;
+                }
+                else if (CheckEvent(ability) == EventType.모든하수인처치)
+                {
+                    for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+                        if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                            MinionManager.instance.minionList[m].animator.SetTrigger("Death");
+
+                    yield return new WaitForSeconds(1.25f);
+
+                    GameEventManager.instance.EventSet(2.5f);
+
+                    #region[아군필드상황정리]
+                    List<MinionObject> removeMinionList = new List<MinionObject>();
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        removeMinionList.Add(MinionField.instance.minions[m]);
+
+                    int pos = 0;
+                    for (int m = 0; m < removeMinionList.Count; m++)
+                    {
+                        MinionField.instance.minions[pos] = removeMinionList[m];
+                        MinionManager.instance.DeathMinionAbility(MinionField.instance.minions[pos]);
+                        pos++;
+                    }
+                    MinionField.instance.minionNum = 0;
+                    removeMinionList.Clear();
+                    #endregion
+
+                    #region[적군필드상황정리]
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                    {
+                        MinionManager.instance.DeathMinionAbility(EnemyMinionField.instance.minions[m]);
+                        EnemyMinionField.instance.minions[m].MinionRemoveProcess();
+                    }
+                    EnemyMinionField.instance.minionNum = 0;
+                    #endregion
+                }
+                else if (CheckEvent(ability) == EventType.하수인들에게_해당턴_능력치부여)
+                {
+                    if (enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                Vector4 buff = new Vector4((int)ability.Ability_data.x, (int)ability.Ability_data.y, (int)ability.Ability_data.z, 1);
+                                EnemyMinionField.instance.minions[m].buffList.Add(buff);
+                                EnemyMinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                            }
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            {
+                                Vector4 buff = new Vector4((int)ability.Ability_data.x, (int)ability.Ability_data.y, (int)ability.Ability_data.z, 1);
+                                MinionField.instance.minions[m].buffList.Add(buff);
+                                MinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
+                            }
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.방어도획득)
+                {
+                    if (enemy)
+                    {
+                        if (HeroManager.instance.heroHpManager.enemyShield < 0)
+                            HeroManager.instance.heroHpManager.enemyShield = 0;
+                        HeroManager.instance.heroHpManager.enemyShield += (int)ability.Ability_data.x;
+                        HeroManager.instance.heroHpManager.enemyShieldAni.SetBool("Break", false);
+                    }
+                    else
+                    {
+                        if (HeroManager.instance.heroHpManager.playerShield < 0)
+                            HeroManager.instance.heroHpManager.playerShield = 0;
+                        HeroManager.instance.heroHpManager.playerShield += (int)ability.Ability_data.x;
+                        HeroManager.instance.heroHpManager.playerShieldAni.SetBool("Break", false);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.공격력획득)
+                {
+                    if (enemy)
+                        HeroManager.instance.heroAtkManager.enemyAtk += (int)ability.Ability_data.x;
+                    else
+                        HeroManager.instance.heroAtkManager.playerAtk += (int)ability.Ability_data.x;
+                }
+                else if (CheckEvent(ability) == EventType.무기장착)
+                {
+                    GameEventManager.instance.EventAdd(1f);
+                    if (enemy)
+                    {
+                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+                        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
+                        int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
+                        int weaponAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+                        HeroManager.instance.heroAtkManager.enemyWeaponName = weapon_name;
+                        HeroManager.instance.heroAtkManager.enemyWeaponDurability = weaponHp;
+                        HeroManager.instance.heroAtkManager.enemyWeaponAtk = weaponAtk;
+                    }
+                    else
+                    {
+                        CardHand.instance.handAni.SetTrigger("축소");
+                        Vector2 v = Camera.main.WorldToScreenPoint(HeroManager.instance.heroAtkManager.playerWeapon.transform.position - new Vector3(0, 50, 0));
+                        DragCardObject.instance.ShowDropEffecWeapon(v, 0);
+                        while (!DragCardObject.instance.dropEffect.effectArrive)
+                            yield return new WaitForSeconds(0.1f);
+
+                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+                        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
+                        int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
+                        int weaponAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+                        HeroManager.instance.heroAtkManager.playerWeaponName = weapon_name;
+                        HeroManager.instance.heroAtkManager.playerWeaponDurability = weaponHp;
+                        HeroManager.instance.heroAtkManager.playerWeaponAtk = weaponAtk;
+
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.무기공격력부여)
+                {
+                    if (enemy)
+                        HeroManager.instance.heroAtkManager.enemyWeaponAtk += (int)ability.Ability_data.x;
+                    else
+                        HeroManager.instance.heroAtkManager.playerWeaponAtk += (int)ability.Ability_data.x;
+                }
+            }
+        }
+
+        selectSpellEvent = false;
+    }
+    #endregion
 
     #region[연계인지 검사]
     bool CheckCombo()
@@ -178,6 +1781,8 @@ public class SpellManager : MonoBehaviour
                 return EventType.모든하수인주인의패로;
             case SpellAbility.Ability.모든하수인처치:
                 return EventType.모든하수인처치;
+            case SpellAbility.Ability.모든하수인에게_해당턴동안_능력치부여:
+                return EventType.하수인들에게_해당턴_능력치부여;
             case SpellAbility.Ability.하수인소환:
                 return EventType.하수인소환;
             case SpellAbility.Ability.모든하수인에게_은신부여:
@@ -347,8 +1952,8 @@ public class SpellManager : MonoBehaviour
     #endregion
 
     #region[대상 선택시]
-    MinionObject targetMinion = null;
-    int targetHero = -1;
+    [HideInInspector] public MinionObject targetMinion = null;
+    [HideInInspector] public int targetHero = -1;
     List<MinionObject> deathList = new List<MinionObject>();
     List<MinionObject> survivalList = new List<MinionObject>();
     List<MinionObject> emptyList = new List<MinionObject>();
@@ -713,538 +2318,4 @@ public class SpellManager : MonoBehaviour
 
     }
     #endregion
-
-    [HideInInspector] public int selectChoose;
-    [HideInInspector] public SpellAbility nowSpellAbility;
-    [HideInInspector] public string nowSpellName;
-    [HideInInspector] public bool selectSpellEvent;
-
-    private IEnumerator SpellEvent(List<SpellAbility> spellList,bool enemy)
-    {
-        while (GameEventManager.instance.GetEventValue() > 0.1f)
-            yield return new WaitForSeconds(0.001f);
-        GameEventManager.instance.EventAdd(0.1f);
-        spellList.Sort((a, b) => 
-        {
-            if (a.Condition_type > b.Condition_type)
-                return 1;
-            else
-            {
-                if(a.Ability_type == SpellAbility.Ability.무기장착)
-                    return +1;
-                else
-                    return -1;
-            }
-        });
-
-        bool checkCombo = false;
-        List<SpellAbility> chooseOneList = new List<SpellAbility>();
-        for(int i = 0; i < spellList.Count; i++)
-        {
-            List<SpellAbility> nowEvent = new List<SpellAbility>();
-
-            if (spellList[i].Condition_type == SpellAbility.Condition.선택)
-                chooseOneList.Add(spellList[i]);
-            else if (CheckCombo() && spellList[i].Condition_type == SpellAbility.Condition.연계)
-                checkCombo = true;
-            else if (checkCombo && spellList[i].Condition_type == SpellAbility.Condition.연계시_작동안함)
-                continue;
-
-            #region[조건에 따른 주문처리]
-            if (spellList[i].Condition_type == SpellAbility.Condition.선택)
-            {
-                if (i + 1 >= spellList.Count || spellList[i + 1].Condition_type != SpellAbility.Condition.선택)
-                {
-                    List<Vector3> chooseOneData = new List<Vector3>();
-                    foreach (SpellAbility chooseAbility in chooseOneList)
-                    {
-                        Vector3 data = chooseAbility.Condition_data;
-                        if (!chooseOneData.Contains(data))
-                            chooseOneData.Add(data);
-                    }
-
-                    BattleUI.instance.chooseOneDruid.SetBool("Hide", false);
-
-                    for (int j = 0; j < 2; j++)
-                    {
-                        string ChooseName = DataMng.instance.ToString((DataMng.TableType)chooseOneData[j].x, (int)chooseOneData[j].y, "카드이름");
-                        CardViewManager.instance.CardShow(ref BattleUI.instance.chooseCardView[j], ChooseName);
-                        CardViewManager.instance.UpdateCardView(0.001f);
-                    }
-
-                    selectChoose = -1;
-
-                    while (selectChoose == -1)
-                    {
-                        GameEventManager.instance.EventSet(1f);
-                        yield return new WaitForSeconds(0.001f);
-                    }
-
-                    foreach (SpellAbility chooseAbility in chooseOneList)
-                    {
-                        if (chooseAbility.Condition_data.y == chooseOneData[selectChoose].y)
-                            nowEvent.Add(chooseAbility);
-                    }
-                }
-            }
-            else if (CheckCombo() && spellList[i].Condition_type == SpellAbility.Condition.연계)
-            {
-                nowEvent.Add(spellList[i]);
-            }
-            else if (!checkCombo && spellList[i].Condition_type == SpellAbility.Condition.연계시_작동안함)
-            {
-                nowEvent.Add(spellList[i]);
-            }
-            else if (spellList[i].Condition_type == SpellAbility.Condition.조건없음)
-            {
-                nowEvent.Add(spellList[i]);
-            }
-            #endregion
-
-            foreach (SpellAbility ability in nowEvent)
-            {
-                if (spellSelectCancle)
-                    break;
-                yield return new WaitForSeconds(0.25f);
-                if (CheckEvent(ability) == EventType.대상선택)
-                {
-                    if (targetMinion == null && targetHero == -1)
-                    {
-                        SetSelectMask(ability.Ability_type);
-
-                        bool targetExistence = false;
-                        selectSpellEvent = true;
-
-                        for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
-                            if ((DragLineRenderer.instance.CheckMask(타겟.아군하수인) && !MinionManager.instance.minionList[m].enemy) ||
-                                (DragLineRenderer.instance.CheckMask(타겟.적하수인) && MinionManager.instance.minionList[m].enemy))
-                                if (MinionManager.instance.minionList[m].gameObject.activeSelf)
-                                    targetExistence = targetExistence || CheckConditionMinion(MinionManager.instance.minionList[m], ability);
-
-                        if (DragLineRenderer.instance.CheckMask(타겟.아군영웅))
-                            targetExistence = true;
-                        if (DragLineRenderer.instance.CheckMask(타겟.적영웅))
-                            targetExistence = true;
-                        if (DragLineRenderer.instance.CheckMask(타겟.실행주체))
-                            targetExistence = true;
-
-                        if (targetExistence)
-                        {
-                            if (DragLineRenderer.instance.CheckMask(타겟.아군영웅) || DragLineRenderer.instance.CheckMask(타겟.적영웅))
-                                CardHand.instance.handAni.SetTrigger("축소");
-                            MinionManager.instance.selectMinionEvent = true;
-                            nowSpellAbility = ability;
-                            BattleUI.instance.grayFilterAni.SetBool("On", true);
-                            BattleUI.instance.selectMinion.gameObject.SetActive(true);
-                            DragLineRenderer.instance.activeObj = BattleUI.instance.playerSpellPos;
-                            BattleUI.instance.selectMinionTxt.text = GetText(ability.Ability_type);
-
-                            while (MinionManager.instance.selectMinionEvent)
-                            {
-                                GameEventManager.instance.EventSet(1f);
-                                yield return new WaitForSeconds(0.001f);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        nowSpellAbility = ability;
-                        MinionManager.instance.selectMinionEvent = true;
-                        if (targetMinion != null)
-                            MinionSelect(targetMinion);
-                        else if (targetHero != -1)
-                            HeroSelect(targetHero == 2);
-                    }
-                }
-                else if (CheckEvent(ability) == EventType.카드뽑기)
-                {
-                    for (int draw = 0; draw < ability.Ability_data.x; draw++)
-                    {
-                        //0이면 발동한 플레이어가 뽑고 
-                        //1이면 상대플레이어가 카드를 뽑음
-                        if ((enemy && (ability.Ability_data.y == 0)) || (!enemy && (ability.Ability_data.y == 1)))
-                            EnemyCardHand.instance.DrawCard();
-                        else
-                        {
-                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
-                            {
-                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                                {
-                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
-                                    CardHand.instance.DrawCard();
-                                    string s = InGameDeck.instance.playDeck[0];
-                                    InGameDeck.instance.playDeck.RemoveAt(0);
-                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                    CardViewManager.instance.UpdateCardView(0.001f);
-                                    break;
-                                }
-                            }
-                        }
-                        GameEventManager.instance.EventAdd(0.5f);
-                        yield return new WaitForSeconds(0.5f);
-                    }
-                }
-                else if(CheckEvent(ability) == EventType.아군광역피해)
-                {
-                    deathList.Clear();
-                    survivalList.Clear();
-                    emptyList.Clear();
-                    if (enemy)
-                    {
-                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                            if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                emptyList.Add(EnemyMinionField.instance.minions[m]);
-                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
-                                deathList.Add(EnemyMinionField.instance.minions[m]);
-                            else
-                                survivalList.Add(EnemyMinionField.instance.minions[m]);
-
-                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                    AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
-                        AttackManager.instance.AttackEffectRun();
-                        EnemyMinionField.instance.setMinionPos = false;
-                        GameEventManager.instance.EventSet(2f);
-                        reArrangementEnemy = true;
-                        ReArrangement();
-                        Invoke("SetMinionPos", 1.25f);
-                    }
-                    else
-                    {
-                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                            if (!MinionField.instance.minions[m].gameObject.activeSelf)
-                                emptyList.Add(MinionField.instance.minions[m]);
-                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
-                                deathList.Add(MinionField.instance.minions[m]);
-                            else
-                                survivalList.Add(MinionField.instance.minions[m]);
-
-                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                            if (MinionField.instance.minions[m].gameObject.activeSelf)
-                                    AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
-                        AttackManager.instance.AttackEffectRun();
-                        MinionField.instance.setMinionPos = false;
-                        GameEventManager.instance.EventSet(2f);
-                        reArrangementEnemy = false;
-                        ReArrangement();
-                        Invoke("SetMinionPos", 1.25f);
-                    }
-                }
-                else if (CheckEvent(ability) == EventType.적군광역피해)
-                {
-                    deathList.Clear();
-                    survivalList.Clear();
-                    emptyList.Clear();
-                    if (!enemy)
-                    {
-                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                            if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                emptyList.Add(EnemyMinionField.instance.minions[m]);
-                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
-                                deathList.Add(EnemyMinionField.instance.minions[m]);
-                            else
-                                survivalList.Add(EnemyMinionField.instance.minions[m]);
-
-                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
-                        AttackManager.instance.AttackEffectRun();
-                        EnemyMinionField.instance.setMinionPos = false;
-                        GameEventManager.instance.EventSet(2f);
-                        reArrangementEnemy = true;
-                        ReArrangement();
-                        Invoke("SetMinionPos", 1.25f);
-                    }
-                    else
-                    {
-                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                            if (!MinionField.instance.minions[m].gameObject.activeSelf)
-                                emptyList.Add(MinionField.instance.minions[m]);
-                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
-                                deathList.Add(MinionField.instance.minions[m]);
-                            else
-                                survivalList.Add(MinionField.instance.minions[m]);
-
-                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                            if (MinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
-                        AttackManager.instance.AttackEffectRun();
-                        MinionField.instance.setMinionPos = false;
-                        GameEventManager.instance.EventSet(2f);
-                        reArrangementEnemy = false;
-                        ReArrangement();
-                        Invoke("SetMinionPos", 1.25f);
-                    }
-                }
-                else if (CheckEvent(ability) == EventType.광역피해)
-                {
-                    deathList.Clear();
-                    survivalList.Clear();
-                    emptyList.Clear();
-                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                        if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                            emptyList.Add(EnemyMinionField.instance.minions[m]);
-                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
-                            deathList.Add(EnemyMinionField.instance.minions[m]);
-                        else
-                            survivalList.Add(EnemyMinionField.instance.minions[m]);
-
-                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                        if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
-                    AttackManager.instance.AttackEffectRun();
-                    EnemyMinionField.instance.setMinionPos = false;
-                    reArrangementEnemy = true;
-                    ReArrangement();
-                    Invoke("SetMinionPos", 1.25f);
-
-                    deathList.Clear();
-                    survivalList.Clear();
-                    emptyList.Clear();
-                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                        if (!MinionField.instance.minions[m].gameObject.activeSelf)
-                            emptyList.Add(MinionField.instance.minions[m]);
-                        else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
-                            deathList.Add(MinionField.instance.minions[m]);
-                        else
-                            survivalList.Add(MinionField.instance.minions[m]);
-
-                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                        if (MinionField.instance.minions[m].gameObject.activeSelf)
-                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
-                    AttackManager.instance.AttackEffectRun();
-                    MinionField.instance.setMinionPos = false;
-                    reArrangementEnemy = false;
-                    ReArrangement();
-                    Invoke("SetMinionPos", 1.25f);
-
-                    GameEventManager.instance.EventSet(2f);
-                }
-                else if(CheckEvent(ability) == EventType.하수인소환)
-                {
-                    //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
-                    bool enemyFlag = (int)ability.Ability_data.z == 1 ? false : true;
-                    string minion_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
-                    string minion_ability = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
-                    if ((enemyFlag && !enemy) || (!enemyFlag && enemy))
-                    {
-                        int index = EnemyMinionField.instance.minionNum;
-                        EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
-                        if (minion_name.Equals("나무정령"))
-                        {
-                            yield return new WaitForSeconds(0.5f);
-                            EnemyMinionField.instance.minions[index].abilityList.Clear();
-                            EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                            MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
-                        }
-                    }
-                    else
-                    {
-                        int index = MinionField.instance.minionNum;
-                        MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
-                        if (minion_name.Equals("나무정령"))
-                        {
-                            yield return new WaitForSeconds(0.5f);
-                            MinionField.instance.minions[index].abilityList.Clear();
-                            MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                            MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
-                        }
-                    }             
-                }
-                else if(CheckEvent(ability) == EventType.하수인들에게_은신부여)
-                {
-                    if(enemy)
-                    {
-                        for(int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                EnemyMinionField.instance.minions[m].stealth = true;
-                    }
-                    else
-                    {
-                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                            if (MinionField.instance.minions[m].gameObject.activeSelf)
-                                MinionField.instance.minions[m].stealth = true;
-                    }
-                }
-                else if (CheckEvent(ability) == EventType.하수인들에게_능력부여)
-                {
-                    string ability_string = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
-                    List<MinionAbility> abilityList = MinionManager.instance.MinionAbilityParsing(ability_string);
-                    if (enemy)
-                    {
-                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                for (int a = 0; a < abilityList.Count; a++)
-                                    EnemyMinionField.instance.minions[m].abilityList.Add(abilityList[a]);
-                    }
-                    else
-                    {
-                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                            if (MinionField.instance.minions[m].gameObject.activeSelf)
-                                for (int a = 0; a < abilityList.Count; a++)
-                                    MinionField.instance.minions[m].abilityList.Add(abilityList[a]);
-                    }
-                }
-                else if(CheckEvent(ability) == EventType.하수인들에게_능력치부여)
-                {
-                    if (enemy)
-                    {
-                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                            {
-                                EnemyMinionField.instance.minions[m].nowAtk += (int)ability.Ability_data.x;
-                                EnemyMinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
-                                EnemyMinionField.instance.minions[m].nowSpell += (int)ability.Ability_data.z;
-                            }
-                    }
-                    else
-                    {
-                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                            if (MinionField.instance.minions[m].gameObject.activeSelf)
-                            {
-                                MinionField.instance.minions[m].nowAtk += (int)ability.Ability_data.x;
-                                MinionField.instance.minions[m].final_hp += (int)ability.Ability_data.y;
-                                MinionField.instance.minions[m].nowSpell += (int)ability.Ability_data.z;
-                            }
-                    }
-                }
-                else if (CheckEvent(ability) == EventType.마나획득)
-                {
-                    if (enemy)
-                        ManaManager.instance.enemyNowMana += (int)ability.Ability_data.x;
-                    else
-                        ManaManager.instance.playerNowMana += (int)ability.Ability_data.x;
-                }
-                else if (CheckEvent(ability) == EventType.마나수정획득)
-                {
-                    if (enemy)
-                        ManaManager.instance.enemyMaxMana += (int)ability.Ability_data.x;
-                    else
-                    {
-                        if (ManaManager.instance.playerMaxMana >= 10)
-                        {
-                            GameEventManager.instance.EventAdd(1.4f);
-                            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName("넘치는마나"));
-                            string cardName = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드이름");
-                            int n = CardHand.instance.nowHandNum;
-                            CardHand.instance.DrawCard();
-                            CardHand.instance.CardMove(cardName, n, BattleUI.instance.playerSpellPos.transform.position, new Vector2(10.685f, 13.714f), 0);
-                            CardViewManager.instance.UpdateCardView(0.001f);
-                        }
-                        else
-                        {
-                            ManaManager.instance.playerMaxMana += (int)ability.Ability_data.x;
-                        }
-                    }
-                }
-                else if (CheckEvent(ability) == EventType.모든하수인주인의패로)
-                {
-                    for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
-                        if (MinionManager.instance.minionList[m].gameObject.activeSelf)
-                            MinionManager.instance.minionList[m].gotoHandTrigger = true;
-                }
-                else if (CheckEvent(ability) == EventType.모든하수인처치)
-                {
-                    for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
-                        if (MinionManager.instance.minionList[m].gameObject.activeSelf)
-                            MinionManager.instance.minionList[m].animator.SetTrigger("Death");
-
-                    yield return new WaitForSeconds(1.25f);
-
-                    GameEventManager.instance.EventSet(2.5f);
-
-                    #region[아군필드상황정리]
-                    List<MinionObject> removeMinionList = new List<MinionObject>();
-                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                        removeMinionList.Add(MinionField.instance.minions[m]);
-
-                    int pos = 0;
-                    for (int m = 0; m < removeMinionList.Count; m++)
-                    {
-                        MinionField.instance.minions[pos] = removeMinionList[m];
-                        MinionManager.instance.DeathMinionAbility(MinionField.instance.minions[pos]);
-                        pos++;
-                    }
-                    MinionField.instance.minionNum = 0;
-                    removeMinionList.Clear();
-                    #endregion
-
-                    #region[적군필드상황정리]
-                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                    {
-                        MinionManager.instance.DeathMinionAbility(EnemyMinionField.instance.minions[m]);
-                        EnemyMinionField.instance.minions[m].MinionRemoveProcess();
-                    }
-                    EnemyMinionField.instance.minionNum = 0;
-                    #endregion
-                }
-                else if (CheckEvent(ability) == EventType.방어도획득)
-                {
-                    if (enemy)
-                    {
-                        if (HeroManager.instance.heroHpManager.enemyShield < 0)
-                            HeroManager.instance.heroHpManager.enemyShield = 0;
-                        HeroManager.instance.heroHpManager.enemyShield += (int)ability.Ability_data.x;
-                        HeroManager.instance.heroHpManager.enemyShieldAni.SetBool("Break", false);
-                    }
-                    else
-                    {
-                        if (HeroManager.instance.heroHpManager.playerShield < 0)
-                            HeroManager.instance.heroHpManager.playerShield = 0;
-                        HeroManager.instance.heroHpManager.playerShield += (int)ability.Ability_data.x;
-                        HeroManager.instance.heroHpManager.playerShieldAni.SetBool("Break", false);
-                    }
-                }
-                else if (CheckEvent(ability) == EventType.공격력획득)
-                {
-                    if (enemy)
-                        HeroManager.instance.heroAtkManager.enemyAtk += (int)ability.Ability_data.x;
-                    else
-                        HeroManager.instance.heroAtkManager.playerAtk += (int)ability.Ability_data.x;
-                }
-                else if (CheckEvent(ability) == EventType.무기장착)
-                {
-                    GameEventManager.instance.EventAdd(1f);
-                    if (enemy)
-                    {
-                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
-                        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
-                        int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
-                        int weaponAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
-                        HeroManager.instance.heroAtkManager.enemyWeaponName = weapon_name;
-                        HeroManager.instance.heroAtkManager.enemyWeaponDurability = weaponHp;
-                        HeroManager.instance.heroAtkManager.enemyWeaponAtk = weaponAtk;
-                    }
-                    else
-                    {
-                        CardHand.instance.handAni.SetTrigger("축소");
-                        Vector2 v = Camera.main.WorldToScreenPoint(HeroManager.instance.heroAtkManager.playerWeapon.transform.position);
-                        DragCardObject.instance.ShowDropEffecWeapon(v, 0);
-                        while (!DragCardObject.instance.dropEffect.effectArrive)
-                            yield return new WaitForSeconds(0.1f);
-
-                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
-                        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
-                        int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
-                        int weaponAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
-                        HeroManager.instance.heroAtkManager.playerWeaponName = weapon_name;
-                        HeroManager.instance.heroAtkManager.playerWeaponDurability = weaponHp;
-                        HeroManager.instance.heroAtkManager.playerWeaponAtk = weaponAtk;
-
-                    }
-                }
-                else if (CheckEvent(ability) == EventType.무기공격력부여)
-                {
-                    if (enemy)
-                        HeroManager.instance.heroAtkManager.enemyWeaponAtk += (int)ability.Ability_data.x;
-                    else
-                        HeroManager.instance.heroAtkManager.playerWeaponAtk += (int)ability.Ability_data.x;
-                }
-            }
-         
-        }
-
-        selectSpellEvent = false;
-
-    }
 }

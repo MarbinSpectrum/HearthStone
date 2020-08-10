@@ -48,6 +48,10 @@ public class HeroAtkManager : MonoBehaviour
     public Animator playerWeaponAtkNumAni;
     public SpriteRenderer[] playerWeaponDurabilityNum;
     public Animator playerWeaponDurabilityNumAni;
+    public int playerCanAttackNum = 0;
+    public GameObject playerAttackGlow;
+    public GameObject playerCanAttack;
+    public Animator playerObjectAni;
 
     public SpriteRenderer[] enemyAtkNum;
     public Animator enemyAtkNumAni;
@@ -58,12 +62,23 @@ public class HeroAtkManager : MonoBehaviour
     public Animator enemyWeaponAtkNumAni;
     public SpriteRenderer[] enemyWeaponDurabilityNum;
     public Animator enemyWeaponDurabilityNumAni;
+    public int enemyCanAttackNum = 0;
+    public GameObject enemyAttackGlow;
+    public GameObject enemyCanAttack;
+    public Animator enemyObjectAni;
+
+    public float maxSpeed = 1000;
+    public float addSpeed = 100;
+    public float minSpeed = 1000;
+    public float subSpeed = 100;
+    public float targetDis = 100;
 
     public void Update()
     {
         HeroAtkUpdate();
         HeroWeaponUpdate();
-
+        playerAttackGlow.SetActive(!GameEventManager.instance.EventCheck() && playerCanAttackNum > 0 && playerFinalAtk > 0 && TurnManager.instance.turn == 턴.플레이어 && BattleUI.instance.gameStart);
+        playerCanAttack.SetActive(playerAttackGlow.activeSelf);
     }
 
     #region[영웅 공격력 업데이트]
@@ -304,9 +319,66 @@ public class HeroAtkManager : MonoBehaviour
     public void HeroAtkTurnEnd(bool enemy)
     {
         if(enemy)
+        {
+            playerCanAttackNum = 1;
             enemyAtk = 0;
+        }
         else
+        {
+            enemyCanAttackNum = 1;
             playerAtk = 0;
+        }
     }
 
+    public void HeroAttack(bool enemy,Vector3 targetPos)
+    {
+        if (enemy)
+        {
+            enemyWeaponDurability--;
+            enemyCanAttackNum--;
+            StartCoroutine(HeroAttack(enemyObjectAni, targetPos));
+        }
+        else
+        {
+            playerWeaponDurability--;
+            playerCanAttackNum--;
+            StartCoroutine(HeroAttack(playerObjectAni, targetPos));
+        }
+    }
+
+    private IEnumerator HeroAttack(Animator heroObject,Vector3 targetPos)
+    {
+        GameEventManager.instance.EventSet(3);
+        playerObjectAni.SetBool("Attack",true);
+        yield return new WaitForSeconds(1f);
+
+        Vector3 defaultPos = heroObject.transform.position;
+
+        playerObjectAni.SetBool("Attack", false);
+
+        float speed = 10;
+        while(Vector2.Distance(heroObject.transform.position,targetPos) > targetDis * Time.deltaTime)
+        {
+            Vector3 dic = targetPos - heroObject.transform.position;
+            dic = dic.normalized;
+            heroObject.transform.position += dic * speed * Time.deltaTime;
+            speed += addSpeed;
+            speed = Mathf.Min(speed, maxSpeed);
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+
+        AttackManager.instance.AttackEffectRun();
+
+        while (Vector2.Distance(heroObject.transform.position, defaultPos) > targetDis * Time.deltaTime)
+        {
+            Vector3 dic = defaultPos - heroObject.transform.position;
+            dic = dic.normalized;
+            heroObject.transform.position += dic * speed * Time.deltaTime;
+            speed -= subSpeed;
+            speed = Mathf.Max(speed, minSpeed);
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+
+        heroObject.transform.position = defaultPos;
+    }
 }

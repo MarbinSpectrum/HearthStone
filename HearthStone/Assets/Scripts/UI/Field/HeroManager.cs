@@ -11,6 +11,7 @@ public class HeroManager : MonoBehaviour
 
     public HeroHpManager heroHpManager;
     public HeroAtkManager heroAtkManager;
+    public HeroPowerManager heroPowerManager;
     public Image playerHero;
     public Image enemyHero;
     public GameObject playerFreezeObj;
@@ -31,6 +32,7 @@ public class HeroManager : MonoBehaviour
         playerHero.raycastTarget = !CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대");
         enemyHero.raycastTarget = !DragCardObject.instance.dragCard;
     }
+
     public void SetFreeze(bool enemy)
     {
         if (enemy)

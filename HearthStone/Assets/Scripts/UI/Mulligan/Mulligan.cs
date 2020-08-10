@@ -26,6 +26,8 @@ public class Mulligan : MonoBehaviour
     public Animator secondCardAni;
     public CardView[] secondTurnCardView;
 
+    public Animator showCharacterAni;
+
     #region[카드세트]
     public void MulliganCardSet()
     {
@@ -175,6 +177,9 @@ public class Mulligan : MonoBehaviour
 
         BattleUI.instance.gameStart = true;
         TurnManager.instance.turnEndTrigger = true;
+        showCharacterAni.enabled = false;
+        HeroManager.instance.heroAtkManager.playerObjectAni.enabled = true;
+        HeroManager.instance.heroAtkManager.enemyObjectAni.enabled = true;
     }
 
     public void SetGoing(float n)

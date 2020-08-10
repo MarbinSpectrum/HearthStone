@@ -281,26 +281,35 @@ public class CardHand : MonoBehaviour
         else if (handCardView[n].cardType == CardType.하수인)
             cost = handCardView[n].MinionsCostData;
 
-        ManaManager.instance.playerNowMana -= cost;
-
         if (handCardView[n].cardType == CardType.무기)
         {
-            useCardNum++;
-            SpellManager.instance.RunSpell(handCardView[n].WeaponCardNameData);
+            if (!DragCardObject.instance.dragSelectCard)
+            {
+                ManaManager.instance.playerNowMana -= cost;
+                useCardNum++;
+                SpellManager.instance.RunSpell(handCardView[n].WeaponCardNameData);
+                CardRemove(n);
+            }
         }
         else if (handCardView[n].cardType == CardType.주문)
         {
-            useCardNum++;
-            DragCardObject.instance.ShowDropEffectSpell(Input.mousePosition, 0);
-            SpellManager.instance.RunSpell(handCardView[n].SpellCardNameData);
+            if (!DragCardObject.instance.dragSelectCard)
+            {
+                ManaManager.instance.playerNowMana -= cost;
+                useCardNum++;
+                DragCardObject.instance.ShowDropEffectSpell(Input.mousePosition, 0);
+                SpellManager.instance.RunSpell(handCardView[n].SpellCardNameData);
+                CardRemove(n);
+            }
         }
         else if (handCardView[n].cardType == CardType.하수인)
         {
+            ManaManager.instance.playerNowMana -= cost;
             useCardNum++;
             MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData,true);
+            CardRemove(n);
         }
 
-        CardRemove(n);
     }
     #endregion
 

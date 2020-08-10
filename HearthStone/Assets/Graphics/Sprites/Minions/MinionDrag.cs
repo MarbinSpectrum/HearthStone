@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class MinionDrag : Btn
 {
-    public static int dragMinionNum;
+    public static int dragMinionNum = -1;
 
     public MinionObject minionObject;
 

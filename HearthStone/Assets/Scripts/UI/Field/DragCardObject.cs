@@ -20,6 +20,7 @@ public class DragCardObject : MonoBehaviour
 
     public int dragCardNum = 0;
     public bool dragCard;
+    public string dragCardName;
     public bool mouseInMyField;
     public bool mouseInEnemyField;
     public bool mouseInField;
@@ -68,8 +69,8 @@ public class DragCardObject : MonoBehaviour
 
         if ((dragCardView.cardType == CardType.무기 || dragCardView.cardType == CardType.주문) && dragCard)
         {
-            string cardName = dragCardView.cardType == CardType.주문 ? dragCardView.SpellCardNameData : dragCardView.WeaponCardNameData;
-            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(cardName));
+            dragCardName = dragCardView.cardType == CardType.주문 ? dragCardView.SpellCardNameData : dragCardView.WeaponCardNameData;
+            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(dragCardName));
             string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
             spellList = SpellManager.instance.SpellParsing(ability_string);
             spellList.Sort((a, b) =>
@@ -98,11 +99,16 @@ public class DragCardObject : MonoBehaviour
         }
         else if(dragSelectCard)
         {
+            if (SpellManager.instance.targetMinion)
+                SpellManager.instance.RunSpellTargetMinion(dragCardName, dragCardNum, SpellManager.instance.targetMinion, false);
+            else if (SpellManager.instance.targetHero != -1)
+                SpellManager.instance.RunSpellTargetHero(dragCardName, dragCardNum, false, SpellManager.instance.targetHero == 2);
             CardHand.instance.handAni.SetBool("패내리기", false);
-            DragLineRenderer.instance.InitMask();
             dragSelectCard = false;
+            DragLineRenderer.instance.InitMask();
             DragLineRenderer.instance.lineRenderer.enabled = false;
         }
+
         dragCardView.gameObject.SetActive(!dragSelectCard);
         glowImg.gameObject.SetActive(!dragSelectCard);
     }

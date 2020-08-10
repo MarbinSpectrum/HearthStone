@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class SpellAbility
 {
     public SpellAbility() { }
@@ -75,7 +76,7 @@ public class SpellAbility
         무기장착,//무기의번호
         다음카드비용감소, 다음주문카드비용감소,
         하수인의_생명력회복, 하수인의_생명력설정, 영웅의_생명력회복, 영웅의_생명력설정, 생명력회복,
-        능력치부여, 모든하수인에게_능력치부여,해당턴동안_능력치부여,
+        능력치부여, 모든하수인에게_능력치부여,해당턴동안_능력치부여, 모든하수인에게_해당턴동안_능력치부여,
         대상의_공격력_생명력_교환,
         무기의_공격력만큼능력부여,
         하수인처치, 모든하수인처치,
@@ -137,6 +138,7 @@ public class SpellAbility
             case Ability.적에게피해주기:
             case Ability.다른모든_적군에게_피해주기:
             case Ability.무기장착:
+            case Ability.모든하수인에게_해당턴동안_능력치부여:
                 return true;
             case Ability.도발부여:
             case Ability.하수인처치:
