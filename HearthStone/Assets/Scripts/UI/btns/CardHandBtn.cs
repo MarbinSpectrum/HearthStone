@@ -16,7 +16,7 @@ public class CardHandBtn : Btn
     #region[Update]
     public override void Update()
     {
-
+        btnImg.raycastTarget = !Input.GetMouseButton(0);
     }
     #endregion
 

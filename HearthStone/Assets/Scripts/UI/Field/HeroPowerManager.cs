@@ -54,7 +54,7 @@ public class HeroPowerManager : MonoBehaviour
             //DragCardObject.instance.ShowDropEffectSpell(Input.mousePosition, 0);
         }
 
-        SpellManager.instance.RunSpell(abilityName, enemy);
+        SpellManager.instance.RunSpell(abilityName, enemy,true);
 
     }
 

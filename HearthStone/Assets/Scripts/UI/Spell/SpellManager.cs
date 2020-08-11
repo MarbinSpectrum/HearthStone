@@ -119,6 +119,11 @@ public class SpellManager : MonoBehaviour
     #region[대상이 아닌]
     public void RunSpell(string name, bool enemy = false)
     {
+        RunSpell(name, enemy, false);
+    }
+
+    public void RunSpell(string name, bool enemy, bool heroPower)
+    {
         targetMinion = null;
         targetHero = -1;
         spellSelectCancle = false;
@@ -126,14 +131,15 @@ public class SpellManager : MonoBehaviour
         string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
         List<SpellAbility> spellList = SpellParsing(ability_string);
         nowSpellName = name;
-        StartCoroutine(SpellEvent(spellList, enemy));
+        StartCoroutine(SpellEvent(spellList, enemy, heroPower));
     }
+
     [HideInInspector] public int selectChoose;
     [HideInInspector] public SpellAbility nowSpellAbility;
     [HideInInspector] public string nowSpellName;
     [HideInInspector] public bool selectSpellEvent;
 
-    private IEnumerator SpellEvent(List<SpellAbility> spellList, bool enemy)
+    private IEnumerator SpellEvent(List<SpellAbility> spellList, bool enemy,bool heroPower)
     {
         while (GameEventManager.instance.GetEventValue() > 0.1f)
             yield return new WaitForSeconds(0.001f);
@@ -654,7 +660,8 @@ public class SpellManager : MonoBehaviour
                     }
                     else
                     {
-                        CardHand.instance.handAni.SetTrigger("축소");
+                        if (CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대"))
+                            CardHand.instance.handAni.SetTrigger("축소");
                         Vector2 v = Camera.main.WorldToScreenPoint(HeroManager.instance.heroAtkManager.playerWeapon.transform.position - new Vector3(0, 50, 0));
                         DragCardObject.instance.ShowDropEffecWeapon(v, 0);
                         while (!DragCardObject.instance.dropEffect.effectArrive)
@@ -682,6 +689,11 @@ public class SpellManager : MonoBehaviour
         }
 
         selectSpellEvent = false;
+
+        if (!heroPower)
+            for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+                if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                    MinionManager.instance.minionList[m].spellRun = true;
 
     }
     #endregion
@@ -1202,6 +1214,10 @@ public class SpellManager : MonoBehaviour
         }
 
         selectSpellEvent = false;
+
+        for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+            if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                MinionManager.instance.minionList[m].spellRun = true;
     }
     #endregion
 
@@ -1727,6 +1743,10 @@ public class SpellManager : MonoBehaviour
         }
 
         selectSpellEvent = false;
+
+        for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
+            if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                MinionManager.instance.minionList[m].spellRun = true;
     }
     #endregion
 

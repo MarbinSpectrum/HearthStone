@@ -334,13 +334,11 @@ public class HeroAtkManager : MonoBehaviour
     {
         if (enemy)
         {
-            enemyWeaponDurability--;
             enemyCanAttackNum--;
             StartCoroutine(HeroAttack(enemyObjectAni, targetPos));
         }
         else
         {
-            playerWeaponDurability--;
             playerCanAttackNum--;
             StartCoroutine(HeroAttack(playerObjectAni, targetPos));
         }
@@ -378,6 +376,11 @@ public class HeroAtkManager : MonoBehaviour
             speed = Mathf.Max(speed, minSpeed);
             yield return new WaitForSeconds(Time.deltaTime);
         }
+
+        if (heroObject.Equals(playerObjectAni))
+            playerWeaponDurability--;
+        else if (heroObject.Equals(enemyObjectAni))
+            enemyWeaponDurability--;
 
         heroObject.transform.position = defaultPos;
     }

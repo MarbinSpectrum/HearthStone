@@ -29,8 +29,8 @@ public class HeroManager : MonoBehaviour
         playerFreezeObj.SetActive(playerFreezeCount > 0);
         enemyFreezeObj.SetActive(enemyFreezeCount > 0);
 
-        playerHero.raycastTarget = !CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대");
-        enemyHero.raycastTarget = !DragCardObject.instance.dragCard;
+        //playerHero.raycastTarget = !CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대");
+        //enemyHero.raycastTarget = !DragCardObject.instance.dragCard;
     }
 
     public void SetFreeze(bool enemy)

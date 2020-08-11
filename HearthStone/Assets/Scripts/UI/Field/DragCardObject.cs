@@ -27,6 +27,9 @@ public class DragCardObject : MonoBehaviour
 
     public bool dragSelectCard;
 
+    public Image playerfield;
+    public Image enemyfield;
+
     public void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -108,6 +111,9 @@ public class DragCardObject : MonoBehaviour
             DragLineRenderer.instance.InitMask();
             DragLineRenderer.instance.lineRenderer.enabled = false;
         }
+
+        playerfield.raycastTarget = !dragSelectCard;
+        enemyfield.raycastTarget = !dragSelectCard;
 
         dragCardView.gameObject.SetActive(!dragSelectCard);
         glowImg.gameObject.SetActive(!dragSelectCard);

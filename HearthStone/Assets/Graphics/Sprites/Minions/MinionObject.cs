@@ -52,6 +52,8 @@ public class MinionObject : MonoBehaviour
     [HideInInspector] public bool turnStartTrigger;
     [HideInInspector] public bool turnEndTrigger;
 
+    [HideInInspector] public bool spellRun;
+
     public List<MinionAbility> abilityList = new List<MinionAbility>();
     /// <summary> x(공격력) y(체력) z(주문공격력) w(한턴동안만 유지되는 여부) </summary>
     [HideInInspector] public List<Vector4> buffList = new List<Vector4>();
@@ -246,6 +248,18 @@ public class MinionObject : MonoBehaviour
             flagHp = final_hp;
             hpAni.SetTrigger("Change");
         }
+
+        SpellRunCheck();
+    }
+    #endregion
+
+    #region[주문시전시]
+    public void SpellRunCheck()
+    {
+        if (!spellRun)
+            return;
+        spellRun = false;
+        MinionManager.instance.SpellRunMinionAbility(this);
     }
     #endregion
 
