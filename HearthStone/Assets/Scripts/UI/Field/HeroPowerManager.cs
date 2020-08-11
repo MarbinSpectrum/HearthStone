@@ -21,7 +21,7 @@ public class HeroPowerManager : MonoBehaviour
 
     public void Update()
     {
-        playerCanUseGlowObj.SetActive(TurnManager.instance.turn == 턴.플레이어 && ManaManager.instance.playerNowMana >= 2 && playerCanUse && playerHeroPowerObjAni.GetCurrentAnimatorStateInfo(0).IsName("HeroPowerObj"));
+        playerCanUseGlowObj.SetActive(BattleUI.instance.gameStart && TurnManager.instance.turn == 턴.플레이어 && ManaManager.instance.playerNowMana >= 2 && playerCanUse && playerHeroPowerObjAni.GetCurrentAnimatorStateInfo(0).IsName("HeroPowerObj"));
         playerHeroPowerBtn.SetActive(playerCanUseGlowObj.activeSelf);
     }
 

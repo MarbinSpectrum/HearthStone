@@ -74,11 +74,7 @@ public class MinionSelect : Btn
     {
         SetSelect(false);
         if (Input.GetMouseButton(0))
-        {
-            AttackManager.instance.PopDamageObj(minionObject.damageEffect);
-            if(MinionDrag.dragMinionNum != -1)
-                AttackManager.instance.PopDamageObj(MinionField.instance.minions[MinionDrag.dragMinionNum].damageEffect);
-        }
+            AttackManager.instance.PopAllDamageObj();
         if (DragCardObject.instance.dragSelectCard)
         {
             SpellManager.instance.targetHero = -1;
@@ -129,7 +125,6 @@ public class MinionSelect : Btn
                     else
                     {
                         AttackManager.instance.AddDamageObj(minionObject.damageEffect, HeroManager.instance.heroAtkManager.playerFinalAtk);
-                        Debug.Log(HeroManager.instance.heroAtkManager.playerFinalAtk);
                         AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, minionObject.final_atk);
                     }
                 }

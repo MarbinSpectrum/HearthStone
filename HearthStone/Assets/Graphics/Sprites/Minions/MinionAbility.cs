@@ -83,7 +83,7 @@ public class MinionAbility
     #region[능력 정보]
     public enum Ability
     {
-        하수인에게_피해주기, 영웅에게_피해주기, 피해주기,
+        하수인에게_피해주기, 영웅에게_피해주기, 피해주기, 무작위_피해주기,
         하수인소환,
         돌진,
         도발,
@@ -130,6 +130,8 @@ public class MinionAbility
     /// </summary>
     public static bool CheckDataAbility(Ability a)
     {
+        if (a == Ability.무작위_피해주기)
+            return true;
         if (a == Ability.하수인에게_피해주기)
             return true;
         if (a == Ability.영웅에게_피해주기)
@@ -215,10 +217,12 @@ public class MinionAbility
                 break;
             case Ability.카드뽑기:
                 //data1만큼 카드를 뽑음
+                //data2의 플레이어가
                 break;
             case Ability.확률_카드뽑기:
-                //data1의 확률로
-                //data2만큼 카드를 뽑음
+                //data1만큼 카드를 뽑음
+                //data2의 플레이어가
+                //data3의 확률로
                 break;
             case Ability.하수인의_생명력회복:
                 //하수인선택로직

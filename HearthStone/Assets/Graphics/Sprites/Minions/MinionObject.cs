@@ -31,6 +31,9 @@ public class MinionObject : MonoBehaviour
     public bool legend;
     public GameObject legendObj;
 
+    [Header("처음냈을때 수면 상태")]
+    public bool sleep;
+
     [Header("침묵")]
     public bool silence;
     public GameObject silenceObj;
@@ -228,6 +231,7 @@ public class MinionObject : MonoBehaviour
                 TurnManager.instance.turn == 턴.플레이어 && 
                 canAttack && 
                 canAttackNum > 0 &&
+                !sleep &&
                 !freeze &&
                 !MinionField.instance.MinionAttackCheck() && 
                 animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"));
@@ -250,6 +254,10 @@ public class MinionObject : MonoBehaviour
         }
 
         SpellRunCheck();
+        if (!enemy && HeroManager.instance.heroAtkManager.playerWeaponDurability > 0)
+            MinionManager.instance.EquipWeaponMinionAbility(this);
+        else if (enemy && HeroManager.instance.heroAtkManager.enemyWeaponDurability > 0)
+            MinionManager.instance.EquipWeaponMinionAbility(this);
     }
     #endregion
 
@@ -280,6 +288,7 @@ public class MinionObject : MonoBehaviour
         if (!turnEndTrigger)
             return;
         turnEndTrigger = false;
+        sleep = false;
         freezeCount--;
         //버프제거
         for (int i = 0; i < buffList.Count; i++)
@@ -435,8 +444,9 @@ public class MinionObject : MonoBehaviour
         final_hp = baseHp;
         nowAtk = baseAtk;
         nowSpell = 0;
-        canAttackNum = 0;
+        canAttackNum = 1;
         canAttack = true;
+        sleep = true;
         taunt = false;
         stealth = false;
         silence = false;

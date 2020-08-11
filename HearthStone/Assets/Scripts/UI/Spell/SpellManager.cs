@@ -28,6 +28,24 @@ public class SpellManager : MonoBehaviour
         instance = this;
     }
 
+    public int playerSpellPower = 0;
+    public int enemySpellPower = 0;
+
+    public void Update()
+    {
+        int temp = 0;
+        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                temp += MinionField.instance.minions[m].final_spellAtk;
+        playerSpellPower = temp;
+
+        temp = 0;
+        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                temp += EnemyMinionField.instance.minions[m].final_spellAtk;
+        enemySpellPower = temp;
+    }
+
     #region[스펠 능력 파싱]
     public List<SpellAbility> SpellParsing(string ability_string)
     {
@@ -314,14 +332,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(EnemyMinionField.instance.minions[m]);
-                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + enemySpellPower)
                                 deathList.Add(EnemyMinionField.instance.minions[m]);
                             else
                                 survivalList.Add(EnemyMinionField.instance.minions[m]);
 
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + enemySpellPower);
                         AttackManager.instance.AttackEffectRun();
                         EnemyMinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -334,14 +352,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (!MinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(MinionField.instance.minions[m]);
-                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                                 deathList.Add(MinionField.instance.minions[m]);
                             else
                                 survivalList.Add(MinionField.instance.minions[m]);
 
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (MinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                         AttackManager.instance.AttackEffectRun();
                         MinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -360,14 +378,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(EnemyMinionField.instance.minions[m]);
-                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                                 deathList.Add(EnemyMinionField.instance.minions[m]);
                             else
                                 survivalList.Add(EnemyMinionField.instance.minions[m]);
 
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                         AttackManager.instance.AttackEffectRun();
                         EnemyMinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -380,14 +398,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (!MinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(MinionField.instance.minions[m]);
-                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + enemySpellPower)
                                 deathList.Add(MinionField.instance.minions[m]);
                             else
                                 survivalList.Add(MinionField.instance.minions[m]);
 
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (MinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + enemySpellPower);
                         AttackManager.instance.AttackEffectRun();
                         MinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -404,14 +422,14 @@ public class SpellManager : MonoBehaviour
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(EnemyMinionField.instance.minions[m]);
-                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                             deathList.Add(EnemyMinionField.instance.minions[m]);
                         else
                             survivalList.Add(EnemyMinionField.instance.minions[m]);
 
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                     AttackManager.instance.AttackEffectRun();
                     EnemyMinionField.instance.setMinionPos = false;
                     reArrangementEnemy = true;
@@ -424,14 +442,14 @@ public class SpellManager : MonoBehaviour
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (!MinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(MinionField.instance.minions[m]);
-                        else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                        else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                             deathList.Add(MinionField.instance.minions[m]);
                         else
                             survivalList.Add(MinionField.instance.minions[m]);
 
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (MinionField.instance.minions[m].gameObject.activeSelf)
-                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                     AttackManager.instance.AttackEffectRun();
                     MinionField.instance.setMinionPos = false;
                     reArrangementEnemy = false;
@@ -841,14 +859,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(EnemyMinionField.instance.minions[m]);
-                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + enemySpellPower)
                                 deathList.Add(EnemyMinionField.instance.minions[m]);
                             else
                                 survivalList.Add(EnemyMinionField.instance.minions[m]);
 
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + enemySpellPower);
                         AttackManager.instance.AttackEffectRun();
                         EnemyMinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -861,14 +879,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (!MinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(MinionField.instance.minions[m]);
-                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                                 deathList.Add(MinionField.instance.minions[m]);
                             else
                                 survivalList.Add(MinionField.instance.minions[m]);
 
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (MinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                         AttackManager.instance.AttackEffectRun();
                         MinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -887,14 +905,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(EnemyMinionField.instance.minions[m]);
-                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                                 deathList.Add(EnemyMinionField.instance.minions[m]);
                             else
                                 survivalList.Add(EnemyMinionField.instance.minions[m]);
 
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                         AttackManager.instance.AttackEffectRun();
                         EnemyMinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -907,14 +925,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (!MinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(MinionField.instance.minions[m]);
-                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + enemySpellPower)
                                 deathList.Add(MinionField.instance.minions[m]);
                             else
                                 survivalList.Add(MinionField.instance.minions[m]);
 
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (MinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + enemySpellPower);
                         AttackManager.instance.AttackEffectRun();
                         MinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -931,14 +949,14 @@ public class SpellManager : MonoBehaviour
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(EnemyMinionField.instance.minions[m]);
-                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                             deathList.Add(EnemyMinionField.instance.minions[m]);
                         else
                             survivalList.Add(EnemyMinionField.instance.minions[m]);
 
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                     AttackManager.instance.AttackEffectRun();
                     EnemyMinionField.instance.setMinionPos = false;
                     reArrangementEnemy = true;
@@ -951,14 +969,14 @@ public class SpellManager : MonoBehaviour
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (!MinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(MinionField.instance.minions[m]);
-                        else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                        else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                             deathList.Add(MinionField.instance.minions[m]);
                         else
                             survivalList.Add(MinionField.instance.minions[m]);
 
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (MinionField.instance.minions[m].gameObject.activeSelf)
-                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                     AttackManager.instance.AttackEffectRun();
                     MinionField.instance.setMinionPos = false;
                     reArrangementEnemy = false;
@@ -1370,14 +1388,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(EnemyMinionField.instance.minions[m]);
-                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + enemySpellPower)
                                 deathList.Add(EnemyMinionField.instance.minions[m]);
                             else
                                 survivalList.Add(EnemyMinionField.instance.minions[m]);
 
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + enemySpellPower);
                         AttackManager.instance.AttackEffectRun();
                         EnemyMinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -1390,14 +1408,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (!MinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(MinionField.instance.minions[m]);
-                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                                 deathList.Add(MinionField.instance.minions[m]);
                             else
                                 survivalList.Add(MinionField.instance.minions[m]);
 
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (MinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                         AttackManager.instance.AttackEffectRun();
                         MinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -1416,14 +1434,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(EnemyMinionField.instance.minions[m]);
-                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                                 deathList.Add(EnemyMinionField.instance.minions[m]);
                             else
                                 survivalList.Add(EnemyMinionField.instance.minions[m]);
 
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                             if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                         AttackManager.instance.AttackEffectRun();
                         EnemyMinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -1436,14 +1454,14 @@ public class SpellManager : MonoBehaviour
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (!MinionField.instance.minions[m].gameObject.activeSelf)
                                 emptyList.Add(MinionField.instance.minions[m]);
-                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                            else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + enemySpellPower)
                                 deathList.Add(MinionField.instance.minions[m]);
                             else
                                 survivalList.Add(MinionField.instance.minions[m]);
 
                         for (int m = 0; m < MinionField.instance.minions.Length; m++)
                             if (MinionField.instance.minions[m].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + enemySpellPower);
                         AttackManager.instance.AttackEffectRun();
                         MinionField.instance.setMinionPos = false;
                         GameEventManager.instance.EventSet(2f);
@@ -1460,14 +1478,14 @@ public class SpellManager : MonoBehaviour
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(EnemyMinionField.instance.minions[m]);
-                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                             deathList.Add(EnemyMinionField.instance.minions[m]);
                         else
                             survivalList.Add(EnemyMinionField.instance.minions[m]);
 
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                     AttackManager.instance.AttackEffectRun();
                     EnemyMinionField.instance.setMinionPos = false;
                     reArrangementEnemy = true;
@@ -1480,14 +1498,14 @@ public class SpellManager : MonoBehaviour
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (!MinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(MinionField.instance.minions[m]);
-                        else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x)
+                        else if (MinionField.instance.minions[m].final_hp <= (int)ability.Ability_data.x + playerSpellPower)
                             deathList.Add(MinionField.instance.minions[m]);
                         else
                             survivalList.Add(MinionField.instance.minions[m]);
 
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (MinionField.instance.minions[m].gameObject.activeSelf)
-                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x);
+                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)ability.Ability_data.x + playerSpellPower);
                     AttackManager.instance.AttackEffectRun();
                     MinionField.instance.setMinionPos = false;
                     reArrangementEnemy = false;
@@ -1999,7 +2017,7 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.적군하수인_주인의패로되돌리기:
                 break;
             case SpellAbility.Ability.돌진부여:
-                minionObject.canAttackNum = 1;
+                minionObject.sleep = false;
                 break;
             case SpellAbility.Ability.도발부여:
                 minionObject.taunt = true;
@@ -2031,7 +2049,7 @@ public class SpellManager : MonoBehaviour
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(EnemyMinionField.instance.minions[m]);
-                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)nowSpellAbility.Ability_data.x && !EnemyMinionField.instance.minions[m].Equals(minionObject))
+                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)nowSpellAbility.Ability_data.x + playerSpellPower && !EnemyMinionField.instance.minions[m].Equals(minionObject))
                             deathList.Add(EnemyMinionField.instance.minions[m]);
                         else
                             survivalList.Add(EnemyMinionField.instance.minions[m]);
@@ -2040,8 +2058,8 @@ public class SpellManager : MonoBehaviour
                     for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
                         if (EnemyMinionField.instance.minions[i].gameObject.activeSelf)
                             if (!EnemyMinionField.instance.minions[i].Equals(minionObject))
-                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[i].damageEffect, (int)nowSpellAbility.Ability_data.x);
-                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)nowSpellAbility.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[i].damageEffect, (int)nowSpellAbility.Ability_data.x + playerSpellPower);
+                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)nowSpellAbility.Ability_data.x + playerSpellPower);
                     AttackManager.instance.AttackEffectRun();
 
                     EnemyMinionField.instance.setMinionPos = false;
@@ -2055,7 +2073,7 @@ public class SpellManager : MonoBehaviour
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (!MinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(MinionField.instance.minions[m]);
-                        else if (MinionField.instance.minions[m].final_hp <= (int)nowSpellAbility.Ability_data.x && !MinionField.instance.minions[m].Equals(minionObject))
+                        else if (MinionField.instance.minions[m].final_hp <= (int)nowSpellAbility.Ability_data.x + playerSpellPower && !MinionField.instance.minions[m].Equals(minionObject))
                             deathList.Add(MinionField.instance.minions[m]);
                         else
                             survivalList.Add(MinionField.instance.minions[m]);
@@ -2064,8 +2082,8 @@ public class SpellManager : MonoBehaviour
                     for (int i = 0; i < MinionField.instance.minions.Length; i++)
                         if (MinionField.instance.minions[i].gameObject.activeSelf)
                             if (!MinionField.instance.minions[i].Equals(minionObject))
-                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[i].damageEffect, (int)nowSpellAbility.Ability_data.x);
-                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)nowSpellAbility.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[i].damageEffect, (int)nowSpellAbility.Ability_data.x + playerSpellPower);
+                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)nowSpellAbility.Ability_data.x + playerSpellPower);
                     AttackManager.instance.AttackEffectRun();
 
                     MinionField.instance.setMinionPos = false;
@@ -2080,10 +2098,13 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.하수인에게_피해주기:
             case SpellAbility.Ability.피해받지않은하수인에게_피해주기:
                 AttackManager.instance.PopAllDamageObj();
-                AttackManager.instance.AddDamageObj(minionObject.damageEffect, (int)nowSpellAbility.Ability_data.x);
+                AttackManager.instance.AddDamageObj(minionObject.damageEffect, (int)nowSpellAbility.Ability_data.x + playerSpellPower);
                 AttackManager.instance.AttackEffectRun();
                 break;
             case SpellAbility.Ability.영웅의공격력만큼_피해주기:
+                AttackManager.instance.PopAllDamageObj();
+                AttackManager.instance.AddDamageObj(minionObject.damageEffect, HeroManager.instance.heroAtkManager.playerFinalAtk + playerSpellPower);
+                AttackManager.instance.AttackEffectRun();
                 break;
             case SpellAbility.Ability.대상의_공격력_생명력_교환:
                 int temp = minionObject.final_hp;
@@ -2096,6 +2117,8 @@ public class SpellManager : MonoBehaviour
                     minionObject.buffList[i] = new Vector4(0, minionObject.buffList[i].y, minionObject.buffList[i].z, minionObject.buffList[i].w);
                 break;
             case SpellAbility.Ability.무기의_공격력만큼능력부여:
+                Vector4 weaponBuff = new Vector4(HeroManager.instance.heroAtkManager.playerWeaponAtk, 0, 0, 0);
+                minionObject.buffList.Add(weaponBuff);
                 break;
             case SpellAbility.Ability.해당턴동안_능력치부여:
             case SpellAbility.Ability.능력치부여:
@@ -2243,9 +2266,9 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.영웅에게_피해주기:
             case SpellAbility.Ability.피해받지않은하수인에게_피해주기:
                 if (enemy)
-                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)nowSpellAbility.Ability_data.x);
+                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)nowSpellAbility.Ability_data.x + playerSpellPower);
                 else
-                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)nowSpellAbility.Ability_data.x);
+                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)nowSpellAbility.Ability_data.x + playerSpellPower);
                 AttackManager.instance.AttackEffectRun();
                 break;
             case SpellAbility.Ability.영웅의공격력만큼_피해주기:
@@ -2272,18 +2295,19 @@ public class SpellManager : MonoBehaviour
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(EnemyMinionField.instance.minions[m]);
-                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)nowSpellAbility.Ability_data.x)
+                        else if (EnemyMinionField.instance.minions[m].final_hp <= (int)nowSpellAbility.Ability_data.x + playerSpellPower)
                             deathList.Add(EnemyMinionField.instance.minions[m]);
                         else
                             survivalList.Add(EnemyMinionField.instance.minions[m]);
                     AttackManager.instance.PopAllDamageObj();
                     for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
                         if (EnemyMinionField.instance.minions[i].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[i].damageEffect, (int)nowSpellAbility.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[i].damageEffect, (int)nowSpellAbility.Ability_data.x + playerSpellPower);
                     AttackManager.instance.AttackEffectRun();
 
                     EnemyMinionField.instance.setMinionPos = false;
-                    GameEventManager.instance.EventSet(2f);
+                    if (emptyList.Count != 7)
+                        GameEventManager.instance.EventSet(2f);
                     reArrangementEnemy = true;
                     ReArrangement();
                     Invoke("SetMinionPos", 1.25f);
@@ -2293,18 +2317,19 @@ public class SpellManager : MonoBehaviour
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (!MinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(MinionField.instance.minions[m]);
-                        else if (MinionField.instance.minions[m].final_hp <= (int)nowSpellAbility.Ability_data.x)
+                        else if (MinionField.instance.minions[m].final_hp <= (int)nowSpellAbility.Ability_data.x + playerSpellPower)
                             deathList.Add(MinionField.instance.minions[m]);
                         else
                             survivalList.Add(MinionField.instance.minions[m]);
                     AttackManager.instance.PopAllDamageObj();
                     for (int i = 0; i < MinionField.instance.minions.Length; i++)
                         if (MinionField.instance.minions[i].gameObject.activeSelf)
-                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[i].damageEffect, (int)nowSpellAbility.Ability_data.x);
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[i].damageEffect, (int)nowSpellAbility.Ability_data.x + playerSpellPower);
                     AttackManager.instance.AttackEffectRun();
 
                     MinionField.instance.setMinionPos = false;
-                    GameEventManager.instance.EventSet(2f);
+                    if (emptyList.Count != 7)
+                        GameEventManager.instance.EventSet(2f);
                     reArrangementEnemy = false;
                     ReArrangement();
                     Invoke("SetMinionPos", 1.25f);

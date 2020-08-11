@@ -60,12 +60,7 @@ public class HeroSelect : Btn
     {
         SetSelect(false);
         if(Input.GetMouseButton(0))
-        {
-            if (enemy)
-                AttackManager.instance.PopDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage);
-            else
-                AttackManager.instance.PopDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage);
-        }
+            AttackManager.instance.PopAllDamageObj();
         if (DragCardObject.instance.dragSelectCard)
         {
             SpellManager.instance.targetHero = -1;

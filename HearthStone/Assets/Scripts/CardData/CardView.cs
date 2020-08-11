@@ -603,7 +603,8 @@ public class CardView : MonoBehaviour
     void ShowExplain()
     {
         string temp = "";
-        for(int i = 0; i < MinionsCardExplainData.Length; i++)
+        #region[하수인 설명]
+        for (int i = 0; i < MinionsCardExplainData.Length; i++)
         {
             if (i < MinionsCardExplainData.Length - 1 && MinionsCardExplainData[i].Equals('\\') && MinionsCardExplainData[i + 1].Equals('n'))
             {
@@ -614,20 +615,54 @@ public class CardView : MonoBehaviour
                 temp += MinionsCardExplainData[i];
         }
         MinionsCardExplain.text = temp;
+        #endregion
 
+        #region[주문 설명]
+        SpellCardExplain.text = "";
+        string checkNum = "없음";
         temp = "";
         for (int i = 0; i < SpellCardExplainData.Length; i++)
         {
-            if (i < SpellCardExplainData.Length - 1 && SpellCardExplainData[i].Equals('\\') && SpellCardExplainData[i + 1].Equals('n'))
+            if (checkNum.Equals("없음"))
             {
-                temp += "\n";
-                i++;
+                if (SpellCardExplainData[i].Equals('$'))
+                    checkNum = "";
+                else
+                {
+                    if (i < SpellCardExplainData.Length - 1 && SpellCardExplainData[i].Equals('\\') && SpellCardExplainData[i + 1].Equals('n'))
+                    {
+                        temp += "\n";
+                        i++;
+                    }
+                    else
+                        temp += SpellCardExplainData[i];
+                }
             }
             else
-                temp += SpellCardExplainData[i];
+            {
+                if (SpellCardExplainData[i].Equals('$'))
+                {
+                    int findValue = 0;
+                    int.TryParse(checkNum, out findValue);
+                    if (SpellManager.instance)
+                        findValue += SpellManager.instance.playerSpellPower;
+                    if (SpellManager.instance.playerSpellPower == 0)
+                        temp += findValue;
+                    else if (SpellManager.instance && SpellManager.instance.playerSpellPower > 0)
+                        temp += "<color=#00FF00>" + findValue + "</color>";
+                    else if (SpellManager.instance && SpellManager.instance.playerSpellPower < 0)
+                        temp += "<color=#FF0000>" + findValue + "</color>";
+                    checkNum = "없음";
+                }
+                else
+                    checkNum += SpellCardExplainData[i];
+            }
         }
         SpellCardExplain.text = temp;
 
+        #endregion
+
+        #region[무기 설명]
         temp = "";
         for (int i = 0; i < WeaponCardExplainData.Length; i++)
         {
@@ -640,6 +675,7 @@ public class CardView : MonoBehaviour
                 temp += WeaponCardExplainData[i];
         }
         WeaponCardExplain.text = temp;
+        #endregion
     }
     #endregion
 

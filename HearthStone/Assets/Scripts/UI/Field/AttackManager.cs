@@ -98,11 +98,11 @@ public class AttackManager : MonoBehaviour
                     HeroManager.instance.heroHpManager.playerShieldAni.SetBool("Break", true);
             }
             else
-                HeroManager.instance.heroHpManager.nowEnemyHp -= n;
+                HeroManager.instance.heroHpManager.nowPlayerHp -= n;
         }
         else if (s.Contains("적_영웅"))
         {
-            if(HeroManager.instance.heroHpManager.enemyShield > 0)
+            if (HeroManager.instance.heroHpManager.enemyShield > 0)
             {
                 int temp = n;
                 temp -= HeroManager.instance.heroHpManager.enemyShield;
