@@ -1322,9 +1322,12 @@ public class MinionManager : MonoBehaviour
                     if (minion_name.Equals("나무정령"))
                     {
                         yield return new WaitForSeconds(0.1f);
-                        EnemyMinionField.instance.minions[index].abilityList.Clear();
-                        EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                        if (0 <= index && index < 7)
+                        {
+                            EnemyMinionField.instance.minions[index].abilityList.Clear();
+                            EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
+                            BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                        }
                     }
                 }
                 else
@@ -1334,9 +1337,12 @@ public class MinionManager : MonoBehaviour
                     if (minion_name.Equals("나무정령"))
                     {
                         yield return new WaitForSeconds(0.1f);
-                        MinionField.instance.minions[index].abilityList.Clear();
-                        MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(MinionField.instance.minions[index]);
+                        if (0 <= index && index < 7)
+                        {
+                            MinionField.instance.minions[index].abilityList.Clear();
+                            MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
+                            BaseMinionAbility(MinionField.instance.minions[index]);
+                        }
                     }
                 }
                 minionNum++;
@@ -1690,9 +1696,12 @@ public class MinionManager : MonoBehaviour
                     if (minion_name.Equals("나무정령"))
                     {
                         yield return new WaitForSeconds(0.1f);
-                        EnemyMinionField.instance.minions[index].abilityList.Clear();
-                        EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                        if (0 <= index && index < 7)
+                        {
+                            EnemyMinionField.instance.minions[index].abilityList.Clear();
+                            EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
+                            BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                        }
                     }
                 }
                 else 
@@ -1702,9 +1711,12 @@ public class MinionManager : MonoBehaviour
                     if (minion_name.Equals("나무정령"))
                     {
                         yield return new WaitForSeconds(0.1f);
-                        MinionField.instance.minions[index].abilityList.Clear();
-                        MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(MinionField.instance.minions[index]);
+                        if (0 <= index && index < 7)
+                        {
+                            MinionField.instance.minions[index].abilityList.Clear();
+                            MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
+                            BaseMinionAbility(MinionField.instance.minions[index]);
+                        }
                     }
                 }
                 minionNum++;
@@ -2235,6 +2247,19 @@ public class MinionManager : MonoBehaviour
         }
         #endregion
 
+        #region[죽음 이벤트]
+        for (int j = 0; j < minionObject.abilityList.Count; j++)
+        {
+            if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.각턴_종료 ||
+                (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.상대턴의_종료 && minionObject.enemy != turnEndHero) ||
+                (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.자신의_턴종료 && minionObject.enemy == turnEndHero))
+            {
+                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.죽음)
+                    TurnEndEventList.Add(j);
+            }
+        }
+        #endregion
+
         if (TurnEndEventList.Count > 0)
             StartCoroutine(TurnEndMinionAbility(minionObject, TurnEndEventList));
     }
@@ -2277,6 +2302,11 @@ public class MinionManager : MonoBehaviour
             #region[무작위 피해 이벤트]
             else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_피해주기)
                 NowEvent = 5;
+            #endregion
+
+            #region[죽음 이벤트]
+            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.죽음)
+                NowEvent = 6;
             #endregion
 
             #region[이벤트 처리]
@@ -2430,6 +2460,11 @@ public class MinionManager : MonoBehaviour
 
                     }
                 }
+            }
+            else if (NowEvent == 6)
+            {
+                minionObject.MinionDeath();
+                GameEventManager.instance.EventSet(0.2f);
             }
             #endregion
 

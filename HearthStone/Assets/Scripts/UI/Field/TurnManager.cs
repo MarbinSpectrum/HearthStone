@@ -81,13 +81,17 @@ public class TurnManager : MonoBehaviour
         for (int i = 0; i < MinionField.instance.minionNum; i++)
             if (MinionField.instance.minions[i].canAttackNum != 0)
                 canAttack = true;
+        if(HeroManager.instance.heroAtkManager.playerCanAttackNum > 0)
+            canAttack = true;
 
         bool canUseCard = false;
         for (int i = 0; i < CardHand.instance.nowHandNum; i++)
             if (CardHand.instance.canUse[i])
                 canUseCard = true;
+        if(HeroManager.instance.heroPowerManager.playerCanUse)
+            canUseCard = true;
 
-        if(canAttack || canUseCard || !BattleUI.instance.gameStart || GameEventManager.instance.EventCheck())
+        if (canAttack || canUseCard || !BattleUI.instance.gameStart || GameEventManager.instance.EventCheck())
             turnBtnMat.SetColor("_ImgColor", normalStateColor);
         else if(BattleUI.instance.gameStart && turn == 턴.플레이어)
             turnBtnMat.SetColor("_ImgColor", glowStateColor);

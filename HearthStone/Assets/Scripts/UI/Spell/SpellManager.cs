@@ -471,9 +471,12 @@ public class SpellManager : MonoBehaviour
                         if (minion_name.Equals("나무정령"))
                         {
                             yield return new WaitForSeconds(0.5f);
-                            EnemyMinionField.instance.minions[index].abilityList.Clear();
-                            EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                            MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                            if (0 <= index && index < 7)
+                            {
+                                EnemyMinionField.instance.minions[index].abilityList.Clear();
+                                EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                                MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                            }
                         }
                     }
                     else
@@ -483,9 +486,12 @@ public class SpellManager : MonoBehaviour
                         if (minion_name.Equals("나무정령"))
                         {
                             yield return new WaitForSeconds(0.5f);
-                            MinionField.instance.minions[index].abilityList.Clear();
-                            MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                            MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
+                            if(0 <= index && index < 7)
+                            {
+                                MinionField.instance.minions[index].abilityList.Clear();
+                                MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                                MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
+                            }
                         }
                     }
                 }
@@ -998,9 +1004,12 @@ public class SpellManager : MonoBehaviour
                         if (minion_name.Equals("나무정령"))
                         {
                             yield return new WaitForSeconds(0.5f);
-                            EnemyMinionField.instance.minions[index].abilityList.Clear();
-                            EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                            MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                            if (0 <= index && index < 7)
+                            {
+                                EnemyMinionField.instance.minions[index].abilityList.Clear();
+                                EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                                MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                            }
                         }
                     }
                     else
@@ -1010,9 +1019,12 @@ public class SpellManager : MonoBehaviour
                         if (minion_name.Equals("나무정령"))
                         {
                             yield return new WaitForSeconds(0.5f);
-                            MinionField.instance.minions[index].abilityList.Clear();
-                            MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                            MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
+                            if (0 <= index && index < 7)
+                            {
+                                MinionField.instance.minions[index].abilityList.Clear();
+                                MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                                MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
+                            }
                         }
                     }
                 }
@@ -1527,9 +1539,12 @@ public class SpellManager : MonoBehaviour
                         if (minion_name.Equals("나무정령"))
                         {
                             yield return new WaitForSeconds(0.5f);
-                            EnemyMinionField.instance.minions[index].abilityList.Clear();
-                            EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                            MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                            if (0 <= index && index < 7)
+                            {
+                                EnemyMinionField.instance.minions[index].abilityList.Clear();
+                                EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                                MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
+                            }
                         }
                     }
                     else
@@ -1539,9 +1554,12 @@ public class SpellManager : MonoBehaviour
                         if (minion_name.Equals("나무정령"))
                         {
                             yield return new WaitForSeconds(0.5f);
-                            MinionField.instance.minions[index].abilityList.Clear();
-                            MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                            MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
+                            if (0 <= index && index < 7)
+                            {
+                                MinionField.instance.minions[index].abilityList.Clear();
+                                MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
+                                MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
+                            }
                         }
                     }
                 }
