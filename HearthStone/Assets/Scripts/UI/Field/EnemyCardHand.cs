@@ -114,7 +114,7 @@ public class EnemyCardHand : MonoBehaviour
         }
     }
 
-    public void DrawCard()
+    public void DrawCard(bool ani = true)
     {
         if (nowHandNum >= 10)
             return;
@@ -124,7 +124,8 @@ public class EnemyCardHand : MonoBehaviour
         {
             if (BattleUI.instance.enemyCardAni[i].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
             {
-                BattleUI.instance.enemyCardAni[i].SetTrigger("Draw");
+                if(ani)
+                    BattleUI.instance.enemyCardAni[i].SetTrigger("Draw");
                 for (int j = 0; j < nowHandNum - 1; j++)
                 {
                     CardMove(j, card[j].transform.position,
@@ -168,6 +169,7 @@ public class EnemyCardHand : MonoBehaviour
         CardViewManager.instance.UpdateCardView(0.001f);
     }
     #endregion
+
     public void CardMove(int n, Vector3 pos, Vector2 size, float angle = 0)
     {
         handLerp[n] = 0;

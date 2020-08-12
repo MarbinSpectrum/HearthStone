@@ -30,6 +30,8 @@ public class DragCardObject : MonoBehaviour
     public Image playerfield;
     public Image enemyfield;
 
+    [HideInInspector] public bool checkNotDamageMinion = false;
+
     public void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -99,17 +101,34 @@ public class DragCardObject : MonoBehaviour
                     SpellManager.instance.SetSelectMask(spellList[i].Ability_type);
                     break;
                 }
+
+            for (int i = 0; i < spellList.Count; i++)
+                if (spellList[i].Condition_type == SpellAbility.Condition.피해입지않은하수인)
+                    checkNotDamageMinion = true;
         }
         else if(dragSelectCard)
         {
             if (SpellManager.instance.targetMinion)
+            {
+                //CardHand.instance.removeCostOffset = CardHand.instance.handCostOffset[dragCardNum];
+                //CardHand.instance.handCostOffset[dragCardNum] = 0;
+                //for (int i = dragCardNum; i < 9; i++)
+                //    CardHand.instance.handCostOffset[i] = CardHand.instance.handCostOffset[i + 1];
                 SpellManager.instance.RunSpellTargetMinion(dragCardName, dragCardNum, SpellManager.instance.targetMinion, false);
+            }
             else if (SpellManager.instance.targetHero != -1)
+            {
+                //CardHand.instance.removeCostOffset = CardHand.instance.handCostOffset[dragCardNum];
+                //CardHand.instance.handCostOffset[dragCardNum] = 0;
+                //for (int i = dragCardNum; i < 9; i++)
+                //    CardHand.instance.handCostOffset[i] = CardHand.instance.handCostOffset[i + 1];
                 SpellManager.instance.RunSpellTargetHero(dragCardName, dragCardNum, false, SpellManager.instance.targetHero == 2);
+            }
             CardHand.instance.handAni.SetBool("패내리기", false);
             dragSelectCard = false;
             DragLineRenderer.instance.InitMask();
             DragLineRenderer.instance.lineRenderer.enabled = false;
+            checkNotDamageMinion = false;
         }
 
         playerfield.raycastTarget = !dragSelectCard;

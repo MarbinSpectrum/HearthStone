@@ -130,6 +130,8 @@ public class MinionAbility
     /// </summary>
     public static bool CheckDataAbility(Ability a)
     {
+        if (a == Ability.연계횟수만큼능력치부여)
+            return true;
         if (a == Ability.무작위_피해주기)
             return true;
         if (a == Ability.하수인에게_피해주기)

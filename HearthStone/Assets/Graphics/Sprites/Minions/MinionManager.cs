@@ -318,6 +318,8 @@ public class MinionManager : MonoBehaviour
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
                     BattlecryEventList.Add(j);
+                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.연계횟수만큼능력치부여)
+                    BattlecryEventList.Add(j);
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
                     BattlecryEventList.Add(j);
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_패_버리기)
@@ -558,6 +560,8 @@ public class MinionManager : MonoBehaviour
                 NowEvent = 2;
             else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무기의_공격력만큼능력부여)
                 NowEvent = 2;
+            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.연계횟수만큼능력치부여)
+                NowEvent = 2;
             #endregion
 
             #region[하수인 소환 이벤트]
@@ -647,6 +651,12 @@ public class MinionManager : MonoBehaviour
                     minionObject.sleep = false;
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.은신)
                     minionObject.stealth = true;
+                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.연계횟수만큼능력치부여)
+                {   
+                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data.x * (CardHand.instance.useCardNum - 1);
+                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data.y * (CardHand.instance.useCardNum - 1);
+                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data.z * (CardHand.instance.useCardNum - 1);
+                }
             }
             else if (NowEvent == 3)
             {
@@ -658,25 +668,11 @@ public class MinionManager : MonoBehaviour
                 {
                     int index = EnemyMinionField.instance.minionNum;
                     EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.5f);
-                        EnemyMinionField.instance.minions[index].abilityList.Clear();
-                        EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(EnemyMinionField.instance.minions[index]);
-                    }
                 }
                 else
                 {
                     int index = MinionField.instance.minionNum;
                     MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
-                    if(minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.5f);
-                        MinionField.instance.minions[index].abilityList.Clear();
-                        MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(MinionField.instance.minions[index]);
-                    }
                 }
                 minionNum++;
             }
@@ -757,7 +753,6 @@ public class MinionManager : MonoBehaviour
                     {
                         MinionField.instance.minions[pos] = removeMinionList[m];
                         DeathMinionAbility(MinionField.instance.minions[pos]);
-                        //MinionField.instance.minions[pos].MinionRemoveProcess();
                         pos++;
                     }
                     MinionField.instance.minionNum = 1;
@@ -949,7 +944,10 @@ public class MinionManager : MonoBehaviour
         BattleUI.instance.selectMinion.gameObject.SetActive(false);
         Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(eventMininon.minion_name));
         int mana = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+        mana += CardHand.instance.removeCostOffset;
+        mana = mana < 0 ? 0 : mana;
         ManaManager.instance.playerNowMana += mana;
+        CardHand.instance.handCostOffset[CardHand.instance.nowHandNum] = CardHand.instance.removeCostOffset;
         CardHand.instance.useCardNum--;
 
     }
@@ -1319,31 +1317,11 @@ public class MinionManager : MonoBehaviour
                 {
                     int index = EnemyMinionField.instance.minionNum;
                     EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.1f);
-                        if (0 <= index && index < 7)
-                        {
-                            EnemyMinionField.instance.minions[index].abilityList.Clear();
-                            EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                            BaseMinionAbility(EnemyMinionField.instance.minions[index]);
-                        }
-                    }
                 }
                 else
                 {
                     int index = MinionField.instance.minionNum;
                     MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.1f);
-                        if (0 <= index && index < 7)
-                        {
-                            MinionField.instance.minions[index].abilityList.Clear();
-                            MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                            BaseMinionAbility(MinionField.instance.minions[index]);
-                        }
-                    }
                 }
                 minionNum++;
             }
@@ -1655,11 +1633,13 @@ public class MinionManager : MonoBehaviour
         while (GameEventManager.instance.GetEventValue() > 0.1f)
             yield return new WaitForSeconds(0.001f);
         GameEventManager.instance.EventAdd(0.1f);
-        int NowEvent = 0;
+
         int minionNum = 0;
 
         while (deathrattleEventQueue.Count > 0)
         {
+            int NowEvent = 0;
+
             MinionAbility temp = deathrattleEventQueue.Dequeue();
 
             #region[하수인 소환 이벤트]
@@ -1693,31 +1673,11 @@ public class MinionManager : MonoBehaviour
                 {
                     int index = EnemyMinionField.instance.minionNum;
                     EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.1f);
-                        if (0 <= index && index < 7)
-                        {
-                            EnemyMinionField.instance.minions[index].abilityList.Clear();
-                            EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                            BaseMinionAbility(EnemyMinionField.instance.minions[index]);
-                        }
-                    }
                 }
                 else 
                 {
                     int index = MinionField.instance.minionNum;
                     MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.1f);
-                        if (0 <= index && index < 7)
-                        {
-                            MinionField.instance.minions[index].abilityList.Clear();
-                            MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                            BaseMinionAbility(MinionField.instance.minions[index]);
-                        }
-                    }
                 }
                 minionNum++;
             }
@@ -1957,25 +1917,11 @@ public class MinionManager : MonoBehaviour
                 {
                     int index = EnemyMinionField.instance.minionNum;
                     EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.5f);
-                        EnemyMinionField.instance.minions[index].abilityList.Clear();
-                        EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(EnemyMinionField.instance.minions[index]);
-                    }
                 }
                 else
                 {
                     int index = MinionField.instance.minionNum;
                     MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.5f);
-                        MinionField.instance.minions[index].abilityList.Clear();
-                        MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(MinionField.instance.minions[index]);
-                    }
                 }
                 minionNum++;
             }
@@ -2143,25 +2089,11 @@ public class MinionManager : MonoBehaviour
                 {
                     int index = EnemyMinionField.instance.minionNum;
                     EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.5f);
-                        EnemyMinionField.instance.minions[index].abilityList.Clear();
-                        EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(EnemyMinionField.instance.minions[index]);
-                    }
                 }
                 else
                 {
                     int index = MinionField.instance.minionNum;
                     MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.5f);
-                        MinionField.instance.minions[index].abilityList.Clear();
-                        MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(MinionField.instance.minions[index]);
-                    }
                 }
                 minionNum++;
             }
@@ -2353,25 +2285,11 @@ public class MinionManager : MonoBehaviour
                 {
                     int index = EnemyMinionField.instance.minionNum;
                     EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.5f);
-                        EnemyMinionField.instance.minions[index].abilityList.Clear();
-                        EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(EnemyMinionField.instance.minions[index]);
-                    }
                 }
                 else
                 {
                     int index = MinionField.instance.minionNum;
                     MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.5f);
-                        MinionField.instance.minions[index].abilityList.Clear();
-                        MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(MinionField.instance.minions[index]);
-                    }
                 }
                 minionNum++;
             }
@@ -2464,7 +2382,7 @@ public class MinionManager : MonoBehaviour
             else if (NowEvent == 6)
             {
                 minionObject.MinionDeath();
-                GameEventManager.instance.EventSet(0.2f);
+                minionNum++;
             }
             #endregion
 
@@ -2590,25 +2508,11 @@ public class MinionManager : MonoBehaviour
                 {
                     int index = EnemyMinionField.instance.minionNum;
                     EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.5f);
-                        EnemyMinionField.instance.minions[index].abilityList.Clear();
-                        EnemyMinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(EnemyMinionField.instance.minions[index]);
-                    }
                 }
                 else
                 {
                     int index = MinionField.instance.minionNum;
                     MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
-                    if (minion_name.Equals("나무정령"))
-                    {
-                        yield return new WaitForSeconds(0.5f);
-                        MinionField.instance.minions[index].abilityList.Clear();
-                        MinionField.instance.minions[index].abilityList = MinionAbilityParsing(minion_ability);
-                        BaseMinionAbility(MinionField.instance.minions[index]);
-                    }
                 }
                 minionNum++;
             }

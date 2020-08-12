@@ -97,32 +97,27 @@ public class HeroSelect : Btn
         }
         else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적영웅)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군영웅)))
         {
-            if (!DragLineRenderer.instance.CheckMask(타겟.실행주체))
-                if (DragLineRenderer.instance.CheckActObj(gameObject))
-                    return;
+            if (!DragLineRenderer.instance.CheckMask(타겟.실행주체) && DragLineRenderer.instance.CheckActObj(gameObject))
+                return;
+            if (!DragCardObject.instance.dragSelectCard && !MinionManager.instance.CheckTaunt(enemy))
+                return;
+
             if (!DragCardObject.instance.dragSelectCard)
             {
-                if (MinionManager.instance.CheckTaunt(enemy))
+                DragLineRenderer.instance.selectTarget = true;
+                DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
+                if (enemy)
                 {
-                    DragLineRenderer.instance.selectTarget = true;
-                    DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
-                    if (enemy)
+                    if (MinionDrag.dragMinionNum != -1)
                     {
-                        if (MinionDrag.dragMinionNum != -1)
-                        {
-                            MinionField.instance.minions[MinionDrag.dragMinionNum].stealth = false;
-                            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, MinionField.instance.minions[MinionDrag.dragMinionNum].final_atk);
-                        }
-                        else
-                        {
-                            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, HeroManager.instance.heroAtkManager.playerFinalAtk);
-                        }
+                        MinionField.instance.minions[MinionDrag.dragMinionNum].stealth = false;
+                        AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, MinionField.instance.minions[MinionDrag.dragMinionNum].final_atk);
                     }
                     else
-                    {
-                        AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, 4);
-                    }
+                        AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, HeroManager.instance.heroAtkManager.playerFinalAtk);
                 }
+                else
+                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, 4);
             }
             else
             {

@@ -45,6 +45,7 @@ public class TurnManager : MonoBehaviour
             {
                 HeroManager.instance.MeltFreeze();
                 CardHand.instance.useCardNum = 0;
+                CardHand.instance.UsePreparation = 0;
                 time = 0.5f;
                 turn = 턴.상대방;
                 manaManager.enemyMaxMana++;

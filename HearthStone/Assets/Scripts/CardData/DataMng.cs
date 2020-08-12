@@ -95,7 +95,9 @@ public class DataMng : MonoBehaviour
         dragCardPos.Add("기계용 정비사", new Vector2(110, -42));
         dragCardPos.Add("기습", new Vector2(55, -67));
         dragCardPos.Add("나 이런 사냥꾼이야", new Vector2(86, -83));
-        dragCardPos.Add("나무정령", new Vector2(86, -57));
+        dragCardPos.Add("나무정령(숲의영혼)", new Vector2(86, -57));
+        dragCardPos.Add("나무정령(자연의 군대)", new Vector2(86, -57));
+        dragCardPos.Add("나무정령(샨도의 가르침)", new Vector2(86, -57));
         dragCardPos.Add("날뛰는 코도", new Vector2(69, 29));
         dragCardPos.Add("남쪽바다 갑판원", new Vector2(109, -98));
         dragCardPos.Add("내트 페이글", new Vector2(70, -73));

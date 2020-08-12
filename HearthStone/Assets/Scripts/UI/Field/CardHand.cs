@@ -50,6 +50,10 @@ public class CardHand : MonoBehaviour
 
     [HideInInspector] public int useCardNum = 0;
 
+    public int[] handCostOffset;
+    public int UsePreparation;
+    [HideInInspector] public int removeCostOffset = 0;
+
     #region[Awake]
     private void Awake()
     {
@@ -57,6 +61,7 @@ public class CardHand : MonoBehaviour
         if (card.Count <= 0)
             return;
         handCardView = new CardView[card.Count];
+        handCostOffset = new int[card.Count];
         for (int i = 0; i < card.Count; i++)
         {
             cardStartPos.Add(Vector4.zero);
@@ -91,6 +96,9 @@ public class CardHand : MonoBehaviour
             card[i].gameObject.SetActive(i < nowHandNum);
             if (!card[i].gameObject.activeSelf)
                 card[i].transform.position = drawCardPos.position;
+            handCardView[i].cardCostOffset = handCostOffset[i];
+            if (handCardView[i].cardType == CardType.주문)
+                handCardView[i].cardCostOffset -= UsePreparation;
         }
 
         for (int i = 0; i < card.Count; i++)
@@ -99,11 +107,11 @@ public class CardHand : MonoBehaviour
             {
                 int cost = 0;
                 if (handCardView[i].cardType == CardType.무기)
-                    cost = handCardView[i].WeaponCostData;
+                    cost = handCardView[i].WeaponCostData + handCostOffset[i];
                 else if (handCardView[i].cardType == CardType.주문)
-                    cost = handCardView[i].SpellCostData;
+                    cost = handCardView[i].SpellCostData + handCostOffset[i] - UsePreparation;
                 else if (handCardView[i].cardType == CardType.하수인)
-                    cost = handCardView[i].MinionsCostData;
+                    cost = handCardView[i].MinionsCostData + handCostOffset[i];
 
                 if (handCardView[i].cardType == CardType.무기)
                     glowImg[i].sprite = weaponImg;
@@ -118,6 +126,7 @@ public class CardHand : MonoBehaviour
                 }
 
                 card_glow[i].gameObject.SetActive(
+                    canUse[i] &&
                     !GameEventManager.instance.EventCheck() &&
                     BattleUI.instance.gameStart &&
                     TurnManager.instance.turnAniEnd &&
@@ -204,18 +213,33 @@ public class CardHand : MonoBehaviour
                 int cost = 0;
                 if (handCardView[i].cardType == CardType.무기)
                 {
-                    cost = handCardView[i].WeaponCostData;
+                    cost = handCardView[i].WeaponCostData + handCostOffset[i];
                     canUse[i] = (cost <= ManaManager.instance.playerNowMana);
 
                 }
                 else if (handCardView[i].cardType == CardType.주문)
                 {
-                    cost = handCardView[i].SpellCostData;
-                    canUse[i] = (cost <= ManaManager.instance.playerNowMana);
+                    bool canUseCheck = true;
+                    Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(handCardView[i].SpellCardNameData));
+                    string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
+                    List<SpellAbility> spellList = SpellManager.instance.SpellParsing(ability_string);
+                    for(int s = 0; s < spellList.Count; s++)
+                    {
+                        if (HeroManager.instance.heroAtkManager.playerWeaponDurability <= 0)
+                            if (spellList[s].Ability_type == SpellAbility.Ability.무기에_공격력부여)
+                                canUseCheck = false;
+                            else if (spellList[s].Ability_type == SpellAbility.Ability.무기파괴)
+                                canUseCheck = false;
+                            else if (spellList[s].Ability_type == SpellAbility.Ability.무기의_공격력만큼능력부여)
+                                canUseCheck = false;
+                    }
+
+                    cost = handCardView[i].SpellCostData + handCostOffset[i] - UsePreparation;
+                    canUse[i] = canUseCheck && (cost <= ManaManager.instance.playerNowMana);
                 }
                 else if (handCardView[i].cardType == CardType.하수인)
                 {
-                    cost = handCardView[i].MinionsCostData;
+                    cost = handCardView[i].MinionsCostData + handCostOffset[i];
                     canUse[i] = (cost <= ManaManager.instance.playerNowMana);
                     canUse[i] = canUse[i] && (MinionField.instance.minionNum < 7);
                 }
@@ -275,18 +299,19 @@ public class CardHand : MonoBehaviour
     {
         int cost = 0;
         if (handCardView[n].cardType == CardType.무기)
-            cost = handCardView[n].WeaponCostData;
+            cost = handCardView[n].WeaponCostData + handCostOffset[n];
         else if (handCardView[n].cardType == CardType.주문)
-            cost = handCardView[n].SpellCostData;
+            cost = handCardView[n].SpellCostData + handCostOffset[n] - UsePreparation;
         else if (handCardView[n].cardType == CardType.하수인)
-            cost = handCardView[n].MinionsCostData;
-
+            cost = handCardView[n].MinionsCostData + handCostOffset[n];
+        cost = cost < 0 ? 0 : cost;
         if (handCardView[n].cardType == CardType.무기)
         {
             if (!DragCardObject.instance.dragSelectCard)
             {
                 ManaManager.instance.playerNowMana -= cost;
                 useCardNum++;
+                removeCostOffset = handCostOffset[n];
                 SpellManager.instance.RunSpell(handCardView[n].WeaponCardNameData);
                 CardRemove(n);
             }
@@ -297,6 +322,7 @@ public class CardHand : MonoBehaviour
             {
                 ManaManager.instance.playerNowMana -= cost;
                 useCardNum++;
+                removeCostOffset = handCostOffset[n];
                 DragCardObject.instance.ShowDropEffectSpell(Input.mousePosition, 0);
                 SpellManager.instance.RunSpell(handCardView[n].SpellCardNameData);
                 CardRemove(n);
@@ -306,6 +332,7 @@ public class CardHand : MonoBehaviour
         {
             ManaManager.instance.playerNowMana -= cost;
             useCardNum++;
+            removeCostOffset = handCostOffset[n];
             MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData,true);
             CardRemove(n);
         }
@@ -316,6 +343,9 @@ public class CardHand : MonoBehaviour
     #region[카드없애기]
     public void CardRemove(int n)
     {
+        handCostOffset[n] = 0;
+        for (int i = n; i < 9; i++)
+            handCostOffset[i] = handCostOffset[i + 1];
         nowHandNum--;
         for (int i = 0; i < nowHandNum; i++)
         {

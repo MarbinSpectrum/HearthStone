@@ -41,6 +41,8 @@ public class CardView : MonoBehaviour
     [HideInInspector] public string cardJob = "중립";
     [HideInInspector] public string cardLevel = "기본";
 
+    [HideInInspector] public int cardCostOffset = 0;
+
     #region[하수인카드 정보]
     GameObject MinionsCard;
     [HideInInspector] public int MinionsCostData;
@@ -262,7 +264,6 @@ public class CardView : MonoBehaviour
         if (updateCard)
         {
             ShowCard();
-            ShowCost();
             ShowAttack();
             ShowHp();
             ShowName();
@@ -272,6 +273,7 @@ public class CardView : MonoBehaviour
             GetCardNum();
             updateCard = false;
         }
+        ShowCost();
         ShowHolo();
     }
     #endregion
@@ -395,11 +397,12 @@ public class CardView : MonoBehaviour
         string c;
 
         #region[하수인코스트]
-        if (MinionsCostData > 99)
-            MinionsCostData = 99;
-        if (MinionsCostData < 0)
-            MinionsCostData = 0;
-        c = MinionsCostData.ToString();
+        int showCost = MinionsCostData + cardCostOffset;
+        if (showCost > 99)
+            showCost = 99;
+        if (showCost < 0)
+            showCost = 0;
+        c = showCost.ToString();
 
         if (c.Length > 1)
         {
@@ -414,14 +417,18 @@ public class CardView : MonoBehaviour
             MinionsCostImage[0].sprite = num[c[0] - '0'];
             MinionsCost[1].SetActive(false);
         }
+
+        MinionsCostImage[0].color = (showCost > MinionsCostData) ? Color.red : (showCost < MinionsCostData) ? Color.green : Color.white;
+        MinionsCostImage[1].color = (showCost > MinionsCostData) ? Color.red : (showCost < MinionsCostData) ? Color.green : Color.white;
         #endregion
 
         #region[주문코스트]
-        if (SpellCostData > 99)
-            SpellCostData = 99;
-        if (SpellCostData < 0)
-            SpellCostData = 0;
-        c = SpellCostData.ToString();
+        showCost = SpellCostData + cardCostOffset;
+        if (showCost > 99)
+            showCost = 99;
+        if (showCost < 0)
+            showCost = 0;
+        c = showCost.ToString();
 
         if (c.Length > 1)
         {
@@ -436,21 +443,25 @@ public class CardView : MonoBehaviour
             SpellCostImage[0].sprite = num[c[0] - '0'];
             SpellCost[1].SetActive(false);
         }
+
+        SpellCostImage[0].color = (showCost > SpellCostData) ? Color.red : (showCost < SpellCostData) ? Color.green : Color.white;
+        SpellCostImage[1].color = (showCost > SpellCostData) ? Color.red : (showCost < SpellCostData) ? Color.green : Color.white;
         #endregion
 
         #region[무기코스트]
-        if (WeaponCostData > 99)
-            WeaponCostData = 99;
-        if (WeaponCostData < 0)
-            WeaponCostData = 0;
-        c = WeaponCostData.ToString();
+        showCost = WeaponCostData + cardCostOffset;
+        if (showCost > 99)
+            showCost = 99;
+        if (showCost < 0)
+            showCost = 0;
+        c = showCost.ToString();
 
         if (c.Length > 1)
         {
             WeaponCost[0].SetActive(true);
             WeaponCostImage[0].sprite = num[c[1] - '0'];
             WeaponCost[1].SetActive(true);
-            SpellCostImage[1].sprite = num[c[0] - '0'];
+            WeaponCostImage[1].sprite = num[c[0] - '0'];
         }
         else
         {
@@ -458,6 +469,9 @@ public class CardView : MonoBehaviour
             WeaponCostImage[0].sprite = num[c[0] - '0'];
             WeaponCost[1].SetActive(false);
         }
+
+        WeaponCostImage[0].color = (showCost > WeaponCostData) ? Color.red : (showCost < WeaponCostData) ? Color.green : Color.white;
+        WeaponCostImage[1].color = (showCost > WeaponCostData) ? Color.red : (showCost < WeaponCostData) ? Color.green : Color.white;
         #endregion
     }
     #endregion

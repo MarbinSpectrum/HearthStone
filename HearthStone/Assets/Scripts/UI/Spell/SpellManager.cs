@@ -11,6 +11,7 @@ public class SpellManager : MonoBehaviour
         없음 = -1,
         대상선택,
         카드뽑기,
+        적영웅에게피해,
         적군광역피해, 아군광역피해, 광역피해,
         모든하수인주인의패로, 모든하수인처치,
         하수인소환,
@@ -20,7 +21,10 @@ public class SpellManager : MonoBehaviour
         하수인들에게_해당턴_능력치부여,
         마나획득, 마나수정획득,
         공격력획득, 방어도획득,
-        무기장착, 무기공격력부여
+        무기장착, 무기공격력부여,
+        무기파괴,무기공격력만큼적군광역피해,
+        다음주문카드비용감소,
+        내손으로다시가져오기
     }
 
     public void Awake()
@@ -129,7 +133,6 @@ public class SpellManager : MonoBehaviour
             }
         }
 
-
         return abilityList;
     }
     #endregion
@@ -176,6 +179,8 @@ public class SpellManager : MonoBehaviour
         });
 
         bool checkCombo = false;
+        bool checkPreparation = false;
+
         List<SpellAbility> chooseOneList = new List<SpellAbility>();
         for (int i = 0; i < spellList.Count; i++)
         {
@@ -234,6 +239,10 @@ public class SpellManager : MonoBehaviour
                 nowEvent.Add(spellList[i]);
             }
             else if (spellList[i].Condition_type == SpellAbility.Condition.조건없음)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            else if (spellList[i].Condition_type == SpellAbility.Condition.피해입지않은하수인)
             {
                 nowEvent.Add(spellList[i]);
             }
@@ -414,6 +423,19 @@ public class SpellManager : MonoBehaviour
                         Invoke("SetMinionPos", 1.25f);
                     }
                 }
+                else if (CheckEvent(ability) == EventType.적영웅에게피해)
+                {
+                    if (!enemy)
+                    {
+                        AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)ability.Ability_data.x + playerSpellPower);
+                        AttackManager.instance.AttackEffectRun();
+                    }
+                    else
+                    {
+                        AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)ability.Ability_data.x + enemySpellPower);
+                        AttackManager.instance.AttackEffectRun();
+                    }
+                }
                 else if (CheckEvent(ability) == EventType.광역피해)
                 {
                     deathList.Clear();
@@ -468,31 +490,11 @@ public class SpellManager : MonoBehaviour
                     {
                         int index = EnemyMinionField.instance.minionNum;
                         EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
-                        if (minion_name.Equals("나무정령"))
-                        {
-                            yield return new WaitForSeconds(0.5f);
-                            if (0 <= index && index < 7)
-                            {
-                                EnemyMinionField.instance.minions[index].abilityList.Clear();
-                                EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                                MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
-                            }
-                        }
                     }
                     else
                     {
                         int index = MinionField.instance.minionNum;
                         MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
-                        if (minion_name.Equals("나무정령"))
-                        {
-                            yield return new WaitForSeconds(0.5f);
-                            if(0 <= index && index < 7)
-                            {
-                                MinionField.instance.minions[index].abilityList.Clear();
-                                MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                                MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
-                            }
-                        }
                     }
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_은신부여)
@@ -585,7 +587,10 @@ public class SpellManager : MonoBehaviour
                 {
                     for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
                         if (MinionManager.instance.minionList[m].gameObject.activeSelf)
+                        {
                             MinionManager.instance.minionList[m].gotoHandTrigger = true;
+                        }
+
                 }
                 else if (CheckEvent(ability) == EventType.모든하수인처치)
                 {
@@ -708,6 +713,82 @@ public class SpellManager : MonoBehaviour
                     else
                         HeroManager.instance.heroAtkManager.playerWeaponAtk += (int)ability.Ability_data.x;
                 }
+                else if (CheckEvent(ability) == EventType.다음주문카드비용감소)
+                {
+                    checkPreparation = true;
+                    CardHand.instance.UsePreparation = (int)ability.Ability_data.x;
+                }
+                else if (CheckEvent(ability) == EventType.무기파괴)
+                {
+                    if(enemy)
+                        HeroManager.instance.heroAtkManager.enemyWeaponDurability = 0;
+                    else
+                        HeroManager.instance.heroAtkManager.playerWeaponDurability = 0;
+                }
+                else if (CheckEvent(ability) == EventType.무기공격력만큼적군광역피해)
+                {
+                    deathList.Clear();
+                    survivalList.Clear();
+                    emptyList.Clear();
+                    if (!enemy)
+                    {
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(EnemyMinionField.instance.minions[m]);
+                            else if (EnemyMinionField.instance.minions[m].final_hp <= (int)HeroManager.instance.heroAtkManager.playerWeaponAtk + playerSpellPower)
+                                deathList.Add(EnemyMinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(EnemyMinionField.instance.minions[m]);
+
+                        for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                            if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[m].damageEffect, (int)HeroManager.instance.heroAtkManager.playerWeaponAtk + playerSpellPower);
+                        AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)HeroManager.instance.heroAtkManager.playerWeaponAtk + playerSpellPower);
+
+                        AttackManager.instance.AttackEffectRun();
+                        EnemyMinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = true;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                    else
+                    {
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (!MinionField.instance.minions[m].gameObject.activeSelf)
+                                emptyList.Add(MinionField.instance.minions[m]);
+                            else if (MinionField.instance.minions[m].final_hp <= (int)HeroManager.instance.heroAtkManager.enemyWeaponAtk + enemySpellPower)
+                                deathList.Add(MinionField.instance.minions[m]);
+                            else
+                                survivalList.Add(MinionField.instance.minions[m]);
+
+                        for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                            if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                AttackManager.instance.AddDamageObj(MinionField.instance.minions[m].damageEffect, (int)HeroManager.instance.heroAtkManager.enemyWeaponAtk + enemySpellPower);
+                        AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)HeroManager.instance.heroAtkManager.playerWeaponAtk + enemySpellPower);
+
+                        AttackManager.instance.AttackEffectRun();
+                        MinionField.instance.setMinionPos = false;
+                        GameEventManager.instance.EventSet(2f);
+                        reArrangementEnemy = false;
+                        ReArrangement();
+                        Invoke("SetMinionPos", 1.25f);
+                    }
+                }
+                else if (CheckEvent(ability) == EventType.내손으로다시가져오기)
+                {
+                    if (CardHand.instance.nowHandNum < 10)
+                        for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
+                        {
+                            if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
+                            {
+                                CardHand.instance.DrawCard();
+                                CardHand.instance.CardMove(nowSpellName, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.position, CardHand.instance.defaultSize, 0);
+                                CardViewManager.instance.UpdateCardView();
+                                break;
+                            }
+                        }
+                }
             }
 
         }
@@ -718,6 +799,9 @@ public class SpellManager : MonoBehaviour
             for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
                 if (MinionManager.instance.minionList[m].gameObject.activeSelf)
                     MinionManager.instance.minionList[m].spellRun = true;
+
+        if(!checkPreparation && !heroPower)
+            CardHand.instance.UsePreparation = 0;
 
     }
     #endregion
@@ -738,6 +822,7 @@ public class SpellManager : MonoBehaviour
         CardHand.instance.CardRemove(handNum);
         StartCoroutine(RunSpellTargetMinion(spellList, minionObject, enemy));
     }
+
     private IEnumerator RunSpellTargetMinion(List<SpellAbility> spellList, MinionObject minionObject,bool enemy)
     {
         spellList.Sort((a, b) =>
@@ -812,6 +897,10 @@ public class SpellManager : MonoBehaviour
                 nowEvent.Add(spellList[i]);
             }
             else if (spellList[i].Condition_type == SpellAbility.Condition.조건없음)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            else if (spellList[i].Condition_type == SpellAbility.Condition.피해입지않은하수인)
             {
                 nowEvent.Add(spellList[i]);
             }
@@ -1001,31 +1090,11 @@ public class SpellManager : MonoBehaviour
                     {
                         int index = EnemyMinionField.instance.minionNum;
                         EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
-                        if (minion_name.Equals("나무정령"))
-                        {
-                            yield return new WaitForSeconds(0.5f);
-                            if (0 <= index && index < 7)
-                            {
-                                EnemyMinionField.instance.minions[index].abilityList.Clear();
-                                EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                                MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
-                            }
-                        }
                     }
                     else
                     {
                         int index = MinionField.instance.minionNum;
                         MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
-                        if (minion_name.Equals("나무정령"))
-                        {
-                            yield return new WaitForSeconds(0.5f);
-                            if (0 <= index && index < 7)
-                            {
-                                MinionField.instance.minions[index].abilityList.Clear();
-                                MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                                MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
-                            }
-                        }
                     }
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_은신부여)
@@ -1248,6 +1317,8 @@ public class SpellManager : MonoBehaviour
         for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
             if (MinionManager.instance.minionList[m].gameObject.activeSelf)
                 MinionManager.instance.minionList[m].spellRun = true;
+
+        CardHand.instance.UsePreparation = 0;
     }
     #endregion
 
@@ -1345,6 +1416,10 @@ public class SpellManager : MonoBehaviour
                 nowEvent.Add(spellList[i]);
             }
             else if (spellList[i].Condition_type == SpellAbility.Condition.조건없음)
+            {
+                nowEvent.Add(spellList[i]);
+            }
+            else if (spellList[i].Condition_type == SpellAbility.Condition.피해입지않은하수인)
             {
                 nowEvent.Add(spellList[i]);
             }
@@ -1536,31 +1611,11 @@ public class SpellManager : MonoBehaviour
                     {
                         int index = EnemyMinionField.instance.minionNum;
                         EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, minion_name, false);
-                        if (minion_name.Equals("나무정령"))
-                        {
-                            yield return new WaitForSeconds(0.5f);
-                            if (0 <= index && index < 7)
-                            {
-                                EnemyMinionField.instance.minions[index].abilityList.Clear();
-                                EnemyMinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                                MinionManager.instance.BaseMinionAbility(EnemyMinionField.instance.minions[index]);
-                            }
-                        }
                     }
                     else
                     {
                         int index = MinionField.instance.minionNum;
                         MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false);
-                        if (minion_name.Equals("나무정령"))
-                        {
-                            yield return new WaitForSeconds(0.5f);
-                            if (0 <= index && index < 7)
-                            {
-                                MinionField.instance.minions[index].abilityList.Clear();
-                                MinionField.instance.minions[index].abilityList = MinionManager.instance.MinionAbilityParsing(minion_ability);
-                                MinionManager.instance.BaseMinionAbility(MinionField.instance.minions[index]);
-                            }
-                        }
                     }
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_은신부여)
@@ -1783,6 +1838,8 @@ public class SpellManager : MonoBehaviour
         for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
             if (MinionManager.instance.minionList[m].gameObject.activeSelf)
                 MinionManager.instance.minionList[m].spellRun = true;
+
+        CardHand.instance.UsePreparation = 0;
     }
     #endregion
 
@@ -1862,11 +1919,20 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.무기에_공격력부여:
                 return EventType.무기공격력부여;
             case SpellAbility.Ability.다음카드비용감소:
-            case SpellAbility.Ability.다음주문카드비용감소:
             case SpellAbility.Ability.무작위_패_버리기:
             case SpellAbility.Ability.무작위_하수인뺏기:
             case SpellAbility.Ability.다음턴에다시가져오기:
                 return EventType.없음;
+            case SpellAbility.Ability.적영웅에게_피해주기:
+                return EventType.적영웅에게피해;
+            case SpellAbility.Ability.다음주문카드비용감소:
+                return EventType.다음주문카드비용감소;
+            case SpellAbility.Ability.무기의_공격력만큼_모든_적군에게피해:
+                return EventType.무기공격력만큼적군광역피해;
+            case SpellAbility.Ability.무기파괴:
+                return EventType.무기파괴;
+            case SpellAbility.Ability.내손으로다시가져오기:
+                return EventType.내손으로다시가져오기;
             default:
                 Debug.Log("이벤트 타입을 지정해주세요");
                 return EventType.없음;
@@ -2030,9 +2096,12 @@ public class SpellManager : MonoBehaviour
                 minionObject.freezeTrigger = true;
                 break;
             case SpellAbility.Ability.아군하수인_주인의패로되돌리기:
+            case SpellAbility.Ability.적군하수인_주인의패로되돌리기:
                 minionObject.gotoHandTrigger = true;
                 break;
-            case SpellAbility.Ability.적군하수인_주인의패로되돌리기:
+            case SpellAbility.Ability.하수인_주인의패로되돌리면서_비용감소:
+                minionObject.gotoHandTrigger = true;
+                CardHand.instance.handCostOffset[CardHand.instance.nowHandNum] = -(int)nowSpellAbility.Ability_data.x;
                 break;
             case SpellAbility.Ability.돌진부여:
                 minionObject.sleep = false;
@@ -2376,7 +2445,10 @@ public class SpellManager : MonoBehaviour
         CardHand.instance.DrawCard();
         CardHand.instance.CardMove(cardName, n,BattleUI.instance.playerSpellPos.transform.position, new Vector2(10.685f, 13.714f), 0);
         CardViewManager.instance.UpdateCardView(0.001f);
+        mana += CardHand.instance.removeCostOffset;
+        mana = mana < 0 ? 0 : mana;
         ManaManager.instance.playerNowMana += mana;
+        CardHand.instance.handCostOffset[CardHand.instance.nowHandNum] = CardHand.instance.removeCostOffset;
         CardHand.instance.useCardNum--;
 
     }
