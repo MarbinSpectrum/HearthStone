@@ -149,7 +149,7 @@ public class EnemyMinionField : MonoBehaviour
         Vector3 v = new Vector3(transform.position.x - minX + minionDistance * n, transform.position.y, minions[n].transform.position.z);
         minions[n].transform.position = v;
         if (cardHandSpawn)
-            DragCardObject.instance.ShowDropEffectMinion(Camera.main.WorldToScreenPoint(v), 0);
+            DragCardObject.instance.ShowDropEffectMinion(Camera.main.WorldToScreenPoint(BattleUI.instance.enemySpellPos.transform.position),Camera.main.WorldToScreenPoint(v), 1);
         StartCoroutine(MinionDrop(n, spawnAni, cardHandSpawn));
     }
 

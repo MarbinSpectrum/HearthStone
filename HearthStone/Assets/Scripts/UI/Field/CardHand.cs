@@ -54,6 +54,8 @@ public class CardHand : MonoBehaviour
     public int UsePreparation;
     [HideInInspector] public int removeCostOffset = 0;
 
+    int exhaustion = 0;
+
     #region[Awake]
     private void Awake()
     {
@@ -250,6 +252,60 @@ public class CardHand : MonoBehaviour
     #endregion
 
     #region[카드 드로우]
+    public void CardDrawAct()
+    {
+        StartCoroutine(CardDrawActRun());
+    }
+
+    private IEnumerator CardDrawActRun()
+    {
+        int index = -1;
+
+        for (int i = 0; i < BattleUI.instance.playerCardAni.Length; i++)
+        {
+            if (BattleUI.instance.playerCardAni[i].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
+            {
+                index = i;
+                break;
+            }
+        }
+
+        if (index == -1)
+        {
+            while (GameEventManager.instance.GetEventValue() > 0.1f)
+                yield return new WaitForSeconds(0.001f);
+            GameEventManager.instance.EventAdd(0.1f);
+            if(handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대"))
+                handAni.SetTrigger("축소");
+            exhaustion++;
+            AttackManager.instance.PopAllDamageObj();
+            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, exhaustion);
+            AttackManager.instance.AttackEffectRun();
+            GameEventManager.instance.EventAdd(0.3f);
+        }
+        else if (nowHandNum >= 10)
+        {
+            GameEventManager.instance.EventAdd(0.3f);
+            BattleUI.instance.playerCardAni[index].SetTrigger("Draw");
+            string s = InGameDeck.instance.playDeck[0];
+            InGameDeck.instance.playDeck.RemoveAt(0);
+            DrawCardRemove.instance.RemoveCard(s, false);
+        }
+        else
+        {
+            GameEventManager.instance.EventAdd(0.3f);
+            BattleUI.instance.playerCardAni[index].SetTrigger("Draw");
+            DrawCard();
+            string s = InGameDeck.instance.playDeck[0];
+            InGameDeck.instance.playDeck.RemoveAt(0);
+            CardMove(s, nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
+            CardViewManager.instance.UpdateCardView(0.001f);
+        }
+
+        yield return new WaitForSeconds(0.001f);
+    }
+
+
     public void DrawCard()
     {
         if (nowHandNum >= 10)
@@ -336,7 +392,6 @@ public class CardHand : MonoBehaviour
             MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData,true);
             CardRemove(n);
         }
-
     }
     #endregion
 
@@ -366,8 +421,8 @@ public class CardHand : MonoBehaviour
             }
             float tempAngle = fullAngle / 2f;
             tempAngle -= i * addAngle;
-            Vector3 destinationPos = Quaternion.Euler(0, 0, tempAngle) * Vector3.up;
-            destinationPos = transform.position + (Vector3)destinationPos * range;
+            //Vector3 destinationPos = Quaternion.Euler(0, 0, tempAngle) * Vector3.up;
+            //destinationPos = transform.position + (Vector3)destinationPos * range;
             int cardViewNum = (i >= n) ? i + 1 : i;
             CardMove(handCardView[cardViewNum], i, card[cardViewNum].transform.position, defaultSize, tempAngle);
         }

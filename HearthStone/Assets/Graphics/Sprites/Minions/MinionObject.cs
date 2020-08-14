@@ -320,7 +320,7 @@ public class MinionObject : MonoBehaviour
     private IEnumerator GotoHand_PlayerMinion()
     {
         animator.SetTrigger("GoHand");
-        DragCardObject.instance.GotoHandEffect(Camera.main.WorldToScreenPoint(transform.position),minion_name);
+        DragCardObject.instance.GotoHandEffect(transform.position, minion_name, false);
         while (!animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환안됨"))
         {
             GameEventManager.instance.EventSet(1f);
@@ -339,29 +339,25 @@ public class MinionObject : MonoBehaviour
         MinionField.instance.minionNum--;
 
         if (CardHand.instance.nowHandNum < 10)
-            for (int i = 0; i < BattleUI.instance.playerCardAni.Length; i++)
-            {
-                if (BattleUI.instance.playerCardAni[i].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                {
-                    CardHand.instance.DrawCard();
-                    CardHand.instance.CardMove(minion_name, CardHand.instance.nowHandNum - 1, transform.position, CardHand.instance.defaultSize, 0);
-                    CardViewManager.instance.UpdateCardView();
-                    break;
-                }
-            }
+        {
+            CardHand.instance.nowHandNum++;
+            CardHand.instance.CardMove(minion_name, CardHand.instance.nowHandNum - 1, transform.position, CardHand.instance.defaultSize, 0);
+            CardViewManager.instance.UpdateCardView();
+        }
+
+        yield return new WaitForSeconds(0.001f);
     }
 
-    private IEnumerator GotoHand_EnemyMinion(float speed = 1)
+    private IEnumerator GotoHand_EnemyMinion()
     {
         animator.SetTrigger("GoHand");
-        animator.speed = speed;
-        DragCardObject.instance.GotoHandEffect(Camera.main.WorldToScreenPoint(transform.position), minion_name);
+        DragCardObject.instance.GotoHandEffect(transform.position, minion_name, true);
         while (!animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환안됨"))
         {
             GameEventManager.instance.EventSet(1f);
             yield return new WaitForSeconds(0.001f);
         }
-        animator.speed = 1;
+
         abilityList.Clear();
         buffList.Clear();
         taunt = false;
@@ -374,16 +370,14 @@ public class MinionObject : MonoBehaviour
         EnemyMinionField.instance.minionNum--;
 
         if (EnemyCardHand.instance.nowHandNum < 10)
-            for (int i = 0; i < BattleUI.instance.playerCardAni.Length; i++)
-            {
-                if (BattleUI.instance.playerCardAni[i].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                {
-                    EnemyCardHand.instance.DrawCard(false);
-                    EnemyCardHand.instance.CardMove(EnemyCardHand.instance.nowHandNum - 1, transform.position, EnemyCardHand.instance.defaultSize, 180);
-                    CardViewManager.instance.UpdateCardView();
-                    break;
-                }
-            }
+        {
+            EnemyCardHand.instance.nowHandNum++;
+            EnemyCardHand.instance.nowCard.Add(temp.minion_name);
+            EnemyCardHand.instance.CardMove(EnemyCardHand.instance.nowHandNum - 1, transform.position, EnemyCardHand.instance.defaultSize, 180);
+            CardViewManager.instance.UpdateCardView();
+        }
+
+        yield return new WaitForSeconds(0.001f);
     }
     #endregion
 

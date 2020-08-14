@@ -38,8 +38,15 @@ public class EnemyCardHand : MonoBehaviour
     [Range(0, 10)]
     public int nowHandNum;
 
+    int useCardNum = 0;
+
     [Header("패 생성 위치")]
     public Transform drawCardPos;
+
+    int exhaustion = 0;
+
+    [Header("상대방 패")]
+    public List<string> nowCard = new List<string>();
 
     private void Awake()
     {
@@ -94,7 +101,9 @@ public class EnemyCardHand : MonoBehaviour
             else
             {
                 Vector3 nowPos = Vector3.Lerp(cardStartPos[i], destinationPos, handLerp[i]);
+
                 float nowAngle = Mathf.Lerp(cardStartAngle[i], tempAngle + handRootCngle, handLerp[i]);
+
                 Vector2 nowSize = Vector2.Lerp(cardStartSize[i], defaultSize, handLerp[i]);
 
                 if (handLerp[i] < 1)
@@ -111,37 +120,128 @@ public class EnemyCardHand : MonoBehaviour
                 card[i].transform.rotation = Quaternion.Euler(0, 0, nowAngle);
                 card[i].localScale = new Vector3(nowSize.x, nowSize.y, 0);
             }
+
+            //Debug.Log(card[i].transform.eulerAngles.z);
+            //if (card[i].transform.eulerAngles.z < 0)
+            //    card[i].transform.rotation = Quaternion.Euler(0, 0, card[i].transform.eulerAngles.z + 360);
         }
     }
 
-    public void DrawCard(bool ani = true)
+    public void CardDrawAct()
+    {
+        StartCoroutine(CardDrawActRun());
+    }
+
+    private IEnumerator CardDrawActRun()
+    {
+        int index = -1;
+
+        for (int i = 0; i < BattleUI.instance.enemyCardAni.Length; i++)
+        {
+            if (BattleUI.instance.enemyCardAni[i].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
+            {
+                index = i;
+                break;
+            }
+        }
+
+        if (index == -1)
+        {
+            while (GameEventManager.instance.GetEventValue() > 0.1f)
+                yield return new WaitForSeconds(0.001f);
+            GameEventManager.instance.EventAdd(0.1f);
+            exhaustion++;
+            AttackManager.instance.PopAllDamageObj();
+            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, exhaustion);
+            AttackManager.instance.AttackEffectRun();
+            GameEventManager.instance.EventAdd(0.5f);
+        }
+        else if (nowHandNum >= 10)
+        {
+            BattleUI.instance.enemyCardAni[index].SetTrigger("Draw");
+            string s = InGameDeck.instance.AIDeck[0];
+            InGameDeck.instance.AIDeck.RemoveAt(0);
+            DrawCardRemove.instance.RemoveCard(s, true);
+            GameEventManager.instance.EventAdd(0.5f);
+        }
+        else
+        {
+            nowHandNum++;
+            CardMove(nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
+            BattleUI.instance.enemyCardAni[index].SetTrigger("Draw");
+            string s = InGameDeck.instance.AIDeck[0];
+            InGameDeck.instance.AIDeck.RemoveAt(0);
+            nowCard.Add(s);
+            for (int j = 0; j < nowHandNum - 1; j++)
+                CardMove(j, card[j].transform.position, defaultSize, card[j].transform.eulerAngles.z);
+            CardMove(nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
+            GameEventManager.instance.EventAdd(0.5f);
+        }
+
+        yield return new WaitForSeconds(0.001f);
+    }
+
+    public void AddCard(string s)
     {
         if (nowHandNum >= 10)
             return;
         nowHandNum++;
         CardMove(nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
-        for (int i = 0; i < BattleUI.instance.playerCardAni.Length; i++)
+        nowCard.Add(s);
+        for (int j = 0; j < nowHandNum - 1; j++)
+            CardMove(j, card[j].transform.position, defaultSize, card[j].transform.eulerAngles.z);
+        CardMove(nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
+    }
+
+    #region[카드 사용]
+    public void UseCard(int n)
+    {
+        int cost = 0;
+        string cardName = nowCard[n];
+        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(cardName));
+        string cardType = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드종류");
+        int cardCost = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+
+        cost = cardCost;
+        cost = cost < 0 ? 0 : cost;
+        if (cardType == "무기")
         {
-            if (BattleUI.instance.enemyCardAni[i].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-            {
-                if(ani)
-                    BattleUI.instance.enemyCardAni[i].SetTrigger("Draw");
-                for (int j = 0; j < nowHandNum - 1; j++)
-                {
-                    CardMove(j, card[j].transform.position,
-                        defaultSize,
-                        card[j].transform.eulerAngles.z);
-                }
-                CardMove(nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
-                break;
-            }
+            ManaManager.instance.enemyNowMana -= cost;
+            useCardNum++;
+            SpellManager.instance.RunSpell(cardName);
+            CardRemove(n);
         }
+        else if (cardType == "주문")
+        {
+            ManaManager.instance.enemyNowMana -= cost;
+            useCardNum++;
+            CardViewManager.instance.CardShow(ref DragCardObject.instance.dropEffect.dropEffectCardView, cardName);
+            CardViewManager.instance.UpdateCardView(0.001f);
+            DragCardObject.instance.ShowDropEffectSpell(Camera.main.WorldToScreenPoint(HeroManager.instance.enemyHero.transform.position), Camera.main.WorldToScreenPoint(HeroManager.instance.playerHero.transform.position), 1);
+            SpellManager.instance.RunSpell(cardName,true);
+            CardRemove(n);
+        }
+        else if (cardType == "하수인")
+        {
+            ManaManager.instance.enemyNowMana -= cost;
+            useCardNum++;
+            EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, cardName, true);
+            CardRemove(n);
+        }
+    }
+    #endregion
+
+    public void DrawCard()
+    {
+        CardDrawAct();
     }
 
     #region[카드없애기]
     public void CardRemove(int n)
     {
+        nowCard.RemoveAt(n);
         nowHandNum--;
+
         for (int i = 0; i < nowHandNum; i++)
         {
             float fullAngle;
@@ -160,13 +260,15 @@ public class EnemyCardHand : MonoBehaviour
                 addAngle = angle;
             }
             float tempAngle = fullAngle / 2f;
-            tempAngle -= i * addAngle;
-            Vector3 destinationPos = Quaternion.Euler(0, 0, tempAngle) * Vector3.up;
-            destinationPos = transform.position + (Vector3)destinationPos * range;
+            tempAngle -= (nowHandNum - 1 - i) * addAngle;
+            //Vector3 destinationPos = Quaternion.Euler(0, 0, tempAngle + handRootCngle) * Vector3.up;
+            //destinationPos = transform.position + (Vector3)destinationPos * range;
+
             int cardViewNum = (i >= n) ? i + 1 : i;
-            CardMove(cardViewNum, card[cardViewNum].transform.position, defaultSize, tempAngle);
+            CardMove(i, card[cardViewNum].transform.position, defaultSize, tempAngle + handRootCngle);
+
+            CardViewManager.instance.UpdateCardView(0.001f);
         }
-        CardViewManager.instance.UpdateCardView(0.001f);
     }
     #endregion
 

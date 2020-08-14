@@ -55,6 +55,7 @@ public class TurnManager : MonoBehaviour
                 HeroManager.instance.heroPowerManager.HeroTurnEnd(false);
                 MinionManager.instance.MinionsTurnStartTrigger(true);
                 MinionManager.instance.MinionsTurnEndTrigger(false);
+                DruidAI.instance.AI_Run();
             }
             else
             {
@@ -82,14 +83,14 @@ public class TurnManager : MonoBehaviour
         for (int i = 0; i < MinionField.instance.minionNum; i++)
             if (MinionField.instance.minions[i].canAttackNum != 0)
                 canAttack = true;
-        if(HeroManager.instance.heroAtkManager.playerCanAttackNum > 0)
+        if(HeroManager.instance.heroAtkManager.playerCanAttack.activeSelf)
             canAttack = true;
 
         bool canUseCard = false;
         for (int i = 0; i < CardHand.instance.nowHandNum; i++)
             if (CardHand.instance.canUse[i])
                 canUseCard = true;
-        if(HeroManager.instance.heroPowerManager.playerCanUse)
+        if(HeroManager.instance.heroPowerManager.playerCanUse && manaManager.playerNowMana >= 2)
             canUseCard = true;
 
         if (canAttack || canUseCard || !BattleUI.instance.gameStart || GameEventManager.instance.EventCheck())
@@ -110,39 +111,9 @@ public class TurnManager : MonoBehaviour
             {
                 turnAniEnd = true;
                 if (turn == 턴.상대방)
-                {
-                    if (EnemyCardHand.instance.nowHandNum >= 10)
-                    {
-                       // Debug.Log("(컴퓨터) : 카드가 너무많아!!");
-                    }
-                    else
-                    {
-                        EnemyCardHand.instance.DrawCard();
-                    }
-                }
+                    EnemyCardHand.instance.DrawCard();
                 else
-                {
-                    if (CardHand.instance.nowHandNum >= 10)
-                    {
-                        Debug.Log("(플레이어) : 카드가 너무많아!!");
-                    }
-                    else
-                    {
-                        for (int i = 0; i < BattleUI.instance.playerCardAni.Length; i++)
-                        {
-                            if (BattleUI.instance.playerCardAni[i].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                            {
-                                BattleUI.instance.playerCardAni[i].SetTrigger("Draw");
-                                CardHand.instance.DrawCard();
-                                string s = InGameDeck.instance.playDeck[0];
-                                InGameDeck.instance.playDeck.RemoveAt(0);
-                                CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                CardViewManager.instance.UpdateCardView(0.001f);
-                                break;
-                            }
-                        }
-                    }
-                }
+                    CardHand.instance.CardDrawAct();
 
             }
         }

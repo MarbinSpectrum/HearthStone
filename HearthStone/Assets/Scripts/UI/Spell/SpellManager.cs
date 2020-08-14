@@ -198,35 +198,42 @@ public class SpellManager : MonoBehaviour
             {
                 if (i + 1 >= spellList.Count || spellList[i + 1].Condition_type != SpellAbility.Condition.선택)
                 {
-                    List<Vector3> chooseOneData = new List<Vector3>();
-                    foreach (SpellAbility chooseAbility in chooseOneList)
+                    if (enemy)
                     {
-                        Vector3 data = chooseAbility.Condition_data;
-                        if (!chooseOneData.Contains(data))
-                            chooseOneData.Add(data);
+                        selectChoose = DruidAI.instance.AI_ChoiceSelect(nowSpellName);
                     }
-
-                    BattleUI.instance.chooseOneDruid.SetBool("Hide", false);
-
-                    for (int j = 0; j < 2; j++)
+                    else
                     {
-                        string ChooseName = DataMng.instance.ToString((DataMng.TableType)chooseOneData[j].x, (int)chooseOneData[j].y, "카드이름");
-                        CardViewManager.instance.CardShow(ref BattleUI.instance.chooseCardView[j], ChooseName);
-                        CardViewManager.instance.UpdateCardView(0.001f);
-                    }
+                        List<Vector3> chooseOneData = new List<Vector3>();
+                        foreach (SpellAbility chooseAbility in chooseOneList)
+                        {
+                            Vector3 data = chooseAbility.Condition_data;
+                            if (!chooseOneData.Contains(data))
+                                chooseOneData.Add(data);
+                        }
 
-                    selectChoose = -1;
+                        BattleUI.instance.chooseOneDruid.SetBool("Hide", false);
 
-                    while (selectChoose == -1)
-                    {
-                        GameEventManager.instance.EventSet(1f);
-                        yield return new WaitForSeconds(0.001f);
-                    }
+                        for (int j = 0; j < 2; j++)
+                        {
+                            string ChooseName = DataMng.instance.ToString((DataMng.TableType)chooseOneData[j].x, (int)chooseOneData[j].y, "카드이름");
+                            CardViewManager.instance.CardShow(ref BattleUI.instance.chooseCardView[j], ChooseName);
+                            CardViewManager.instance.UpdateCardView(0.001f);
+                        }
 
-                    foreach (SpellAbility chooseAbility in chooseOneList)
-                    {
-                        if (chooseAbility.Condition_data.y == chooseOneData[selectChoose].y)
-                            nowEvent.Add(chooseAbility);
+                        selectChoose = -1;
+
+                        while (selectChoose == -1)
+                        {
+                            GameEventManager.instance.EventSet(1f);
+                            yield return new WaitForSeconds(0.001f);
+                        }
+
+                        foreach (SpellAbility chooseAbility in chooseOneList)
+                        {
+                            if (chooseAbility.Condition_data.y == chooseOneData[selectChoose].y)
+                                nowEvent.Add(chooseAbility);
+                        }
                     }
                 }
             }
@@ -277,19 +284,28 @@ public class SpellManager : MonoBehaviour
 
                         if (targetExistence)
                         {
-                            if (DragLineRenderer.instance.CheckMask(타겟.아군영웅) || DragLineRenderer.instance.CheckMask(타겟.적영웅))
-                                CardHand.instance.handAni.SetTrigger("축소");
-                            MinionManager.instance.selectMinionEvent = true;
-                            nowSpellAbility = ability;
-                            BattleUI.instance.grayFilterAni.SetBool("On", true);
-                            BattleUI.instance.selectMinion.gameObject.SetActive(true);
-                            DragLineRenderer.instance.activeObj = BattleUI.instance.playerSpellPos;
-                            BattleUI.instance.selectMinionTxt.text = GetText(ability.Ability_type);
-
-                            while (MinionManager.instance.selectMinionEvent)
+                            if(enemy)
                             {
-                                GameEventManager.instance.EventSet(1f);
-                                yield return new WaitForSeconds(0.001f);
+                                Debug.Log("Act");
+                                nowSpellAbility = ability;
+                                DruidAI.instance.AI_Select(nowSpellAbility);
+                            }
+                            else
+                            {
+                                if (DragLineRenderer.instance.CheckMask(타겟.아군영웅) || DragLineRenderer.instance.CheckMask(타겟.적영웅))
+                                    CardHand.instance.handAni.SetTrigger("축소");
+                                MinionManager.instance.selectMinionEvent = true;
+                                nowSpellAbility = ability;
+                                BattleUI.instance.grayFilterAni.SetBool("On", true);
+                                BattleUI.instance.selectMinion.gameObject.SetActive(true);
+                                DragLineRenderer.instance.activeObj = BattleUI.instance.playerSpellPos;
+                                BattleUI.instance.selectMinionTxt.text = GetText(ability.Ability_type);
+
+                                while (MinionManager.instance.selectMinionEvent)
+                                {
+                                    GameEventManager.instance.EventSet(1f);
+                                    yield return new WaitForSeconds(0.001f);
+                                }
                             }
                         }
                     }
@@ -312,21 +328,7 @@ public class SpellManager : MonoBehaviour
                         if ((enemy && (ability.Ability_data.y == 0)) || (!enemy && (ability.Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
-                        {
-                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
-                            {
-                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                                {
-                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
-                                    CardHand.instance.DrawCard();
-                                    string s = InGameDeck.instance.playDeck[0];
-                                    InGameDeck.instance.playDeck.RemoveAt(0);
-                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                    CardViewManager.instance.UpdateCardView(0.001f);
-                                    break;
-                                }
-                            }
-                        }
+                            CardHand.instance.CardDrawAct();
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -564,7 +566,23 @@ public class SpellManager : MonoBehaviour
                 else if (CheckEvent(ability) == EventType.마나수정획득)
                 {
                     if (enemy)
-                        ManaManager.instance.enemyMaxMana += (int)ability.Ability_data.x;
+                    {
+                        if (ManaManager.instance.enemyMaxMana >= 10)
+                        {
+                            GameEventManager.instance.EventAdd(1.4f);
+                            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName("넘치는마나"));
+                            string cardName = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드이름");
+                            int n = EnemyCardHand.instance.nowHandNum;
+                            EnemyCardHand.instance.DrawCard();
+                            EnemyCardHand.instance.nowCard.Add(cardName);
+                            EnemyCardHand.instance.CardMove(n, BattleUI.instance.playerSpellPos.transform.position, new Vector2(10.685f, 13.714f), 0);
+                            CardViewManager.instance.UpdateCardView(0.001f);
+                        }
+                        else
+                        {
+                            ManaManager.instance.enemyMaxMana += (int)ability.Ability_data.x;
+                        }
+                    }
                     else
                     {
                         if (ManaManager.instance.playerMaxMana >= 10)
@@ -925,21 +943,7 @@ public class SpellManager : MonoBehaviour
                         if ((enemy && (ability.Ability_data.y == 0)) || (!enemy && (ability.Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
-                        {
-                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
-                            {
-                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                                {
-                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
-                                    CardHand.instance.DrawCard();
-                                    string s = InGameDeck.instance.playDeck[0];
-                                    InGameDeck.instance.playDeck.RemoveAt(0);
-                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                    CardViewManager.instance.UpdateCardView(0.001f);
-                                    break;
-                                }
-                            }
-                        }
+                            CardHand.instance.CardDrawAct();
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -1446,21 +1450,7 @@ public class SpellManager : MonoBehaviour
                         if ((enemy && (ability.Ability_data.y == 0)) || (!enemy && (ability.Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
-                        {
-                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
-                            {
-                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                                {
-                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
-                                    CardHand.instance.DrawCard();
-                                    string s = InGameDeck.instance.playDeck[0];
-                                    InGameDeck.instance.playDeck.RemoveAt(0);
-                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                    CardViewManager.instance.UpdateCardView(0.001f);
-                                    break;
-                                }
-                            }
-                        }
+                            CardHand.instance.CardDrawAct();
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }

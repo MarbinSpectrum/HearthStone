@@ -32,6 +32,8 @@ public class DragCardObject : MonoBehaviour
 
     [HideInInspector] public bool checkNotDamageMinion = false;
 
+    public List<GoToHandEffect> gotoHandList = new List<GoToHandEffect>();
+
     public void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -174,12 +176,18 @@ public class DragCardObject : MonoBehaviour
         mouseInField = b && dragCard;
     }
 
-    public void ShowDropEffectMinion(Vector2 pos,int n)
+    //(StartPos) Screen좌표   //
+    public void ShowDropEffectMinion(Vector2 startPos,Vector2 pos, int n)
     {
         dropEffect.dropPos = pos;
-        Vector2 v = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 v = Camera.main.ScreenToWorldPoint(startPos);
         dropEffect.dropRectTransform.transform.position = v;
         dropEffect.dropEffectAni.SetTrigger("Effect_Minion_" + n);
+    }
+
+    public void ShowDropEffectMinion(Vector2 pos,int n)
+    {
+        ShowDropEffectMinion(Input.mousePosition, pos, n);
     }
 
     public void ShowDropEffecWeapon(Vector2 pos, int n)
@@ -192,23 +200,35 @@ public class DragCardObject : MonoBehaviour
 
     public void ShowDropEffectSpell(Vector2 pos, int n)
     {
+        ShowDropEffectSpell(Input.mousePosition, pos, n);
+    }
+
+    public void ShowDropEffectSpell(Vector2 startPos, Vector2 pos, int n)
+    {
         dropEffect.dropPos = pos;
-        Vector2 v = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 v = Camera.main.ScreenToWorldPoint(startPos);
         dropEffect.dropRectTransform.transform.position = v;
         dropEffect.dropEffectAni.SetTrigger("Effect_Spell_" + n);
         dropEffect.effectArrive = false;
     }
 
-    public void GotoHandEffect(Vector2 pos,string s)
+    public void GotoHandEffect(Vector2 pos,string s,bool enemy)
     {
-        dropEffect.dropPos = pos;
-        dropEffect.dropRectTransform.anchoredPosition = dropEffect.dropPos;
-        ShowDragCard(s);
-        if (CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대"))
-            dropEffect.dropEffectAni.SetTrigger("GoHand");
-        else
-            dropEffect.dropEffectAni.SetTrigger("GoHand_Small");
-        dropEffect.effectArrive = false;
+        for (int i = 0; i < gotoHandList.Count; i++)
+        {
+            if (gotoHandList[i].cardHide)
+            {
+                gotoHandList[i].cardHide = false;
+                gotoHandList[i].transform.position = pos;
+                CardViewManager.instance.CardShow(ref gotoHandList[i].dropEffectCardView, s);
+                CardViewManager.instance.UpdateCardView(0.001f);
+                if (enemy || CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대"))
+                    gotoHandList[i].dropEffectAni.SetTrigger("GoHand");
+                else
+                    gotoHandList[i].dropEffectAni.SetTrigger("GoHand_Small");
+                break;
+            }
+        }
     }
 
     public void ShowDragCard(string s)

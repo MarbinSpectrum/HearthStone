@@ -613,20 +613,30 @@ public class MinionManager : MonoBehaviour
 
                 if (targetExistence)
                 {
-                    if(DragLineRenderer.instance.CheckMask(타겟.아군영웅) || DragLineRenderer.instance.CheckMask(타겟.적영웅))
-                        CardHand.instance.handAni.SetTrigger("축소");
-                    selectMinionEvent = true;
-                    eventMininon = minionObject;
-                    eventNum = j;
-                    BattleUI.instance.grayFilterAni.SetBool("On", true);
-                    BattleUI.instance.selectMinion.gameObject.SetActive(true);
-                    DragLineRenderer.instance.activeObj = minionObject.gameObject;
-                    BattleUI.instance.selectMinionTxt.text = GetText(minionObject.abilityList[j].Ability_type);
-
-                    while (selectMinionEvent)
+                    if(minionObject.enemy)
                     {
-                        GameEventManager.instance.EventSet(1f);
-                        yield return new WaitForSeconds(0.001f);
+                        eventMininon = minionObject;
+                        eventNum = j;
+                        DruidAI.instance.AI_Select(eventMininon.abilityList[eventNum].Ability_type);
+                    }
+                    else
+                    {
+
+                        if (DragLineRenderer.instance.CheckMask(타겟.아군영웅) || DragLineRenderer.instance.CheckMask(타겟.적영웅))
+                            CardHand.instance.handAni.SetTrigger("축소");
+                        selectMinionEvent = true;
+                        eventMininon = minionObject;
+                        eventNum = j;
+                        BattleUI.instance.grayFilterAni.SetBool("On", true);
+                        BattleUI.instance.selectMinion.gameObject.SetActive(true);
+                        DragLineRenderer.instance.activeObj = minionObject.gameObject;
+                        BattleUI.instance.selectMinionTxt.text = GetText(minionObject.abilityList[j].Ability_type);
+
+                        while (selectMinionEvent)
+                        {
+                            GameEventManager.instance.EventSet(1f);
+                            yield return new WaitForSeconds(0.001f);
+                        }
                     }
                 }
             }
@@ -687,21 +697,7 @@ public class MinionManager : MonoBehaviour
                         if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
-                        {
-                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
-                            {
-                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                                {
-                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
-                                    CardHand.instance.DrawCard();
-                                    string s = InGameDeck.instance.playDeck[0];
-                                    InGameDeck.instance.playDeck.RemoveAt(0);
-                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                    CardViewManager.instance.UpdateCardView(0.001f);
-                                    break;
-                                }
-                            }
-                        }
+                            CardHand.instance.CardDrawAct();
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -852,7 +848,21 @@ public class MinionManager : MonoBehaviour
                                 randomMinion.Clear();
                         }
 
-                        if(randomMinion.Count > 0)
+                        if (randomMinion.Count > 0)
+                        {
+                            if (minionObject.enemy)
+                            {
+                                if (MinionField.instance.minionNum <= 0)
+                                    randomMinion.Clear();
+                            }
+                            else
+                            {
+                                if (EnemyMinionField.instance.minionNum <= 0)
+                                    randomMinion.Clear();
+                            }
+                        }
+
+                        if (randomMinion.Count > 0)
                         {
                             int r = Random.Range(0, randomMinion.Count);
                             minion_name = randomMinion[r].minion_name;
@@ -1135,11 +1145,10 @@ public class MinionManager : MonoBehaviour
             yield return new WaitForSeconds(0.001f);
         GameEventManager.instance.EventAdd(0.1f);
 
-        BattleUI.instance.chooseOneDruid.SetBool("Hide", false);
 
         List<Vector2> chooseOneList = new List<Vector2>();
 
-        for(int i = 0; i < ChooseOneEventList.Count; i++)
+        for (int i = 0; i < ChooseOneEventList.Count; i++)
         {
             int j = ChooseOneEventList[i];
             int chooseEventJobNum = (int)minionObject.abilityList[j].Condition_data.x;
@@ -1148,21 +1157,30 @@ public class MinionManager : MonoBehaviour
                 chooseOneList.Add(new Vector2(chooseEventJobNum, chooseEventCardNum));
         }
 
-        for (int i = 0; i < chooseOneList.Count; i++)
+        if (minionObject.enemy)
         {
-            string ChooseName = DataMng.instance.ToString((DataMng.TableType)chooseOneList[i].x, (int)chooseOneList[i].y, "카드이름");
-            CardViewManager.instance.CardShow(ref BattleUI.instance.chooseCardView[i], ChooseName);
-            CardViewManager.instance.UpdateCardView(0.001f);
+            selectChoose = DruidAI.instance.AI_ChoiceSelect(minionObject);
         }
-
-        eventMininon = minionObject;
-
-        selectChoose = -1;
-
-        while (selectChoose == -1)
+        else
         {
-            GameEventManager.instance.EventSet(1f);
-            yield return new WaitForSeconds(0.001f);
+            for (int i = 0; i < chooseOneList.Count; i++)
+            {
+                string ChooseName = DataMng.instance.ToString((DataMng.TableType)chooseOneList[i].x, (int)chooseOneList[i].y, "카드이름");
+                CardViewManager.instance.CardShow(ref BattleUI.instance.chooseCardView[i], ChooseName);
+                CardViewManager.instance.UpdateCardView(0.001f);
+            }
+
+            BattleUI.instance.chooseOneDruid.SetBool("Hide", false);
+
+            eventMininon = minionObject;
+
+            selectChoose = -1;
+
+            while (selectChoose == -1)
+            {
+                GameEventManager.instance.EventSet(1f);
+                yield return new WaitForSeconds(0.001f);
+            }
         }
         int minionNum = 0;
 
@@ -1275,20 +1293,29 @@ public class MinionManager : MonoBehaviour
 
                 if (targetExistence)
                 {
-                    if (DragLineRenderer.instance.CheckMask(타겟.아군영웅) || DragLineRenderer.instance.CheckMask(타겟.적영웅))
-                        CardHand.instance.handAni.SetTrigger("축소");
-                    selectMinionEvent = true;
-                    eventMininon = minionObject;
-                    eventNum = j;
-                    BattleUI.instance.grayFilterAni.SetBool("On", true);
-                    BattleUI.instance.selectMinion.gameObject.SetActive(true);
-                    DragLineRenderer.instance.activeObj = minionObject.gameObject;
-                    BattleUI.instance.selectMinionTxt.text = GetText(minionObject.abilityList[j].Ability_type);
-
-                    while (selectMinionEvent)
+                    if (minionObject.enemy)
                     {
-                        GameEventManager.instance.EventSet(1f);
-                        yield return new WaitForSeconds(0.001f);
+                        eventMininon = minionObject;
+                        eventNum = j;
+                        DruidAI.instance.AI_Select(eventMininon.abilityList[eventNum].Ability_type);
+                    }
+                    else
+                    {
+                        if (DragLineRenderer.instance.CheckMask(타겟.아군영웅) || DragLineRenderer.instance.CheckMask(타겟.적영웅))
+                            CardHand.instance.handAni.SetTrigger("축소");
+                        selectMinionEvent = true;
+                        eventMininon = minionObject;
+                        eventNum = j;
+                        BattleUI.instance.grayFilterAni.SetBool("On", true);
+                        BattleUI.instance.selectMinion.gameObject.SetActive(true);
+                        DragLineRenderer.instance.activeObj = minionObject.gameObject;
+                        BattleUI.instance.selectMinionTxt.text = GetText(minionObject.abilityList[j].Ability_type);
+
+                        while (selectMinionEvent)
+                        {
+                            GameEventManager.instance.EventSet(1f);
+                            yield return new WaitForSeconds(0.001f);
+                        }
                     }
                 }
             }
@@ -1336,21 +1363,7 @@ public class MinionManager : MonoBehaviour
                         if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
-                        {
-                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
-                            {
-                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                                {
-                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
-                                    CardHand.instance.DrawCard();
-                                    string s = InGameDeck.instance.playDeck[0];
-                                    InGameDeck.instance.playDeck.RemoveAt(0);
-                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                    CardViewManager.instance.UpdateCardView(0.001f);
-                                    break;
-                                }
-                            }
-                        }
+                            CardHand.instance.CardDrawAct();
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -1692,21 +1705,7 @@ public class MinionManager : MonoBehaviour
                         if ((minion_enemy && (temp.Ability_data.y == 0)) || (!minion_enemy && (temp.Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
-                        {
-                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
-                            {
-                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                                {
-                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
-                                    CardHand.instance.DrawCard();
-                                    string s = InGameDeck.instance.playDeck[0];
-                                    InGameDeck.instance.playDeck.RemoveAt(0);
-                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                    CardViewManager.instance.UpdateCardView(0.001f);
-                                    break;
-                                }
-                            }
-                        }
+                            CardHand.instance.CardDrawAct();
                     }
                 }
                 else if (temp.Ability_type == MinionAbility.Ability.무작위_패_버리기)
@@ -1757,6 +1756,21 @@ public class MinionManager : MonoBehaviour
                 {
                     GameEventManager.instance.EventSet(1.75f);
                     yield return new WaitForSeconds(1f);
+                    if (minion_enemy)
+                    {
+                        if (MinionField.instance.minionNum <= 0)
+                            randomMinion.Clear();
+                    }
+                    else
+                    {
+                        if (EnemyMinionField.instance.minionNum <= 0)
+                            randomMinion.Clear();
+                    }
+
+                }
+
+                if (randomMinion.Count > 0)
+                {
 
                     int r = Random.Range(0, randomMinion.Count);
                     minion_name = randomMinion[r].minion_name;
@@ -1936,21 +1950,7 @@ public class MinionManager : MonoBehaviour
                         if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
-                        {
-                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
-                            {
-                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                                {
-                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
-                                    CardHand.instance.DrawCard();
-                                    string s = InGameDeck.instance.playDeck[0];
-                                    InGameDeck.instance.playDeck.RemoveAt(0);
-                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                    CardViewManager.instance.UpdateCardView(0.001f);
-                                    break;
-                                }
-                            }
-                        }
+                            CardHand.instance.CardDrawAct();
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -2111,21 +2111,7 @@ public class MinionManager : MonoBehaviour
                         if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
-                        {
-                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
-                            {
-                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                                {
-                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
-                                    CardHand.instance.DrawCard();
-                                    string s = InGameDeck.instance.playDeck[0];
-                                    InGameDeck.instance.playDeck.RemoveAt(0);
-                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                    CardViewManager.instance.UpdateCardView(0.001f);
-                                    break;
-                                }
-                            }
-                        }
+                            CardHand.instance.CardDrawAct();
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -2304,21 +2290,7 @@ public class MinionManager : MonoBehaviour
                         if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
-                        {
-                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
-                            {
-                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                                {
-                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
-                                    CardHand.instance.DrawCard();
-                                    string s = InGameDeck.instance.playDeck[0];
-                                    InGameDeck.instance.playDeck.RemoveAt(0);
-                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                    CardViewManager.instance.UpdateCardView(0.001f);
-                                    break;
-                                }
-                            }
-                        }
+                            CardHand.instance.CardDrawAct();
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -2527,21 +2499,7 @@ public class MinionManager : MonoBehaviour
                         if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
-                        {
-                            for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
-                            {
-                                if (BattleUI.instance.playerCardAni[c].GetCurrentAnimatorStateInfo(0).IsName("카드일반"))
-                                {
-                                    BattleUI.instance.playerCardAni[c].SetTrigger("Draw");
-                                    CardHand.instance.DrawCard();
-                                    string s = InGameDeck.instance.playDeck[0];
-                                    InGameDeck.instance.playDeck.RemoveAt(0);
-                                    CardHand.instance.CardMove(s, CardHand.instance.nowHandNum - 1, CardHand.instance.drawCardPos.transform.position, CardHand.instance.defaultSize, 0);
-                                    CardViewManager.instance.UpdateCardView(0.001f);
-                                    break;
-                                }
-                            }
-                        }
+                            CardHand.instance.CardDrawAct();
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }

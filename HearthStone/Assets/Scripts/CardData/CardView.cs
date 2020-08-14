@@ -659,13 +659,19 @@ public class CardView : MonoBehaviour
                     int findValue = 0;
                     int.TryParse(checkNum, out findValue);
                     if (SpellManager.instance)
+                    {
                         findValue += SpellManager.instance.playerSpellPower;
-                    if (SpellManager.instance.playerSpellPower == 0)
+                        if (SpellManager.instance.playerSpellPower == 0)
+                            temp += findValue;
+                        else if (SpellManager.instance.playerSpellPower > 0)
+                            temp += "<color=#00FF00>" + findValue + "</color>";
+                        else if (SpellManager.instance.playerSpellPower < 0)
+                            temp += "<color=#FF0000>" + findValue + "</color>";
+                    }
+                    else
+                    {
                         temp += findValue;
-                    else if (SpellManager.instance && SpellManager.instance.playerSpellPower > 0)
-                        temp += "<color=#00FF00>" + findValue + "</color>";
-                    else if (SpellManager.instance && SpellManager.instance.playerSpellPower < 0)
-                        temp += "<color=#FF0000>" + findValue + "</color>";
+                    }
                     checkNum = "없음";
                 }
                 else

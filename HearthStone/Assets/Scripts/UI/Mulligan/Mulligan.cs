@@ -66,13 +66,15 @@ public class Mulligan : MonoBehaviour
         CardViewManager.instance.UpdateCardView();
     }
 
-    private IEnumerator EnemyDrawCard(int n)
+    private IEnumerator EnemyDrawCard(int n,bool coin = false)
     {
         for (int i = 0; i < n; i++)
         {
             EnemyCardHand.instance.DrawCard();
             yield return new WaitForSeconds(0.5f);
         }
+        if(coin)
+            EnemyCardHand.instance.AddCard("동전 한 닢");
     }
 
     private IEnumerator MulliganDrawCard(float waitTime)
@@ -102,7 +104,7 @@ public class Mulligan : MonoBehaviour
                     CardViewManager.instance.CardShow(ref secondTurnCardView[i], InGameDeck.instance.playDeck[0]);
                     CardViewManager.instance.UpdateCardView();
                     InGameDeck.instance.playDeck.RemoveAt(0);
-                    InGameDeck.instance.Shuffle(1000);
+                    InGameDeck.instance.Shuffle(InGameDeck.instance.playDeck, 1000);
                 }
             }
             secondCardAni.SetInteger("State", 2);
@@ -130,7 +132,7 @@ public class Mulligan : MonoBehaviour
         }
         else if (r == 2)
         {
-            StartCoroutine(EnemyDrawCard(4));
+            StartCoroutine(EnemyDrawCard(4,true));
             for (int i = 0; i < 3; i++)
             {
                 if (firstTurnCardView[i].gameObject.activeSelf)
@@ -147,7 +149,7 @@ public class Mulligan : MonoBehaviour
                     CardViewManager.instance.CardShow(ref firstTurnCardView[i], InGameDeck.instance.playDeck[0]);
                     CardViewManager.instance.UpdateCardView();
                     InGameDeck.instance.playDeck.RemoveAt(0);
-                    InGameDeck.instance.Shuffle(1000);
+                    InGameDeck.instance.Shuffle(InGameDeck.instance.playDeck,1000);
                 }
             }
             firstCardAni.SetInteger("State", 2);
@@ -206,7 +208,7 @@ public class Mulligan : MonoBehaviour
             //Debug.Log(InGameDeck.instance.playDeck[0] + ":" + cardView[i].cardN);
             InGameDeck.instance.playDeck.RemoveAt(0);
         }
-        InGameDeck.instance.Shuffle(1000);
+        InGameDeck.instance.Shuffle(InGameDeck.instance.playDeck,1000);
 
     }
 

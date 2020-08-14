@@ -84,6 +84,7 @@
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\Spin.cs" />
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\Test.cs" />
     <Compile Include="Assets\Graphics\Shaders\DropEffect.cs" />
+    <Compile Include="Assets\Graphics\Shaders\GoToHandEffect.cs" />
     <Compile Include="Assets\Graphics\Shaders\Gray.cs" />
     <Compile Include="Assets\Graphics\Shaders\RenderCamera.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\CanSelect.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Assets\Graphics\Sprites\UI\시작영상\StartAni.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\영웅초상화\PlayerSet.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\영웅초상화\SelectHeroBtn.cs" />
+    <Compile Include="Assets\Graphics\Sprites\UI\카드소멸\DrawCardRemove.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\코인\SetCoinMat.cs" />
     <Compile Include="Assets\Scenes\미니언능력생성기\CreateAbility.cs" />
     <Compile Include="Assets\Scenes\주문능력생성기\CreateSpellAbility.cs" />
@@ -113,6 +115,7 @@
     <Compile Include="Assets\Scripts\CardData\CardViewManager.cs" />
     <Compile Include="Assets\Scripts\CardData\DataMng.cs" />
     <Compile Include="Assets\Scripts\CardData\LowBase.cs" />
+    <Compile Include="Assets\Scripts\DruidAI.cs" />
     <Compile Include="Assets\Scripts\PlayData.cs" />
     <Compile Include="Assets\Scripts\Sound\SoundManager.cs" />
     <Compile Include="Assets\Scripts\UI\CopyAct.cs" />

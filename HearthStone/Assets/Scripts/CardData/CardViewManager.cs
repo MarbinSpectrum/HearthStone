@@ -113,6 +113,7 @@ public class CardViewManager : MonoBehaviour
             card.WeaponCardNameData = cardCopy.WeaponCardNameData;
             card.WeaponCardExplainData = cardCopy.WeaponCardExplainData;
         }
+        card.cardCostOffset = cardCopy.cardCostOffset;
         card.cardLevel = cardCopy.cardLevel;
         card.cardJob = cardCopy.cardJob;
     }
