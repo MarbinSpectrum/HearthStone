@@ -21,8 +21,8 @@ MonoBehaviour:
   dropPos: {x: 0, y: 0}
   lerp: 0
   alpha: 0
-  min_speed: 5
-  max_speed: 20
+  min_speed: 200
+  max_speed: 600
 --- !u!1001 &6704900927361440441
 PrefabInstance:
   m_ObjectHideFlags: 0

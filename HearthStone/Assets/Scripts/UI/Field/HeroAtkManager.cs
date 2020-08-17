@@ -67,18 +67,97 @@ public class HeroAtkManager : MonoBehaviour
     public GameObject enemyCanAttack;
     public Animator enemyObjectAni;
 
-    public float maxSpeed = 1000;
-    public float addSpeed = 100;
-    public float minSpeed = 1000;
-    public float subSpeed = 100;
-    public float targetDis = 100;
+    Animator heroObject;
+    Vector3 startHeroPos;
+    Vector3 defaultPos;
+    Vector3 targetPos;
+    float time = 0;
+    int attackFlag = -1;
+
+    [Range(0.1f, 3)]
+    public float speed;
+    public float targetDis = 10;
 
     public void Update()
     {
         HeroAtkUpdate();
         HeroWeaponUpdate();
+        HeroAttack_Update();
         playerAttackGlow.SetActive(!GameEventManager.instance.EventCheck() && playerCanAttackNum > 0 && playerFinalAtk > 0 && TurnManager.instance.turn == 턴.플레이어 && BattleUI.instance.gameStart);
         playerCanAttack.SetActive(playerAttackGlow.activeSelf);
+    }
+
+    public void HeroAttack_Update()
+    {
+        if (attackFlag == 0)
+        {
+            GameEventManager.instance.EventSet(3);
+            heroObject.SetBool("Attack", true);
+            attackFlag = 1;
+        }
+        else if (attackFlag == 1)
+        {
+            time += Time.deltaTime;
+            if (time >= 1)
+            {
+                attackFlag = 2;
+                time = 0;
+            }
+        }
+        else if (attackFlag == 2)
+        {
+            defaultPos = heroObject.transform.position;
+            heroObject.SetBool("Attack", false);
+            startHeroPos = heroObject.transform.position;
+            attackFlag = 3;
+            time = 0;
+        }
+        else if (attackFlag == 3)
+        {
+            Vector3 dic = targetPos - startHeroPos;
+            dic = dic.normalized;
+            if (time < 1)
+            {
+                Vector3 heroPos = Vector3.Lerp(startHeroPos, targetPos - dic * targetDis, time);
+                heroObject.transform.position = heroPos;
+                time += Time.deltaTime * speed;
+            }
+            else
+            {
+                attackFlag = 4;
+            }
+        }
+        else if (attackFlag == 4)
+        {
+            startHeroPos = heroObject.transform.position;
+            AttackManager.instance.AttackEffectRun();
+            attackFlag = 5;
+            time = 0;
+        }
+        else if (attackFlag == 5)
+        {
+            if (time < 1)
+            {
+                Vector3 heroPos = Vector3.Lerp(startHeroPos, defaultPos, time);
+                heroObject.transform.position = heroPos;
+                time += Time.deltaTime * speed;
+            }
+            else
+            {
+                heroObject.transform.position = defaultPos;
+                attackFlag = 6;
+            }
+        }
+        else if (attackFlag == 6)
+        {
+            heroObject.transform.position = defaultPos;
+            if (heroObject.Equals(playerObjectAni))
+                playerWeaponDurability--;
+            else if (heroObject.Equals(enemyObjectAni))
+                enemyWeaponDurability--;
+            time = 0;
+            attackFlag = -1;
+        }
     }
 
     #region[영웅 공격력 업데이트]
@@ -330,58 +409,21 @@ public class HeroAtkManager : MonoBehaviour
         }
     }
 
-    public void HeroAttack(bool enemy,Vector3 targetPos)
+    public void HeroAttack(bool enemy,Vector3 target)
     {
         if (enemy)
         {
             enemyCanAttackNum--;
-            StartCoroutine(HeroAttack(enemyObjectAni, targetPos));
+            attackFlag = 0;
+            heroObject = enemyObjectAni;
+            targetPos = target;
         }
         else
         {
             playerCanAttackNum--;
-            StartCoroutine(HeroAttack(playerObjectAni, targetPos));
+            attackFlag = 0;
+            heroObject = playerObjectAni;
+            targetPos = target;
         }
-    }
-
-    private IEnumerator HeroAttack(Animator heroObject,Vector3 targetPos)
-    {
-        GameEventManager.instance.EventSet(3);
-        playerObjectAni.SetBool("Attack",true);
-        yield return new WaitForSeconds(1f);
-
-        Vector3 defaultPos = heroObject.transform.position;
-
-        playerObjectAni.SetBool("Attack", false);
-
-        float speed = 10;
-        while(Vector2.Distance(heroObject.transform.position,targetPos) > targetDis * Time.deltaTime)
-        {
-            Vector3 dic = targetPos - heroObject.transform.position;
-            dic = dic.normalized;
-            heroObject.transform.position += dic * speed * Time.deltaTime;
-            speed += addSpeed;
-            speed = Mathf.Min(speed, maxSpeed);
-            yield return new WaitForSeconds(Time.deltaTime);
-        }
-
-        AttackManager.instance.AttackEffectRun();
-
-        while (Vector2.Distance(heroObject.transform.position, defaultPos) > targetDis * Time.deltaTime)
-        {
-            Vector3 dic = defaultPos - heroObject.transform.position;
-            dic = dic.normalized;
-            heroObject.transform.position += dic * speed * Time.deltaTime;
-            speed -= subSpeed;
-            speed = Mathf.Max(speed, minSpeed);
-            yield return new WaitForSeconds(Time.deltaTime);
-        }
-
-        if (heroObject.Equals(playerObjectAni))
-            playerWeaponDurability--;
-        else if (heroObject.Equals(enemyObjectAni))
-            enemyWeaponDurability--;
-
-        heroObject.transform.position = defaultPos;
     }
 }

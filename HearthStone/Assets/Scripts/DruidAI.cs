@@ -686,7 +686,7 @@ public class DruidAI : MonoBehaviour
 
                 if (searchMinionIndex != -1)
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
-                else if (EnemyMinionField.instance.minionNum > 0)
+                else if (MinionField.instance.minionNum > 0)
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)]);
                 else
                     SpellManager.instance.HeroSelect(false);
@@ -710,7 +710,7 @@ public class DruidAI : MonoBehaviour
 
                 if (searchMinionIndex != -1)
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
-                else if (EnemyMinionField.instance.minionNum > 0)
+                else if (MinionField.instance.minionNum > 0)
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)]);
                 break;
             #endregion

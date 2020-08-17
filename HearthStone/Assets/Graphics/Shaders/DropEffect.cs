@@ -37,10 +37,10 @@ public class DropEffect : MonoBehaviour
             parentRectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
         Vector2 v = dropPos - dropRectTransform.anchoredPosition;   
         v *= Time.deltaTime * 10;
-        if (Vector2.Distance(Vector2.zero, v) > Vector2.Distance(Vector2.zero, v.normalized * max_speed))
-            v = v.normalized * max_speed;
-        if (Vector2.Distance(Vector2.zero, v) < Vector2.Distance(Vector2.zero, v.normalized * min_speed))
-            v = v.normalized * min_speed;
+        if (Vector2.Distance(Vector2.zero, v) > Vector2.Distance(Vector2.zero, v.normalized * Time.deltaTime  * max_speed))
+            v = v.normalized * Time.deltaTime * max_speed;
+        if (Vector2.Distance(Vector2.zero, v) < Vector2.Distance(Vector2.zero, v.normalized * Time.deltaTime * min_speed))
+            v = v.normalized * Time.deltaTime * min_speed;
         if (Vector2.Distance(dropRectTransform.anchoredPosition, dropPos) < Vector2.Distance(Vector2.zero, v) || (dropRectTransform.anchoredPosition == dropPos))
         {
             dropRectTransform.anchoredPosition = dropPos;

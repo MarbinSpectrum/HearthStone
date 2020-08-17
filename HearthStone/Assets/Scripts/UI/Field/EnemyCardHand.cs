@@ -217,7 +217,7 @@ public class EnemyCardHand : MonoBehaviour
             useCardNum++;
             CardViewManager.instance.CardShow(ref DragCardObject.instance.dropEffect.dropEffectCardView, cardName);
             CardViewManager.instance.UpdateCardView(0.001f);
-            DragCardObject.instance.ShowDropEffectSpell(Camera.main.WorldToScreenPoint(HeroManager.instance.enemyHero.transform.position), Camera.main.WorldToScreenPoint(HeroManager.instance.playerHero.transform.position), 1);
+            DragCardObject.instance.ShowDropEffectSpell(Camera.main.WorldToScreenPoint(BattleUI.instance.enemySpellViewPos.transform.position), Camera.main.WorldToScreenPoint(BattleUI.instance.enemySpellViewPos.transform.position), 1);
             SpellManager.instance.RunSpell(cardName,true);
             CardRemove(n);
         }

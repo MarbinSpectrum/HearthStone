@@ -40,6 +40,8 @@ public class BattleUI : MonoBehaviour
 
     public GameObject playerSpellPos;
     public GameObject enemySpellPos;
+    public GameObject enemySpellViewPos;
+
 
     [HideInInspector] public bool gameStart;
 
