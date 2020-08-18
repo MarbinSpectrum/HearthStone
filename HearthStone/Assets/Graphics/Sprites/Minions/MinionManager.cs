@@ -834,7 +834,7 @@ public class MinionManager : MonoBehaviour
                         if(minionObject.enemy)
                         {
                             for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                                if (MinionField.instance.minions[m].gameObject.activeSelf)
+                                if (MinionField.instance.minions[m].gameObject.activeSelf && MinionField.instance.minions[m].final_hp > 0)
                                     randomMinion.Add(MinionField.instance.minions[m]);
                             if (EnemyMinionField.instance.minionNum >= 7)
                                 randomMinion.Clear();
@@ -842,7 +842,7 @@ public class MinionManager : MonoBehaviour
                         else
                         {
                             for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                                if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                                if (EnemyMinionField.instance.minions[m].gameObject.activeSelf && EnemyMinionField.instance.minions[m].final_hp > 0)
                                     randomMinion.Add(EnemyMinionField.instance.minions[m]);
                             if (MinionField.instance.minionNum >= 7)
                                 randomMinion.Clear();
@@ -1738,7 +1738,7 @@ public class MinionManager : MonoBehaviour
                 if (minion_enemy)
                 {
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                        if (MinionField.instance.minions[m].gameObject.activeSelf)
+                        if (MinionField.instance.minions[m].gameObject.activeSelf && MinionField.instance.minions[m].final_hp > 0)
                             randomMinion.Add(MinionField.instance.minions[m]);
                     if (EnemyMinionField.instance.minionNum >= 7)
                         randomMinion.Clear();
@@ -1746,7 +1746,7 @@ public class MinionManager : MonoBehaviour
                 else
                 {
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                        if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                        if (EnemyMinionField.instance.minions[m].gameObject.activeSelf && EnemyMinionField.instance.minions[m].final_hp > 0)
                             randomMinion.Add(EnemyMinionField.instance.minions[m]);
                     if (MinionField.instance.minionNum >= 7)
                         randomMinion.Clear();

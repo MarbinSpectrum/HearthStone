@@ -13,7 +13,7 @@ public class CardView : MonoBehaviour
 {
     [HideInInspector] public CardType cardType;
 
-    [HideInInspector] public bool hide;
+    public bool hide;
     [HideInInspector] public bool updateCard;
 
     string cardName;
@@ -42,6 +42,7 @@ public class CardView : MonoBehaviour
     [HideInInspector] public string cardLevel = "기본";
 
     [HideInInspector] public int cardCostOffset = 0;
+    public bool viewSpellOffset = false;
 
     #region[하수인카드 정보]
     GameObject MinionsCard;
@@ -658,7 +659,7 @@ public class CardView : MonoBehaviour
                 {
                     int findValue = 0;
                     int.TryParse(checkNum, out findValue);
-                    if (SpellManager.instance)
+                    if (SpellManager.instance && viewSpellOffset)
                     {
                         findValue += SpellManager.instance.playerSpellPower;
                         if (SpellManager.instance.playerSpellPower == 0)

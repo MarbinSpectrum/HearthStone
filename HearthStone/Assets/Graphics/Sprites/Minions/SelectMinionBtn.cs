@@ -66,7 +66,7 @@ public class SelectMinionBtn : Btn
         else
         {
             if (!DragLineRenderer.instance.CheckActObj(minionObject.gameObject))
-                SpellManager.instance.MinionSelect(minionObject);
+                SpellManager.instance.MinionSelect(minionObject,false);
             else
                 SpellManager.instance.MinionSelectCancle();
         }

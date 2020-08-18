@@ -57,6 +57,126 @@ public class DruidAI : MonoBehaviour
         }
         #endregion
 
+        #region[하수인으로 공격하는 것을 고려]
+        //공격하는하수인,타겟번호,돌진여부,우선순위(남은체력)
+        List<Vector4> targetList = new List<Vector4>();
+        List<Vector4> targetTauntList = new List<Vector4>();
+        for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
+        {
+            if (!EnemyMinionField.instance.minions[i].gameObject.activeSelf)
+                continue;
+            if (!EnemyMinionField.instance.minions[i].checkCanAtttack)
+                continue;
+            int atk = EnemyMinionField.instance.minions[i].final_atk;
+            int hp = EnemyMinionField.instance.minions[i].final_hp;
+            bool charge = false;
+            for (int j = 0; j < EnemyMinionField.instance.minions[i].abilityList.Count; j++)
+                if (EnemyMinionField.instance.minions[i].abilityList[j].Ability_type == MinionAbility.Ability.돌진)
+                    charge = true;
+
+            for (int j = 0; j < MinionField.instance.minions.Length; j++)
+            {
+                if (!MinionField.instance.minions[j].gameObject.activeSelf)
+                    continue;
+                int targetAtk = MinionField.instance.minions[j].final_atk;
+                int targetHp = MinionField.instance.minions[j].final_hp;
+                if (targetHp - atk > 0 && !charge)
+                    continue;
+                if (MinionField.instance.minions[j].taunt)
+                    targetTauntList.Add(new Vector4(i, j, charge ? +1 : -1, hp - targetAtk));
+                else
+                    targetList.Add(new Vector4(i, j, charge ? +1 : -1, hp - targetAtk));
+            }
+        }
+
+
+
+        targetList.Sort(delegate (Vector4 A, Vector4 B)
+        {
+            if (A.z < B.z)
+                return 1;
+            if (A.z == B.z)
+            {
+                if (A.w > B.w)
+                    return 1;
+                else
+                    return -1;
+            }
+            return -1;
+        });
+        targetTauntList.Sort(delegate (Vector4 A, Vector4 B)
+        {
+            if (A.z < B.z)
+                return 1;
+            if (A.z == B.z)
+            {
+                if (A.w > B.w)
+                    return 1;
+                else
+                    return -1;
+            }
+            return -1;
+        });
+
+        if (targetTauntList.Count > 0)
+        {
+            if (!MinionManager.instance.CheckTaunt(false))
+            {
+                if (targetTauntList[0].z > 0)
+                {
+                    Debug.Log("돌진하수인이고 도발하수인존재");
+                    return AI_Act.AttackMinion;
+                }
+                //돌진하수인은 아니고 공격하기 좋은경우
+                else if (targetTauntList[0].w >= 0)
+                {
+                    Debug.Log("(적합한대상공격)돌진하수인은 아니고 도발하수인존재");
+                    return AI_Act.AttackMinion;
+                }
+            }
+        }
+        else if (targetList.Count > 0)
+        {
+            //도발하수인이없다면
+            if (MinionManager.instance.CheckTaunt(false))
+            {
+                if (targetList[0].z > 0)
+                {
+                    Debug.Log("돌진하수인이고 도발하수인이 없음");
+                    return AI_Act.AttackMinion;
+                }
+                else if (targetList[0].w >= 0)
+                {
+                    Debug.Log("(적합한대상공격)돌진하수인이 아니고 도발하수인이 없음");
+                    return AI_Act.AttackMinion;
+                }
+                else
+                {
+                    Debug.Log("(영웅을 공격)돌진하수인이 아니고 도발하수인이 없음");
+                    return AI_Act.AttackMinion;
+                }
+            }
+        }
+        else if (EnemyMinionField.instance.minionNum > 0)
+        {
+            if (MinionManager.instance.CheckTaunt(false))
+            {
+                bool canAttackFlag = false;
+                for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
+                {
+                    if (!EnemyMinionField.instance.minions[i].gameObject.activeSelf)
+                        continue;
+                    if (EnemyMinionField.instance.minions[i].checkCanAtttack)
+                    {
+                        Debug.Log("필드에 하수인이 없어서 영웅본체공격");
+                        return AI_Act.AttackMinion;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
         return AI_Act.TurnEnd;
     }
 
@@ -191,10 +311,140 @@ public class DruidAI : MonoBehaviour
             }
             #endregion
 
+            #region[하수인으로 공격]
             else if (act == AI_Act.AttackMinion)
             {
- 
+                //공격하는하수인,타겟번호,돌진여부,우선순위(남은체력)
+                List<Vector4> targetList = new List<Vector4>();
+                List<Vector4> targetTauntList = new List<Vector4>();
+                for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
+                {
+                    if (!EnemyMinionField.instance.minions[i].gameObject.activeSelf)
+                        continue;
+                    if (!EnemyMinionField.instance.minions[i].checkCanAtttack)
+                        continue;
+                    int atk = EnemyMinionField.instance.minions[i].final_atk;
+                    int hp = EnemyMinionField.instance.minions[i].final_hp;
+                    bool charge = false;
+                    for (int j = 0; j < EnemyMinionField.instance.minions[i].abilityList.Count; j++)
+                        if (EnemyMinionField.instance.minions[i].abilityList[j].Ability_type == MinionAbility.Ability.돌진)
+                            charge = true;
+
+                    for (int j = 0; j < MinionField.instance.minions.Length; j++)
+                    {
+                        if (!MinionField.instance.minions[j].gameObject.activeSelf)
+                            continue;
+                        int targetAtk = MinionField.instance.minions[j].final_atk;
+                        int targetHp = MinionField.instance.minions[j].final_hp;
+                        if (targetHp - atk > 0 && !charge)
+                            continue;
+                        if (MinionField.instance.minions[j].taunt)
+                            targetTauntList.Add(new Vector4(i, j, charge ? +1 : -1, hp - targetAtk));
+                        else
+                            targetList.Add(new Vector4(i, j, charge ? +1 : -1, hp - targetAtk));
+                    }
+                }
+
+                targetList.Sort(delegate (Vector4 A, Vector4 B)
+                {
+                    if (A.z < B.z)
+                        return 1;
+                    if (A.z == B.z)
+                    {
+                        if (A.w > B.w)
+                            return 1;
+                        else
+                            return -1;
+                    }
+                    return -1;
+                });
+                targetTauntList.Sort(delegate (Vector4 A, Vector4 B)
+                {
+                    if (A.z < B.z)
+                        return 1;
+                    if (A.z == B.z)
+                    {
+                        if (A.w > B.w)
+                            return 1;
+                        else
+                            return -1;
+                    }
+                    return -1;
+                });
+
+                if (targetTauntList.Count > 0)
+                {
+                    Debug.Log(targetTauntList[0]);
+                    //도발하수인이있다면
+                    if (!MinionManager.instance.CheckTaunt(false))
+                    {
+                        //돌진하수인이면
+                        if (targetTauntList[0].z > 0)
+                        {
+                            string targetName = "" + targetTauntList[0].y;
+                            AttackOrder((int)targetTauntList[0].x, targetName);
+                            yield return new WaitForSeconds(2f);
+                        }
+                        //돌진하수인은 아니고 공격하기 좋은경우
+                        else if (targetTauntList[0].w >= 0)
+                        {
+                            string targetName = "" + targetTauntList[0].y;
+                            AttackOrder((int)targetTauntList[0].x, targetName);
+                            yield return new WaitForSeconds(2f);
+                        }
+                    }
+                }
+                else if (targetList.Count > 0)
+                {
+                    Debug.Log(targetList[0]);
+                    //도발하수인이없다면
+                    if (MinionManager.instance.CheckTaunt(false))
+                    {
+                        //돌진하수인이면
+                        if (targetList[0].z > 0)
+                        {
+                            string targetName = "Hero";
+                            AttackOrder((int)targetList[0].x, targetName);
+                            yield return new WaitForSeconds(2f);
+                        }
+                        //돌진하수인은 아니고 공격하기 좋은경우
+                        else if (targetList[0].w >= 0)
+                        {
+                            string targetName = "" + targetList[0].y;
+                            AttackOrder((int)targetList[0].x, targetName);
+                            yield return new WaitForSeconds(2f);
+                        }
+                        //돌진하수인은 아니고 공격하기 힘든경우
+                        else
+                        {
+                            string targetName = "Hero";
+                            AttackOrder((int)targetList[0].x, targetName);
+                            yield return new WaitForSeconds(2f);
+                        }
+                    }
+                }
+                else if (EnemyMinionField.instance.minionNum > 0)
+                {
+                    if (MinionManager.instance.CheckTaunt(false))
+                    {
+                        bool canAttackFlag = false;
+                        for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
+                        {
+                            if (!EnemyMinionField.instance.minions[i].gameObject.activeSelf)
+                                continue;
+                            if (EnemyMinionField.instance.minions[i].checkCanAtttack)
+                            {
+                                string targetName = "Hero";
+                                AttackOrder(i, targetName);
+                                yield return new WaitForSeconds(2f);
+                                break;
+                            }
+                        }
+                    }
+                }
             }
+            #endregion
+
             else if(act == AI_Act.AttackHero)
             {
 
@@ -491,7 +741,7 @@ public class DruidAI : MonoBehaviour
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
                 //하수인이 없으면 영웅빙결
                 else
-                    SpellManager.instance.HeroSelect(false);
+                    SpellManager.instance.HeroSelect(false,true);
                 break;
             #endregion
 
@@ -518,7 +768,7 @@ public class DruidAI : MonoBehaviour
                                 break;
                             }
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
                 break;
             #endregion
 
@@ -534,7 +784,7 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                         }
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
                 break;
             #endregion
 
@@ -549,9 +799,9 @@ public class DruidAI : MonoBehaviour
                             break;
                         }
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
                 else if (EnemyMinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)]);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)], true);
                 break;
             #endregion
 
@@ -567,9 +817,9 @@ public class DruidAI : MonoBehaviour
                         }
 
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
                 else if (EnemyMinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)]);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)], true);
                 break;
             #endregion
 
@@ -586,9 +836,9 @@ public class DruidAI : MonoBehaviour
                         }
 
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
                 else if (EnemyMinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)]);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)], true);
                 break;
             #endregion
 
@@ -618,9 +868,9 @@ public class DruidAI : MonoBehaviour
                                 searchMinionIndex = i;
                             }
                     if (searchMinionIndex != -1)
-                        SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
+                        SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
                     else
-                        SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)]);
+                        SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
                 }
                 break;
             #endregion
@@ -637,16 +887,16 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                         }
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
                 else
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
                 break;
             #endregion
 
             #region[생명력회복]
             case SpellAbility.Ability.생명력회복:
             case SpellAbility.Ability.하수인의_생명력회복:
-                SpellManager.instance.HeroSelect(true);
+                SpellManager.instance.HeroSelect(true, true);
                 break;
             #endregion
 
@@ -662,9 +912,9 @@ public class DruidAI : MonoBehaviour
                         }
 
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
                 else if (MinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
                 break;
             #endregion
 
@@ -685,11 +935,11 @@ public class DruidAI : MonoBehaviour
                         }
 
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
                 else if (MinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
                 else
-                    SpellManager.instance.HeroSelect(false);
+                    SpellManager.instance.HeroSelect(false, true);
                 break;
             #endregion
 
@@ -709,9 +959,9 @@ public class DruidAI : MonoBehaviour
                         }
 
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
                 else if (MinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
                 break;
             #endregion
 
@@ -726,7 +976,7 @@ public class DruidAI : MonoBehaviour
                         }
 
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
 
                 if (searchMinionIndex == -1)
                 {
@@ -739,7 +989,7 @@ public class DruidAI : MonoBehaviour
                             }
 
                     if (searchMinionIndex != -1)
-                        SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex]);
+                        SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
                 }
                 break;
             #endregion
@@ -756,9 +1006,9 @@ public class DruidAI : MonoBehaviour
                         }
 
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
                 else if (EnemyMinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)]);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)], true);
                 break;
             #endregion
 
@@ -776,9 +1026,9 @@ public class DruidAI : MonoBehaviour
                             break;
                         }
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
                 else if (EnemyMinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)]);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)], true);
                 break;
             #endregion
 
@@ -793,9 +1043,9 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                         }
                 if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
                 else
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)]);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
                 break;
                 #endregion
         }
@@ -1073,5 +1323,35 @@ public class DruidAI : MonoBehaviour
     }
     #endregion
 
+    #endregion
+
+    #region[드루이드 공격 명령]
+    public void AttackOrder(int n, string target)
+    {
+        GameEventManager.instance.EventAdd(2f);
+        EnemyMinionField.instance.minions[n].stealth = false;
+        if(target.Equals("Hero"))
+        {
+            AttackManager.instance.PopAllDamageObj();
+            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, EnemyMinionField.instance.minions[n].final_atk);
+            Debug.Log(EnemyMinionField.instance.minions[n].minion_name + " : " + "Hero");
+            Vector3 targetPos = HeroManager.instance.playerHero.transform.position;
+            targetPos -= new Vector3(0, 0, -10);
+            EnemyMinionField.instance.minions_Attack_pos[n] = targetPos;
+        }
+        else
+        {
+            int targetN = 0;
+            int.TryParse(target, out targetN);
+            AttackManager.instance.PopAllDamageObj();
+            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[n].damageEffect, MinionField.instance.minions[targetN].final_atk);
+            AttackManager.instance.AddDamageObj(MinionField.instance.minions[targetN].damageEffect, EnemyMinionField.instance.minions[n].final_atk);
+            Vector3 targetPos = MinionField.instance.minions[targetN].transform.position;
+            targetPos -= new Vector3(0, 0, -10);
+            Debug.Log(EnemyMinionField.instance.minions[n].minion_name + " : " + MinionField.instance.minions[targetN].minion_name);
+            EnemyMinionField.instance.minions_Attack_pos[n] = targetPos;
+        }
+
+    }
     #endregion
 }

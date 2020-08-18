@@ -57,7 +57,10 @@ public class ManaManager : MonoBehaviour
         }
 
         playerMaxMana = Mathf.Min(playerMaxMana, 10);
+        playerNowMana = Mathf.Max(playerNowMana, 0);
+
         enemyMaxMana = Mathf.Min(enemyMaxMana, 10);
+        enemyNowMana = Mathf.Max(enemyNowMana, 0);
     }
     #endregion
 }

@@ -26,6 +26,7 @@ public class MinionObject : MonoBehaviour
     //공격가능횟수
     public int canAttackNum;
     public bool canAttack;
+    public bool checkCanAtttack;
 
     [Header("전설")]
     public bool legend;
@@ -235,6 +236,19 @@ public class MinionObject : MonoBehaviour
                 !freeze &&
                 !MinionField.instance.MinionAttackCheck() && 
                 animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"));
+
+        if (!enemy)
+            checkCanAtttack = canAttackObj.activeSelf;
+        else
+            checkCanAtttack = !GameEventManager.instance.EventCheck() &&
+                final_atk != 0 &&
+                TurnManager.instance.turn == 턴.상대방 &&
+                canAttack &&
+                canAttackNum > 0 &&
+                !sleep &&
+                !freeze &&
+                !EnemyMinionField.instance.MinionAttackCheck() &&
+                animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료");
 
         tauntObj.SetActive(taunt);
         stealthObj.SetActive(stealth);

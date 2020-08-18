@@ -65,8 +65,8 @@ public class TurnChangeBtn : Btn
         }
         else if (btnAni.GetCurrentAnimatorStateInfo(0).IsName("상대턴_멈춤"))
         {
-            btnAni.SetTrigger("내턴");
-            TurnManager.instance.turnEndTrigger = true;
+            //btnAni.SetTrigger("내턴");
+            //TurnManager.instance.turnEndTrigger = true;
         }
     }
     #endregion
