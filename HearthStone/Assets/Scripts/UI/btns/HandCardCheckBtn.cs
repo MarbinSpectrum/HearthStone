@@ -13,6 +13,14 @@ public class HandCardCheckBtn : Btn
     public override void Awake()
     {
         AddEvent();
+
+        EventTrigger.Entry pDrag = new EventTrigger.Entry();
+        pDrag.eventID = EventTriggerType.Drag;
+        pDrag.callback.AddListener((data) =>
+        {
+            PointDrag();
+        });
+        btnEvent.triggers.Add(pDrag);
     }
     #endregion
 
@@ -45,20 +53,30 @@ public class HandCardCheckBtn : Btn
     }
     #endregion
 
-    #region[pointerExit]
-    public override void pointerExit()
+    public void PointDrag()
     {
-        select = false;
         if (DragLineRenderer.instance.lineRenderer.enabled)
             return;
         if (DragCardObject.instance.dragCard)
             return;
         if (!DragCardObject.instance.dropEffect.dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Stop"))
             return;
-
+        if (!CardDragField.InMouse)
+            return;
+        if (!select)
+            return;
+        select = false;
         CardHandCheck.instance.checkCard.hide = true;
         CardViewManager.instance.UpdateCardView(0.001f);
         PickUpCard();
+    }
+
+    #region[pointerExit]
+    public override void pointerExit()
+    {
+        select = false;
+        CardHandCheck.instance.checkCard.hide = true;
+        CardViewManager.instance.UpdateCardView(0.001f);
     }
     #endregion
 
@@ -113,6 +131,8 @@ public class HandCardCheckBtn : Btn
         CardHandCheck.instance.checkCard.hide = false;
         CardViewManager.instance.UpdateCardView();
         CardHandCheck.instance.transform.position = new Vector3(transform.position.x, CardHandCheck.instance.transform.position.y, CardHandCheck.instance.transform.position.z);
+
+        
     }
     #endregion
 

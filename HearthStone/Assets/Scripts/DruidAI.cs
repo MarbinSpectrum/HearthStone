@@ -78,6 +78,8 @@ public class DruidAI : MonoBehaviour
             {
                 if (!MinionField.instance.minions[j].gameObject.activeSelf)
                     continue;
+                if (MinionField.instance.minions[j].stealth)
+                    continue;
                 int targetAtk = MinionField.instance.minions[j].final_atk;
                 int targetHp = MinionField.instance.minions[j].final_hp;
                 if (targetHp - atk > 0 && !charge)
@@ -88,8 +90,6 @@ public class DruidAI : MonoBehaviour
                     targetList.Add(new Vector4(i, j, charge ? +1 : -1, hp - targetAtk));
             }
         }
-
-
 
         targetList.Sort(delegate (Vector4 A, Vector4 B)
         {
@@ -173,6 +173,25 @@ public class DruidAI : MonoBehaviour
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region[영웅능력을 사용하는 것을 고려]
+        if (ManaManager.instance.enemyNowMana >= 2 && HeroManager.instance.heroPowerManager.enemyCanUse)
+        {
+            if (HeroManager.instance.heroPowerManager.enemyHeroName.Equals("발리라"))
+            {
+                //무기공격력이 1이하이고 내구도가 2미만일때
+                if (HeroManager.instance.heroAtkManager.enemyWeaponAtk <= 1 && HeroManager.instance.heroAtkManager.enemyWeaponDurability < 2)
+                    return AI_Act.AttackHero;
+            }
+            else if (HeroManager.instance.heroPowerManager.enemyHeroName.Equals("말퓨리온"))
+                return AI_Act.AttackHero;
+        }
+        else if (HeroManager.instance.heroAtkManager.enemyAttackCheck)
+        {
+            return AI_Act.AttackHero;
         }
 
         #endregion
@@ -334,6 +353,8 @@ public class DruidAI : MonoBehaviour
                     {
                         if (!MinionField.instance.minions[j].gameObject.activeSelf)
                             continue;
+                        if (MinionField.instance.minions[j].stealth)
+                            continue;
                         int targetAtk = MinionField.instance.minions[j].final_atk;
                         int targetHp = MinionField.instance.minions[j].final_hp;
                         if (targetHp - atk > 0 && !charge)
@@ -374,7 +395,6 @@ public class DruidAI : MonoBehaviour
 
                 if (targetTauntList.Count > 0)
                 {
-                    Debug.Log(targetTauntList[0]);
                     //도발하수인이있다면
                     if (!MinionManager.instance.CheckTaunt(false))
                     {
@@ -396,7 +416,6 @@ public class DruidAI : MonoBehaviour
                 }
                 else if (targetList.Count > 0)
                 {
-                    Debug.Log(targetList[0]);
                     //도발하수인이없다면
                     if (MinionManager.instance.CheckTaunt(false))
                     {
@@ -445,10 +464,78 @@ public class DruidAI : MonoBehaviour
             }
             #endregion
 
-            else if(act == AI_Act.AttackHero)
+            #region[영웅능력 사용]
+            else if (act == AI_Act.AttackHero)
             {
+                //영웅능력사용조건
+                if (ManaManager.instance.enemyNowMana >= 2 && HeroManager.instance.heroPowerManager.enemyCanUse)
+                {
+                    if (HeroManager.instance.heroPowerManager.enemyHeroName.Equals("발리라"))
+                    {
+                        //무기공격력이 1이하이고 내구도가 2미만일때
+                        if (HeroManager.instance.heroAtkManager.enemyWeaponAtk <= 1 && HeroManager.instance.heroAtkManager.enemyWeaponDurability < 2)
+                        {
+                            HeroManager.instance.heroPowerManager.UseHeroAbility(true);
+                            yield return new WaitForSeconds(2f);
+                        }
 
+                    }
+                    else if (HeroManager.instance.heroPowerManager.enemyHeroName.Equals("말퓨리온"))
+                    {
+                        HeroManager.instance.heroPowerManager.UseHeroAbility(true);
+                        yield return new WaitForSeconds(2f);
+                    }
+                }
+                else if (HeroManager.instance.heroAtkManager.enemyAttackCheck)
+                {
+                    List<int> targetList = new List<int>();
+                    for (int i = 0; i < MinionField.instance.minions.Length; i++)
+                        if (MinionField.instance.minions[i].gameObject.activeSelf && !MinionField.instance.minions[i].stealth)
+                        {
+                            if (MinionField.instance.minions[i].stealth)
+                                continue;
+                            if (MinionField.instance.minions[i].final_hp > HeroManager.instance.heroAtkManager.enemyFinalAtk)
+                                continue;
+                            if(!MinionManager.instance.CheckTaunt(false) && !MinionField.instance.minions[i].taunt)
+                                continue;
+                            if (MinionField.instance.minions[i].final_atk > 5)
+                                continue;
+                            if (MinionField.instance.minions[i].final_atk >= HeroManager.instance.heroHpManager.nowEnemyHp + HeroManager.instance.heroHpManager.enemyShield)
+                                continue;
+
+                            targetList.Add(i);
+                        }
+
+                    targetList.Sort(delegate (int A, int B)
+                    {
+                        if (MinionField.instance.minions[A].baseHp + MinionField.instance.minions[A].baseAtk < MinionField.instance.minions[B].baseHp + MinionField.instance.minions[B].baseAtk)
+                            return -1;
+                        return +1;
+                    });
+
+
+                    if (targetList.Count > 0)
+                    {
+                        AttackManager.instance.PopAllDamageObj();
+                        AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, MinionField.instance.minions[targetList[0]].final_atk);
+                        AttackManager.instance.AddDamageObj(MinionField.instance.minions[targetList[0]].damageEffect, HeroManager.instance.heroAtkManager.enemyFinalAtk);
+                        HeroManager.instance.heroAtkManager.HeroAttack(true, MinionField.instance.minions[targetList[0]].transform.position);
+                        yield return new WaitForSeconds(2f);
+                    }
+                    else if (MinionManager.instance.CheckTaunt(false))
+                    {
+                        AttackManager.instance.PopAllDamageObj();
+                        AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, HeroManager.instance.heroAtkManager.enemyFinalAtk);
+                        HeroManager.instance.heroAtkManager.HeroAttack(true, HeroManager.instance.playerHero.transform.position);
+                        yield return new WaitForSeconds(2f);
+                    }
+                    else
+                        HeroManager.instance.heroAtkManager.enemyCanAttackNum--;
+
+                }
             }
+            #endregion
+
             else if (act == AI_Act.TurnEnd)
             {
                 Debug.Log("턴끝냄");

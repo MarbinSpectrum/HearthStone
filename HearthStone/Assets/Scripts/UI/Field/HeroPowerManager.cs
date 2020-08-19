@@ -5,7 +5,7 @@ using UnityEngine;
 public class HeroPowerManager : MonoBehaviour
 {
     [Header("나의 영웅 능력")]
-    string playerHeroName;
+    [HideInInspector] public string playerHeroName;
     public List<SpellAbility> playerheroPower = new List<SpellAbility>();
     public bool playerCanUse = true;
     public Animator playerHeroPowerObjAni;
@@ -13,7 +13,7 @@ public class HeroPowerManager : MonoBehaviour
     public GameObject playerHeroPowerBtn;
 
     [Header("적의 영웅 능력")]
-    string enemyHeroName;
+    [HideInInspector] public string enemyHeroName;
     public List<SpellAbility> enemyheroPower = new List<SpellAbility>();
     public bool enemyCanUse = true;
     public Animator enemyHeroPowerObjAni;

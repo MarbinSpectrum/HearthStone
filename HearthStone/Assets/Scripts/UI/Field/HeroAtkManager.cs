@@ -65,6 +65,7 @@ public class HeroAtkManager : MonoBehaviour
     public int enemyCanAttackNum = 0;
     public GameObject enemyAttackGlow;
     public GameObject enemyCanAttack;
+    public bool enemyAttackCheck = false;
     public Animator enemyObjectAni;
 
     Animator heroObject;
@@ -85,6 +86,7 @@ public class HeroAtkManager : MonoBehaviour
         HeroAttack_Update();
         playerAttackGlow.SetActive(!GameEventManager.instance.EventCheck() && playerCanAttackNum > 0 && playerFinalAtk > 0 && TurnManager.instance.turn == 턴.플레이어 && BattleUI.instance.gameStart);
         playerCanAttack.SetActive(playerAttackGlow.activeSelf);
+        enemyAttackCheck = !GameEventManager.instance.EventCheck() && enemyCanAttackNum > 0 && enemyFinalAtk > 0 && TurnManager.instance.turn == 턴.상대방 && BattleUI.instance.gameStart;
     }
 
     public void HeroAttack_Update()
@@ -416,7 +418,7 @@ public class HeroAtkManager : MonoBehaviour
             enemyCanAttackNum--;
             attackFlag = 0;
             heroObject = enemyObjectAni;
-            targetPos = target;
+            targetPos = new Vector3(target.x, target.y, 0);
         }
         else
         {

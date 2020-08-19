@@ -81,7 +81,7 @@ public class TurnManager : MonoBehaviour
     {
         bool canAttack = false;
         for (int i = 0; i < MinionField.instance.minionNum; i++)
-            if (MinionField.instance.minions[i].canAttackNum != 0)
+            if (MinionField.instance.minions[i].canAttackNum != 0 && !MinionField.instance.minions[i].sleep)
                 canAttack = true;
         if(HeroManager.instance.heroAtkManager.playerCanAttack.activeSelf)
             canAttack = true;

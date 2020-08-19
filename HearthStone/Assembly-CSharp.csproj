@@ -101,6 +101,7 @@
     <Compile Include="Assets\Graphics\Sprites\Minions\SetMinionRenderer.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\Battery\BatteryUI.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\BigBell\BigBell.cs" />
+    <Compile Include="Assets\Graphics\Sprites\UI\CardDragField.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\Water Wheel\WaterWheel.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\시작영상\StartAni.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\영웅초상화\PlayerSet.cs" />

@@ -198,19 +198,20 @@ public class SpellManager : MonoBehaviour
             {
                 if (i + 1 >= spellList.Count || spellList[i + 1].Condition_type != SpellAbility.Condition.선택)
                 {
+                    List<Vector3> chooseOneData = new List<Vector3>();
+                    foreach (SpellAbility chooseAbility in chooseOneList)
+                    {
+                        Vector3 data = chooseAbility.Condition_data;
+                        if (!chooseOneData.Contains(data))
+                            chooseOneData.Add(data);
+                    }
+
                     if (enemy)
                     {
                         selectChoose = DruidAI.instance.AI_ChoiceSelect(nowSpellName);
                     }
                     else
                     {
-                        List<Vector3> chooseOneData = new List<Vector3>();
-                        foreach (SpellAbility chooseAbility in chooseOneList)
-                        {
-                            Vector3 data = chooseAbility.Condition_data;
-                            if (!chooseOneData.Contains(data))
-                                chooseOneData.Add(data);
-                        }
 
                         BattleUI.instance.chooseOneDruid.SetBool("Hide", false);
 
@@ -228,12 +229,12 @@ public class SpellManager : MonoBehaviour
                             GameEventManager.instance.EventSet(1f);
                             yield return new WaitForSeconds(0.001f);
                         }
+                    }
 
-                        foreach (SpellAbility chooseAbility in chooseOneList)
-                        {
-                            if (chooseAbility.Condition_data.y == chooseOneData[selectChoose].y)
-                                nowEvent.Add(chooseAbility);
-                        }
+                    foreach (SpellAbility chooseAbility in chooseOneList)
+                    {
+                        if (chooseAbility.Condition_data.y == chooseOneData[selectChoose].y)
+                            nowEvent.Add(chooseAbility);
                     }
                 }
             }
@@ -1337,7 +1338,7 @@ public class SpellManager : MonoBehaviour
         List<SpellAbility> spellList = SpellParsing(ability_string);
         nowSpellName = name;
         int cost = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
-        ManaManager.instance.playerNowMana -= cost;
+        cost = cost + CardHand.instance.handCostOffset[handNum] - CardHand.instance.UsePreparation;
         CardHand.instance.useCardNum++;
         CardHand.instance.CardRemove(handNum);
         StartCoroutine(RunSpellTargetHero(spellList, runHero, tarHero));
@@ -2174,6 +2175,7 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.피해주기:
             case SpellAbility.Ability.하수인에게_피해주기:
             case SpellAbility.Ability.피해받지않은하수인에게_피해주기:
+                Debug.Log("피해주기");
                 AttackManager.instance.PopAllDamageObj();
                 AttackManager.instance.AddDamageObj(minionObject.damageEffect, (int)nowSpellAbility.Ability_data.x + (enemy ? enemySpellPower : playerSpellPower));
                 AttackManager.instance.AttackEffectRun();

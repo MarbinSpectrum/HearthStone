@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 [ExecuteInEditMode]
 public class CardHand : MonoBehaviour
@@ -79,6 +80,7 @@ public class CardHand : MonoBehaviour
         glowImg = new Image[card_glow.Count];
         for (int i = 0; i < card_glow.Count; i++)
             glowImg[i] = card_glow[i].GetComponent<Image>();
+
     }
     #endregion
 
