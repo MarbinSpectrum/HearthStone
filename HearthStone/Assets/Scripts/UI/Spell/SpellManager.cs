@@ -287,6 +287,7 @@ public class SpellManager : MonoBehaviour
                         {
                             if(enemy)
                             {
+                                DruidAI.instance.targetMinionNum = -2;
                                 nowSpellAbility = ability;
                                 DruidAI.instance.AI_Select(nowSpellAbility);
                             }

@@ -262,6 +262,8 @@ public class CardView : MonoBehaviour
     #region[LateUpdate]
     void LateUpdate()
     {
+        if(!MinionsCard.activeSelf && !SpellCard.activeSelf && !WeaponCard.activeSelf && !hide)
+            updateCard = true;
         if (updateCard)
         {
             ShowCard();

@@ -189,7 +189,7 @@ public class DruidAI : MonoBehaviour
             else if (HeroManager.instance.heroPowerManager.enemyHeroName.Equals("말퓨리온"))
                 return AI_Act.AttackHero;
         }
-        else if (HeroManager.instance.heroAtkManager.enemyAttackCheck)
+        else if (HeroManager.instance.heroAtkManager.enemyAttackCheck && !HeroManager.instance.enemyFreezeObj.activeSelf)
         {
             return AI_Act.AttackHero;
         }
@@ -486,7 +486,7 @@ public class DruidAI : MonoBehaviour
                         yield return new WaitForSeconds(2f);
                     }
                 }
-                else if (HeroManager.instance.heroAtkManager.enemyAttackCheck)
+                else if (HeroManager.instance.heroAtkManager.enemyAttackCheck && !HeroManager.instance.enemyFreezeObj.activeSelf)
                 {
                     List<int> targetList = new List<int>();
                     for (int i = 0; i < MinionField.instance.minions.Length; i++)
@@ -802,7 +802,7 @@ public class DruidAI : MonoBehaviour
 
     #region[AI Select 주문]
 
-    int targetMinionNum = 0;
+    public int targetMinionNum = -2;
     public void AI_Select(SpellAbility spellAbility)
     {
         int searchMinionIndex = -1;
@@ -826,8 +826,14 @@ public class DruidAI : MonoBehaviour
                             minionHp = MinionField.instance.minions[i].final_hp;
                             searchMinionIndex = i;
                         }
-                if (searchMinionIndex != -1)
+
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
+                    targetMinionNum = searchMinionIndex;
+                }
                 //하수인이 없으면 영웅빙결
                 else
                     SpellManager.instance.HeroSelect(false,true);
@@ -856,8 +862,13 @@ public class DruidAI : MonoBehaviour
                                 searchMinionIndex = i;
                                 break;
                             }
-                if (searchMinionIndex != -1)
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
+                    targetMinionNum = searchMinionIndex;
+                }
                 break;
             #endregion
 
@@ -872,8 +883,14 @@ public class DruidAI : MonoBehaviour
                             minionHp = MinionField.instance.minions[i].final_hp;
                             searchMinionIndex = i;
                         }
-                if (searchMinionIndex != -1)
+
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
+                    targetMinionNum = searchMinionIndex;
+                }
                 break;
             #endregion
 
@@ -887,10 +904,20 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                             break;
                         }
-                if (searchMinionIndex != -1)
+
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
+                    targetMinionNum = searchMinionIndex;
+                }
                 else if (EnemyMinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)], true);
+                {
+                    int r = Random.Range(0, EnemyMinionField.instance.minionNum);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[r], true);
+                    targetMinionNum = r;
+                }
                 break;
             #endregion
 
@@ -905,10 +932,19 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                         }
 
-                if (searchMinionIndex != -1)
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
+                    targetMinionNum = searchMinionIndex;
+                }
                 else if (EnemyMinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)], true);
+                {
+                    int r = Random.Range(0, EnemyMinionField.instance.minionNum);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[r], true);
+                    targetMinionNum = r;
+                }
                 break;
             #endregion
 
@@ -924,10 +960,19 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                         }
 
-                if (searchMinionIndex != -1)
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
+                    targetMinionNum = searchMinionIndex;
+                }
                 else if (EnemyMinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)], true);
+                {
+                    int r = Random.Range(0, EnemyMinionField.instance.minionNum);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[r], true);
+                    targetMinionNum = r;
+                }
                 break;
             #endregion
 
@@ -944,8 +989,13 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                         }
 
-                if (searchMinionIndex != -1)
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex]);
+                    targetMinionNum = searchMinionIndex;
+                }
                 else
                 {
                     //능력이 많은 하수인
@@ -957,9 +1007,16 @@ public class DruidAI : MonoBehaviour
                                 searchMinionIndex = i;
                             }
                     if (searchMinionIndex != -1)
+                    {
                         SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
+                        targetMinionNum = searchMinionIndex;
+                    }
                     else
-                        SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
+                    {
+                        int r = Random.Range(0, MinionField.instance.minionNum);
+                        SpellManager.instance.MinionSelect(MinionField.instance.minions[r], true);
+                        targetMinionNum = r;
+                    }
                 }
                 break;
             #endregion
@@ -975,10 +1032,20 @@ public class DruidAI : MonoBehaviour
                             minionHp = MinionField.instance.minions[i].final_hp;
                             searchMinionIndex = i;
                         }
-                if (searchMinionIndex != -1)
+
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
+                    targetMinionNum = searchMinionIndex;
+                }
                 else
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
+                {
+                    int r = Random.Range(0, MinionField.instance.minionNum);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[r], true);
+                    targetMinionNum = r;
+                }
                 break;
             #endregion
 
@@ -991,13 +1058,8 @@ public class DruidAI : MonoBehaviour
 
             #region[다른모든_적군에게_피해주기]
             case SpellAbility.Ability.다른모든_적군에게_피해주기:
-
-                Debug.Log("다른모든_적군에게_피해주기!");
-                if (targetMinionNum != -1)
-                {
+                if (targetMinionNum >= 0)
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[targetMinionNum], true);
-                    Debug.Log("!!");
-                }
                 else
                     SpellManager.instance.HeroSelect(false, true);
                 break;
@@ -1019,7 +1081,9 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                         }
 
-                if (searchMinionIndex != -1)
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
                 {
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
                     targetMinionNum = searchMinionIndex;
@@ -1053,10 +1117,19 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                         }
 
-                if (searchMinionIndex != -1)
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
+                    targetMinionNum = searchMinionIndex;
+                }
                 else if (MinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
+                {
+                    int r = Random.Range(0, MinionField.instance.minionNum);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[r], true);
+                    targetMinionNum = r;
+                }
                 break;
             #endregion
 
@@ -1070,10 +1143,14 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                         }
 
-                if (searchMinionIndex != -1)
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
-
-                if (searchMinionIndex == -1)
+                    targetMinionNum = searchMinionIndex;
+                }
+                else if (searchMinionIndex == -1)
                 {
                     for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
                         if (EnemyMinionField.instance.minions[i].gameObject.activeSelf && !EnemyMinionField.instance.minions[i].Equals(MinionManager.instance.eventMininon))
@@ -1083,8 +1160,13 @@ public class DruidAI : MonoBehaviour
                                 searchMinionIndex = i;
                             }
 
-                    if (searchMinionIndex != -1)
+                    if (targetMinionNum >= 0)
+                        SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[targetMinionNum], true);
+                    else if (searchMinionIndex != -1)
+                    {
                         SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
+                        targetMinionNum = searchMinionIndex;
+                    }
                 }
                 break;
             #endregion
@@ -1100,10 +1182,19 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                         }
 
-                if (searchMinionIndex != -1)
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
+                    targetMinionNum = searchMinionIndex;
+                }
                 else if (EnemyMinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)], true);
+                {
+                    int r = Random.Range(0, EnemyMinionField.instance.minionNum);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[r], true);
+                    targetMinionNum = r;
+                }
                 break;
             #endregion
 
@@ -1120,10 +1211,20 @@ public class DruidAI : MonoBehaviour
                             searchMinionIndex = i;
                             break;
                         }
-                if (searchMinionIndex != -1)
+
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[searchMinionIndex], true);
+                    targetMinionNum = searchMinionIndex;
+                }
                 else if (EnemyMinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[Random.Range(0, EnemyMinionField.instance.minionNum)], true);
+                {
+                    int r = Random.Range(0, EnemyMinionField.instance.minionNum);
+                    SpellManager.instance.MinionSelect(EnemyMinionField.instance.minions[r], true);
+                    targetMinionNum = r;
+                }
                 break;
             #endregion
 
@@ -1137,10 +1238,20 @@ public class DruidAI : MonoBehaviour
                             minionAtk = MinionField.instance.minions[i].final_atk;
                             searchMinionIndex = i;
                         }
-                if (searchMinionIndex != -1)
+
+                if (targetMinionNum >= 0)
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[targetMinionNum], true);
+                else if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
+                    targetMinionNum = searchMinionIndex;
+                }
                 else
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
+                {
+                    int r = Random.Range(0, MinionField.instance.minionNum);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[r], true);
+                    targetMinionNum = r;
+                }
                 break;
                 #endregion
         }
