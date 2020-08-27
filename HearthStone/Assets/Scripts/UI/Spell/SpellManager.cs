@@ -287,7 +287,6 @@ public class SpellManager : MonoBehaviour
                         {
                             if(enemy)
                             {
-                                Debug.Log("Act");
                                 nowSpellAbility = ability;
                                 DruidAI.instance.AI_Select(nowSpellAbility);
                             }
@@ -312,12 +311,21 @@ public class SpellManager : MonoBehaviour
                     }
                     else
                     {
-                        nowSpellAbility = ability;
-                        MinionManager.instance.selectMinionEvent = true;
-                        if (targetMinion != null)
-                            MinionSelect(targetMinion);
-                        else if (targetHero != -1)
-                            HeroSelect(targetHero == 2);
+
+                        if (enemy)
+                        {
+                            nowSpellAbility = ability;
+                            DruidAI.instance.AI_Select(nowSpellAbility);
+                        }
+                        else
+                        {
+                            nowSpellAbility = ability;
+                            MinionManager.instance.selectMinionEvent = true;
+                            if (targetMinion != null)
+                                MinionSelect(targetMinion);
+                            else if (targetHero != -1)
+                                HeroSelect(targetHero == 2);
+                        }
                     }
                 }
                 else if (CheckEvent(ability) == EventType.카드뽑기)
@@ -2071,6 +2079,7 @@ public class SpellManager : MonoBehaviour
     List<MinionObject> survivalList = new List<MinionObject>();
     List<MinionObject> emptyList = new List<MinionObject>();
 
+    //대상하수인 , 발동한 플레이어
     public void MinionSelect(MinionObject minionObject, bool enemy = false)
     {
         if (!MinionManager.instance.selectMinionEvent)
@@ -2113,6 +2122,7 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.하수인의_생명력회복:
                 minionObject.final_hp += (int)nowSpellAbility.Ability_data.x;
                 minionObject.final_hp = Mathf.Min(minionObject.final_hp, minionObject.baseHp);
+                EffectManager.instance.HealEffect(minionObject.transform.position);
                 break;
             case SpellAbility.Ability.하수인의_생명력설정:
                 minionObject.final_hp = (int)nowSpellAbility.Ability_data.x;
@@ -2122,7 +2132,8 @@ public class SpellManager : MonoBehaviour
                 deathList.Clear();
                 survivalList.Clear();
                 emptyList.Clear();
-                if (enemy)
+                Debug.Log(enemy);
+                if (!enemy)
                 {
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
@@ -2148,6 +2159,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log("휘둘러치기");
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (!MinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(MinionField.instance.minions[m]);
@@ -2219,7 +2231,7 @@ public class SpellManager : MonoBehaviour
                 emptyList.Clear();
                 int left = minionObject.num - 1;
                 int right = minionObject.num + 1;
-                if (enemy)
+                if (!enemy)
                 {
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if (!EnemyMinionField.instance.minions[m].gameObject.activeSelf)
@@ -2355,9 +2367,15 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.생명력회복:
             case SpellAbility.Ability.영웅의_생명력회복:
                 if (enemy)
+                {
                     HeroManager.instance.heroHpManager.nowEnemyHp += (int)nowSpellAbility.Ability_data.x;
+                    EffectManager.instance.HealEffect(HeroManager.instance.enemyHero.transform.position);
+                }
                 else
+                {
                     HeroManager.instance.heroHpManager.nowPlayerHp += (int)nowSpellAbility.Ability_data.x;
+                    EffectManager.instance.HealEffect(HeroManager.instance.playerHero.transform.position);
+                }
                 break;
             case SpellAbility.Ability.영웅의_생명력설정:
                 if (enemy)

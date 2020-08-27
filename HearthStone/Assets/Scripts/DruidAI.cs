@@ -791,9 +791,9 @@ public class DruidAI : MonoBehaviour
             #region[영웅 생명력설정]
             case MinionAbility.Ability.영웅의_생명력설정:
                 if (HeroManager.instance.heroHpManager.nowEnemyHp < (int)MinionManager.instance.eventMininon.abilityList[MinionManager.instance.eventNum].Ability_data.x)
-                    MinionManager.instance.HeroSelect(false);
-                else
                     MinionManager.instance.HeroSelect(true);
+                else
+                    MinionManager.instance.HeroSelect(false);
                 break;
                 #endregion
         }
@@ -801,6 +801,8 @@ public class DruidAI : MonoBehaviour
     #endregion
 
     #region[AI Select 주문]
+
+    int targetMinionNum = 0;
     public void AI_Select(SpellAbility spellAbility)
     {
         int searchMinionIndex = -1;
@@ -989,19 +991,15 @@ public class DruidAI : MonoBehaviour
 
             #region[다른모든_적군에게_피해주기]
             case SpellAbility.Ability.다른모든_적군에게_피해주기:
-                //상대의 체력높은 하수인 찾기
-                for (int i = 0; i < MinionField.instance.minions.Length; i++)
-                    if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (MinionField.instance.minions[i].final_hp > minionHp)
-                        {
-                            minionHp = MinionField.instance.minions[i].final_hp;
-                            searchMinionIndex = i;
-                        }
 
-                if (searchMinionIndex != -1)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
-                else if (MinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
+                Debug.Log("다른모든_적군에게_피해주기!");
+                if (targetMinionNum != -1)
+                {
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[targetMinionNum], true);
+                    Debug.Log("!!");
+                }
+                else
+                    SpellManager.instance.HeroSelect(false, true);
                 break;
             #endregion
 
@@ -1022,11 +1020,21 @@ public class DruidAI : MonoBehaviour
                         }
 
                 if (searchMinionIndex != -1)
+                {
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[searchMinionIndex], true);
+                    targetMinionNum = searchMinionIndex;
+                }
                 else if (MinionField.instance.minionNum > 0)
-                    SpellManager.instance.MinionSelect(MinionField.instance.minions[Random.Range(0, MinionField.instance.minionNum)], true);
+                {
+                    int r = Random.Range(0, MinionField.instance.minionNum);
+                    SpellManager.instance.MinionSelect(MinionField.instance.minions[r], true);
+                    targetMinionNum = r;
+                }
                 else
+                {
                     SpellManager.instance.HeroSelect(false, true);
+                    targetMinionNum = -1;
+                }
                 break;
             #endregion
 

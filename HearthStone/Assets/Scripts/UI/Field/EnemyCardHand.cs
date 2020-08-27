@@ -225,7 +225,13 @@ public class EnemyCardHand : MonoBehaviour
         {
             ManaManager.instance.enemyNowMana -= cost;
             useCardNum++;
-            EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, cardName, true);
+
+            if (cardName.Equals("데스윙"))
+                EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, cardName, true, 2);
+            else if (cardName.Equals("그룰"))
+                EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.mousePos, cardName, true, 3);
+            else
+                EnemyMinionField.instance.AddMinion(EnemyMinionField.instance.minionNum, cardName, true);
             CardRemove(n);
         }
     }

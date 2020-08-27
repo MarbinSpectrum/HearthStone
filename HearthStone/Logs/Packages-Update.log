@@ -51,3 +51,11 @@ Update Mode: updateDependencies
 
 The following packages were updated:
   com.unity.test-framework from version 1.1.9 to 1.1.11
+
+=== Tue Aug 25 17:44:55 2020
+
+Packages were changed.
+Update Mode: mergeDefaultDependencies
+
+The following packages were added:
+  com.unity.progrids@3.0.3-preview.4

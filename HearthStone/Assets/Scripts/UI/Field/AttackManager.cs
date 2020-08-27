@@ -75,6 +75,7 @@ public class AttackManager : MonoBehaviour
         {
             int i = s[6] - '0';
             EnemyMinionField.instance.minions[i].final_hp -= n;
+            MinionManager.instance.DamageMinionAbility(EnemyMinionField.instance.minions[i]);
             if (EnemyMinionField.instance.minions[i].final_hp <= 0)
                 EnemyMinionField.instance.minions[i].MinionDeath();
         }
@@ -82,6 +83,7 @@ public class AttackManager : MonoBehaviour
         {
             int i = s[7] - '0';
             MinionField.instance.minions[i].final_hp -= n;
+            MinionManager.instance.DamageMinionAbility(MinionField.instance.minions[i]);
             if (MinionField.instance.minions[i].final_hp <= 0)
                 MinionField.instance.minions[i].MinionDeath();
         }
@@ -126,7 +128,7 @@ public class AttackManager : MonoBehaviour
         Vector3 v = Camera.main.transform.position;
         for (int i = 0; i < n; i++)
         {
-            Camera.main.transform.position = v + Quaternion.Euler(0, 0, Random.Range(0, 360)) * new Vector3(1, 0, 0);
+            Camera.main.transform.position = v + Quaternion.Euler(0, 0, Random.Range(0, 360)) * new Vector3(power, 0, 0);
             yield return new WaitForSeconds(0.01f);
         }
         Camera.main.transform.position = v;

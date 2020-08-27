@@ -236,8 +236,10 @@ public class EnemyMinionField : MonoBehaviour
         float minX = minionDistance * (minionNum - 1) / 2f;
         Vector3 v = new Vector3(transform.position.x - minX + minionDistance * n, transform.position.y, minions[n].transform.position.z);
         minions[n].transform.position = v;
-        if (cardHandSpawn)
+        if (cardHandSpawn && spawnAni != 2)
             DragCardObject.instance.ShowDropEffectMinion(Camera.main.WorldToScreenPoint(BattleUI.instance.enemySpellPos.transform.position),Camera.main.WorldToScreenPoint(v), 1);
+        else if (cardHandSpawn && spawnAni == 2)
+            EffectManager.instance.FireField();
         StartCoroutine(MinionDrop(n, spawnAni, cardHandSpawn));
     }
 
@@ -253,6 +255,16 @@ public class EnemyMinionField : MonoBehaviour
                 minions[n].animator.SetTrigger("NormalSpawn");
             else if (spawnType == 1)
                 minions[n].animator.SetTrigger("SetSpawn");
+            else if (spawnType == 2)
+            {
+                minions[n].animator.SetTrigger("DeathWingSpawn");
+                EffectManager.instance.VibrationEffect(2f, 20, 10);
+            }
+            else if (spawnType == 3)
+            {
+                minions[n].animator.SetTrigger("StrongSpawn");
+                EffectManager.instance.VibrationEffect(0.5f, 15, 4);
+            }
             while (!minions[n].animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"))
                 yield return new WaitForSeconds(0.1f);
             minions[n].CardHandMinionSpawn();
@@ -266,6 +278,16 @@ public class EnemyMinionField : MonoBehaviour
                 minions[n].animator.SetTrigger("NormalSpawn");
             else if (spawnType == 1)
                 minions[n].animator.SetTrigger("SetSpawn");
+            else if (spawnType == 2)
+            {
+                minions[n].animator.SetTrigger("DeathWingSpawn");
+                EffectManager.instance.VibrationEffect(2f, 20, 10);
+            }
+            else if (spawnType == 3)
+            {
+                minions[n].animator.SetTrigger("StrongSpawn");
+                EffectManager.instance.VibrationEffect(0.5f, 15, 4);
+            }
         }
     }
 

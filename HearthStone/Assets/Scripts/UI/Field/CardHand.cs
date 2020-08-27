@@ -391,7 +391,12 @@ public class CardHand : MonoBehaviour
             ManaManager.instance.playerNowMana -= cost;
             useCardNum++;
             removeCostOffset = handCostOffset[n];
-            MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData,true);
+            if (handCardView[n].MinionsCardNameData.Equals("데스윙"))
+                MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData, true, 2);
+            else if (handCardView[n].MinionsCardNameData.Equals("그룰"))
+                MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData, true, 3);
+            else
+                MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData,true);
             CardRemove(n);
         }
     }
