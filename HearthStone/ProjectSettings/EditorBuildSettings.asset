@@ -8,9 +8,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Loading.unity
     guid: 8824ff25b0177c74aa38f03833a09710
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/Battle.unity
     guid: b99e1ac7aec77ba4089028ed06e9d81a
