@@ -156,12 +156,17 @@ public class MinionField : MonoBehaviour
     #region[미니언 이동]
     void MoveMinion()
     {
+        for (int i = 0; i < minions.Length; i++)
+            minions[i].gameObject.SetActive(i < minionNum);
+
+        if (!setMinionPos)
+            return;
+
         min_speed = Mathf.Min(min_speed, max_speed);
         min_attack_speed = Mathf.Min(min_attack_speed, max_attack_speed);
+
         for (int i = 0; i < minionNum; i++)
         {
-            minions[i].gameObject.SetActive(true);
-
             //일반적인 위치 조정
             if(Mathf.Abs(transform.position.y - minions[i].transform.position.y) < 1)
             {
@@ -207,9 +212,6 @@ public class MinionField : MonoBehaviour
                     minions[i].transform.position += new Vector3(v.x, v.y, 0);
             }
         }
-        for (int i = minionNum; i < minions.Length; i++)
-            minions[i].gameObject.SetActive(false);
-
     }
     #endregion
 

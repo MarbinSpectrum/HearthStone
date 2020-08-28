@@ -101,6 +101,8 @@ public class EnemyMinionField : MonoBehaviour
     #region[미니언 위치 설정]
     void SetPos()
     {
+        if (!setMinionPos)
+            return;
         //새로 설치할 미니언에 따른 위치 설정
         //bool flag = (minionNum == 7);   //미니언을 설치할 위치가 없을때
         //flag = flag || (DragCardObject.instance.dragCardView.cardType != CardType.하수인);   //하수인을 드래그하는게 아닐때
@@ -158,8 +160,12 @@ public class EnemyMinionField : MonoBehaviour
     #region[미니언 이동]
     void MoveMinion()
     {
+        for (int i = 0; i < minions.Length; i++)
+            minions[i].gameObject.SetActive(i < minionNum);
+
         if (!setMinionPos)
             return;
+
         min_speed = Mathf.Min(min_speed, max_speed);
 
         for (int i = 0; i < minionNum; i++)
@@ -167,7 +173,6 @@ public class EnemyMinionField : MonoBehaviour
             //일반적인 위치 조정
             if (Mathf.Abs(transform.position.y - minions[i].transform.position.y) < 1)
             {
-                minions[i].gameObject.SetActive(true);
                 Vector2 v = minions_pos[i] - minions[i].transform.position;
                 v *= Time.deltaTime * Vector2.Distance(minions_pos[i], minions[i].transform.position);
 
@@ -210,9 +215,6 @@ public class EnemyMinionField : MonoBehaviour
                     minions[i].transform.position += new Vector3(v.x, v.y, 0);
             }
         }
-        for (int i = minionNum; i < minions.Length; i++)
-            minions[i].gameObject.SetActive(false);
-
     }
     #endregion
 

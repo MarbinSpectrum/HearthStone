@@ -324,6 +324,8 @@ public class MyCollectionsMenu : MonoBehaviour
         //카드리스트
         ShowCard();
 
+        DeckUpdate();
+
         bool arrowFlag = (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop") &&  pageAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.2f);
         backArrow.gameObject.SetActive(arrowFlag && hasBackPage);
         nextArrow.gameObject.SetActive(arrowFlag && hasNextPage);
@@ -346,7 +348,7 @@ public class MyCollectionsMenu : MonoBehaviour
 
         if (deleteDeckNum != -1)
         {
-            if (newCreateDeckBtn.characterDeckRect.anchoredPosition.y < 189)
+            if (newCreateDeckBtn.characterDeckRect.anchoredPosition.y < 0)
             {
                 if (DataMng.instance.playData.deck.Count == 9)
                     newCreateDeckBtn.hide = false;
@@ -355,7 +357,7 @@ public class MyCollectionsMenu : MonoBehaviour
 
                 newCreateDeckBtn.characterDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime)* 400;
                 newCreateDeckBtn.newDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime) * 400;
-                for(int i = deleteDeckNum + 1; i < 9; i++)
+                for(int i = deleteDeckNum; i < 9; i++)
                 {
                     deckBtn[i].characterDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime) * 400;
                     deckBtn[i].newDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime) * 400;
@@ -363,32 +365,15 @@ public class MyCollectionsMenu : MonoBehaviour
             }
             else
             {
+                Debug.Log("올라가는가기완료");
                 newCreateDeckBtn.characterDeckRect.anchoredPosition = new Vector2(0, 0);
                 newCreateDeckBtn.newDeckRect.anchoredPosition = new Vector2(0, 0);
-                for (int i = 0; i < 9; i++)
+                for (int i = deleteDeckNum; i < 9; i++)
                 {
                     deckBtn[i].characterDeckRect.anchoredPosition = new Vector2(0, 0);
                     deckBtn[i].newDeckRect.anchoredPosition = new Vector2(0, 0);
                 }
 
-                DataMng.instance.playData.deck.RemoveAt(deleteDeckNum);
-                deckBtn[deleteDeckNum].hide = false;
-
-                int deckNum = DataMng.instance.playData.deck.Count;
-                hasDeckNum.sprite = DataMng.instance.num[deckNum];
-                deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1, 9));
-
-                //덱조절
-                for (int i = 0; i < 9; i++)
-                {
-                    deckBtn[i].gameObject.SetActive(i < Mathf.Min(deckNum + 1, 9));
-                    deckBtn[i].hasDeck = (i < deckNum);
-                }
-                for (int i = 0; i < deckNum; i++)
-                {
-                    deckBtn[i].deckNameTxt.text = DataMng.instance.playData.deck[i].name;
-                    deckBtn[i].nowCharacter = (int)DataMng.instance.playData.deck[i].job;
-                }
                 dontClick_remove.SetActive(false);
                 deleteDeckNum = -1;
             }
@@ -396,22 +381,6 @@ public class MyCollectionsMenu : MonoBehaviour
         else
         {
             newCreateDeckBtn.hide = true;
-
-            int deckNum = DataMng.instance.playData.deck.Count;
-            hasDeckNum.sprite = DataMng.instance.num[deckNum];
-            deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1, 9));
-
-            //덱조절
-            for (int i = 0; i < 9; i++)
-            {
-                deckBtn[i].gameObject.SetActive(i < Mathf.Min(deckNum + 1, 9));
-                deckBtn[i].hasDeck = (i < deckNum);
-            }
-            for (int i = 0; i < deckNum; i++)
-            {
-                deckBtn[i].deckNameTxt.text = DataMng.instance.playData.deck[i].name;
-                deckBtn[i].nowCharacter = (int)DataMng.instance.playData.deck[i].job;
-            }
         }
 
         //덱이 선택되었을때 애니메이션
@@ -533,6 +502,27 @@ public class MyCollectionsMenu : MonoBehaviour
                 deckBtn[nowDeck].deckNameTxt.text = keyboardText;
                 keyboard = null;
             }
+        }
+    }
+
+    public void DeckUpdate()
+    {
+        int deckNum = DataMng.instance.playData.deck.Count;
+        hasDeckNum.sprite = DataMng.instance.num[deckNum];
+        deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1, 9));
+
+        for (int i = 0; i < deckNum; i++)
+        {
+            deckBtn[i].deckNameTxt.text = DataMng.instance.playData.deck[i].name;
+            deckBtn[i].nowCharacter = (int)DataMng.instance.playData.deck[i].job;
+        }
+
+        //덱조절
+        for (int i = 0; i < 9; i++)
+        {
+            deckBtn[i].gameObject.SetActive(i < Mathf.Min(deckNum + 1, 9));
+            deckBtn[i].hasDeck = (i < deckNum);
+            deckBtn[i].ImageUpdate();
         }
     }
 
@@ -1398,7 +1388,18 @@ public class MyCollectionsMenu : MonoBehaviour
     private IEnumerator DeckDeleteActCor(int n)
     {
         yield return new WaitForSeconds(1);
-        deckBtn[n].hide = true;
+        //deckBtn[n].hide = true;
+        DataMng.instance.playData.deck.RemoveAt(n);
+        DeckUpdate();
+        //yield return new WaitForSeconds(0.1f);
+        newCreateDeckBtn.characterDeckRect.anchoredPosition = new Vector2(0, -189);
+        newCreateDeckBtn.newDeckRect.anchoredPosition = new Vector2(0, -189);
+        for (int i = n; i < 9; i++)
+        {
+            deckBtn[i].characterDeckRect.anchoredPosition = new Vector2(0, -189);
+            deckBtn[i].newDeckRect.anchoredPosition = new Vector2(0, -189);
+        }
+        yield return new WaitForSeconds(0.2f);
         deleteDeckNum = n;
     }
     #endregion

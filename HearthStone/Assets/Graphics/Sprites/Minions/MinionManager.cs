@@ -834,7 +834,8 @@ public class MinionManager : MonoBehaviour
 
                         List<MinionObject> randomMinion = new List<MinionObject>();
 
-                        if(minionObject.enemy)
+                        //적군미니언효과이면
+                        if (minionObject.enemy)
                         {
                             for (int m = 0; m < MinionField.instance.minions.Length; m++)
                                 if (MinionField.instance.minions[m].gameObject.activeSelf && MinionField.instance.minions[m].final_hp > 0)
@@ -842,6 +843,7 @@ public class MinionManager : MonoBehaviour
                             if (EnemyMinionField.instance.minionNum >= 7)
                                 randomMinion.Clear();
                         }
+                        //아군미니언효과이면
                         else
                         {
                             for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -850,9 +852,9 @@ public class MinionManager : MonoBehaviour
                             if (MinionField.instance.minionNum >= 7)
                                 randomMinion.Clear();
                         }
-
                         if (randomMinion.Count > 0)
                         {
+                            yield return new WaitForSeconds(1f);
                             if (minionObject.enemy)
                             {
                                 if (MinionField.instance.minionNum <= 0)
@@ -863,45 +865,60 @@ public class MinionManager : MonoBehaviour
                                 if (EnemyMinionField.instance.minionNum <= 0)
                                     randomMinion.Clear();
                             }
+
                         }
 
                         if (randomMinion.Count > 0)
                         {
+                            GameEventManager.instance.EventSet(1.5f);
                             int r = Random.Range(0, randomMinion.Count);
                             minion_name = randomMinion[r].minion_name;
 
-                            MinionObject temp = randomMinion[r];
+                            MinionObject tempMinion = randomMinion[r];
+                            Vector2 pos = tempMinion.transform.position;
+
+                            if (minionObject.enemy)
+                            {
+                                int index = EnemyMinionField.instance.minionNum;
+                                EnemyMinionField.instance.AddMinion(index, minion_name, false, 1);
+                                MinionCopy(randomMinion[r], EnemyMinionField.instance.minions[index]);
+                                MinionField.instance.setMinionPos = false;
+                                EnemyMinionField.instance.setMinionPos = false;
+                                EnemyMinionField.instance.minions[index].transform.position = pos;
+                            }
+                            else
+                            {
+                                int index = MinionField.instance.minionNum;
+                                MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false, 1);
+                                MinionCopy(randomMinion[r], MinionField.instance.minions[index]);
+                                MinionField.instance.setMinionPos = false;
+                                EnemyMinionField.instance.setMinionPos = false;
+                                MinionField.instance.minions[index].transform.position = pos;
+                            }
+
+                            yield return new WaitForSeconds(1.5f);
+
                             if (minionObject.enemy)
                             {
                                 for (int m = randomMinion[r].num; m < MinionField.instance.minions.Length - 1; m++)
                                     MinionField.instance.minions[m] = MinionField.instance.minions[m + 1];
+                                MinionField.instance.minions[MinionField.instance.minions.Length - 1] = tempMinion;
                                 MinionField.instance.minionNum--;
-                                MinionField.instance.minions[MinionField.instance.minions.Length - 1] = temp;
                             }
                             else
                             {
                                 for (int m = randomMinion[r].num; m < EnemyMinionField.instance.minions.Length - 1; m++)
                                     EnemyMinionField.instance.minions[m] = EnemyMinionField.instance.minions[m + 1];
+                                EnemyMinionField.instance.minions[EnemyMinionField.instance.minions.Length - 1] = tempMinion;
                                 EnemyMinionField.instance.minionNum--;
-                                EnemyMinionField.instance.minions[EnemyMinionField.instance.minions.Length - 1] = temp;
                             }
 
-                            if (minionObject.enemy)
-                            {
-                                int index = EnemyMinionField.instance.minionNum;
-                                EnemyMinionField.instance.AddMinion(index, minion_name, false);
-                                yield return new WaitForSeconds(0.5f);
-                                MinionCopy(randomMinion[r], EnemyMinionField.instance.minions[index]);
-                            }
-                            else
-                            {
-                                int index = MinionField.instance.minionNum;
-                                MinionField.instance.AddMinion(index, minion_name, false);
-                                yield return new WaitForSeconds(0.5f);
-                                MinionCopy(randomMinion[r], MinionField.instance.minions[index]);
-                            }
-                            minionNum++;
                             randomMinion[r].MinionRemoveProcess();
+
+                            MinionField.instance.setMinionPos = true;
+                            EnemyMinionField.instance.setMinionPos = true;
+
+                            minionNum++;
                         }
                     }
                 }
@@ -944,6 +961,7 @@ public class MinionManager : MonoBehaviour
         if (minionNum > 0)
             GameEventManager.instance.EventSet(1.5f);
     }
+    #endregion
 
     #region[대상 선택 취소]
     public void MinionSelectCancle()
@@ -988,7 +1006,9 @@ public class MinionManager : MonoBehaviour
             case MinionAbility.Ability.적군하수인_주인의패로되돌리기:
                 break;
             case MinionAbility.Ability.침묵시키기:
-                minionObject.ActSilence();
+                invokeMinion = minionObject;
+                EffectManager.instance.MagicEffect(invokeMinion.transform.position);
+                Invoke("SilenceMinion", 1f);
                 break;
             case MinionAbility.Ability.하수인처치:
                 if (eventMininon.minion_name == "나 이런 사냥꾼이야")
@@ -1003,6 +1023,13 @@ public class MinionManager : MonoBehaviour
                     EffectManager.instance.EnergyEffect(eventMininon.transform.position, invokeMinion.transform.position);
                     Invoke("DeathMinion", 0.5f);
                 }
+                else if (eventMininon.minion_name == "흑기사")
+                {
+                    invokeMinion = minionObject;
+                    EffectManager.instance.CutEffect(invokeMinion.transform.position, new Vector2(+1, 1));
+                    EffectManager.instance.CutEffect(invokeMinion.transform.position, new Vector2(-1, 1));
+                    Invoke("DeathMinion", 1f);
+                }
                 else
                     minionObject.MinionDeath();
                 break;
@@ -1014,9 +1041,17 @@ public class MinionManager : MonoBehaviour
                 break;
             case MinionAbility.Ability.피해주기:
             case MinionAbility.Ability.하수인에게_피해주기:
-                AttackManager.instance.PopAllDamageObj();
-                AttackManager.instance.AddDamageObj(minionObject.damageEffect, (int)eventMininon.abilityList[eventNum].Ability_data.x);
-                AttackManager.instance.AttackEffectRun();
+                if (eventMininon.minion_name == "SI7 요원")
+                {
+                    invokeMinion = minionObject;
+                    EffectManager.instance.CutEffect(invokeMinion.transform.position, new Vector2(+1, 1));
+                    Invoke("DamageMinion", 1f);
+                }
+                else
+                {
+                    invokeMinion = minionObject;
+                    DamageMinion();
+                }
                 break;
             case MinionAbility.Ability.대상의_공격력_생명력_교환:
                 invokeMinion = minionObject;
@@ -1046,6 +1081,24 @@ public class MinionManager : MonoBehaviour
         if (invokeMinion == null)
             return;
         invokeMinion.freezeTrigger = true;
+        invokeMinion = null;
+    }
+
+    public void DamageMinion()
+    {
+        if (invokeMinion == null)
+            return;
+        AttackManager.instance.PopAllDamageObj();
+        AttackManager.instance.AddDamageObj(invokeMinion.damageEffect, (int)eventMininon.abilityList[eventNum].Ability_data.x);
+        AttackManager.instance.AttackEffectRun();
+        invokeMinion = null;
+    }
+
+    public void SilenceMinion()
+    {
+        if (invokeMinion == null)
+            return;
+        invokeMinion.ActSilence();
         invokeMinion = null;
     }
 
@@ -1096,11 +1149,12 @@ public class MinionManager : MonoBehaviour
             case MinionAbility.Ability.피해주기:
             case MinionAbility.Ability.영웅에게_피해주기:
                 AttackManager.instance.PopAllDamageObj();
+                invokeHero = enemy ? 2 : 1;
                 if (enemy)
-                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)eventMininon.abilityList[eventNum].Ability_data.x);
+                    EffectManager.instance.CutEffect(HeroManager.instance.enemyHero.transform.position, new Vector2(+1, 1));
                 else
-                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)eventMininon.abilityList[eventNum].Ability_data.x);
-                AttackManager.instance.AttackEffectRun();
+                    EffectManager.instance.CutEffect(HeroManager.instance.playerHero.transform.position, new Vector2(+1, 1));
+                Invoke("DamageHero", 1f);
                 break;
             case MinionAbility.Ability.생명력회복:
             case MinionAbility.Ability.영웅의_생명력회복:
@@ -1163,6 +1217,19 @@ public class MinionManager : MonoBehaviour
             HeroManager.instance.SetFreeze(false);
         else if (invokeHero == 2)
             HeroManager.instance.SetFreeze(true);
+        invokeHero = 0;
+    }
+
+    public void DamageHero()
+    {
+        if (invokeHero == 0)
+            return;
+        AttackManager.instance.PopAllDamageObj();
+        if (invokeHero == 2)
+            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)eventMininon.abilityList[eventNum].Ability_data.x);
+        else if (invokeHero == 1)
+            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)eventMininon.abilityList[eventNum].Ability_data.x);
+        AttackManager.instance.AttackEffectRun();
         invokeHero = 0;
     }
 
@@ -1244,7 +1311,6 @@ public class MinionManager : MonoBehaviour
     }
     #endregion
 
-    #endregion
 
     #region[선택(드루이드) 이벤트]
     [HideInInspector] public int selectChoose = -1;
@@ -1741,7 +1807,7 @@ public class MinionManager : MonoBehaviour
         }
         #endregion
 
-        StartCoroutine(DeathrattleEvent(DeathrattleEventQueue, minionObject.enemy));
+        StartCoroutine(DeathrattleEvent(DeathrattleEventQueue, minionObject.enemy, minionObject.transform.position));
 
         for (int i = 0; i < minionList.Count; i++)
             if (minionList[i].gameObject.activeSelf)
@@ -1750,7 +1816,7 @@ public class MinionManager : MonoBehaviour
     #endregion
 
     #region[죽음의 메아리 이벤트]
-    private IEnumerator DeathrattleEvent(Queue<MinionAbility> deathrattleEventQueue, bool minion_enemy)
+    private IEnumerator DeathrattleEvent(Queue<MinionAbility> deathrattleEventQueue, bool minion_enemy,Vector2 actPos)
     {
         while (GameEventManager.instance.GetEventValue() > 0.1f)
             yield return new WaitForSeconds(0.001f);
@@ -1844,6 +1910,7 @@ public class MinionManager : MonoBehaviour
 
                 List<MinionObject> randomMinion = new List<MinionObject>();
 
+                //적군미니언효과이면
                 if (minion_enemy)
                 {
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
@@ -1852,6 +1919,7 @@ public class MinionManager : MonoBehaviour
                     if (EnemyMinionField.instance.minionNum >= 7)
                         randomMinion.Clear();
                 }
+                //아군미니언효과이면
                 else
                 {
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -1859,11 +1927,9 @@ public class MinionManager : MonoBehaviour
                             randomMinion.Add(EnemyMinionField.instance.minions[m]);
                     if (MinionField.instance.minionNum >= 7)
                         randomMinion.Clear();
-                }
-
+                }         
                 if (randomMinion.Count > 0)
                 {
-                    GameEventManager.instance.EventSet(1.75f);
                     yield return new WaitForSeconds(1f);
                     if (minion_enemy)
                     {
@@ -1880,11 +1946,37 @@ public class MinionManager : MonoBehaviour
 
                 if (randomMinion.Count > 0)
                 {
-
+                    GameEventManager.instance.EventSet(1.5f);
                     int r = Random.Range(0, randomMinion.Count);
                     minion_name = randomMinion[r].minion_name;
 
                     MinionObject tempMinion = randomMinion[r];
+                    Vector2 pos = tempMinion.transform.position;
+
+                    EffectManager.instance.CurseEffect(actPos, pos);
+
+                    yield return new WaitForSeconds(1f);
+
+                    if (minion_enemy)
+                    {
+                        int index = EnemyMinionField.instance.minionNum;
+                        EnemyMinionField.instance.AddMinion(index, minion_name, false, 1);
+                        MinionCopy(randomMinion[r], EnemyMinionField.instance.minions[index]);
+                        MinionField.instance.setMinionPos = false;
+                        EnemyMinionField.instance.setMinionPos = false;
+                        EnemyMinionField.instance.minions[index].transform.position = pos;
+                    }
+                    else
+                    {
+                        int index = MinionField.instance.minionNum;
+                        MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false, 1);
+                        MinionCopy(randomMinion[r], MinionField.instance.minions[index]);
+                        MinionField.instance.setMinionPos = false;
+                        EnemyMinionField.instance.setMinionPos = false;
+                        MinionField.instance.minions[index].transform.position = pos;
+                    }
+
+                    yield return new WaitForSeconds(1.5f);
 
                     if (minion_enemy)
                     {
@@ -1901,21 +1993,11 @@ public class MinionManager : MonoBehaviour
                         EnemyMinionField.instance.minionNum--;
                     }
 
-                    if (minion_enemy)
-                    {
-                        int index = EnemyMinionField.instance.minionNum;
-                        EnemyMinionField.instance.AddMinion(index, minion_name, false, 1);
-                        yield return new WaitForSeconds(0.5f);
-                        MinionCopy(randomMinion[r], EnemyMinionField.instance.minions[index]);
-                    }
-                    else
-                    {
-                        int index = MinionField.instance.minionNum;
-                        MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false, 1);
-                        yield return new WaitForSeconds(0.5f);
-                        MinionCopy(randomMinion[r], MinionField.instance.minions[index]);
-                    }
                     randomMinion[r].MinionRemoveProcess();
+
+                    MinionField.instance.setMinionPos = true;
+                    EnemyMinionField.instance.setMinionPos = true;
+
                     minionNum++;
                 }
             }
@@ -2434,12 +2516,24 @@ public class MinionManager : MonoBehaviour
                         int r = Random.Range(0, targetList.Count);
                         if(targetList[r] == 987654321)
                         {
+                            if (minionObject.minion_name == "불의 군주 라그나로스")
+                            {
+                                EffectManager.instance.FireBallEffect(minionObject.transform.position, HeroManager.instance.enemyHero.transform.position);
+                                GameEventManager.instance.EventAdd(1f);
+                                yield return new WaitForSeconds(1f);
+                            }
                             AttackManager.instance.PopAllDamageObj();
                             AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)minionObject.abilityList[j].Ability_data.x);
                             AttackManager.instance.AttackEffectRun();
                         }
                         else
                         {
+                            if (minionObject.minion_name == "불의 군주 라그나로스")
+                            {
+                                EffectManager.instance.FireBallEffect(minionObject.transform.position, EnemyMinionField.instance.minions[targetList[r]].transform.position);
+                                GameEventManager.instance.EventAdd(1f);
+                                yield return new WaitForSeconds(1f);
+                            }
                             AttackManager.instance.PopAllDamageObj();
                             AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[targetList[r]].damageEffect, (int)minionObject.abilityList[j].Ability_data.x);
                             AttackManager.instance.AttackEffectRun();
@@ -2459,12 +2553,24 @@ public class MinionManager : MonoBehaviour
                         int r = Random.Range(0, targetList.Count);
                         if (targetList[r] == 987654321)
                         {
+                            if (minionObject.minion_name == "불의 군주 라그나로스")
+                            {
+                                EffectManager.instance.FireBallEffect(minionObject.transform.position, HeroManager.instance.playerHero.transform.position);
+                                GameEventManager.instance.EventAdd(1f);
+                                yield return new WaitForSeconds(1f);
+                            }
                             AttackManager.instance.PopAllDamageObj();
                             AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)minionObject.abilityList[j].Ability_data.x);
                             AttackManager.instance.AttackEffectRun();
                         }
                         else
                         {
+                            if (minionObject.minion_name == "불의 군주 라그나로스")
+                            {
+                                EffectManager.instance.FireBallEffect(minionObject.transform.position, MinionField.instance.minions[targetList[r]].transform.position);
+                                GameEventManager.instance.EventAdd(1f);
+                                yield return new WaitForSeconds(1f);
+                            }
                             AttackManager.instance.PopAllDamageObj();
                             AttackManager.instance.AddDamageObj(MinionField.instance.minions[targetList[r]].damageEffect, (int)minionObject.abilityList[j].Ability_data.x);
                             AttackManager.instance.AttackEffectRun();

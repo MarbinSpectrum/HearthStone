@@ -25,6 +25,12 @@ public class DeckBtn : MonoBehaviour
 
     public void Update()
     {
+        ImageUpdate();
+
+    }
+
+    public void ImageUpdate()
+    {
         thisImg.enabled = !hide;
 
         if (hide)
@@ -41,6 +47,5 @@ public class DeckBtn : MonoBehaviour
         characterDeckBtn.SetActive(hasDeck);
         for (int i = 0; i < characterImg.Length; i++)
             characterImg[i].enabled = (i == nowCharacter);
-
     }
 }

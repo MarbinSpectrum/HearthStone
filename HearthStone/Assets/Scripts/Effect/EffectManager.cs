@@ -21,15 +21,24 @@ public class EffectManager : ObjectPool
     [SerializeField]
     private GameObject iceballEffect;
     [SerializeField]
+    private GameObject fireballEffect;
+    [SerializeField]
+    private GameObject curseEffect;
+    [SerializeField]
     private GameObject magicEffect;
     [SerializeField]
     private GameObject iceEffect;
+    [SerializeField]
+    private GameObject fireEffect;
     [SerializeField]
     private GameObject explodeEffect;
     [SerializeField]
     private GameObject healEffect;
     [SerializeField]
     private GameObject waterEffect;
+    [SerializeField]
+    private GameObject cutEffect;
+
     public Transform playerDeckPos;
     public Transform enemyDeckPos;
 
@@ -179,6 +188,44 @@ public class EffectManager : ObjectPool
     }
     #endregion
 
+    #region[파이어볼 이펙트]
+    public void FireBallEffect(Vector2 pos, Vector2 targetPos)
+    {
+        string objName = "FireBallEffect";
+        GameObject obj = FindPool(objName);
+        if (obj == null)
+        {
+            obj = Instantiate(fireballEffect);
+            AddPool(obj);
+        }
+        obj.SetActive(true);
+        obj.transform.position = new Vector3(pos.x, pos.y, obj.transform.position.z);
+        obj.GetComponent<ThrowEffect>().startPos = obj.transform.position;
+        obj.GetComponent<ThrowEffect>().targetPos = targetPos;
+        obj.transform.name = objName;
+        AddPool(obj);
+    }
+    #endregion
+
+    #region[저주 이펙트]
+    public void CurseEffect(Vector2 pos, Vector2 targetPos)
+    {
+        string objName = "CurseEffect";
+        GameObject obj = FindPool(objName);
+        if (obj == null)
+        {
+            obj = Instantiate(curseEffect);
+            AddPool(obj);
+        }
+        obj.SetActive(true);
+        obj.transform.position = new Vector3(pos.x, pos.y, obj.transform.position.z);
+        obj.GetComponent<ThrowEffect>().startPos = obj.transform.position;
+        obj.GetComponent<ThrowEffect>().targetPos = targetPos;
+        obj.transform.name = objName;
+        AddPool(obj);
+    }
+    #endregion
+
     #region[마법이펙트]
     public void MagicEffect(Vector3 pos)
     {
@@ -187,6 +234,23 @@ public class EffectManager : ObjectPool
         if (obj == null)
         {
             obj = Instantiate(magicEffect);
+            AddPool(obj);
+        }
+        obj.SetActive(true);
+        obj.transform.position = pos;
+        obj.transform.name = objName;
+        AddPool(obj);
+    }
+    #endregion
+
+    #region[파이어이펙트]
+    public void FireEffect(Vector3 pos)
+    {
+        string objName = "FireEffect";
+        GameObject obj = FindPool(objName);
+        if (obj == null)
+        {
+            obj = Instantiate(fireEffect);
             AddPool(obj);
         }
         obj.SetActive(true);
@@ -264,6 +328,24 @@ public class EffectManager : ObjectPool
     }
     #endregion
 
+    #region[베는 이펙트]
+    public void CutEffect(Vector3 pos, Vector2 scale)
+    {
+        string objName = "CutEffect";
+        GameObject obj = FindPool(objName);
+        if (obj == null)
+        {
+            obj = Instantiate(cutEffect);
+            AddPool(obj);
+        }
+        obj.SetActive(true);
+        obj.transform.position = pos;
+        obj.transform.localScale = new Vector3(50 * scale.x, 50 * scale.y, 50);
+        obj.transform.name = objName;
+        AddPool(obj);
+    }
+    #endregion
+
     #region[이펙트(진동)]
     public void VibrationEffect(float waitTime, int n, float power = 1)
     {
@@ -273,7 +355,7 @@ public class EffectManager : ObjectPool
     private IEnumerator CameraVibrationEffect(float waitTime, int n, float power = 1)
     {
         yield return new WaitForSeconds(waitTime);
-        Vector3 v = Camera.main.transform.position;
+        Vector3 v = new Vector3(0, 0, -1000);
         for (int i = 0; i < n; i++)
         {
             Camera.main.transform.position = v + Quaternion.Euler(0, 0, Random.Range(0, 360)) * new Vector3(power, 0, 0);
