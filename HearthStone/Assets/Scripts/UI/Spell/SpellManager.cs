@@ -2188,7 +2188,12 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.피해주기:
             case SpellAbility.Ability.하수인에게_피해주기:
             case SpellAbility.Ability.피해받지않은하수인에게_피해주기:
-                Debug.Log("피해주기");
+                //if (eventMininon.minion_name == "기습")
+                //{
+                //    invokeMinion = minionObject;
+                //    EffectManager.instance.CutEffect(invokeMinion.transform.position, new Vector2(+1, 1));
+                //    Invoke("DamageMinion", 1f);
+                //}
                 AttackManager.instance.PopAllDamageObj();
                 AttackManager.instance.AddDamageObj(minionObject.damageEffect, (int)nowSpellAbility.Ability_data.x + (enemy ? enemySpellPower : playerSpellPower));
                 AttackManager.instance.AttackEffectRun();

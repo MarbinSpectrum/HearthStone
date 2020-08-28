@@ -40,6 +40,13 @@ public class ManaManager : MonoBehaviour
     #region[Update]
     private void Update()
     {
+
+        playerMaxMana = Mathf.Min(playerMaxMana, 10);
+        playerNowMana = Mathf.Max(playerNowMana, 0);
+
+        enemyMaxMana = Mathf.Min(enemyMaxMana, 10);
+        enemyNowMana = Mathf.Max(enemyNowMana, 0);
+
         if (showManaCost)
         {
             showManaCost.nowMana = playerNowMana;
@@ -55,12 +62,6 @@ public class ManaManager : MonoBehaviour
             enemyManaCost.nowMana = enemyNowMana;
             enemyManaCost.maxMana = enemyMaxMana;
         }
-
-        playerMaxMana = Mathf.Min(playerMaxMana, 10);
-        playerNowMana = Mathf.Max(playerNowMana, 0);
-
-        enemyMaxMana = Mathf.Min(enemyMaxMana, 10);
-        enemyNowMana = Mathf.Max(enemyNowMana, 0);
     }
     #endregion
 }
