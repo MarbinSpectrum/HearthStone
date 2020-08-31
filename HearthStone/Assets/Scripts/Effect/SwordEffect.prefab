@@ -95,5 +95,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   angleSpeed: 180
+  startPos: {x: 0, y: 0}
   targetPos: {x: 0, y: 0}
-  moveSpeed: 100

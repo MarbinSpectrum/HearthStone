@@ -73,7 +73,6 @@ public class EffectManager : ObjectPool
         obj.transform.position = pos;
         obj.transform.name = objName;
         obj.transform.rotation = Quaternion.Euler(0, 0, angle);
-        AddPool(obj);
     }
     #endregion
 
@@ -91,7 +90,6 @@ public class EffectManager : ObjectPool
         obj.SetActive(true);
         obj.transform.position = Vector3.zero;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -108,7 +106,6 @@ public class EffectManager : ObjectPool
         obj.SetActive(true);
         obj.transform.position = pos;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -127,7 +124,37 @@ public class EffectManager : ObjectPool
         obj.GetComponent<ThrowEffect>().startPos = obj.transform.position;
         obj.GetComponent<ThrowEffect>().targetPos = targetPos;
         obj.transform.name = objName;
-        AddPool(obj);
+    }
+    #endregion
+
+    #region[검이펙트(칼발부채)]
+    public void FanofKnives(Vector2 pos,float baseAngle)
+    {
+        StartCoroutine(FanofKnives(pos, baseAngle, 25));
+    }
+
+    private IEnumerator FanofKnives(Vector2 pos, float baseAngle, int n)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            string objName = "SwordEffect";
+            GameObject obj = FindPool(objName);
+            if (obj == null)
+            {
+                obj = Instantiate(swordEffect);
+                AddPool(obj);
+            }
+            obj.SetActive(true);
+            float angle = Random.Range(-80 + baseAngle, +80 + baseAngle);
+
+            obj.transform.position = new Vector3(pos.x, pos.y, 900);
+            obj.transform.eulerAngles = new Vector3(0, 0, angle);
+            obj.GetComponent<ThrowEffect>().startPos = obj.transform.position;
+            obj.GetComponent<ThrowEffect>().targetPos = obj.transform.position + Quaternion.Euler(0, 0, angle) * new Vector3(0, 3000, 0);
+            obj.GetComponent<ThrowEffect>().angleSpeed = 0;
+            obj.transform.name = objName;
+            yield return new WaitForSeconds(0.01f);
+        }
     }
     #endregion
 
@@ -146,7 +173,6 @@ public class EffectManager : ObjectPool
         obj.GetComponent<ThrowEffect>().startPos = obj.transform.position;
         obj.GetComponent<ThrowEffect>().targetPos = targetPos;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -165,7 +191,6 @@ public class EffectManager : ObjectPool
         obj.GetComponent<ThrowEffect>().startPos = obj.transform.position;
         obj.GetComponent<ThrowEffect>().targetPos = targetPos;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -184,7 +209,6 @@ public class EffectManager : ObjectPool
         obj.GetComponent<ThrowEffect>().startPos = obj.transform.position;
         obj.GetComponent<ThrowEffect>().targetPos = targetPos;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -203,7 +227,6 @@ public class EffectManager : ObjectPool
         obj.GetComponent<ThrowEffect>().startPos = obj.transform.position;
         obj.GetComponent<ThrowEffect>().targetPos = targetPos;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -222,7 +245,6 @@ public class EffectManager : ObjectPool
         obj.GetComponent<ThrowEffect>().startPos = obj.transform.position;
         obj.GetComponent<ThrowEffect>().targetPos = targetPos;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -239,7 +261,6 @@ public class EffectManager : ObjectPool
         obj.SetActive(true);
         obj.transform.position = pos;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -256,7 +277,6 @@ public class EffectManager : ObjectPool
         obj.SetActive(true);
         obj.transform.position = pos;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -273,7 +293,6 @@ public class EffectManager : ObjectPool
         obj.SetActive(true);
         obj.transform.position = pos;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -290,7 +309,6 @@ public class EffectManager : ObjectPool
         obj.SetActive(true);
         obj.transform.position = pos;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -307,7 +325,6 @@ public class EffectManager : ObjectPool
         obj.SetActive(true);
         obj.transform.position = new Vector3(pos.x, pos.y, obj.transform.position.z);
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -324,7 +341,6 @@ public class EffectManager : ObjectPool
         obj.SetActive(true);
         obj.transform.position = pos;
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 
@@ -342,7 +358,6 @@ public class EffectManager : ObjectPool
         obj.transform.position = pos;
         obj.transform.localScale = new Vector3(50 * scale.x, 50 * scale.y, 50);
         obj.transform.name = objName;
-        AddPool(obj);
     }
     #endregion
 

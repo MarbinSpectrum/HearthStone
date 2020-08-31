@@ -112,18 +112,12 @@ public class DragCardObject : MonoBehaviour
         {
             if (SpellManager.instance.targetMinion)
             {
-                //CardHand.instance.removeCostOffset = CardHand.instance.handCostOffset[dragCardNum];
-                //CardHand.instance.handCostOffset[dragCardNum] = 0;
-                //for (int i = dragCardNum; i < 9; i++)
-                //    CardHand.instance.handCostOffset[i] = CardHand.instance.handCostOffset[i + 1];
+                Debug.Log("드래그미니언");
                 SpellManager.instance.RunSpellTargetMinion(dragCardName, dragCardNum, SpellManager.instance.targetMinion, false);
             }
             else if (SpellManager.instance.targetHero != -1)
             {
-                //CardHand.instance.removeCostOffset = CardHand.instance.handCostOffset[dragCardNum];
-                //CardHand.instance.handCostOffset[dragCardNum] = 0;
-                //for (int i = dragCardNum; i < 9; i++)
-                //    CardHand.instance.handCostOffset[i] = CardHand.instance.handCostOffset[i + 1];
+                Debug.Log("드래그영웅");
                 SpellManager.instance.RunSpellTargetHero(dragCardName, dragCardNum, false, SpellManager.instance.targetHero == 2);
             }
             CardHand.instance.handAni.SetBool("패내리기", false);

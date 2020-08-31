@@ -125,7 +125,8 @@ public class AttackManager : MonoBehaviour
     private IEnumerator CameraVibrationEffect(float waitTime, int n, float power = 1)
     {
         yield return new WaitForSeconds(waitTime);
-        Vector3 v = Camera.main.transform.position;
+        //Vector3 v = Camera.main.transform.position;
+        Vector3 v = new Vector3(0, 0, -1000);
         for (int i = 0; i < n; i++)
         {
             Camera.main.transform.position = v + Quaternion.Euler(0, 0, Random.Range(0, 360)) * new Vector3(power, 0, 0);

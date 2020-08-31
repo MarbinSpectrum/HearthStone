@@ -207,6 +207,7 @@ public class EnemyCardHand : MonoBehaviour
         if (cardType == "무기")
         {
             ManaManager.instance.enemyNowMana -= cost;
+            DragCardObject.instance.dropEffect.dropEffectCardView.cardCostOffset = 0;
             useCardNum++;
             SpellManager.instance.RunSpell(cardName);
             CardRemove(n);
@@ -216,6 +217,7 @@ public class EnemyCardHand : MonoBehaviour
             ManaManager.instance.enemyNowMana -= cost;
             useCardNum++;
             CardViewManager.instance.CardShow(ref DragCardObject.instance.dropEffect.dropEffectCardView, cardName);
+            DragCardObject.instance.dropEffect.dropEffectCardView.cardCostOffset = 0;
             CardViewManager.instance.UpdateCardView(0.001f);
             DragCardObject.instance.ShowDropEffectSpell(Camera.main.WorldToScreenPoint(BattleUI.instance.enemySpellViewPos.transform.position), Camera.main.WorldToScreenPoint(BattleUI.instance.enemySpellViewPos.transform.position), 1);
             SpellManager.instance.RunSpell(cardName,true);
@@ -224,6 +226,7 @@ public class EnemyCardHand : MonoBehaviour
         else if (cardType == "하수인")
         {
             ManaManager.instance.enemyNowMana -= cost;
+            DragCardObject.instance.dropEffect.dropEffectCardView.cardCostOffset = 0;
             useCardNum++;
 
             if (cardName.Equals("데스윙"))

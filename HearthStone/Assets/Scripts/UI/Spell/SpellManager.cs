@@ -345,6 +345,14 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.아군광역피해)
                 {
+                    if (nowSpellName == "칼날 부채")
+                    {
+                        if (enemy)
+                            EffectManager.instance.FanofKnives(HeroManager.instance.enemyHero.transform.position, 180);
+                        else
+                            EffectManager.instance.FanofKnives(HeroManager.instance.playerHero.transform.position, 0);
+                        yield return new WaitForSeconds(1f);
+                    }
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -391,6 +399,14 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.적군광역피해)
                 {
+                    if (nowSpellName == "칼날 부채")
+                    {
+                        if (enemy)
+                            EffectManager.instance.FanofKnives(HeroManager.instance.enemyHero.transform.position, 180);
+                        else
+                            EffectManager.instance.FanofKnives(HeroManager.instance.playerHero.transform.position, 0);
+                        yield return new WaitForSeconds(1f);
+                    }
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -437,19 +453,39 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.적영웅에게피해)
                 {
+                    if (nowSpellName == "사악한 일격")
+                    {
+                        if (!enemy)
+                        {
+                            EffectManager.instance.CutEffect(HeroManager.instance.enemyHero.transform.position, new Vector2(+1, 1));
+                            EffectManager.instance.CutEffect(HeroManager.instance.enemyHero.transform.position, new Vector2(-1, 1));
+                        }
+                        else
+                        {
+                            EffectManager.instance.CutEffect(HeroManager.instance.playerHero.transform.position, new Vector2(+1, 1));
+                            EffectManager.instance.CutEffect(HeroManager.instance.playerHero.transform.position, new Vector2(-1, 1));
+                        }
+                        GameEventManager.instance.EventAdd(1f);
+                        yield return new WaitForSeconds(1f);
+                    }
+
+                    AttackManager.instance.PopAllDamageObj();
                     if (!enemy)
-                    {
                         AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)ability.Ability_data.x + playerSpellPower);
-                        AttackManager.instance.AttackEffectRun();
-                    }
                     else
-                    {
                         AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)ability.Ability_data.x + enemySpellPower);
-                        AttackManager.instance.AttackEffectRun();
-                    }
+                    AttackManager.instance.AttackEffectRun();
                 }
                 else if (CheckEvent(ability) == EventType.광역피해)
                 {
+                    if (nowSpellName == "칼날 부채")
+                    {
+                        if (enemy)
+                            EffectManager.instance.FanofKnives(HeroManager.instance.enemyHero.transform.position, 180);
+                        else
+                            EffectManager.instance.FanofKnives(HeroManager.instance.playerHero.transform.position, 0);
+                        yield return new WaitForSeconds(1f);
+                    }
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -736,6 +772,16 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.무기공격력부여)
                 {
+                    if (nowSpellName == "맹독")
+                    {
+                        if (enemy)
+                            EffectManager.instance.MagicEffect(HeroManager.instance.heroAtkManager.enemyWeapon.transform.position);
+                        else
+                            EffectManager.instance.MagicEffect(HeroManager.instance.heroAtkManager.playerWeapon.transform.position);
+                        GameEventManager.instance.EventAdd(1f);
+                        yield return new WaitForSeconds(1f);
+                    }
+
                     if (enemy)
                         HeroManager.instance.heroAtkManager.enemyWeaponAtk += (int)ability.Ability_data.x;
                     else
@@ -845,6 +891,7 @@ public class SpellManager : MonoBehaviour
         List<SpellAbility> spellList = SpellParsing(ability_string);
         nowSpellName = name;
         int cost = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+        cost = Mathf.Max(0, cost + CardHand.instance.handCostOffset[handNum] - CardHand.instance.UsePreparation);
         ManaManager.instance.playerNowMana -= cost;
         CardHand.instance.useCardNum++;
         CardHand.instance.CardRemove(handNum);
@@ -960,6 +1007,14 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.아군광역피해)
                 {
+                    if (nowSpellName == "칼날 부채")
+                    {
+                        if (enemy)
+                            EffectManager.instance.FanofKnives(HeroManager.instance.enemyHero.transform.position, 180);
+                        else
+                            EffectManager.instance.FanofKnives(HeroManager.instance.playerHero.transform.position, 0);
+                        yield return new WaitForSeconds(1f);
+                    }
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -1006,6 +1061,14 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.적군광역피해)
                 {
+                    if (nowSpellName == "칼날 부채")
+                    {
+                        if (enemy)
+                            EffectManager.instance.FanofKnives(HeroManager.instance.enemyHero.transform.position, 180);
+                        else
+                            EffectManager.instance.FanofKnives(HeroManager.instance.playerHero.transform.position, 0);
+                        yield return new WaitForSeconds(1f);
+                    }
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -1052,6 +1115,14 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.광역피해)
                 {
+                    if (nowSpellName == "칼날 부채")
+                    {
+                        if (enemy)
+                            EffectManager.instance.FanofKnives(HeroManager.instance.enemyHero.transform.position, 180);
+                        else
+                            EffectManager.instance.FanofKnives(HeroManager.instance.playerHero.transform.position, 0);
+                        yield return new WaitForSeconds(1f);
+                    }
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -1347,7 +1418,8 @@ public class SpellManager : MonoBehaviour
         List<SpellAbility> spellList = SpellParsing(ability_string);
         nowSpellName = name;
         int cost = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
-        cost = cost + CardHand.instance.handCostOffset[handNum] - CardHand.instance.UsePreparation;
+        cost = Mathf.Max(0, cost + CardHand.instance.handCostOffset[handNum] - CardHand.instance.UsePreparation);
+        ManaManager.instance.playerNowMana -= cost;
         CardHand.instance.useCardNum++;
         CardHand.instance.CardRemove(handNum);
         StartCoroutine(RunSpellTargetHero(spellList, runHero, tarHero));
@@ -1467,6 +1539,14 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.아군광역피해)
                 {
+                    if (nowSpellName == "칼날 부채")
+                    {
+                        if (enemy)
+                            EffectManager.instance.FanofKnives(HeroManager.instance.enemyHero.transform.position, 180);
+                        else
+                            EffectManager.instance.FanofKnives(HeroManager.instance.playerHero.transform.position, 0);
+                        yield return new WaitForSeconds(1f);
+                    }
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -1513,6 +1593,14 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.적군광역피해)
                 {
+                    if (nowSpellName == "칼날 부채")
+                    {
+                        if (enemy)
+                            EffectManager.instance.FanofKnives(HeroManager.instance.enemyHero.transform.position, 180);
+                        else
+                            EffectManager.instance.FanofKnives(HeroManager.instance.playerHero.transform.position, 0);
+                        yield return new WaitForSeconds(1f);
+                    }
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -1559,6 +1647,14 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.광역피해)
                 {
+                    if (nowSpellName == "칼날 부채")
+                    {
+                        if (enemy)
+                            EffectManager.instance.FanofKnives(HeroManager.instance.enemyHero.transform.position, 180);
+                        else
+                            EffectManager.instance.FanofKnives(HeroManager.instance.playerHero.transform.position, 0);
+                        yield return new WaitForSeconds(1f);
+                    }
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -2117,7 +2213,16 @@ public class SpellManager : MonoBehaviour
                 minionObject.ActSilence();
                 break;
             case SpellAbility.Ability.하수인처치:
-                minionObject.MinionDeath();
+                invokeMinion = minionObject;
+                if (nowSpellName == "암살")
+                {
+                    GameEventManager.instance.EventSet(1f);
+                    EffectManager.instance.CutEffect(invokeMinion.transform.position, new Vector2(+1, 1));
+                    EffectManager.instance.CutEffect(invokeMinion.transform.position, new Vector2(-1, 1));
+                    Invoke("MinionDeath", 1f);
+                }
+                else
+                    Invoke("MinionDeath", 0f);
                 break;
             case SpellAbility.Ability.생명력회복:
             case SpellAbility.Ability.하수인의_생명력회복:
@@ -2133,7 +2238,6 @@ public class SpellManager : MonoBehaviour
                 deathList.Clear();
                 survivalList.Clear();
                 emptyList.Clear();
-                Debug.Log(enemy);
                 if (!enemy)
                 {
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -2160,7 +2264,6 @@ public class SpellManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("휘둘러치기");
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (!MinionField.instance.minions[m].gameObject.activeSelf)
                             emptyList.Add(MinionField.instance.minions[m]);
@@ -2188,15 +2291,28 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.피해주기:
             case SpellAbility.Ability.하수인에게_피해주기:
             case SpellAbility.Ability.피해받지않은하수인에게_피해주기:
-                //if (eventMininon.minion_name == "기습")
-                //{
-                //    invokeMinion = minionObject;
-                //    EffectManager.instance.CutEffect(invokeMinion.transform.position, new Vector2(+1, 1));
-                //    Invoke("DamageMinion", 1f);
-                //}
-                AttackManager.instance.PopAllDamageObj();
-                AttackManager.instance.AddDamageObj(minionObject.damageEffect, (int)nowSpellAbility.Ability_data.x + (enemy ? enemySpellPower : playerSpellPower));
-                AttackManager.instance.AttackEffectRun();
+                invokeMinion = minionObject;
+                invokeEnemy = enemy;
+                if (nowSpellName == "기습")
+                {
+                    GameEventManager.instance.EventSet(1f);
+                    EffectManager.instance.CutEffect(invokeMinion.transform.position, new Vector2(+1, 1));
+                    Invoke("MinionDamage", 1f);
+                }
+                else if (nowSpellName == "독칼")
+                {
+                    GameEventManager.instance.EventSet(1f);
+                    EffectManager.instance.CutEffect(invokeMinion.transform.position, new Vector2(+1, 1));
+                    Invoke("MinionDamage", 1f);
+                }
+                else if (nowSpellName == "절개")
+                {
+                    GameEventManager.instance.EventSet(1f);
+                    EffectManager.instance.CutEffect(invokeMinion.transform.position, new Vector2(+1, 1));
+                    Invoke("MinionDamage", 1f);
+                }
+                else
+                    Invoke("MinionDamage", 0f);
                 break;
             case SpellAbility.Ability.영웅의공격력만큼_피해주기:
                 AttackManager.instance.PopAllDamageObj();
@@ -2291,6 +2407,38 @@ public class SpellManager : MonoBehaviour
         }
     }
 
+    MinionObject invokeMinion;
+    bool invokeEnemy;
+    bool invokeRunEnemy;
+
+    public void MinionDamage()
+    {
+        if (invokeMinion == null)
+            return;
+        AttackManager.instance.PopAllDamageObj();
+        AttackManager.instance.AddDamageObj(invokeMinion.damageEffect, (int)nowSpellAbility.Ability_data.x + (invokeEnemy ? enemySpellPower : playerSpellPower));
+        AttackManager.instance.AttackEffectRun();
+        invokeMinion = null;
+    }
+
+    public void MinionDeath()
+    {
+        if (invokeMinion == null)
+            return;
+        invokeMinion.MinionDeath();
+        invokeMinion = null;
+    }
+
+    public void HeroDamage()
+    {
+        AttackManager.instance.PopAllDamageObj();
+        if (invokeEnemy)
+            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)nowSpellAbility.Ability_data.x + (invokeRunEnemy ? enemySpellPower : playerSpellPower));
+        else
+            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)nowSpellAbility.Ability_data.x + (invokeRunEnemy ? enemySpellPower : playerSpellPower));
+        AttackManager.instance.AttackEffectRun();
+    }
+
     #region[미니언위치 세팅]
     bool reArrangementEnemy = false;
     public void SetMinionPos()
@@ -2362,11 +2510,22 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.피해주기:
             case SpellAbility.Ability.영웅에게_피해주기:
             case SpellAbility.Ability.피해받지않은하수인에게_피해주기:
-                if (enemy)
-                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)nowSpellAbility.Ability_data.x + playerSpellPower);
+                invokeEnemy = enemy;
+                invokeRunEnemy = runEnemy;
+                if (nowSpellName == "독칼")
+                {
+                    GameEventManager.instance.EventSet(1f);
+                    EffectManager.instance.CutEffect(invokeEnemy ? HeroManager.instance.enemyHero.transform.position : HeroManager.instance.playerHero.transform.position, new Vector2(+1, 1));
+                    Invoke("HeroDamage", 1f);
+                }
+                else if (nowSpellName == "절개")
+                {
+                    GameEventManager.instance.EventSet(1f);
+                    EffectManager.instance.CutEffect(invokeEnemy ? HeroManager.instance.enemyHero.transform.position : HeroManager.instance.playerHero.transform.position, new Vector2(+1, 1));
+                    Invoke("HeroDamage", 1f);
+                }
                 else
-                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)nowSpellAbility.Ability_data.x + playerSpellPower);
-                AttackManager.instance.AttackEffectRun();
+                    Invoke("HeroDamage", 0f);
                 break;
             case SpellAbility.Ability.영웅의공격력만큼_피해주기:
                 break;

@@ -362,7 +362,7 @@ public class CardHand : MonoBehaviour
             cost = handCardView[n].SpellCostData + handCostOffset[n] - UsePreparation;
         else if (handCardView[n].cardType == CardType.하수인)
             cost = handCardView[n].MinionsCostData + handCostOffset[n];
-        cost = cost < 0 ? 0 : cost;
+        cost = Mathf.Max(0,cost);
         if (handCardView[n].cardType == CardType.무기)
         {
             if (!DragCardObject.instance.dragSelectCard)
