@@ -1311,9 +1311,9 @@ public class DruidAI : MonoBehaviour
         else if(card_name == "지식의 고대정령")
         {
             if(EnemyCardHand.instance.nowHandNum <= 5)
-                return 0;
-            else
                 return 1;
+            else
+                return 0;
         }
         #endregion
 

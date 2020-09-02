@@ -276,17 +276,33 @@ public class CardHand : MonoBehaviour
         {
             while (GameEventManager.instance.GetEventValue() > 0.1f)
                 yield return new WaitForSeconds(0.001f);
-            GameEventManager.instance.EventAdd(0.1f);
+
+            exhaustion++;
+            BattleUI.instance.exhaustionUI.SetActive(true);
+            BattleUI.instance.exhaustionText.text = "카드가 없습니다! " + exhaustion + "의\n 피해를 입습니다.";
+
+            GameEventManager.instance.EventAdd(2f);
+            yield return new WaitForSeconds(2f);
+            BattleUI.instance.exhaustionUI.SetActive(false);
+
             if(handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대"))
                 handAni.SetTrigger("축소");
-            exhaustion++;
+
             AttackManager.instance.PopAllDamageObj();
             AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, exhaustion);
             AttackManager.instance.AttackEffectRun();
-            GameEventManager.instance.EventAdd(0.3f);
+            GameEventManager.instance.EventAdd(0.5f);
         }
         else if (nowHandNum >= 10)
         {
+            if (InGameDeck.instance.playDeck.Count == 1)
+            {
+                if (HeroManager.instance.heroPowerManager.playerHeroName == "발리라")
+                    BattleUI.instance.playerText.ShowText("카드가 없어!!");
+                else if (HeroManager.instance.heroPowerManager.playerHeroName == "말퓨리온")
+                    BattleUI.instance.playerText.ShowText("카드가 없다!!");
+            }
+
             GameEventManager.instance.EventAdd(0.3f);
             BattleUI.instance.playerCardAni[index].SetTrigger("Draw");
             string s = InGameDeck.instance.playDeck[0];
@@ -295,6 +311,14 @@ public class CardHand : MonoBehaviour
         }
         else
         {
+            if (InGameDeck.instance.playDeck.Count == 1)
+            {
+                if (HeroManager.instance.heroPowerManager.playerHeroName == "발리라")
+                    BattleUI.instance.playerText.ShowText("카드가 없어!!");
+                else if (HeroManager.instance.heroPowerManager.playerHeroName == "말퓨리온")
+                    BattleUI.instance.playerText.ShowText("카드가 없다!!");
+            }
+
             GameEventManager.instance.EventAdd(0.3f);
             BattleUI.instance.playerCardAni[index].SetTrigger("Draw");
             DrawCard();

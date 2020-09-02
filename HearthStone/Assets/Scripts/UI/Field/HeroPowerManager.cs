@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HeroPowerManager : MonoBehaviour
 {
@@ -18,6 +19,12 @@ public class HeroPowerManager : MonoBehaviour
     public bool enemyCanUse = true;
     public Animator enemyHeroPowerObjAni;
     public GameObject enemyCanUseGlowObj;
+
+    public GameObject showHeroPower;
+    public Text heroPowerName;
+    public Text heroPowerExplain;
+    public Image []heroPowerImage;
+
 
     public void Update()
     {
@@ -39,6 +46,20 @@ public class HeroPowerManager : MonoBehaviour
                 abilityName = "변신";
             enemyCanUse = false;
             enemyHeroPowerObjAni.SetBool("CanUse", false);
+
+
+            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(abilityName));
+
+            showHeroPower.SetActive(true);
+            heroPowerName.text = abilityName;
+            for (int i = 0; i < heroPowerImage.Length; i++)
+                heroPowerImage[i].enabled = heroPowerImage[i].transform.name == abilityName;
+            if(abilityName == "변신")
+                heroPowerExplain.text = "방어도를 + 1 얻고 이번 턴에 내 영웅이 공격력을 +1 얻습니다.";
+            else if (abilityName == "단검의 대가")
+                heroPowerExplain.text = "1/2 무기를 장착합니다.";
+            Invoke("CloseHeroPower", 1.5f);
+
         }
         else
         {
@@ -95,10 +116,15 @@ public class HeroPowerManager : MonoBehaviour
 
         Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(abilityName));
         string ability = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
+
         if (!enemy)
             playerheroPower = SpellManager.instance.SpellParsing(ability);
         else
             enemyheroPower = SpellManager.instance.SpellParsing(ability);
     }
 
+    void CloseHeroPower()
+    {
+        showHeroPower.SetActive(false);
+    }
 }

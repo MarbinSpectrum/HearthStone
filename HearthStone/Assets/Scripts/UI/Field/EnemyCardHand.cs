@@ -149,8 +149,15 @@ public class EnemyCardHand : MonoBehaviour
         {
             while (GameEventManager.instance.GetEventValue() > 0.1f)
                 yield return new WaitForSeconds(0.001f);
-            GameEventManager.instance.EventAdd(0.1f);
+
             exhaustion++;
+            BattleUI.instance.exhaustionUI.SetActive(true);
+            BattleUI.instance.exhaustionText.text = "카드가 없습니다! " + exhaustion + "의\n 피해를 입습니다.";
+
+            GameEventManager.instance.EventAdd(2f);
+            yield return new WaitForSeconds(2f);
+            BattleUI.instance.exhaustionUI.SetActive(false);
+
             AttackManager.instance.PopAllDamageObj();
             AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, exhaustion);
             AttackManager.instance.AttackEffectRun();
@@ -158,6 +165,14 @@ public class EnemyCardHand : MonoBehaviour
         }
         else if (nowHandNum >= 10)
         {
+            if (InGameDeck.instance.AIDeck.Count == 1)
+            {
+                if (HeroManager.instance.heroPowerManager.enemyHeroName == "발리라")
+                    BattleUI.instance.enermyText.ShowText("카드가 없어!!");
+                else if (HeroManager.instance.heroPowerManager.enemyHeroName == "말퓨리온")
+                    BattleUI.instance.enermyText.ShowText("카드가 없다!!");
+            }
+
             BattleUI.instance.enemyCardAni[index].SetTrigger("Draw");
             string s = InGameDeck.instance.AIDeck[0];
             InGameDeck.instance.AIDeck.RemoveAt(0);
@@ -166,6 +181,14 @@ public class EnemyCardHand : MonoBehaviour
         }
         else
         {
+            if (InGameDeck.instance.AIDeck.Count == 1)
+            {
+                if (HeroManager.instance.heroPowerManager.enemyHeroName == "발리라")
+                    BattleUI.instance.enermyText.ShowText("카드가 없어!!");
+                else if (HeroManager.instance.heroPowerManager.enemyHeroName == "말퓨리온")
+                    BattleUI.instance.enermyText.ShowText("카드가 없다!!");
+            }
+
             nowHandNum++;
             CardMove(nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
             BattleUI.instance.enemyCardAni[index].SetTrigger("Draw");

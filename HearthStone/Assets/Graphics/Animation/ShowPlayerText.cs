@@ -31,4 +31,10 @@ public class ShowPlayerText : MonoBehaviour
             text_obj.SetActive(false);
     }
 
+    public void ShowText(string s)
+    {
+        text = s;
+        show = true;
+    }
+
 }

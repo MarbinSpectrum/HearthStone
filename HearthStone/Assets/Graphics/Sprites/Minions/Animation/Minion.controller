@@ -285,37 +285,37 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: NormalSpawn
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: SetSpawn
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: GoHand
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: DeathWingSpawn
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: StrongSpawn
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -415,28 +415,28 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -4556182497773844330}
-    m_Position: {x: 410, y: 70, z: 0}
+    m_Position: {x: 400, y: 110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3256481330806708574}
     m_Position: {x: 710, y: 340, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2188522532827136303}
-    m_Position: {x: 110, y: 70, z: 0}
+    m_Position: {x: 110, y: 80, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1297508647837644143}
-    m_Position: {x: 710, y: 70, z: 0}
+    m_Position: {x: 710, y: 80, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8292171349501728823}
     m_Position: {x: 110, y: 350, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4979262344373115801}
-    m_Position: {x: 400, y: 210, z: 0}
+    m_Position: {x: 400, y: 160, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1742177194648173578}
-    m_Position: {x: 400, y: -40, z: 0}
+    m_Position: {x: 400, y: 60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2630595033480758917}
-    m_Position: {x: 400, y: -150, z: 0}
+    m_Position: {x: 400, y: 10, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: -6707275348589781946}

@@ -38,9 +38,19 @@ public class EffectManager : ObjectPool
     private GameObject waterEffect;
     [SerializeField]
     private GameObject cutEffect;
+    [SerializeField]
+    private GameObject tornadoEffect;
+    [SerializeField]
+    private GameObject spiralEffect;
+    [SerializeField]
+    private GameObject swipeTargetEffect;
+    [SerializeField]
+    private GameObject swipeEffect;
 
     public Transform playerDeckPos;
     public Transform enemyDeckPos;
+    public Transform playerEffectPos;
+    public Transform enemyEffectPos;
 
     #region[Awake]
     public void Awake()
@@ -123,6 +133,7 @@ public class EffectManager : ObjectPool
         obj.transform.position = new Vector3(pos.x, pos.y, obj.transform.position.z);
         obj.GetComponent<ThrowEffect>().startPos = obj.transform.position;
         obj.GetComponent<ThrowEffect>().targetPos = targetPos;
+        obj.GetComponent<ThrowEffect>().angleSpeed = 180;
         obj.transform.name = objName;
     }
     #endregion
@@ -173,6 +184,42 @@ public class EffectManager : ObjectPool
         obj.GetComponent<ThrowEffect>().startPos = obj.transform.position;
         obj.GetComponent<ThrowEffect>().targetPos = targetPos;
         obj.transform.name = objName;
+    }
+    #endregion
+
+    #region[별똥별]
+    public void StarFall(bool enemy)
+    {
+        StartCoroutine(StarFall(enemy, 25));
+    }
+
+    private IEnumerator StarFall(bool enemy, int n)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            string objName = "EnergyEffect";
+            GameObject obj = FindPool(objName);
+            if (obj == null)
+            {
+                obj = Instantiate(energyEffect);
+                AddPool(obj);
+            }
+            obj.SetActive(true);
+            if(enemy)
+            {
+                float r = Random.Range(-300, 300);
+                obj.GetComponent<ThrowEffect>().startPos = enemyEffectPos.position + new Vector3(r,1000,0);
+                obj.GetComponent<ThrowEffect>().targetPos = enemyEffectPos.position + new Vector3(r,60,0);
+            }
+            else
+            {
+                float r = Random.Range(-300, 300);
+                obj.GetComponent<ThrowEffect>().startPos = playerEffectPos.position + new Vector3(r, 1000, 0);
+                obj.GetComponent<ThrowEffect>().targetPos = playerEffectPos.position + new Vector3(r, 60, 0);
+            }
+            obj.transform.name = objName;
+            yield return new WaitForSeconds(0.01f);
+        }
     }
     #endregion
 
@@ -357,6 +404,73 @@ public class EffectManager : ObjectPool
         obj.SetActive(true);
         obj.transform.position = pos;
         obj.transform.localScale = new Vector3(50 * scale.x, 50 * scale.y, 50);
+        obj.transform.name = objName;
+    }
+    #endregion
+
+    #region[토네이도 이펙트]
+    public void TornadoEffect(Vector3 pos)
+    {
+        string objName = "TornadoEffect";
+        GameObject obj = FindPool(objName);
+        if (obj == null)
+        {
+            obj = Instantiate(tornadoEffect);
+            AddPool(obj);
+        }
+        obj.SetActive(true);
+        obj.transform.position = new Vector3(pos.x,pos.y,900);
+        obj.transform.name = objName;
+    }
+    #endregion
+
+    #region[스파이럴 이펙트]
+    public void SpiralEffect(Vector3 pos)
+    {
+        string objName = "SpiralEffect";
+        GameObject obj = FindPool(objName);
+        if (obj == null)
+        {
+            obj = Instantiate(spiralEffect);
+            AddPool(obj);
+        }
+        obj.SetActive(true);
+        obj.transform.position = new Vector3(pos.x, pos.y, 900);
+        obj.transform.name = objName;
+    }
+    #endregion
+
+    #region[휘둘러치기(대상) 이펙트]
+    public void SwipeTargetEffect(Vector3 pos)
+    {
+        string objName = "SwipeTargetEffect";
+        GameObject obj = FindPool(objName);
+        if (obj == null)
+        {
+            obj = Instantiate(swipeTargetEffect);
+            AddPool(obj);
+        }
+        obj.SetActive(true);
+        obj.transform.position = new Vector3(pos.x, pos.y, 900);
+        obj.transform.name = objName;
+    }
+    #endregion
+
+    #region[휘둘러치기 이펙트]
+    public void SwipeEffect(bool enemy)
+    {
+        string objName = "SwipeEffect";
+        GameObject obj = FindPool(objName);
+        if (obj == null)
+        {
+            obj = Instantiate(swipeEffect);
+            AddPool(obj);
+        }
+        obj.SetActive(true);
+        if(!enemy)
+            obj.transform.position = enemyEffectPos.position;
+        else
+            obj.transform.position = playerEffectPos.position;
         obj.transform.name = objName;
     }
     #endregion
