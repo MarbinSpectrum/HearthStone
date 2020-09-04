@@ -91,6 +91,8 @@
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\Fireball.cs" />
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\Spin.cs" />
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\Test.cs" />
+    <Compile Include="Assets\Graphics\Shaders\BreakPiece.cs" />
+    <Compile Include="Assets\Graphics\Shaders\BreakPorait.cs" />
     <Compile Include="Assets\Graphics\Shaders\DropEffect.cs" />
     <Compile Include="Assets\Graphics\Shaders\GoToHandEffect.cs" />
     <Compile Include="Assets\Graphics\Shaders\Gray.cs" />

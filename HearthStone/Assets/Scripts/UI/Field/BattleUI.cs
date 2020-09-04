@@ -45,6 +45,8 @@ public class BattleUI : MonoBehaviour
     public GameObject exhaustionUI;
     public Text exhaustionText;
 
+    public GameObject gameEndDontTouch;
+
     [HideInInspector] public bool gameStart;
 
     #region[Awake]

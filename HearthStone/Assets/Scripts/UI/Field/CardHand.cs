@@ -247,7 +247,9 @@ public class CardHand : MonoBehaviour
                     canUse[i] = (cost <= ManaManager.instance.playerNowMana);
                     canUse[i] = canUse[i] && (MinionField.instance.minionNum < 7);
                 }
-              
+                canUse[i] = canUse[i] && BattleUI.instance.gameStart;
+
+
             }
         }
     }

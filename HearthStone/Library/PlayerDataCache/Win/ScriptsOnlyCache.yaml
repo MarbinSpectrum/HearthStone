@@ -1534,7 +1534,7 @@ ScriptsOnlyBuild:
     className: DebugUpdater
   - hash:
       serializedVersion: 2
-      Hash: 9845c9eff27a89dc51081e9a257c82f3
+      Hash: 6c99083ea8f0772c193aaba8a979fd05
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: HeroPowerManager
@@ -1804,7 +1804,7 @@ ScriptsOnlyBuild:
     className: BattleMenuFindBattle
   - hash:
       serializedVersion: 2
-      Hash: 0842dddb68456ca89a6d6321f0f85d59
+      Hash: 74bdb559d6279fe26a43e152e5388147
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: BattleUI
@@ -2629,4 +2629,5 @@ ScriptsOnlyBuild:
   - Assets/Scenes/Loading.unity
   - Assets/Scenes/Main.unity
   - Assets/Scenes/Battle.unity
-  playerPath: "C:/Users/9507y/OneDrive/\uBC14\uD0D5 \uD654\uBA74/HearthStone_Game/Hearth_Stone.exe"
+  playerPath: "C:/Users/9507y/OneDrive/\uBC14\uD0D5 \uD654\uBA74/\uAC15\uC601\uBB35
+    \uD3EC\uD2B8\uD3F4\uB9AC\uC624/Hearth_Stone.exe"

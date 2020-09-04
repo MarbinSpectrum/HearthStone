@@ -12,6 +12,7 @@ public class DruidAI : MonoBehaviour
         SpellRun,     //주문을 사용 할 수 있다면 && 주문을 사용하는 것으로 이득이 생길경우
         AttackMinion, //필드에 공격 할 수 있는 하수인이 존재한다면 && 공격하는 것이 이득인 경우 
         AttackHero,   //영웅능력을 사용할 수 있다면 && 공격하는것이 이득인 경우
+        GameEnd,      //게임이 종료됨
         TurnEnd       //위의 사항이 모두 적용되지않을 경우
     };
     AI_Act act = AI_Act.TurnEnd;
@@ -195,6 +196,9 @@ public class DruidAI : MonoBehaviour
         }
 
         #endregion
+
+        if(!BattleUI.instance.gameStart)
+            return AI_Act.GameEnd;
 
         return AI_Act.TurnEnd;
     }
