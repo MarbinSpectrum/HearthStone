@@ -85,6 +85,9 @@
     <Compile Include="Assets\Graphics\JMO Assets\WarFX\Scripts\WFX_BulletHoleDecal.cs" />
     <Compile Include="Assets\Graphics\JMO Assets\WarFX\Scripts\WFX_LightFlicker.cs" />
     <Compile Include="Assets\Graphics\JMO Assets\WarFX\Spawn System\CFX_SpawnSystem.cs" />
+    <Compile Include="Assets\Graphics\Particle Ribbon by Moonflower Carnivore\Scripts\ReverseNormals.cs" />
+    <Compile Include="Assets\Graphics\Particle Ribbon by Moonflower Carnivore\Scripts\randomParticleRotation.cs" />
+    <Compile Include="Assets\Graphics\Particle Ribbon by Moonflower Carnivore\Scripts\rotation.cs" />
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\DemoManager.cs" />
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\FairyDustRandomPosition.cs" />
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\FairyMeteorAddForceDemo.cs" />
@@ -118,9 +121,6 @@
     <Compile Include="Assets\Graphics\Sprites\UI\영웅초상화\SelectHeroBtn.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\카드소멸\DrawCardRemove.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\코인\SetCoinMat.cs" />
-    <Compile Include="Assets\Particle Ribbon by Moonflower Carnivore\Scripts\ReverseNormals.cs" />
-    <Compile Include="Assets\Particle Ribbon by Moonflower Carnivore\Scripts\randomParticleRotation.cs" />
-    <Compile Include="Assets\Particle Ribbon by Moonflower Carnivore\Scripts\rotation.cs" />
     <Compile Include="Assets\Scenes\미니언능력생성기\CreateAbility.cs" />
     <Compile Include="Assets\Scenes\주문능력생성기\CreateSpellAbility.cs" />
     <Compile Include="Assets\Scripts\CardData\CardData.cs" />
@@ -233,7 +233,7 @@
     <None Include="Assets\Graphics\JMO Assets\WarFX\Shaders\WFX_S Multiply Soft Scroll.shader" />
     <None Include="Assets\Graphics\Shaders\UI_Gray Color.shader" />
     <None Include="Assets\Graphics\Shaders\InverseOutLine.shader" />
-    <None Include="Assets\Particle Ribbon by Moonflower Carnivore\readme_Simple_Particle_Ribbon.txt" />
+    <None Include="Assets\Graphics\Particle Ribbon by Moonflower Carnivore\readme_Simple_Particle_Ribbon.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\Graphics\Sprites\Minions\미니언.shader" />
     <None Include="Assets\Graphics\JMO Assets\WarFX\_Effects\MuzzleFlashes\!MuzzleFlash Differences.txt" />
@@ -244,7 +244,7 @@
     <None Include="Assets\Graphics\JMO Assets\WarFX\Shaders\WFX_S Add Scroll.shader" />
     <None Include="Assets\Graphics\Sprites\UI\영웅초상화\PlayerSetEffect.shader" />
     <None Include="Assets\Graphics\JMO Assets\Cartoon FX Easy Editor\CartoonFX Easy Editor Readme.txt" />
-    <None Include="Assets\Particle Ribbon by Moonflower Carnivore\Shaders\Particle Alpha Blend HDR.shader" />
+    <None Include="Assets\Graphics\Particle Ribbon by Moonflower Carnivore\Shaders\Particle Alpha Blend HDR.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\Graphics\JMO Assets\WarFX\_Effects (Mobile)\MuzzleFlashes\!MuzzleFlash Differences.txt" />
     <None Include="Assets\Graphics\Shaders\BlueMoveCard.shader" />

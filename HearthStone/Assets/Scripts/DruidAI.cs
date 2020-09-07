@@ -23,6 +23,9 @@ public class DruidAI : MonoBehaviour
 
     AI_Act SelectChoice()
     {
+        if(!BattleUI.instance.gameStart)
+            return AI_Act.GameEnd;
+
         #region[하수인이 내는것을 고려]
         if (EnemyMinionField.instance.minionNum < 7)
             for (int i = 0; i < EnemyCardHand.instance.nowCard.Count; i++)
@@ -197,8 +200,6 @@ public class DruidAI : MonoBehaviour
 
         #endregion
 
-        if(!BattleUI.instance.gameStart)
-            return AI_Act.GameEnd;
 
         return AI_Act.TurnEnd;
     }

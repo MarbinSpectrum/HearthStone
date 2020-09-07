@@ -46,6 +46,8 @@ public class EffectManager : ObjectPool
     private GameObject swipeTargetEffect;
     [SerializeField]
     private GameObject swipeEffect;
+    [SerializeField]
+    private GameObject heroExplodeEffect;
 
     public Transform playerDeckPos;
     public Transform enemyDeckPos;
@@ -475,6 +477,27 @@ public class EffectManager : ObjectPool
     }
     #endregion
 
+    #region[영웅폭발 이펙트]
+    public void HeroExplodeEffect(Vector3 pos)
+    {
+        StartCoroutine(HeroExplodeEffect(1.5f, pos));
+    }
+    public IEnumerator HeroExplodeEffect(float waitTime, Vector3 pos)
+    {
+        yield return new WaitForSeconds(waitTime);
+        string objName = "HeroExplodeEffect";
+        GameObject obj = FindPool(objName);
+        if (obj == null)
+        {
+            obj = Instantiate(heroExplodeEffect);
+            AddPool(obj);
+        }
+        obj.SetActive(true);
+        obj.transform.position = new Vector3(pos.x, pos.y, 900);
+        obj.transform.name = objName;
+    }
+    #endregion
+
     #region[이펙트(진동)]
     public void VibrationEffect(float waitTime, int n, float power = 1)
     {
@@ -485,9 +508,11 @@ public class EffectManager : ObjectPool
     {
         yield return new WaitForSeconds(waitTime);
         Vector3 v = new Vector3(0, 0, -1000);
+        float down = power / (float)n;
         for (int i = 0; i < n; i++)
         {
             Camera.main.transform.position = v + Quaternion.Euler(0, 0, Random.Range(0, 360)) * new Vector3(power, 0, 0);
+            power -= down;
             yield return new WaitForSeconds(0.01f);
         }
         Camera.main.transform.position = v;

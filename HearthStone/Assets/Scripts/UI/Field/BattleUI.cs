@@ -47,6 +47,12 @@ public class BattleUI : MonoBehaviour
 
     public GameObject gameEndDontTouch;
 
+    public GameObject gameDefeat;
+    public Image gameDefeatImg;
+
+    public GameObject gameWin;
+    public Image gameWinImg;
+
     [HideInInspector] public bool gameStart;
 
     #region[Awake]
