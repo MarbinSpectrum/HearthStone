@@ -58,10 +58,10 @@ public class BattleUI : MonoBehaviour
     #region[Awake]
     public void Awake()
     {
-        if (MainMenu.instance)
-            MainMenu.instance.gameObject.SetActive(false);
-        if (MyCollectionsMenu.instance)
-            MyCollectionsMenu.instance.gameObject.SetActive(false);
+        //if (MainMenu.instance)
+        //    MainMenu.instance.gameObject.SetActive(false);
+        //if (MyCollectionsMenu.instance)
+        //    MyCollectionsMenu.instance.gameObject.SetActive(false);
         if (BattleMenu.instance)
             BattleMenu.instance.gameObject.SetActive(false);
         instance = this;

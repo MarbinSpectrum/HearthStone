@@ -96,6 +96,7 @@
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\Test.cs" />
     <Compile Include="Assets\Graphics\Shaders\BreakPiece.cs" />
     <Compile Include="Assets\Graphics\Shaders\BreakPorait.cs" />
+    <Compile Include="Assets\Graphics\Shaders\CircleRange.cs" />
     <Compile Include="Assets\Graphics\Shaders\DropEffect.cs" />
     <Compile Include="Assets\Graphics\Shaders\GoToHandEffect.cs" />
     <Compile Include="Assets\Graphics\Shaders\Gray.cs" />
@@ -167,6 +168,7 @@
     <Compile Include="Assets\Scripts\UI\Field\ShowManaCost.cs" />
     <Compile Include="Assets\Scripts\UI\Field\TurnChangeBtn.cs" />
     <Compile Include="Assets\Scripts\UI\Field\TurnManager.cs" />
+    <Compile Include="Assets\Scripts\UI\GlobalFade.cs" />
     <Compile Include="Assets\Scripts\UI\HeroCanSelect.cs" />
     <Compile Include="Assets\Scripts\UI\Main\BattleMenu.cs" />
     <Compile Include="Assets\Scripts\UI\Main\MainMenu.cs" />
@@ -188,6 +190,7 @@
     <Compile Include="Assets\Scripts\UI\btns\DeckCardDragBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckDeleteCheck.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckReNameBtn.cs" />
+    <Compile Include="Assets\Scripts\UI\btns\GotoMainBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\HandCardCheckBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\HeroDrag.cs" />
     <Compile Include="Assets\Scripts\UI\btns\HeroSelect.cs" />

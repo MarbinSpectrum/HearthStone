@@ -1037,7 +1037,7 @@ public class MinionManager : MonoBehaviour
             case MinionAbility.Ability.하수인의_생명력회복:
                 minionObject.final_hp += (int)eventMininon.abilityList[eventNum].Ability_data.x;
                 minionObject.final_hp = Mathf.Min(minionObject.final_hp, minionObject.baseHp);
-                EffectManager.instance.HealEffect(minionObject.transform.position);
+                EffectManager.instance.HealEffect(minionObject.transform.position, (int)eventMininon.abilityList[eventNum].Ability_data.x);
                 break;
             case MinionAbility.Ability.피해주기:
             case MinionAbility.Ability.하수인에게_피해주기:
@@ -1161,12 +1161,12 @@ public class MinionManager : MonoBehaviour
                 if(enemy)
                 {
                     HeroManager.instance.heroHpManager.nowEnemyHp += (int)eventMininon.abilityList[eventNum].Ability_data.x;
-                    EffectManager.instance.HealEffect(HeroManager.instance.enemyHero.transform.position);
+                    EffectManager.instance.HealEffect(HeroManager.instance.enemyHero.transform.position, (int)eventMininon.abilityList[eventNum].Ability_data.x);
                 }
                 else
                 {
                     HeroManager.instance.heroHpManager.nowPlayerHp += (int)eventMininon.abilityList[eventNum].Ability_data.x;
-                    EffectManager.instance.HealEffect(HeroManager.instance.playerHero.transform.position);
+                    EffectManager.instance.HealEffect(HeroManager.instance.playerHero.transform.position, (int)eventMininon.abilityList[eventNum].Ability_data.x);
                 }
                 break;
             case MinionAbility.Ability.영웅의_생명력설정:

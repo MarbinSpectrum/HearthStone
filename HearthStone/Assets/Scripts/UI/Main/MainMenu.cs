@@ -32,7 +32,7 @@ public class MainMenu : MonoBehaviour
         }
         else
         {
-            Destroy(this);
+            Destroy(this.gameObject);
         }
     }
     #endregion
@@ -61,7 +61,10 @@ public class MainMenu : MonoBehaviour
         if (!mainMenuAni.GetCurrentAnimatorStateInfo(0).IsName("CenterUI") && !mainMenuAni.GetCurrentAnimatorStateInfo(0).IsName("StartTurn"))
         {
             inMainMenu = false;
-            Setting.instance.gameObject.SetActive(false);
+            if(BattleMenu.instance == null)
+                Setting.instance.gameObject.SetActive(false);
+            else
+                Setting.instance.gameObject.SetActive(true);
             return;
         }
 

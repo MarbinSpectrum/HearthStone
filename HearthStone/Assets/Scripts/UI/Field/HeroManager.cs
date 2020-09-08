@@ -39,51 +39,54 @@ public class HeroManager : MonoBehaviour
         {
             if(heroHpManager.nowEnemyHp <= 0)
             {
-                heroAtkManager.enemyObjectAni.SetBool("Break", true);
-                heroHpManager.enemyHp.SetActive(false);
-                heroHpManager.enemyShieldAni.gameObject.SetActive(false);
-                heroPowerManager.enemyHeroPowerObjAni.gameObject.SetActive(false);
-
                 BattleUI.instance.gameStart = false;
-                BattleUI.instance.gameEndDontTouch.SetActive(true);
-
-                for (int i = 0; i < enemyHeroBreak.Length; i++)
-                    enemyHeroBreak[i].sprite = heroSpr[heroPowerManager.enemyHeroName == "말퓨리온" ? 0 : 1];
-                EffectManager.instance.HeroExplodeEffect(enemyHero.transform.position);
-                EffectManager.instance.VibrationEffect(1.5f, 300, 10);
-                StartCoroutine(GameWin(5.5f));
+                StartCoroutine(GameWin());
 
             }
             else if (heroHpManager.nowPlayerHp <= 0)
             {
-                heroAtkManager.playerObjectAni.SetBool("Break", true);
-                heroHpManager.playerHp.SetActive(false);
-                heroHpManager.playerShieldAni.gameObject.SetActive(false);
-                heroPowerManager.playerHeroPowerObjAni.gameObject.SetActive(false);
-
                 BattleUI.instance.gameStart = false;
-                BattleUI.instance.gameEndDontTouch.SetActive(true);
-
-                for (int i = 0; i < playerHeroBreak.Length; i++)
-                    playerHeroBreak[i].sprite = heroSpr[heroPowerManager.playerHeroName == "말퓨리온" ? 0 : 1];
-                EffectManager.instance.HeroExplodeEffect(playerHero.transform.position);
-                EffectManager.instance.VibrationEffect(1.5f, 300, 10);
-                StartCoroutine(GameDefeat(5.5f));
-
+                StartCoroutine(GameDefeat());
             }
         }
     }
 
-    public IEnumerator GameDefeat(float waitTime)
+    public IEnumerator GameDefeat()
     {
-        yield return new WaitForSeconds(waitTime);
+        EffectManager.instance.HeroExplodeEffect(playerHero.transform.position);
+        yield return new WaitForSeconds(0.2f);
+        heroAtkManager.playerObjectAni.SetBool("Break", true);
+        heroHpManager.playerHp.SetActive(false);
+        heroHpManager.playerShieldAni.gameObject.SetActive(false);
+        heroPowerManager.playerHeroPowerObjAni.gameObject.SetActive(false);
+
+        BattleUI.instance.gameEndDontTouch.SetActive(true);
+
+        for (int i = 0; i < playerHeroBreak.Length; i++)
+            playerHeroBreak[i].sprite = heroSpr[heroPowerManager.playerHeroName == "말퓨리온" ? 0 : 1];
+        EffectManager.instance.VibrationEffect(1.5f, 300, 10);
+
+        yield return new WaitForSeconds(7f);
         BattleUI.instance.gameDefeat.SetActive(true);
         BattleUI.instance.gameDefeatImg.sprite = heroSpr[heroPowerManager.playerHeroName == "말퓨리온" ? 0 : 1];
     }
 
-    public IEnumerator GameWin(float waitTime)
+    public IEnumerator GameWin()
     {
-        yield return new WaitForSeconds(waitTime);
+        EffectManager.instance.HeroExplodeEffect(enemyHero.transform.position);
+        yield return new WaitForSeconds(0.2f);
+        heroAtkManager.enemyObjectAni.SetBool("Break", true);
+        heroHpManager.enemyHp.SetActive(false);
+        heroHpManager.enemyShieldAni.gameObject.SetActive(false);
+        heroPowerManager.enemyHeroPowerObjAni.gameObject.SetActive(false);
+
+        BattleUI.instance.gameEndDontTouch.SetActive(true);
+
+        for (int i = 0; i < enemyHeroBreak.Length; i++)
+            enemyHeroBreak[i].sprite = heroSpr[heroPowerManager.enemyHeroName == "말퓨리온" ? 0 : 1];
+        EffectManager.instance.VibrationEffect(1.5f, 300, 10);
+
+        yield return new WaitForSeconds(7f);
         BattleUI.instance.gameWin.SetActive(true);
         BattleUI.instance.gameWinImg.sprite = heroSpr[heroPowerManager.playerHeroName == "말퓨리온" ? 0 : 1];
     }

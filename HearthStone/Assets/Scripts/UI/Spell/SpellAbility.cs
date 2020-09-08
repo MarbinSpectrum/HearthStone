@@ -151,6 +151,7 @@ public class SpellAbility
             case Ability.적군하수인_주인의패로되돌리기:
             case Ability.내손으로다시가져오기:
             case Ability.영웅의공격력만큼_피해주기:
+            case Ability.대상이_양옆하수인을_공격:
                 return false;
             default:
                 Debug.Log(a.ToString() + " : 설정값에 등록이안됨!!");

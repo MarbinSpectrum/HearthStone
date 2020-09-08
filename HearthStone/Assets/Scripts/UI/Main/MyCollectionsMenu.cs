@@ -169,7 +169,8 @@ public class MyCollectionsMenu : MonoBehaviour
         }
         else
         {
-            Destroy(this);
+            Destroy(this.gameObject);
+            return;
         }
 
         for (int i = 0; i < 8; i++)

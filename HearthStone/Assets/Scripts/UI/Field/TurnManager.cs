@@ -56,6 +56,7 @@ public class TurnManager : MonoBehaviour
                 MinionManager.instance.MinionsTurnStartTrigger(true);
                 MinionManager.instance.MinionsTurnEndTrigger(false);
                 DruidAI.instance.AI_Run();
+
             }
             else
             {

@@ -41,7 +41,7 @@ public class BattleMenu : MonoBehaviour
         }
         else
         {
-            Destroy(this);
+            Destroy(this.gameObject);
         }
 
     }

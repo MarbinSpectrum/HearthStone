@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: "\uBB34\uAE30\uB9C8\uC2A4\uD06C"
+  m_Shader: {fileID: -6465566751694194690, guid: d8f8a08337a8db146bcb3f65eb3bc105,
+    type: 3}
+  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats:
+    - Vector1_24D09AA: 0.47
+    - _Range: 0.5
+    m_Colors:
+    - Vector2_C1BC29E7: {r: 0.49, g: 0.59, b: 0, a: 0}
+    - _Center: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _Pivot: {r: 0, g: 0, b: 0, a: 0}

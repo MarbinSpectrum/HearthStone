@@ -824,12 +824,14 @@ public class SpellManager : MonoBehaviour
                     {
                         if (CardHand.instance.handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대"))
                             CardHand.instance.handAni.SetTrigger("축소");
+                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
+
+                        DragCardObject.instance.ShowDragCard(weapon_name);
                         Vector2 v = Camera.main.WorldToScreenPoint(HeroManager.instance.heroAtkManager.playerWeapon.transform.position - new Vector3(0, 50, 0));
                         DragCardObject.instance.ShowDropEffecWeapon(v, 0);
                         while (!DragCardObject.instance.dropEffect.effectArrive)
                             yield return new WaitForSeconds(0.1f);
 
-                        string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
                         Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(weapon_name));
                         int weaponHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
                         int weaponAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
@@ -2400,7 +2402,7 @@ public class SpellManager : MonoBehaviour
             case SpellAbility.Ability.하수인의_생명력회복:
                 minionObject.final_hp += (int)nowSpellAbility.Ability_data.x;
                 minionObject.final_hp = Mathf.Min(minionObject.final_hp, minionObject.baseHp);
-                EffectManager.instance.HealEffect(minionObject.transform.position);
+                EffectManager.instance.HealEffect(minionObject.transform.position, (int)nowSpellAbility.Ability_data.x);
                 break;
             case SpellAbility.Ability.하수인의_생명력설정:
                 minionObject.final_hp = (int)nowSpellAbility.Ability_data.x;
@@ -2771,12 +2773,12 @@ public class SpellManager : MonoBehaviour
                 if (enemy)
                 {
                     HeroManager.instance.heroHpManager.nowEnemyHp += (int)nowSpellAbility.Ability_data.x;
-                    EffectManager.instance.HealEffect(HeroManager.instance.enemyHero.transform.position);
+                    EffectManager.instance.HealEffect(HeroManager.instance.enemyHero.transform.position, (int)nowSpellAbility.Ability_data.x);
                 }
                 else
                 {
                     HeroManager.instance.heroHpManager.nowPlayerHp += (int)nowSpellAbility.Ability_data.x;
-                    EffectManager.instance.HealEffect(HeroManager.instance.playerHero.transform.position);
+                    EffectManager.instance.HealEffect(HeroManager.instance.playerHero.transform.position, (int)nowSpellAbility.Ability_data.x);
                 }
                 break;
             case SpellAbility.Ability.영웅의_생명력설정:

@@ -43,6 +43,7 @@ public class HeroAtkManager : MonoBehaviour
     public Animator playerAtkNumAni;
 
     public GameObject playerWeapon;
+    bool playerWeaponFlag = false;
     public SpriteRenderer[] playerWeapons;
     public SpriteRenderer[] playerWeaponAtkNum;
     public Animator playerWeaponAtkNumAni;
@@ -52,11 +53,13 @@ public class HeroAtkManager : MonoBehaviour
     public GameObject playerAttackGlow;
     public GameObject playerCanAttack;
     public Animator playerObjectAni;
+    public Animator playerWeaponCover;
 
     public SpriteRenderer[] enemyAtkNum;
     public Animator enemyAtkNumAni;
 
     public GameObject enemyWeapon;
+    bool enemyWeaponFlag = false;
     public SpriteRenderer[] enemyWeapons;
     public SpriteRenderer[] enemyWeaponAtkNum;
     public Animator enemyWeaponAtkNumAni;
@@ -67,6 +70,8 @@ public class HeroAtkManager : MonoBehaviour
     public GameObject enemyCanAttack;
     public bool enemyAttackCheck = false;
     public Animator enemyObjectAni;
+    public Animator enemyWeaponCover;
+
 
     Animator heroObject;
     Vector3 startHeroPos;
@@ -87,6 +92,11 @@ public class HeroAtkManager : MonoBehaviour
         playerAttackGlow.SetActive(!GameEventManager.instance.EventCheck() && playerCanAttackNum > 0 && playerFinalAtk > 0 && TurnManager.instance.turn == 턴.플레이어 && BattleUI.instance.gameStart);
         playerCanAttack.SetActive(playerAttackGlow.activeSelf);
         enemyAttackCheck = !GameEventManager.instance.EventCheck() && enemyCanAttackNum > 0 && enemyFinalAtk > 0 && TurnManager.instance.turn == 턴.상대방 && BattleUI.instance.gameStart;
+        if (playerWeaponDurability > 0 && !playerWeaponFlag)
+            playerWeaponFlag = true;
+        if (enemyWeaponDurability > 0 && !enemyWeaponFlag)
+            enemyWeaponFlag = true;
+
     }
 
     public void HeroAttack_Update()
@@ -247,7 +257,16 @@ public class HeroAtkManager : MonoBehaviour
             flagPlayerWeaponDurability = playerWeaponDurability;
             playerWeaponDurabilityNumAni.SetTrigger("Change");
         }
-        playerWeapon.SetActive(playerWeaponDurability > 0);
+
+        if(playerWeaponDurability <= 0 && playerWeaponFlag)
+        {
+            StartCoroutine(WeaponVibration(HeroManager.instance.heroAtkManager.playerWeapon.gameObject, 0, 50, 2));
+            StartCoroutine(WeaponBreak(HeroManager.instance.heroAtkManager.playerWeapon.gameObject, 0.7f));
+            playerWeaponFlag = false;
+        }
+        else if (playerWeaponDurability > 0)
+            playerWeapon.SetActive(true);
+
         if (playerWeaponDurability <= 0 && playerWeaponAtk != 0)
             playerWeaponAtk = 0;
 
@@ -328,7 +347,16 @@ public class HeroAtkManager : MonoBehaviour
             flagEnemyWeaponDurability = enemyWeaponDurability;
             enemyWeaponDurabilityNumAni.SetTrigger("Change");
         }
-        enemyWeapon.SetActive(enemyWeaponAtk > 0);
+
+        if (enemyWeaponDurability <= 0 && enemyWeaponFlag)
+        {
+            StartCoroutine(WeaponVibration(HeroManager.instance.heroAtkManager.enemyWeapon.gameObject, 0, 50, 2));
+            StartCoroutine(WeaponBreak(HeroManager.instance.heroAtkManager.enemyWeapon.gameObject, 0.7f));
+            enemyWeaponFlag = false;
+        }
+        else if (enemyWeaponDurability > 0)
+            enemyWeapon.SetActive(true);
+
         if (enemyWeaponDurability <= 0 && enemyWeaponAtk != 0)
             enemyWeaponAtk = 0;
 
@@ -399,13 +427,17 @@ public class HeroAtkManager : MonoBehaviour
 
     public void HeroAtkTurnEnd(bool enemy)
     {
-        if(enemy)
+        HeroManager.instance.heroAtkManager.enemyWeaponCover.SetBool("Open", !enemy);
+        HeroManager.instance.heroAtkManager.playerWeaponCover.SetBool("Open", enemy);
+        if (enemy)
         {
+            StartCoroutine(WeaponVibration(HeroManager.instance.heroAtkManager.enemyWeapon.gameObject, 0.8f, 20, 1));
             playerCanAttackNum = 1;
             enemyAtk = 0;
         }
         else
         {
+            StartCoroutine(WeaponVibration(HeroManager.instance.heroAtkManager.playerWeapon.gameObject, 0.8f, 20, 1));
             enemyCanAttackNum = 1;
             playerAtk = 0;
         }
@@ -427,5 +459,26 @@ public class HeroAtkManager : MonoBehaviour
             heroObject = playerObjectAni;
             targetPos = target;
         }
+    }
+
+    private IEnumerator WeaponBreak(GameObject obj,float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        obj.SetActive(false);
+        EffectManager.instance.BreakSmokeEffect(obj.transform.position);
+    }
+
+    private IEnumerator WeaponVibration(GameObject obj,float waitTime, int n, float power)
+    {
+        yield return new WaitForSeconds(waitTime);
+        Vector3 v = obj.transform.position;
+        float down = power / (float)n;
+        for (int i = 0; i < n; i++)
+        {
+            obj.transform.position = v + Quaternion.Euler(0, 0, Random.Range(0, 360)) * new Vector3(power, 0, 0);
+            power -= down;
+            yield return new WaitForSeconds(0.01f);
+        }
+        obj.transform.position = v;
     }
 }

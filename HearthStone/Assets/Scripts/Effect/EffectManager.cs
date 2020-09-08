@@ -48,6 +48,8 @@ public class EffectManager : ObjectPool
     private GameObject swipeEffect;
     [SerializeField]
     private GameObject heroExplodeEffect;
+    [SerializeField]
+    private GameObject breakSmokeEffect;
 
     public Transform playerDeckPos;
     public Transform enemyDeckPos;
@@ -362,7 +364,7 @@ public class EffectManager : ObjectPool
     #endregion
 
     #region[회복 이펙트]
-    public void HealEffect(Vector3 pos)
+    public void HealEffect(Vector3 pos,int n)
     {
         string objName = "HealEffect";
         GameObject obj = FindPool(objName);
@@ -372,6 +374,7 @@ public class EffectManager : ObjectPool
             AddPool(obj);
         }
         obj.SetActive(true);
+        obj.GetComponent<DamageNum>().damage = n;
         obj.transform.position = new Vector3(pos.x, pos.y, obj.transform.position.z);
         obj.transform.name = objName;
     }
@@ -493,7 +496,28 @@ public class EffectManager : ObjectPool
             AddPool(obj);
         }
         obj.SetActive(true);
-        obj.transform.position = new Vector3(pos.x, pos.y, 900);
+        obj.transform.position = new Vector3(pos.x, pos.y, 1200);
+        obj.transform.name = objName;
+    }
+    #endregion
+
+    #region[영웅폭발 이펙트]
+    public void BreakSmokeEffect(Vector3 pos)
+    {
+        StartCoroutine(BreakSmokeEffect(0, pos));
+    }
+    public IEnumerator BreakSmokeEffect(float waitTime, Vector3 pos)
+    {
+        yield return new WaitForSeconds(waitTime);
+        string objName = "BreakSmokeEffect";
+        GameObject obj = FindPool(objName);
+        if (obj == null)
+        {
+            obj = Instantiate(breakSmokeEffect);
+            AddPool(obj);
+        }
+        obj.SetActive(true);
+        obj.transform.position = new Vector3(pos.x, pos.y, 1200);
         obj.transform.name = objName;
     }
     #endregion
