@@ -165,14 +165,6 @@ public class EnemyCardHand : MonoBehaviour
         }
         else if (nowHandNum >= 10)
         {
-            if (InGameDeck.instance.AIDeck.Count == 1)
-            {
-                if (HeroManager.instance.heroPowerManager.enemyHeroName == "발리라")
-                    BattleUI.instance.enermyText.ShowText("카드가 없어!!");
-                else if (HeroManager.instance.heroPowerManager.enemyHeroName == "말퓨리온")
-                    BattleUI.instance.enermyText.ShowText("카드가 없다!!");
-            }
-
             BattleUI.instance.enemyCardAni[index].SetTrigger("Draw");
             string s = InGameDeck.instance.AIDeck[0];
             InGameDeck.instance.AIDeck.RemoveAt(0);
@@ -181,17 +173,10 @@ public class EnemyCardHand : MonoBehaviour
         }
         else
         {
-            if (InGameDeck.instance.AIDeck.Count == 1)
-            {
-                if (HeroManager.instance.heroPowerManager.enemyHeroName == "발리라")
-                    BattleUI.instance.enermyText.ShowText("카드가 없어!!");
-                else if (HeroManager.instance.heroPowerManager.enemyHeroName == "말퓨리온")
-                    BattleUI.instance.enermyText.ShowText("카드가 없다!!");
-            }
-
             nowHandNum++;
             CardMove(nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
             BattleUI.instance.enemyCardAni[index].SetTrigger("Draw");
+            SoundManager.instance.PlaySE("카드드로우");
             string s = InGameDeck.instance.AIDeck[0];
             InGameDeck.instance.AIDeck.RemoveAt(0);
             nowCard.Add(s);

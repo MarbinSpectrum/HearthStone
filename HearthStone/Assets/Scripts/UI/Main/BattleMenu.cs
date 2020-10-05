@@ -28,6 +28,8 @@ public class BattleMenu : MonoBehaviour
     //대전씬으로
     public Animator gotoBattleFadeAni;
 
+    bool findBattleFalg = false;
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #region[Awake]
@@ -87,8 +89,10 @@ public class BattleMenu : MonoBehaviour
                 if (gotoBattleFadeAni.GetCurrentAnimatorStateInfo(0).IsName("GotoBattle_Fade_Not"))
                     gotoBattleFadeAni.SetTrigger("Fade");
             }
-            if (findBattleAni.GetCurrentAnimatorStateInfo(0).IsName("FindBattle") && findBattleAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.7)
+            if (findBattleAni.GetCurrentAnimatorStateInfo(0).IsName("FindBattle") && findBattleAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.7 && !findBattleFalg)
             {
+                findBattleFalg = true;
+                SoundManager.instance.PlaySE("대전상대찾기슬롯멈춤");
                 SoundManager.instance.StopBGM();
             }
             if (findBattleAni.GetCurrentAnimatorStateInfo(0).IsName("FindBattle") && findBattleAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
@@ -129,6 +133,7 @@ public class BattleMenu : MonoBehaviour
     public void FindBattle(bool b)
     {
         findBattleZoomAni.SetBool("Find", b);
+        findBattleFalg = false;
     }
     #endregion
 

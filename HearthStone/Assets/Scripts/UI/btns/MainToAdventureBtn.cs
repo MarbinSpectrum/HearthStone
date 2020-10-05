@@ -65,7 +65,7 @@ public class MainToAdventureBtn : Btn
     public override void ActBtn()
     {
         Debug.Log("모험");
-        MainMenu.instance.OpenBoard();
+        //MainMenu.instance.OpenBoard();
     }
     #endregion
 }

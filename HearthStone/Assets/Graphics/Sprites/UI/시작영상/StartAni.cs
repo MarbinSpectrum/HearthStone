@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class StartAni : MonoBehaviour
 {
+
+
     public Animator animator;
     public GameObject mainMenu;
     public Animator main_animator;

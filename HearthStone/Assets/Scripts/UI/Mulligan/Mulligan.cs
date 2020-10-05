@@ -122,6 +122,7 @@ public class Mulligan : MonoBehaviour
             coinAnimator.SetInteger("State", 3);
             yield return new WaitForSeconds(1f);
             createCoinCard.SetBool("Hide", false);
+            SoundManager.instance.PlaySE("코인얻기");
             yield return new WaitForSeconds(2f);
             createCoinCard.SetBool("Hide", true);
             BattleUI.instance.fieldShadowAni.SetInteger("State", 1);
@@ -178,6 +179,7 @@ public class Mulligan : MonoBehaviour
             TurnManager.instance.turnBtnAni.SetTrigger("상대턴");      
 
         BattleUI.instance.gameStart = true;
+        SoundManager.instance.PlayBGM("대전맵배경음");
         TurnManager.instance.turnEndTrigger = true;
         showCharacterAni.enabled = false;
         HeroManager.instance.heroAtkManager.playerObjectAni.enabled = true;
@@ -191,7 +193,7 @@ public class Mulligan : MonoBehaviour
 
         r =  Random.Range(0, 100) > 50 ? 1 : 2;
         TurnManager.instance.turn = (턴)(r-1);
-
+        SoundManager.instance.PlaySE(r == 2 ? "멀리건선택선공" : "멀리건선택후공");
         SetMulligan(r);
         StartCoroutine(SetCoin(n + 1.5f, r));
         StartCoroutine(CardGlow(n + (r == 2 ? 4.5f : 4f), r));

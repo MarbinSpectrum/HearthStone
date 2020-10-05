@@ -15,6 +15,9 @@ public class MainMenu : MonoBehaviour
 
     public GameObject battleMenuUI;
     public GameObject myCollectionsMenuUI;
+    public GameObject openPackUI;
+    public ShopScript shopUI;
+    public Animator questUI;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -61,16 +64,14 @@ public class MainMenu : MonoBehaviour
         if (!mainMenuAni.GetCurrentAnimatorStateInfo(0).IsName("CenterUI") && !mainMenuAni.GetCurrentAnimatorStateInfo(0).IsName("StartTurn"))
         {
             inMainMenu = false;
-            if(BattleMenu.instance == null)
-                Setting.instance.gameObject.SetActive(false);
-            else
-                Setting.instance.gameObject.SetActive(true);
             return;
         }
 
         if (!inMainMenu)
         {
             inMainMenu = true;
+            Setting.instance.setting.SetActive(true);
+            Setting.instance.settingBtn.SetActive(true);
             DataMng.instance.SaveData();
             SoundManager.instance.PlayBGM("메인화면배경음");
             Setting.instance.gameObject.SetActive(true);

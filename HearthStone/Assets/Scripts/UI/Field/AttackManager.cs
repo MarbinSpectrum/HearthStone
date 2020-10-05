@@ -110,13 +110,33 @@ public class AttackManager : MonoBehaviour
                 temp -= HeroManager.instance.heroHpManager.enemyShield;
                 HeroManager.instance.heroHpManager.enemyShield -= n;
                 temp = Mathf.Max(temp, 0);
+                QuestManager.instance.HeroDamage(temp);
                 HeroManager.instance.heroHpManager.nowEnemyHp -= temp;
                 if (HeroManager.instance.heroHpManager.enemyShield <= 0)
                     HeroManager.instance.heroHpManager.enemyShieldAni.SetBool("Break", true);
             }
             else
+            {
+                QuestManager.instance.HeroDamage(n);
                 HeroManager.instance.heroHpManager.nowEnemyHp -= n;
+            }
         }
+        if (n < 3)
+        {
+            SoundManager.instance.PlaySE("약한공격");
+            SoundManager.instance.PlaySE("환호작음");
+        }
+        else if (n < 7)
+        {
+            SoundManager.instance.PlaySE("중간공격");
+            SoundManager.instance.PlaySE("환호보통");
+        }
+        else
+        {
+            SoundManager.instance.PlaySE("강한공격");
+            SoundManager.instance.PlaySE("환호큼");
+        }
+
         StartCoroutine(CameraVibrationEffect(0, 10, Mathf.Min(15,n)));
     }
     #endregion

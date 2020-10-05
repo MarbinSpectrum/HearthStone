@@ -30,6 +30,10 @@ public class TurnManager : MonoBehaviour
 
     float time = 2;
 
+    float checkTime = 0;
+
+    bool trunEndplz = false;
+
     public void Awake()
     {
         instance = this;
@@ -60,9 +64,11 @@ public class TurnManager : MonoBehaviour
             }
             else
             {
+                SoundManager.instance.PlaySE("턴시작");
                 HeroManager.instance.MeltFreeze();
                 time = 1;
-                turn = 턴.플레이어;              
+                turn = 턴.플레이어;
+                trunEndplz = false;
                 manaManager.playerMaxMana++;
                 manaManager.playerMaxMana = Mathf.Min(manaManager.playerMaxMana, 10);
                 manaManager.playerNowMana = manaManager.playerMaxMana;
@@ -95,9 +101,23 @@ public class TurnManager : MonoBehaviour
             canUseCard = true;
 
         if (canAttack || canUseCard || !BattleUI.instance.gameStart || GameEventManager.instance.EventCheck())
+        {
             turnBtnMat.SetColor("_ImgColor", normalStateColor);
-        else if(BattleUI.instance.gameStart && turn == 턴.플레이어)
-            turnBtnMat.SetColor("_ImgColor", glowStateColor);
+            checkTime = 2;
+        }
+        else if (BattleUI.instance.gameStart && turn == 턴.플레이어 && !trunEndplz)
+        {
+            checkTime -= Time.deltaTime;
+
+            if (time <= 0 && checkTime <= 0)
+            {
+                SoundManager.instance.PlaySE("해당턴에할게없습니다");
+                trunEndplz = true;
+                turnBtnMat.SetColor("_ImgColor", glowStateColor);
+            }
+        }
+        else
+            checkTime = 2;
     }
 
 

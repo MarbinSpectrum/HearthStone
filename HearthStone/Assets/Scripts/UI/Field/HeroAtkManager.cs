@@ -103,6 +103,7 @@ public class HeroAtkManager : MonoBehaviour
     {
         if (attackFlag == 0)
         {
+            SoundManager.instance.PlaySE("영웅공격시작");
             GameEventManager.instance.EventSet(3);
             heroObject.SetBool("Attack", true);
             attackFlag = 1;
@@ -142,6 +143,7 @@ public class HeroAtkManager : MonoBehaviour
         else if (attackFlag == 4)
         {
             startHeroPos = heroObject.transform.position;
+            SoundManager.instance.PlaySE("영웅공격끝");
             AttackManager.instance.AttackEffectRun();
             attackFlag = 5;
             time = 0;
@@ -431,12 +433,22 @@ public class HeroAtkManager : MonoBehaviour
         HeroManager.instance.heroAtkManager.playerWeaponCover.SetBool("Open", enemy);
         if (enemy)
         {
+            if (HeroManager.instance.heroAtkManager.enemyWeaponDurability > 0)
+                StartCoroutine(WeaponSound(1, false));
+            if (HeroManager.instance.heroAtkManager.playerWeaponDurability > 0)
+                StartCoroutine(WeaponSound(0, true));
+
             StartCoroutine(WeaponVibration(HeroManager.instance.heroAtkManager.enemyWeapon.gameObject, 0.8f, 20, 1));
             playerCanAttackNum = 1;
             enemyAtk = 0;
         }
         else
         {
+            if (HeroManager.instance.heroAtkManager.enemyWeaponDurability > 0)
+                StartCoroutine(WeaponSound(0, true));
+            if (HeroManager.instance.heroAtkManager.playerWeaponDurability > 0)
+                StartCoroutine(WeaponSound(1, false));
+
             StartCoroutine(WeaponVibration(HeroManager.instance.heroAtkManager.playerWeapon.gameObject, 0.8f, 20, 1));
             enemyCanAttackNum = 1;
             playerAtk = 0;
@@ -457,8 +469,18 @@ public class HeroAtkManager : MonoBehaviour
             playerCanAttackNum--;
             attackFlag = 0;
             heroObject = playerObjectAni;
+            SoundManager.instance.PlayCharacterSE(HeroManager.instance.heroPowerManager.playerHeroName, 영웅상태.공격시);
             targetPos = target;
         }
+    }
+
+    private IEnumerator WeaponSound(float waitTime, bool open)
+    {
+        yield return new WaitForSeconds(waitTime);
+        if (!open)
+            SoundManager.instance.PlaySE("무기닫기");
+        else
+            SoundManager.instance.PlaySE("무기열기");
     }
 
     private IEnumerator WeaponBreak(GameObject obj,float waitTime)

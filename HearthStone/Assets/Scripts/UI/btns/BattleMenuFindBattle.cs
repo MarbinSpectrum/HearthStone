@@ -70,7 +70,10 @@ public class BattleMenuFindBattle : Btn
         BattleMenu.instance.selectDeck = deck;
         BattleMenu.instance.FindBattle(find);
         if (find)
-            SoundManager.instance.PlayBGM("대전상대찾기1");
+        {
+
+            SoundManager.instance.PlayBGM("대전상대찾기");
+        }
         else
             SoundManager.instance.StopBGM();
     }

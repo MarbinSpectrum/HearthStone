@@ -91,9 +91,11 @@ public class MinionDrag : Btn
         if(DragLineRenderer.instance.dragTargetPos != Vector2.zero)
         {
             int n = minionObject.num;
-            GameEventManager.instance.EventAdd(1f);
+            GameEventManager.instance.EventAdd(2f);
+            MinionField.instance.attack_ready = 1f;
             minionObject.stealth = false;
             MinionField.instance.minions_Attack_pos[n] = new Vector3(DragLineRenderer.instance.dragTargetPos.x, DragLineRenderer.instance.dragTargetPos.y, minionObject.transform.position.z);
+            SoundManager.instance.PlayMinionSE(minionObject.minion_name, 미니언상태.공격);
         }
     }
     #endregion

@@ -65,7 +65,7 @@ public class MainToMeleeBtn : Btn
     public override void ActBtn()
     {
         Debug.Log("난투");
-        MainMenu.instance.OpenBoard();
+        //MainMenu.instance.OpenBoard();
     }
     #endregion
 }

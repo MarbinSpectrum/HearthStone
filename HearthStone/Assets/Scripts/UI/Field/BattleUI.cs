@@ -73,12 +73,14 @@ public class BattleUI : MonoBehaviour
     #region[Start]
     private void Start()
     {
-        StartCoroutine(PlayerSetEffect(4));
-        StartCoroutine(CameraVibrationEffect(4, 12,0.5f));
-        StartCoroutine(ShowEnermyText(4, "내가 대자연을 수호하겠다!"));
-        mulligan.SetGoing(4.5f);
+        StartCoroutine(PlayerSetEffect(7));
+        StartCoroutine(CameraVibrationEffect(7, 12,0.5f));
+        StartCoroutine(ShowEnermyText(7, "내가 대자연을 수호하겠다!"));
+        StartCoroutine(PlayHeroSound(7, "말퓨리온", 영웅상태.게임시작_아군));
+        mulligan.SetGoing(9.5f);
 
         int jobNum = (int)DataMng.instance.playData.deck[InGameDeck.nowDeck].job;
+        StartCoroutine(BattleVsSound(0.2f, "말퓨리온", jobNum == 0 ? "말퓨리온" : "발리라"));
         for (int i = 0; i < characterImg.Length; i++)
             characterImg[i].SetActive(false);
         characterImg[jobNum].SetActive(true);
@@ -90,7 +92,8 @@ public class BattleUI : MonoBehaviour
                 playerHeroPower.material = druidMat;
                 HeroManager.instance.heroPowerManager.SetHeroPower("말퓨리온", false);
                 HeroManager.instance.heroPowerManager.SetHeroPower("말퓨리온", true);
-                StartCoroutine(ShowPlayerText(6, "자연은 반드시 보호해야한다!"));
+                StartCoroutine(ShowPlayerText(10, "자연이 그대를 거부하리라!"));
+                StartCoroutine(PlayHeroSound(10, "말퓨리온", 영웅상태.게임시작_적군));
                 break;
             case 1:
                 characterNameTxt.text = "발리라 생귀나르";
@@ -98,13 +101,32 @@ public class BattleUI : MonoBehaviour
                 playerHeroPower.material = rogueMat;
                 HeroManager.instance.heroPowerManager.SetHeroPower("발리라", false);
                 HeroManager.instance.heroPowerManager.SetHeroPower("말퓨리온", true);
-                StartCoroutine(ShowPlayerText(6, "등...뒤를... 조심해..."));
+                StartCoroutine(ShowPlayerText(10, "등...뒤를... 조심해..."));
+                StartCoroutine(PlayHeroSound(10, "발리라", 영웅상태.게임시작_아군));
                 break;
         }
     }
     #endregion
 
+    #region[대전자소개]
+    private IEnumerator BattleVsSound(float waitTime, string name1, string name2)
+    {
+        yield return new WaitForSeconds(waitTime);
+        SoundManager.instance.PlaySE(name1);
+        yield return new WaitForSeconds(2);
+        SoundManager.instance.PlaySE("그상대는");
+        yield return new WaitForSeconds(2);
+        SoundManager.instance.PlaySE(name2);
+    }
+    #endregion
+
     #region[등장대사]
+    private IEnumerator PlayHeroSound(float waitTime, string name,영웅상태 state)
+    {
+        yield return new WaitForSeconds(waitTime);
+        SoundManager.instance.PlayCharacterSE(name, state);
+    }
+
     private IEnumerator ShowPlayerText(float waitTime,string s)
     {
         yield return new WaitForSeconds(waitTime);

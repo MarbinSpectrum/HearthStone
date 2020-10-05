@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class MainShowQuestBtn : Btn
 {
     public Image glowImg;
+    public bool flag;
 
     #region[Awake]
     public override void Awake()
@@ -18,7 +19,8 @@ public class MainShowQuestBtn : Btn
     public override void Update()
     {
         if (Input.GetMouseButtonUp(0))
-            glowImg.enabled = false;
+            if (glowImg)
+                glowImg.enabled = false;
     }
     #endregion
 
@@ -30,7 +32,8 @@ public class MainShowQuestBtn : Btn
     public override void pointerEnter()
     {
         if (Input.GetMouseButton(0))
-            glowImg.enabled = true;
+            if (glowImg)
+                glowImg.enabled = true;
     }
     #endregion
 
@@ -38,14 +41,16 @@ public class MainShowQuestBtn : Btn
     public override void pointerDown()
     {
         if (Input.GetMouseButtonDown(0))
-            glowImg.enabled = true;
+            if (glowImg)
+                glowImg.enabled = true;
     }
     #endregion
 
     #region[pointerExit]
     public override void pointerExit()
     {
-        glowImg.enabled = false;
+        if (glowImg)
+            glowImg.enabled = false;
     }
     #endregion
 
@@ -60,6 +65,7 @@ public class MainShowQuestBtn : Btn
     public override void ActBtn()
     {
         Debug.Log("상점");
+        MainMenu.instance.questUI.SetBool("Open", flag);
     }
     #endregion
 }

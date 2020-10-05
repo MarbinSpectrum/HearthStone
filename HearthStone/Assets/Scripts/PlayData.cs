@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum 카드등급 { 전설, 특급, 희귀,일반};
 [System.Serializable]
 public class PlayData
 {
@@ -87,9 +88,114 @@ public class PlayData
         }
     }
 
-    public List<Deck> deck = new List<Deck>();
+     public List<Deck> deck = new List<Deck>();
+
+    [System.Serializable]
+    public class Pack
+    {
+        [SerializeField] public List<string> card = new List<string>();
+
+        #region[등급별 카드 리스트]
+        List<string> LevelCardList(카드등급 cardLevle)
+        {
+            List<string> temp = new List<string>();
+            for (int i = 0; i < 3; i++)
+                for (int j = 1; j <= DataMng.instance.m_dic[(DataMng.TableType)i].m_table.Count; j++)
+                    if (DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "등급").Equals(cardLevle.ToString()))
+                        temp.Add(DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "카드이름"));
+            return temp;
+        }
+        #endregion
+
+        public Pack()
+        {
+            List<string> normal = LevelCardList(카드등급.일반);
+            List<string> rare = LevelCardList(카드등급.희귀);
+            List<string> hero = LevelCardList(카드등급.특급);
+            List<string> legend = LevelCardList(카드등급.전설);
+
+            card.Add(rare[Random.Range(0, rare.Count)]);
+
+
+            for (int i = 0; i < 4; i++)
+            {
+                int r = Random.Range(0, 100);
+                //전설
+                if (r < 5)
+                    card.Add(legend[Random.Range(0, legend.Count)]);
+                //특급
+                else if (r < 25)
+                    card.Add(hero[Random.Range(0, hero.Count)]);
+                //희귀
+                else if (r < 60)
+                    card.Add(rare[Random.Range(0, rare.Count)]);
+                //일반
+                else
+                    card.Add(normal[Random.Range(0, normal.Count)]);
+            }
+
+            for(int i = 0; i < 100; i++)
+            {
+                int a = Random.Range(0, 5);
+                int b = Random.Range(0, 5);
+                string temp = card[a];
+                card[a] = card[b];
+                card[b] = temp;
+            }
+        }
+    }
+
+    public List<Pack> packs = new List<Pack>();
+
+    [System.Serializable]
+    public class Quest
+    {
+        public int questNum;
+        public int value;
+        public Quest()
+        {
+            questNum = Random.Range(0, 6);
+            value = 0;
+        }
+
+        public Quest(int n)
+        {
+            questNum = n;
+            value = 0;
+        }
+    }
+
+    public List<Quest> quests = new List<Quest>();
+
+    public void AddQuest()
+    {
+        if (quests.Count >= 3)
+            return;
+        int c = 100;
+        int r = 0;
+        while (c > 0)
+        {
+            c--;
+            r = Random.Range(0, 6);
+            bool check = false;
+            for (int j = 0; j < quests.Count; j++)
+            {
+                if (quests[j].questNum == r)
+                {
+                    check = true;
+                    break;
+                }
+            }
+            if (!check)
+            {
+                quests.Add(new Quest(r));
+                break;
+            }
+        }
+    }
 
     public int magicPowder;
+    public int gold;
     public PlayData(bool b)
     {
         if (!b)
@@ -118,6 +224,9 @@ public class PlayData
                 }
 
             magicPowder = 80000;
+            gold = 100000;
+            for (int i = 0; i < 3; i++)
+                AddQuest();
         }
     }
 

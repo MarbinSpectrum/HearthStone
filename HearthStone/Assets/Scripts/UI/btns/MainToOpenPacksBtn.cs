@@ -60,6 +60,9 @@ public class MainToOpenPacksBtn : Btn
     public override void ActBtn()
     {
         Debug.Log("팩개봉");
+        SoundManager.instance.PlayBGM("");
+        MainMenu.instance.OpenBoard();
+        MainMenu.instance.openPackUI.SetActive(true);
     }
     #endregion
 }

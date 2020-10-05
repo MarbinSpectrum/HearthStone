@@ -92,9 +92,13 @@ public class CardDragObject : MonoBehaviour
         {
             if (Input.GetMouseButtonUp(0))
             {
-                string cardName = cardDrag.cardName_Data;
-                DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].AddCard(cardName);
-                MyCollectionsMenu.instance.DeckSort();
+                if (DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].CountCardNum() < 30)
+                {
+                    string cardName = cardDrag.cardName_Data;
+                    DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].AddCard(cardName);
+                    SoundManager.instance.PlaySE("덱에카드넣기");
+                    MyCollectionsMenu.instance.DeckSort();
+                }
             }
         }
 

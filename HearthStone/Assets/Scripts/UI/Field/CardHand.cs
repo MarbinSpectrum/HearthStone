@@ -303,6 +303,15 @@ public class CardHand : MonoBehaviour
                     BattleUI.instance.playerText.ShowText("카드가 없어!!");
                 else if (HeroManager.instance.heroPowerManager.playerHeroName == "말퓨리온")
                     BattleUI.instance.playerText.ShowText("카드가 없다!!");
+                SoundManager.instance.PlayCharacterSE(HeroManager.instance.heroPowerManager.playerHeroName, 영웅상태.덱이없다);
+            }
+            else if (InGameDeck.instance.playDeck.Count == 2)
+            {
+                if (HeroManager.instance.heroPowerManager.playerHeroName == "발리라")
+                    BattleUI.instance.playerText.ShowText("카드가 거의 없어.");
+                else if (HeroManager.instance.heroPowerManager.playerHeroName == "말퓨리온")
+                    BattleUI.instance.playerText.ShowText("카드가 거의 없다.");
+                SoundManager.instance.PlayCharacterSE(HeroManager.instance.heroPowerManager.playerHeroName, 영웅상태.덱이적다);
             }
 
             GameEventManager.instance.EventAdd(0.3f);
@@ -316,13 +325,23 @@ public class CardHand : MonoBehaviour
             if (InGameDeck.instance.playDeck.Count == 1)
             {
                 if (HeroManager.instance.heroPowerManager.playerHeroName == "발리라")
-                    BattleUI.instance.playerText.ShowText("카드가 없어!!");
+                    BattleUI.instance.playerText.ShowText("카드가 없어!");
                 else if (HeroManager.instance.heroPowerManager.playerHeroName == "말퓨리온")
-                    BattleUI.instance.playerText.ShowText("카드가 없다!!");
+                    BattleUI.instance.playerText.ShowText("카드가 없다!");
+                SoundManager.instance.PlayCharacterSE(HeroManager.instance.heroPowerManager.playerHeroName, 영웅상태.덱이없다);
             }
-
+            else if (InGameDeck.instance.playDeck.Count == 2)
+            {
+                if (HeroManager.instance.heroPowerManager.playerHeroName == "발리라")
+                    BattleUI.instance.playerText.ShowText("카드가 거의 없어.");
+                else if (HeroManager.instance.heroPowerManager.playerHeroName == "말퓨리온")
+                    BattleUI.instance.playerText.ShowText("카드가 거의 없다.");
+                SoundManager.instance.PlayCharacterSE(HeroManager.instance.heroPowerManager.playerHeroName, 영웅상태.덱이적다);
+            }
+            
             GameEventManager.instance.EventAdd(0.3f);
             BattleUI.instance.playerCardAni[index].SetTrigger("Draw");
+            SoundManager.instance.PlaySE("카드드로우");
             DrawCard();
             string s = InGameDeck.instance.playDeck[0];
             InGameDeck.instance.playDeck.RemoveAt(0);
@@ -389,6 +408,7 @@ public class CardHand : MonoBehaviour
         else if (handCardView[n].cardType == CardType.하수인)
             cost = handCardView[n].MinionsCostData + handCostOffset[n];
         cost = Mathf.Max(0,cost);
+
         if (handCardView[n].cardType == CardType.무기)
         {
             if (!DragCardObject.instance.dragSelectCard)
@@ -396,6 +416,10 @@ public class CardHand : MonoBehaviour
                 ManaManager.instance.playerNowMana -= cost;
                 useCardNum++;
                 removeCostOffset = handCostOffset[n];
+                if (handCardView[n].cardJob == "드루이드")
+                    QuestManager.instance.CharacterCard(Job.드루이드);
+                else if (handCardView[n].cardJob == "도적")
+                    QuestManager.instance.CharacterCard(Job.도적);
                 SpellManager.instance.RunSpell(handCardView[n].WeaponCardNameData);
                 CardRemove(n);
             }

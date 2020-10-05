@@ -73,6 +73,7 @@ public class HeroPowerManager : MonoBehaviour
             playerCanUse = false;
             playerHeroPowerObjAni.SetBool("CanUse", false);
             //DragCardObject.instance.ShowDropEffectSpell(Input.mousePosition, 0);
+            QuestManager.instance.HeroAbility();
         }
 
         SpellManager.instance.RunSpell(abilityName, enemy,true);

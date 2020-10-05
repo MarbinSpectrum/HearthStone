@@ -296,9 +296,11 @@ public class DataMng : MonoBehaviour
         if (loadingAni)
             loadingAni.enabled = true;
         yield return new WaitForSeconds(1f);
-        SoundManager.instance.PlayBGM("메인화면배경음");
         SceneManager.LoadScene("Main");
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
+        SoundManager.instance.PlayBGM("메인화면배경음");
+        SoundManager.instance.PlaySE("게임인트로");
+        yield return new WaitForSeconds(2f);
         Destroy(loadingAni.gameObject);
     }
 

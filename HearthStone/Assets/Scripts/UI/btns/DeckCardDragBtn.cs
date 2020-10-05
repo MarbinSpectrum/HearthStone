@@ -54,6 +54,8 @@ public class DeckCardDragBtn : MonoBehaviour
             scrollRect.enabled = true;
             drag = false;
 
+            SoundManager.instance.PlaySE("작은버튼");
+
             cardName = cardDrag.cardName_Data;
             DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].PopCard(cardName);
             MyCollectionsMenu.instance.DeckSort();

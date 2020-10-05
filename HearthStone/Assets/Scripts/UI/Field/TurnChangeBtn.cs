@@ -61,6 +61,7 @@ public class TurnChangeBtn : Btn
         if (btnAni.GetCurrentAnimatorStateInfo(0).IsName("턴종료_멈춤"))
         {
             btnAni.SetTrigger("상대턴");
+            SoundManager.instance.PlaySE("턴종료버튼누름");
             TurnManager.instance.turnEndTrigger = true;
         }
         else if (btnAni.GetCurrentAnimatorStateInfo(0).IsName("상대턴_멈춤"))

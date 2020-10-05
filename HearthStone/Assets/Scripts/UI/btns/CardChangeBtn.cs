@@ -55,6 +55,7 @@ public class CardChangeBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
+        SoundManager.instance.PlaySE("멀리건선택");
         change = !change;
         changeItemObj.SetActive(change);
     }

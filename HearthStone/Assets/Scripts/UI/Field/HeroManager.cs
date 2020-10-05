@@ -39,12 +39,16 @@ public class HeroManager : MonoBehaviour
         {
             if(heroHpManager.nowEnemyHp <= 0)
             {
+                SoundManager.instance.StopBGM();
+                SoundManager.instance.PlayCharacterSE("말퓨리온", 영웅상태.죽을시);
                 BattleUI.instance.gameStart = false;
                 StartCoroutine(GameWin());
 
             }
             else if (heroHpManager.nowPlayerHp <= 0)
             {
+                SoundManager.instance.StopBGM();
+                SoundManager.instance.PlayCharacterSE(heroPowerManager.playerHeroName, 영웅상태.죽을시);
                 BattleUI.instance.gameStart = false;
                 StartCoroutine(GameDefeat());
             }
@@ -56,19 +60,23 @@ public class HeroManager : MonoBehaviour
         EffectManager.instance.HeroExplodeEffect(playerHero.transform.position);
         yield return new WaitForSeconds(0.2f);
         heroAtkManager.playerObjectAni.SetBool("Break", true);
+        SoundManager.instance.PlaySE("영웅깨짐");
         heroHpManager.playerHp.SetActive(false);
         heroHpManager.playerShieldAni.gameObject.SetActive(false);
         heroPowerManager.playerHeroPowerObjAni.gameObject.SetActive(false);
-
-        BattleUI.instance.gameEndDontTouch.SetActive(true);
 
         for (int i = 0; i < playerHeroBreak.Length; i++)
             playerHeroBreak[i].sprite = heroSpr[heroPowerManager.playerHeroName == "말퓨리온" ? 0 : 1];
         EffectManager.instance.VibrationEffect(1.5f, 300, 10);
 
-        yield return new WaitForSeconds(7f);
+        yield return new WaitForSeconds(1f);
+        SoundManager.instance.PlaySE("영웅폭발");
+        BattleUI.instance.gameEndDontTouch.SetActive(true);
+        yield return new WaitForSeconds(6f);
         BattleUI.instance.gameDefeat.SetActive(true);
         BattleUI.instance.gameDefeatImg.sprite = heroSpr[heroPowerManager.playerHeroName == "말퓨리온" ? 0 : 1];
+        SoundManager.instance.PlaySE("패배시");
+        QuestClear.instance.QuesetClear();
     }
 
     public IEnumerator GameWin()
@@ -76,19 +84,26 @@ public class HeroManager : MonoBehaviour
         EffectManager.instance.HeroExplodeEffect(enemyHero.transform.position);
         yield return new WaitForSeconds(0.2f);
         heroAtkManager.enemyObjectAni.SetBool("Break", true);
+        SoundManager.instance.PlaySE("영웅깨짐");
         heroHpManager.enemyHp.SetActive(false);
         heroHpManager.enemyShieldAni.gameObject.SetActive(false);
         heroPowerManager.enemyHeroPowerObjAni.gameObject.SetActive(false);
-
-        BattleUI.instance.gameEndDontTouch.SetActive(true);
 
         for (int i = 0; i < enemyHeroBreak.Length; i++)
             enemyHeroBreak[i].sprite = heroSpr[heroPowerManager.enemyHeroName == "말퓨리온" ? 0 : 1];
         EffectManager.instance.VibrationEffect(1.5f, 300, 10);
 
-        yield return new WaitForSeconds(7f);
+        yield return new WaitForSeconds(1f);
+        SoundManager.instance.PlaySE("영웅폭발");
+        BattleUI.instance.gameEndDontTouch.SetActive(true);
+        yield return new WaitForSeconds(6f);
         BattleUI.instance.gameWin.SetActive(true);
         BattleUI.instance.gameWinImg.sprite = heroSpr[heroPowerManager.playerHeroName == "말퓨리온" ? 0 : 1];
+        QuestManager.instance.CharacterWin(heroPowerManager.playerHeroName == "말퓨리온" ? Job.드루이드 : Job.도적);
+        SoundManager.instance.PlaySE("승리시");
+        SoundManager.instance.PlaySE("승리의환호");
+        SoundManager.instance.PlaySE("승리의폭죽");
+        QuestClear.instance.QuesetClear();
     }
 
     public void SetFreeze(bool enemy)

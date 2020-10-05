@@ -71,7 +71,6 @@ public class MyCollectionsCardCloseUpBtn : Btn
     #region[BeginDrag]
     public virtual void BeginDrag()
     {
-
         if (MyCollectionsMenu.instance.nowDeck == -1)
             return;
 
@@ -82,6 +81,8 @@ public class MyCollectionsCardCloseUpBtn : Btn
 
         if (Mathf.Min(maxNum,DataMng.instance.playData.GetCardNum(cardName)) - DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].HasCardNum(cardName) <= 0)
             return;
+
+        SoundManager.instance.PlaySE("작은버튼");
         CardDragObject.instance.isDrag = true;
         MyCollectionsMenu.instance.CardShow(ref CardDragObject.instance.cardView, MyCollectionsMenu.instance.nowJobIndex, MyCollectionsMenu.instance.nowCardIndex + cardNum);
         CardDragObject.instance.cardView.gameObject.SetActive(false);

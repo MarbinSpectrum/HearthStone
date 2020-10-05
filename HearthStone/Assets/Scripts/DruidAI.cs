@@ -544,6 +544,7 @@ public class DruidAI : MonoBehaviour
             else if (act == AI_Act.TurnEnd)
             {
                 Debug.Log("턴끝냄");
+                SoundManager.instance.PlaySE("상대가턴종료버튼누름");
                 TurnManager.instance.turnBtnAni.SetTrigger("내턴");
                 TurnManager.instance.turnEndTrigger = true;
                 break;
@@ -571,7 +572,8 @@ public class DruidAI : MonoBehaviour
                 //강한하수인찾기
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
                         {
                             minionAtk = MinionField.instance.minions[i].final_atk;
                             minionHp = MinionField.instance.minions[i].final_hp;
@@ -616,7 +618,8 @@ public class DruidAI : MonoBehaviour
                 //강한하수인찾기
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
                         {
                             minionAtk = MinionField.instance.minions[i].final_atk;
                             minionHp = MinionField.instance.minions[i].final_hp;
@@ -632,7 +635,8 @@ public class DruidAI : MonoBehaviour
                 //강한하수인찾기
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp &&
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp &&
                             MinionField.instance.minions[i].baseAtk + MinionField.instance.minions[i].baseHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
                         {
                             minionAtk = MinionField.instance.minions[i].final_atk;
@@ -665,7 +669,8 @@ public class DruidAI : MonoBehaviour
                 //강한하수인찾기
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
                         {
                             minionAtk = MinionField.instance.minions[i].final_atk;
                             minionHp = MinionField.instance.minions[i].final_hp;
@@ -719,7 +724,8 @@ public class DruidAI : MonoBehaviour
                 //강한하수인찾기
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
                         {
                             minionAtk = MinionField.instance.minions[i].final_atk;
                             minionHp = MinionField.instance.minions[i].final_hp;
@@ -736,7 +742,8 @@ public class DruidAI : MonoBehaviour
             case MinionAbility.Ability.대상의_공격력_생명력_교환:
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (hpAtkAds < Mathf.Abs(MinionField.instance.minions[i].final_atk - MinionField.instance.minions[i].final_hp) && MinionField.instance.minions[i].final_atk <= MinionField.instance.minions[i].final_hp)
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (hpAtkAds < Mathf.Abs(MinionField.instance.minions[i].final_atk - MinionField.instance.minions[i].final_hp) && MinionField.instance.minions[i].final_atk <= MinionField.instance.minions[i].final_hp)
                         {
                             hpAtkAds = Mathf.Abs(MinionField.instance.minions[i].final_atk - MinionField.instance.minions[i].final_hp);
                             searchMinionIndex = i;
@@ -825,12 +832,13 @@ public class DruidAI : MonoBehaviour
                 //강한하수인찾기
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
-                        {
-                            minionAtk = MinionField.instance.minions[i].final_atk;
-                            minionHp = MinionField.instance.minions[i].final_hp;
-                            searchMinionIndex = i;
-                        }
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
+                            {
+                                minionAtk = MinionField.instance.minions[i].final_atk;
+                                minionHp = MinionField.instance.minions[i].final_hp;
+                                searchMinionIndex = i;
+                            }
 
                 if (targetMinionNum >= 0)
                     SpellManager.instance.MinionSelect(MinionField.instance.minions[targetMinionNum], true);
@@ -882,7 +890,8 @@ public class DruidAI : MonoBehaviour
                 //강한하수인찾기
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
                         {
                             minionAtk = MinionField.instance.minions[i].final_atk;
                             minionHp = MinionField.instance.minions[i].final_hp;
@@ -986,7 +995,8 @@ public class DruidAI : MonoBehaviour
                 //강한하수인찾기
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp &&
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp &&
                             MinionField.instance.minions[i].baseAtk + MinionField.instance.minions[i].baseHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
                         {
                             minionAtk = MinionField.instance.minions[i].final_atk;
@@ -1006,7 +1016,8 @@ public class DruidAI : MonoBehaviour
                     //능력이 많은 하수인
                     for (int i = 0; i < MinionField.instance.minions.Length; i++)
                         if (MinionField.instance.minions[i].gameObject.activeSelf)
-                            if (minionAbilityCount < MinionField.instance.minions[i].abilityList.Count)
+                            if (!MinionField.instance.minions[i].stealth)
+                                if (minionAbilityCount < MinionField.instance.minions[i].abilityList.Count)
                             {
                                 minionAbilityCount = MinionField.instance.minions[i].abilityList.Count;
                                 searchMinionIndex = i;
@@ -1031,7 +1042,8 @@ public class DruidAI : MonoBehaviour
                 //강한하수인찾기
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
                         {
                             minionAtk = MinionField.instance.minions[i].final_atk;
                             minionHp = MinionField.instance.minions[i].final_hp;
@@ -1077,7 +1089,8 @@ public class DruidAI : MonoBehaviour
                 //주문을 사용하기 적합한 하수인 선택(데미지 대비 효율이 좋고,강한 하수인)
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (MinionField.instance.minions[i].final_hp <= spellDamage &&
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (MinionField.instance.minions[i].final_hp <= spellDamage &&
                             Mathf.Abs(MinionField.instance.minions[i].final_hp - spellDamage) <= 2 &&
                             minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
                         {
@@ -1113,7 +1126,8 @@ public class DruidAI : MonoBehaviour
                 //주문을 사용하기 적합한 하수인 선택(데미지 대비 효율이 좋고,강한 하수인)
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (MinionField.instance.minions[i].final_hp <= spellDamage &&
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (MinionField.instance.minions[i].final_hp <= spellDamage &&
                             Mathf.Abs(MinionField.instance.minions[i].final_hp - spellDamage) <= 2 &&
                             minionAtk + minionHp < MinionField.instance.minions[i].final_atk + MinionField.instance.minions[i].final_hp)
                         {
@@ -1142,7 +1156,8 @@ public class DruidAI : MonoBehaviour
             case SpellAbility.Ability.대상의_공격력_생명력_교환:
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (hpAtkAds < Mathf.Abs(MinionField.instance.minions[i].final_atk - MinionField.instance.minions[i].final_hp) && MinionField.instance.minions[i].final_atk <= MinionField.instance.minions[i].final_hp)
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (hpAtkAds < Mathf.Abs(MinionField.instance.minions[i].final_atk - MinionField.instance.minions[i].final_hp) && MinionField.instance.minions[i].final_atk <= MinionField.instance.minions[i].final_hp)
                         {
                             hpAtkAds = Mathf.Abs(MinionField.instance.minions[i].final_atk - MinionField.instance.minions[i].final_hp);
                             searchMinionIndex = i;
@@ -1238,7 +1253,8 @@ public class DruidAI : MonoBehaviour
                 //강한하수인찾기
                 for (int i = 0; i < MinionField.instance.minions.Length; i++)
                     if (MinionField.instance.minions[i].gameObject.activeSelf)
-                        if (minionAtk < MinionField.instance.minions[i].final_atk)
+                        if (!MinionField.instance.minions[i].stealth)
+                            if (minionAtk < MinionField.instance.minions[i].final_atk)
                         {
                             minionAtk = MinionField.instance.minions[i].final_atk;
                             searchMinionIndex = i;
@@ -1539,9 +1555,11 @@ public class DruidAI : MonoBehaviour
     #region[드루이드 공격 명령]
     public void AttackOrder(int n, string target)
     {
-        GameEventManager.instance.EventAdd(2f);
+        GameEventManager.instance.EventAdd(3f);
+        EnemyMinionField.instance.attack_ready = 1f;
         EnemyMinionField.instance.minions[n].stealth = false;
-        if(target.Equals("Hero"))
+        SoundManager.instance.PlayMinionSE(EnemyMinionField.instance.minions[n].minion_name, 미니언상태.공격);
+        if (target.Equals("Hero"))
         {
             AttackManager.instance.PopAllDamageObj();
             AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, EnemyMinionField.instance.minions[n].final_atk);

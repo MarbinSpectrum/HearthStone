@@ -349,6 +349,7 @@ public class SpellManager : MonoBehaviour
                             EnemyCardHand.instance.DrawCard();
                         else
                             CardHand.instance.CardDrawAct();
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -380,6 +381,7 @@ public class SpellManager : MonoBehaviour
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -445,6 +447,7 @@ public class SpellManager : MonoBehaviour
                         EffectManager.instance.StarFall(!enemy);
                         yield return new WaitForSeconds(1f);
                     }
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -507,6 +510,7 @@ public class SpellManager : MonoBehaviour
                         yield return new WaitForSeconds(1f);
                     }
 
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     AttackManager.instance.PopAllDamageObj();
                     if (!enemy)
                         AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)ability.Ability_data.x + playerSpellPower);
@@ -538,6 +542,7 @@ public class SpellManager : MonoBehaviour
                         EffectManager.instance.StarFall(!enemy);
                         yield return new WaitForSeconds(1f);
                     }
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -582,6 +587,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인소환)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
                     bool enemyFlag = (int)ability.Ability_data.z == 1 ? false : true;
                     string minion_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
@@ -599,6 +605,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_은신부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -614,6 +621,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_능력부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     string ability_string = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
                     List<MinionAbility> abilityList = MinionManager.instance.MinionAbilityParsing(ability_string);
                     if (enemy)
@@ -633,6 +641,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_능력치부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -656,6 +665,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.마나획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (nowSpellName == "정신 자극")
                     {
                         EffectManager.instance.SpiralEffect(enemy ? HeroManager.instance.enemyHero.transform.position : HeroManager.instance.playerHero.transform.position);
@@ -674,6 +684,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.마나수정획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (nowSpellName == "급속 성장")
                     {
                         EffectManager.instance.SpiralEffect(enemy ? HeroManager.instance.enemyHero.transform.position : HeroManager.instance.playerHero.transform.position);
@@ -718,6 +729,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.모든하수인주인의패로)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
                         if (MinionManager.instance.minionList[m].gameObject.activeSelf)
                         {
@@ -732,6 +744,7 @@ public class SpellManager : MonoBehaviour
                             MinionManager.instance.minionList[m].animator.SetTrigger("Death");
 
                     yield return new WaitForSeconds(1.25f);
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
 
                     GameEventManager.instance.EventSet(2.5f);
 
@@ -762,6 +775,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_해당턴_능력치부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -785,6 +799,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.방어도획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         if (HeroManager.instance.heroHpManager.enemyShield < 0)
@@ -802,6 +817,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.공격력획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                         HeroManager.instance.heroAtkManager.enemyAtk += (int)ability.Ability_data.x;
                     else
@@ -809,6 +825,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.무기장착)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     GameEventManager.instance.EventAdd(1f);
                     if (enemy)
                     {
@@ -852,7 +869,7 @@ public class SpellManager : MonoBehaviour
                         GameEventManager.instance.EventAdd(1f);
                         yield return new WaitForSeconds(1f);
                     }
-
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                         HeroManager.instance.heroAtkManager.enemyWeaponAtk += (int)ability.Ability_data.x;
                     else
@@ -864,12 +881,14 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.다음주문카드비용감소)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     checkPreparation = true;
                     CardHand.instance.UsePreparation = (int)ability.Ability_data.x;
                 }
                 else if (CheckEvent(ability) == EventType.무기파괴)
                 {
-                    if(enemy)
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
+                    if (enemy)
                         HeroManager.instance.heroAtkManager.enemyWeaponDurability = 0;
                     else
                     {
@@ -891,6 +910,7 @@ public class SpellManager : MonoBehaviour
                             EffectManager.instance.TornadoEffect(HeroManager.instance.playerHero.transform.position);
                         yield return new WaitForSeconds(1f);
                     }
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -941,6 +961,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.내손으로다시가져오기)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (CardHand.instance.nowHandNum < 10)
                         for (int c = 0; c < BattleUI.instance.playerCardAni.Length; c++)
                         {
@@ -964,7 +985,17 @@ public class SpellManager : MonoBehaviour
                 if (MinionManager.instance.minionList[m].gameObject.activeSelf && MinionManager.instance.minionList[m].enemy == enemy)
                     MinionManager.instance.minionList[m].spellRun = true;
 
-        if(!checkPreparation && !heroPower)
+        if(!enemy && !heroPower)
+        {
+            QuestManager.instance.SpellCard();
+            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(nowSpellName));
+            if (pair.x == 0)
+                QuestManager.instance.CharacterCard(Job.드루이드);
+            else if (pair.x == 1)
+                QuestManager.instance.CharacterCard(Job.도적);
+        }
+
+        if (!checkPreparation && !heroPower)
             CardHand.instance.UsePreparation = 0;
 
     }
@@ -1091,6 +1122,7 @@ public class SpellManager : MonoBehaviour
                             EnemyCardHand.instance.DrawCard();
                         else
                             CardHand.instance.CardDrawAct();
+                        SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -1119,6 +1151,7 @@ public class SpellManager : MonoBehaviour
                         EffectManager.instance.StarFall(!enemy);
                         yield return new WaitForSeconds(1f);
                     }
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -1187,6 +1220,7 @@ public class SpellManager : MonoBehaviour
                         EffectManager.instance.StarFall(!enemy);
                         yield return new WaitForSeconds(1f);
                     }
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -1255,6 +1289,7 @@ public class SpellManager : MonoBehaviour
                         EffectManager.instance.StarFall(!enemy);
                         yield return new WaitForSeconds(1f);
                     }
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -1299,6 +1334,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인소환)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
                     bool enemyFlag = (int)ability.Ability_data.z == 1 ? false : true;
                     string minion_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
@@ -1316,6 +1352,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_은신부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -1331,6 +1368,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_능력부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     string ability_string = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
                     List<MinionAbility> abilityList = MinionManager.instance.MinionAbilityParsing(ability_string);
                     if (enemy)
@@ -1350,6 +1388,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_능력치부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -1373,6 +1412,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.마나획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                         ManaManager.instance.enemyNowMana += (int)ability.Ability_data.x;
                     else
@@ -1380,6 +1420,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.마나수정획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                         ManaManager.instance.enemyMaxMana += (int)ability.Ability_data.x;
                     else
@@ -1402,12 +1443,14 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.모든하수인주인의패로)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
                         if (MinionManager.instance.minionList[m].gameObject.activeSelf)
                             MinionManager.instance.minionList[m].gotoHandTrigger = true;
                 }
                 else if (CheckEvent(ability) == EventType.모든하수인처치)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
                         if (MinionManager.instance.minionList[m].gameObject.activeSelf)
                             MinionManager.instance.minionList[m].animator.SetTrigger("Death");
@@ -1443,6 +1486,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_해당턴_능력치부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -1466,6 +1510,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.방어도획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         if (HeroManager.instance.heroHpManager.enemyShield < 0)
@@ -1483,6 +1528,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.공격력획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                         HeroManager.instance.heroAtkManager.enemyAtk += (int)ability.Ability_data.x;
                     else
@@ -1490,6 +1536,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.무기장착)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     GameEventManager.instance.EventAdd(1f);
                     if (enemy)
                     {
@@ -1521,6 +1568,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.무기공격력부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                         HeroManager.instance.heroAtkManager.enemyWeaponAtk += (int)ability.Ability_data.x;
                     else
@@ -1534,6 +1582,16 @@ public class SpellManager : MonoBehaviour
         for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
             if (MinionManager.instance.minionList[m].gameObject.activeSelf && MinionManager.instance.minionList[m].enemy == enemy)
                 MinionManager.instance.minionList[m].spellRun = true;
+
+        if (!enemy)
+        {
+            QuestManager.instance.SpellCard();
+            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(nowSpellName));
+            if (pair.x == 0)
+                QuestManager.instance.CharacterCard(Job.드루이드);
+            else if (pair.x == 1)
+                QuestManager.instance.CharacterCard(Job.도적);
+        }
 
         CardHand.instance.UsePreparation = 0;
     }
@@ -1665,6 +1723,7 @@ public class SpellManager : MonoBehaviour
                             EnemyCardHand.instance.DrawCard();
                         else
                             CardHand.instance.CardDrawAct();
+                        SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                         GameEventManager.instance.EventAdd(0.5f);
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -1693,6 +1752,7 @@ public class SpellManager : MonoBehaviour
                         EffectManager.instance.StarFall(!enemy);
                         yield return new WaitForSeconds(1f);
                     }
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -1761,6 +1821,7 @@ public class SpellManager : MonoBehaviour
                         EffectManager.instance.StarFall(!enemy);
                         yield return new WaitForSeconds(1f);
                     }
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -1829,6 +1890,7 @@ public class SpellManager : MonoBehaviour
                         EffectManager.instance.StarFall(!enemy);
                         yield return new WaitForSeconds(1f);
                     }
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     deathList.Clear();
                     survivalList.Clear();
                     emptyList.Clear();
@@ -1873,6 +1935,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인소환)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
                     bool enemyFlag = (int)ability.Ability_data.z == 1 ? false : true;
                     string minion_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
@@ -1890,6 +1953,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_은신부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -1905,6 +1969,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_능력부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     string ability_string = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "명령어");
                     List<MinionAbility> abilityList = MinionManager.instance.MinionAbilityParsing(ability_string);
                     if (enemy)
@@ -1924,6 +1989,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_능력치부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -1947,6 +2013,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.마나획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                         ManaManager.instance.enemyNowMana += (int)ability.Ability_data.x;
                     else
@@ -1954,6 +2021,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.마나수정획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                         ManaManager.instance.enemyMaxMana += (int)ability.Ability_data.x;
                     else
@@ -1976,12 +2044,14 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.모든하수인주인의패로)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
                         if (MinionManager.instance.minionList[m].gameObject.activeSelf)
                             MinionManager.instance.minionList[m].gotoHandTrigger = true;
                 }
                 else if (CheckEvent(ability) == EventType.모든하수인처치)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
                         if (MinionManager.instance.minionList[m].gameObject.activeSelf)
                             MinionManager.instance.minionList[m].animator.SetTrigger("Death");
@@ -2017,6 +2087,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.하수인들에게_해당턴_능력치부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -2040,6 +2111,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.방어도획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                     {
                         if (HeroManager.instance.heroHpManager.enemyShield < 0)
@@ -2057,6 +2129,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.공격력획득)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                         HeroManager.instance.heroAtkManager.enemyAtk += (int)ability.Ability_data.x;
                     else
@@ -2064,6 +2137,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.무기장착)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     GameEventManager.instance.EventAdd(1f);
                     if (enemy)
                     {
@@ -2095,6 +2169,7 @@ public class SpellManager : MonoBehaviour
                 }
                 else if (CheckEvent(ability) == EventType.무기공격력부여)
                 {
+                    SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                     if (enemy)
                         HeroManager.instance.heroAtkManager.enemyWeaponAtk += (int)ability.Ability_data.x;
                     else
@@ -2108,6 +2183,16 @@ public class SpellManager : MonoBehaviour
         for (int m = 0; m < MinionManager.instance.minionList.Count; m++)
             if (MinionManager.instance.minionList[m].gameObject.activeSelf && MinionManager.instance.minionList[m].enemy == enemy)
                 MinionManager.instance.minionList[m].spellRun = true;
+
+        if (!enemy)
+        {
+            QuestManager.instance.SpellCard();
+            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(nowSpellName));
+            if (pair.x == 0)
+                QuestManager.instance.CharacterCard(Job.드루이드);
+            else if (pair.x == 1)
+                QuestManager.instance.CharacterCard(Job.도적);
+        }
 
         CardHand.instance.UsePreparation = 0;
     }
@@ -2364,26 +2449,33 @@ public class SpellManager : MonoBehaviour
         switch (nowSpellAbility.Ability_type)
         {
             case SpellAbility.Ability.빙결시키기:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 minionObject.freezeTrigger = true;
                 break;
             case SpellAbility.Ability.아군하수인_주인의패로되돌리기:
             case SpellAbility.Ability.적군하수인_주인의패로되돌리기:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 minionObject.gotoHandTrigger = true;
                 break;
             case SpellAbility.Ability.하수인_주인의패로되돌리면서_비용감소:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 minionObject.gotoHandTrigger = true;
                 CardHand.instance.handCostOffset[CardHand.instance.nowHandNum] = -(int)nowSpellAbility.Ability_data.x;
                 break;
             case SpellAbility.Ability.돌진부여:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 minionObject.sleep = false;
                 break;
             case SpellAbility.Ability.도발부여:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 minionObject.taunt = true;
                 break;
             case SpellAbility.Ability.은신부여:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 minionObject.stealth = true;
                 break;
             case SpellAbility.Ability.침묵시키기:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 minionObject.ActSilence();
                 break;
             case SpellAbility.Ability.하수인처치:
@@ -2400,15 +2492,18 @@ public class SpellManager : MonoBehaviour
                 break;
             case SpellAbility.Ability.생명력회복:
             case SpellAbility.Ability.하수인의_생명력회복:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 minionObject.final_hp += (int)nowSpellAbility.Ability_data.x;
                 minionObject.final_hp = Mathf.Min(minionObject.final_hp, minionObject.baseHp);
                 EffectManager.instance.HealEffect(minionObject.transform.position, (int)nowSpellAbility.Ability_data.x);
                 break;
             case SpellAbility.Ability.하수인의_생명력설정:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 minionObject.final_hp = (int)nowSpellAbility.Ability_data.x;
                 minionObject.baseHp = (int)nowSpellAbility.Ability_data.x;
                 break;
             case SpellAbility.Ability.다른모든_적군에게_피해주기:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 deathList.Clear();
                 survivalList.Clear();
                 emptyList.Clear();
@@ -2521,6 +2616,7 @@ public class SpellManager : MonoBehaviour
                     Invoke("MinionDamage", 0f);
                 break;
             case SpellAbility.Ability.영웅의공격력만큼_피해주기:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 if (nowSpellName == "야생성")
                 {
                     GameEventManager.instance.EventSet(1f);
@@ -2531,6 +2627,7 @@ public class SpellManager : MonoBehaviour
                 AttackManager.instance.AttackEffectRun();
                 break;
             case SpellAbility.Ability.대상의_공격력_생명력_교환:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 int temp = minionObject.final_hp;
                 minionObject.baseHp = minionObject.final_atk;
                 minionObject.final_hp = minionObject.final_atk;
@@ -2541,11 +2638,13 @@ public class SpellManager : MonoBehaviour
                     minionObject.buffList[i] = new Vector4(0, minionObject.buffList[i].y, minionObject.buffList[i].z, minionObject.buffList[i].w);
                 break;
             case SpellAbility.Ability.무기의_공격력만큼능력부여:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 Vector4 weaponBuff = new Vector4(HeroManager.instance.heroAtkManager.playerWeaponAtk, 0, 0, 0);
                 minionObject.buffList.Add(weaponBuff);
                 break;
             case SpellAbility.Ability.해당턴동안_능력치부여:
             case SpellAbility.Ability.능력치부여:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 Vector4 buff = new Vector4((int)nowSpellAbility.Ability_data.x, (int)nowSpellAbility.Ability_data.y, (int)nowSpellAbility.Ability_data.z, 1);
                 if (nowSpellAbility.Ability_type == SpellAbility.Ability.능력치부여)
                     buff -= new Vector4(0, 0, 0, 1);
@@ -2553,12 +2652,14 @@ public class SpellManager : MonoBehaviour
                 minionObject.final_hp += (int)nowSpellAbility.Ability_data.y;
                 break;
             case SpellAbility.Ability.능력부여:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 string ability_string = DataMng.instance.ToString((DataMng.TableType)nowSpellAbility.Ability_data.x, (int)nowSpellAbility.Ability_data.y, "명령어");
                 List<MinionAbility> abilityList = MinionManager.instance.MinionAbilityParsing(ability_string);
                 for (int i = 0; i < abilityList.Count; i++)
                     minionObject.abilityList.Add(abilityList[i]);
                 break;
             case SpellAbility.Ability.대상이_양옆하수인을_공격:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 deathList.Clear();
                 survivalList.Clear();
                 emptyList.Clear();
@@ -2626,6 +2727,7 @@ public class SpellManager : MonoBehaviour
     {
         if (invokeMinion == null)
             return;
+        SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
         AttackManager.instance.PopAllDamageObj();
         AttackManager.instance.AddDamageObj(invokeMinion.damageEffect, (int)nowSpellAbility.Ability_data.x + (invokeEnemy ? enemySpellPower : playerSpellPower));
         AttackManager.instance.AttackEffectRun();
@@ -2636,6 +2738,7 @@ public class SpellManager : MonoBehaviour
     {
         if (invokeMinion == null)
             return;
+        SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
         invokeMinion.MinionDeath();
         invokeMinion = null;
     }
@@ -2643,6 +2746,7 @@ public class SpellManager : MonoBehaviour
     public void HeroDamage()
     {
         AttackManager.instance.PopAllDamageObj();
+        SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
         if (invokeEnemy)
             AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)nowSpellAbility.Ability_data.x + (invokeRunEnemy ? enemySpellPower : playerSpellPower));
         else
@@ -2715,6 +2819,7 @@ public class SpellManager : MonoBehaviour
         switch (nowSpellAbility.Ability_type)
         {
             case SpellAbility.Ability.빙결시키기:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 HeroManager.instance.SetFreeze(enemy);
                 break;
             case SpellAbility.Ability.적에게피해주기:
@@ -2757,6 +2862,7 @@ public class SpellManager : MonoBehaviour
                     Invoke("HeroDamage", 0f);
                 break;
             case SpellAbility.Ability.영웅의공격력만큼_피해주기:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 if (nowSpellName == "야생성")
                 {
                     GameEventManager.instance.EventSet(1f);
@@ -2770,6 +2876,7 @@ public class SpellManager : MonoBehaviour
                 break;
             case SpellAbility.Ability.생명력회복:
             case SpellAbility.Ability.영웅의_생명력회복:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 if (enemy)
                 {
                     HeroManager.instance.heroHpManager.nowEnemyHp += (int)nowSpellAbility.Ability_data.x;
@@ -2782,12 +2889,14 @@ public class SpellManager : MonoBehaviour
                 }
                 break;
             case SpellAbility.Ability.영웅의_생명력설정:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 if (enemy)
                     HeroManager.instance.heroHpManager.nowEnemyHp = (int)nowSpellAbility.Ability_data.x;
                 else
                     HeroManager.instance.heroHpManager.nowPlayerHp = (int)nowSpellAbility.Ability_data.x;
                 break;
             case SpellAbility.Ability.다른모든_적군에게_피해주기:
+                SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
                 deathList.Clear();
                 survivalList.Clear();
                 emptyList.Clear();

@@ -36,6 +36,7 @@ public class MinionField : MonoBehaviour
     Vector3[] minions_pos = new Vector3[7];
     [HideInInspector] public Vector3[] minions_Attack_pos = new Vector3[7];
     [HideInInspector] public float[] minions_attack_delay = new float[7];
+    [HideInInspector] public float attack_ready;
     [HideInInspector] public int mousePos;
     [HideInInspector] public bool setMinionPos = true;
 
@@ -139,12 +140,16 @@ public class MinionField : MonoBehaviour
                     }
                     else
                     {
+                        minions[i].animator.SetBool("Attack", false);
                         AttackManager.instance.AttackEffectRun();
                         minions_attack_delay[i] -= Time.deltaTime;
                     }
                 }
                 else
+                {
+                    minions[i].animator.SetBool("Attack", true);
                     minions_attack_delay[i] = attack_delay;
+                }
 
                 if (minions_Attack_pos[i] != Vector3.zero)
                     minions_pos[i] = new Vector3(minions_Attack_pos[i].x, minions_Attack_pos[i].y, transform.position.z);
@@ -164,6 +169,12 @@ public class MinionField : MonoBehaviour
 
         min_speed = Mathf.Min(min_speed, max_speed);
         min_attack_speed = Mathf.Min(min_attack_speed, max_attack_speed);
+
+        if(attack_ready > 0)
+        {
+            attack_ready -= Time.deltaTime;
+            return;
+        }
 
         for (int i = 0; i < minionNum; i++)
         {
@@ -253,11 +264,18 @@ public class MinionField : MonoBehaviour
             while (!DragCardObject.instance.dropEffect.effectArrive)
                 yield return new WaitForSeconds(0.1f);
             if(spawnType == 0)
+            {
+                SoundManager.instance.PlaySE("미니언소환일반");
                 minions[n].animator.SetTrigger("NormalSpawn");
+            }
             else if (spawnType == 1)
+            {
+                SoundManager.instance.PlaySE("미니언소환일반");
                 minions[n].animator.SetTrigger("SetSpawn");
+            }
             else if (spawnType == 2)
             {
+                Debug.Log("데스윙");
                 minions[n].animator.SetTrigger("DeathWingSpawn");
                 EffectManager.instance.VibrationEffect(2f, 20, 10);
             }
@@ -271,6 +289,18 @@ public class MinionField : MonoBehaviour
             minions[n].CardHandMinionSpawn();
             if (GameEventManager.instance.GetEventValue() > 1.5f)
                 GameEventManager.instance.EventSet(1.5f);
+
+            yield return new WaitForSeconds(2f);
+            while (!minions[n].animator.gameObject.activeSelf)
+                yield return new WaitForSeconds(0.001f);
+
+            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minions[n].minion_name));
+
+            if (pair.x == 0)
+                QuestManager.instance.CharacterCard(Job.드루이드);
+            else if (pair.x == 1)
+                QuestManager.instance.CharacterCard(Job.도적);
+
         }
         else
         {

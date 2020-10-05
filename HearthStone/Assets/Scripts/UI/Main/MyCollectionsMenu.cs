@@ -131,6 +131,9 @@ public class MyCollectionsMenu : MonoBehaviour
     int deleteDeckNum = -1;
     TouchScreenKeyboard keyboard;
     string keyboardText = "";
+    public Animator reNameUI;
+    public InputField reNameInput;
+    string baseName;
 
     [Header("캐릭터선택")]
     public Animator selectCharacterAni;
@@ -218,6 +221,8 @@ public class MyCollectionsMenu : MonoBehaviour
         nowCardIndex = 0;
         nowJob = DataMng.TableType.모두;
         SoundManager.instance.PlayBGM("수집함배경음");
+        Setting.instance.setting.SetActive(false);
+        Setting.instance.settingBtn.SetActive(false);
         CardViewManager.instance.UpdateCardView();
     }
     #endregion
@@ -672,6 +677,8 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[카드표시]
     public void CardShow(ref CardView card,int nowJobIndex,int cardIndex)
     {
+        if (card == null)
+            return;
         card.gameObject.SetActive(true);
         if (cardDatas[nowJobIndex][cardIndex].cardType.Equals("하수인"))
         {
@@ -1067,7 +1074,7 @@ public class MyCollectionsMenu : MonoBehaviour
             return;
         if (CardData.CostCardPowder(nowCloseUpcardLevel) > DataMng.instance.playData.magicPowder)
             return;
-
+        SoundManager.instance.PlaySE("카드생성");
         StartCoroutine(MakeCardEffect(cardNum,1.5f));
         StartCoroutine(ShowCardNum(cardNum + 1, 1.5f));
     }
@@ -1110,7 +1117,8 @@ public class MyCollectionsMenu : MonoBehaviour
             return;
         if (nowCloseUpcardLevel.Equals("토큰") || nowCloseUpcardLevel.Equals("기본"))
             return;
-        if(nowDeck != -1)
+        SoundManager.instance.PlaySE("카드삭제");
+        if (nowDeck != -1)
         {
             if(DataMng.instance.playData.deck[nowDeck].HasCardNum(nowCloseUpcardName) > cardNum - 1)
             {
@@ -1214,6 +1222,7 @@ public class MyCollectionsMenu : MonoBehaviour
     {
         SelectCharacter(false);
         SelectCharacterOK(false);
+        SoundManager.instance.PlaySE("덱펼치기");
        // deckListView.SetActive(false);
         deckCardView.SetActive(true);
         deckBannerBtn.hide = false;
@@ -1254,6 +1263,7 @@ public class MyCollectionsMenu : MonoBehaviour
     public void DeckAutoCreate()
     {
         deckCardShow = DataMng.instance.playData.deck[nowDeck].CountCardNum();
+        int inputNum = 0;
         bool exFlag = false;
         for (int i = 0; i < cardDatas.Length; i++)
         {
@@ -1265,10 +1275,23 @@ public class MyCollectionsMenu : MonoBehaviour
                     if (exFlag)
                         break;
                     DataMng.instance.playData.deck[nowDeck].AddCard(cardDatas[i][j].cardName);
-                    MyCollectionsMenu.instance.DeckSort();
+                    inputNum++;
+                    DeckSort();
                 }
             if (exFlag)
                 break;
+        }
+        StartCoroutine(DeckAutoCreateCor(inputNum));
+    }
+
+    private IEnumerator DeckAutoCreateCor(int n)
+    {
+        n /= 4;
+        n = Mathf.Max(1, n);
+        for (int i = 0; i < n; i++)
+        {
+            SoundManager.instance.PlaySE("덱에카드넣기");
+            yield return new WaitForSeconds(0.2f);
         }
     }
     #endregion
@@ -1276,6 +1299,7 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[덱 카드 접기]
     public void DeckCardFade()
     {
+        SoundManager.instance.PlaySE("덱펼치기");
         deckCardViewFlag = false;
         int deckCardNum = 0;
         for (int i = 0; i < 30; i++)
@@ -1375,7 +1399,28 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[덱 이름설정]
     public void DeckReName()
     {
-        keyboard = TouchScreenKeyboard.Open(deckBannerBtn.deckNameTxt.text, TouchScreenKeyboardType.Default, false, false, false, false);
+        if (Application.platform == RuntimePlatform.Android)
+            keyboard = TouchScreenKeyboard.Open(deckBannerBtn.deckNameTxt.text, TouchScreenKeyboardType.Default, false, false, false, false);
+        else
+        {
+            reNameUI.SetBool("Show", true);
+            baseName = deckBannerBtn.deckNameTxt.text;
+            reNameInput.text = deckBannerBtn.deckNameTxt.text;
+        }
+    }
+
+    public void DeckReNameOK()
+    {
+        reNameUI.SetBool("Show", false);
+        deckBannerBtn.deckNameTxt.text = reNameInput.text;
+        DataMng.instance.playData.deck[nowDeck].name = reNameInput.text;
+        deckBtn[nowDeck].deckNameTxt.text = reNameInput.text;
+    }
+
+    public void DeckReNameCancle()
+    {
+        reNameUI.SetBool("Show", false);
+        deckBannerBtn.deckNameTxt.text = baseName;
     }
     #endregion
 
@@ -1390,6 +1435,7 @@ public class MyCollectionsMenu : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
         //deckBtn[n].hide = true;
+        SoundManager.instance.PlaySE("덱삭제");
         DataMng.instance.playData.deck.RemoveAt(n);
         DeckUpdate();
         //yield return new WaitForSeconds(0.1f);

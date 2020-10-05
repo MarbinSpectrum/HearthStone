@@ -7,6 +7,8 @@ public class MainToShopBtn : Btn
 {
     public Image glowImg;
 
+    public bool flag;
+
     #region[Awake]
     public override void Awake()
     {
@@ -18,7 +20,8 @@ public class MainToShopBtn : Btn
     public override void Update()
     {
         if (Input.GetMouseButtonUp(0))
-            glowImg.enabled = false;
+            if (glowImg)
+                glowImg.enabled = false;
     }
     #endregion
 
@@ -30,7 +33,8 @@ public class MainToShopBtn : Btn
     public override void pointerEnter()
     {
         if (Input.GetMouseButton(0))
-            glowImg.enabled = true;
+            if (glowImg)
+                glowImg.enabled = true;
     }
     #endregion
 
@@ -38,14 +42,16 @@ public class MainToShopBtn : Btn
     public override void pointerDown()
     {
         if (Input.GetMouseButtonDown(0))
-            glowImg.enabled = true;
+            if(glowImg)
+                glowImg.enabled = true;
     }
     #endregion
 
     #region[pointerExit]
     public override void pointerExit()
     {
-        glowImg.enabled = false;
+        if(glowImg)
+            glowImg.enabled = false;
     }
     #endregion
 
@@ -59,7 +65,10 @@ public class MainToShopBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        Debug.Log("퀘스트");
+        if (MainMenu.instance.shopUI.animator.GetBool("Run") == flag)
+            return;
+        MainMenu.instance.shopUI.gameObject.SetActive(flag);
+        MainMenu.instance.shopUI.animator.SetBool("Run", flag);
     }
     #endregion
 }

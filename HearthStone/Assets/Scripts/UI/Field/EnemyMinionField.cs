@@ -36,6 +36,7 @@ public class EnemyMinionField : MonoBehaviour
     Vector3[] minions_pos = new Vector3[7];
     [HideInInspector] public Vector3[] minions_Attack_pos = new Vector3[7];
     [HideInInspector] public float[] minions_attack_delay = new float[7];
+    [HideInInspector] public float attack_ready = 1f;
     public Transform AI_MousePos;
     [HideInInspector] public int mousePos;
 
@@ -143,12 +144,16 @@ public class EnemyMinionField : MonoBehaviour
                     }
                     else
                     {
+                        minions[i].animator.SetBool("Attack", false);
                         AttackManager.instance.AttackEffectRun();
                         minions_attack_delay[i] -= Time.deltaTime;
                     }
                 }
                 else
+                {
+                    minions[i].animator.SetBool("Attack", true);
                     minions_attack_delay[i] = attack_delay;
+                }
 
                 if (minions_Attack_pos[i] != Vector3.zero)
                     minions_pos[i] = new Vector3(minions_Attack_pos[i].x, minions_Attack_pos[i].y, transform.position.z);
@@ -167,6 +172,12 @@ public class EnemyMinionField : MonoBehaviour
             return;
 
         min_speed = Mathf.Min(min_speed, max_speed);
+
+        if (attack_ready > 0)
+        {
+            attack_ready -= Time.deltaTime;
+            return;
+        }
 
         for (int i = 0; i < minionNum; i++)
         {
@@ -254,9 +265,15 @@ public class EnemyMinionField : MonoBehaviour
             while (!DragCardObject.instance.dropEffect.effectArrive)
                 yield return new WaitForSeconds(0.1f);
             if (spawnType == 0)
+            {
+                SoundManager.instance.PlaySE("미니언소환일반");
                 minions[n].animator.SetTrigger("NormalSpawn");
+            }
             else if (spawnType == 1)
+            {
+                SoundManager.instance.PlaySE("미니언소환일반");
                 minions[n].animator.SetTrigger("SetSpawn");
+            }
             else if (spawnType == 2)
             {
                 minions[n].animator.SetTrigger("DeathWingSpawn");

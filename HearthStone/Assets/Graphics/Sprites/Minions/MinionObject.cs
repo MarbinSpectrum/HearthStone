@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MinionObject : MonoBehaviour
 {
+    public static bool minionSoundRun = false;
+
     [Header("하수인 이름")]
     public string minion_name;
 
@@ -292,6 +294,7 @@ public class MinionObject : MonoBehaviour
             return;
         turnStartTrigger = false;
         freezeCount--;
+        sleep = false;
         canAttackNum = 1;
     }
     #endregion
@@ -302,7 +305,6 @@ public class MinionObject : MonoBehaviour
         if (!turnEndTrigger)
             return;
         turnEndTrigger = false;
-        sleep = false;
         freezeCount--;
         //버프제거
         for (int i = 0; i < buffList.Count; i++)
@@ -429,6 +431,8 @@ public class MinionObject : MonoBehaviour
     #region[소멸 프로세스]
     public void MinionRemoveProcess()
     {
+        if(final_hp <= 0)
+            SoundManager.instance.PlayMinionSE(minion_name, 미니언상태.죽음);
         abilityList.Clear();
         buffList.Clear();
         canAttackNum = 0;
@@ -501,7 +505,9 @@ public class MinionObject : MonoBehaviour
         string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
         abilityList.Clear();
         abilityList = MinionManager.instance.MinionAbilityParsing(ability_string);
-      
+        SoundManager.instance.PlayMinionSE(minion_name, 미니언상태.소환);
+        if (legend)
+            SoundManager.instance.DownBGM(3.5f, 0.25f);
         MinionManager.instance.BaseMinionAbility(this);
 
     }

@@ -63,7 +63,8 @@ public class DeckReNameBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        MyCollectionsMenu.instance.DeckReName();
+            MyCollectionsMenu.instance.DeckReName();
+
     }
     #endregion
 }

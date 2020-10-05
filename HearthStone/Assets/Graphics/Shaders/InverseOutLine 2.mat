@@ -25,6 +25,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - PixelSnap: 1
-    - _Alpha: 0.00002759695
+    - _Alpha: 0.0000086426735
     m_Colors:
     - _Color: {r: 0, g: 0.9252393, b: 1.4980392, a: 1}

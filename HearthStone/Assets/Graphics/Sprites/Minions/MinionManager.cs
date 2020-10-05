@@ -14,18 +14,19 @@ public class MinionManager : MonoBehaviour
     #region[Awake]
     void Awake()
     {
+        //minionList.Clear();
         if (instance == null)
         {
             instance = this;
             for (int i = 0; i < minionMat.Count; i++)
                 minionMaterial.Add(minionMat[i].name, minionMat[i]);
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+        //else
+        //{
+        //    Destroy(gameObject);
+        //    return;
+        //}
     }
     #endregion
 
@@ -621,6 +622,7 @@ public class MinionManager : MonoBehaviour
                     }
                     else
                     {
+                        SoundManager.instance.MuteBGM(true);
 
                         if (DragLineRenderer.instance.CheckMask(타겟.아군영웅) || DragLineRenderer.instance.CheckMask(타겟.적영웅))
                             CardHand.instance.handAni.SetTrigger("축소");
@@ -671,6 +673,7 @@ public class MinionManager : MonoBehaviour
             else if (NowEvent == 3)
             {
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
+                SoundManager.instance.PlayMinionSE(minionObject.minion_name, 미니언상태.효과);
                 bool enemy = (int)minionObject.abilityList[j].Ability_data.z == 1 ? false : true;
                 string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
                 string minion_ability = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "명령어");
@@ -968,6 +971,7 @@ public class MinionManager : MonoBehaviour
     {
         if (!selectMinionEvent)
             return;
+        SoundManager.instance.MuteBGM(false);
         selectMinionEvent = false;
         eventMininon.gotoHandTrigger = true;
         GameEventManager.instance.EventAdd(1.4f);
@@ -989,6 +993,7 @@ public class MinionManager : MonoBehaviour
     {
         if (!selectMinionEvent)
             return;
+        SoundManager.instance.MuteBGM(false);
         selectMinionEvent = false;
         GameEventManager.instance.EventAdd(0.3f);
         BattleUI.instance.grayFilterAni.SetBool("On", false);
@@ -1035,6 +1040,7 @@ public class MinionManager : MonoBehaviour
                 break;
             case MinionAbility.Ability.생명력회복:
             case MinionAbility.Ability.하수인의_생명력회복:
+                SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
                 minionObject.final_hp += (int)eventMininon.abilityList[eventNum].Ability_data.x;
                 minionObject.final_hp = Mathf.Min(minionObject.final_hp, minionObject.baseHp);
                 EffectManager.instance.HealEffect(minionObject.transform.position, (int)eventMininon.abilityList[eventNum].Ability_data.x);
@@ -1080,6 +1086,7 @@ public class MinionManager : MonoBehaviour
     {
         if (invokeMinion == null)
             return;
+        SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
         invokeMinion.freezeTrigger = true;
         invokeMinion = null;
     }
@@ -1088,6 +1095,7 @@ public class MinionManager : MonoBehaviour
     {
         if (invokeMinion == null)
             return;
+        SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
         AttackManager.instance.PopAllDamageObj();
         AttackManager.instance.AddDamageObj(invokeMinion.damageEffect, (int)eventMininon.abilityList[eventNum].Ability_data.x);
         AttackManager.instance.AttackEffectRun();
@@ -1098,6 +1106,7 @@ public class MinionManager : MonoBehaviour
     {
         if (invokeMinion == null)
             return;
+        SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
         invokeMinion.ActSilence();
         invokeMinion = null;
     }
@@ -1106,6 +1115,7 @@ public class MinionManager : MonoBehaviour
     {
         if (invokeMinion == null)
             return;
+        SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
         invokeMinion.MinionDeath();
         invokeMinion = null;
     }
@@ -1115,6 +1125,7 @@ public class MinionManager : MonoBehaviour
         if (invokeMinion == null)
             return;
         int temp = invokeMinion.final_hp;
+        SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
         invokeMinion.baseHp = invokeMinion.final_atk;
         invokeMinion.final_hp = invokeMinion.final_atk;
         invokeMinion.baseAtk = temp;
@@ -1131,6 +1142,7 @@ public class MinionManager : MonoBehaviour
     {
         if (!selectMinionEvent)
             return;
+        SoundManager.instance.MuteBGM(false);
         selectMinionEvent = false;
         GameEventManager.instance.EventAdd(0.3f);
         BattleUI.instance.grayFilterAni.SetBool("On", false);
@@ -1158,7 +1170,8 @@ public class MinionManager : MonoBehaviour
                 break;
             case MinionAbility.Ability.생명력회복:
             case MinionAbility.Ability.영웅의_생명력회복:
-                if(enemy)
+                SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
+                if (enemy)
                 {
                     HeroManager.instance.heroHpManager.nowEnemyHp += (int)eventMininon.abilityList[eventNum].Ability_data.x;
                     EffectManager.instance.HealEffect(HeroManager.instance.enemyHero.transform.position, (int)eventMininon.abilityList[eventNum].Ability_data.x);
@@ -1213,6 +1226,7 @@ public class MinionManager : MonoBehaviour
     {
         if (invokeHero == 0)
             return;
+        SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
         if (invokeHero == 1)
             HeroManager.instance.SetFreeze(false);
         else if (invokeHero == 2)
@@ -1224,6 +1238,7 @@ public class MinionManager : MonoBehaviour
     {
         if (invokeHero == 0)
             return;
+        SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
         AttackManager.instance.PopAllDamageObj();
         if (invokeHero == 2)
             AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)eventMininon.abilityList[eventNum].Ability_data.x);
@@ -2137,7 +2152,10 @@ public class MinionManager : MonoBehaviour
                     for (int draw = 0; draw < minionObject.abilityList[j].Ability_data.x; draw++)
                     {
                         if (minionObject.minion_name == "가젯잔 경매인")
+                        {
                             EffectManager.instance.CoinEffect(minionObject.transform.position);
+                            SoundManager.instance.PlayMinionSE(minionObject.minion_name, 미니언상태.효과);
+                        }
                         //0이면 발동한 플레이어가 뽑고 
                         //1이면 상대플레이어가 카드를 뽑음
                         if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
@@ -2303,12 +2321,14 @@ public class MinionManager : MonoBehaviour
                         //1이면 상대플레이어가 카드를 뽑음
                         if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
                         {
+                            SoundManager.instance.PlayMinionSE(minionObject.minion_name, 미니언상태.효과);
                             if (minionObject.minion_name == "내트 페이글")
                                 EffectManager.instance.WaterEffect(EffectManager.instance.enemyDeckPos.position);
                             EnemyCardHand.instance.DrawCard();
                         }
                         else
                         {
+                            SoundManager.instance.PlayMinionSE(minionObject.minion_name, 미니언상태.효과);
                             if (minionObject.minion_name == "내트 페이글")
                                 EffectManager.instance.WaterEffect(EffectManager.instance.playerDeckPos.position);
                             CardHand.instance.CardDrawAct();
@@ -2448,6 +2468,7 @@ public class MinionManager : MonoBehaviour
                 if(targetList.Count > 0)
                 {
                     MinionObject targetMinion = targetList[Random.Range(0, targetList.Count)];
+                    SoundManager.instance.PlayMinionSE(minionObject.minion_name, 미니언상태.효과);
                     if (minionObject.minion_name == "검 제작의 대가")
                         EffectManager.instance.SwordEffect(minionObject.transform.position, targetMinion.transform.position);
                     yield return new WaitForSeconds(1.3f);
@@ -2518,6 +2539,7 @@ public class MinionManager : MonoBehaviour
                         {
                             if (minionObject.minion_name == "불의 군주 라그나로스")
                             {
+                                SoundManager.instance.PlayMinionSE(minionObject.minion_name, 미니언상태.효과);
                                 EffectManager.instance.FireBallEffect(minionObject.transform.position, HeroManager.instance.enemyHero.transform.position);
                                 GameEventManager.instance.EventAdd(1f);
                                 yield return new WaitForSeconds(1f);
@@ -2530,6 +2552,7 @@ public class MinionManager : MonoBehaviour
                         {
                             if (minionObject.minion_name == "불의 군주 라그나로스")
                             {
+                                SoundManager.instance.PlayMinionSE(minionObject.minion_name, 미니언상태.효과);
                                 EffectManager.instance.FireBallEffect(minionObject.transform.position, EnemyMinionField.instance.minions[targetList[r]].transform.position);
                                 GameEventManager.instance.EventAdd(1f);
                                 yield return new WaitForSeconds(1f);
