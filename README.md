@@ -14,5 +14,7 @@
 
 ![InGame4](./Image/5.png)
 
+![InGame5](./Image/6.png)
+
 <h2>영상링크</h2>
 https://youtu.be/42OibhFpyDU
