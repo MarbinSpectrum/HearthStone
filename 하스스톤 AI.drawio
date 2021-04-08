@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2021-04-08T15:38:16.314Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" etag="vMFUbP846h8KL7j55QjV" version="14.4.9" type="github">
+<mxfile host="app.diagrams.net" modified="2021-04-08T15:42:23.041Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" etag="RTDUZi8YWW4qKbyfWUqY" version="14.4.9" type="github">
   <diagram id="4cKAdu8nWia-SeCUqdoe" name="Page-1">
-    <mxGraphModel dx="1185" dy="635" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="2000" math="0" shadow="0">
+    <mxGraphModel dx="2844" dy="1524" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="2000" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -258,6 +258,86 @@
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="870" y="270" as="sourcePoint" />
             <mxPoint x="810" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-33" value="영웅능력을 사용할 수 있는가?" style="rhombus;whiteSpace=wrap;html=1;rounded=1;glass=0;opacity=80;" vertex="1" parent="1">
+          <mxGeometry x="68.75" y="1090" width="275" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-34" value="YES" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="343.75000000000017" y="1129.58" as="sourcePoint" />
+            <mxPoint x="411.92" y="1129.58" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-35" value="영웅능력을 사용" style="rounded=0;whiteSpace=wrap;html=1;glass=0;opacity=80;" vertex="1" parent="1">
+          <mxGeometry x="414" y="1112.5" width="121.82" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-36" value="" style="endArrow=classic;html=1;" edge="1" parent="1" target="LpWBtAVl-2Sken_FvuLC-37">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="470" y="1150" as="sourcePoint" />
+            <mxPoint x="470" y="1190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-37" value="능력을 사용해서 공격하면 이득인가?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="337.08" y="1200" width="262.92" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-38" value="공격" style="rounded=0;whiteSpace=wrap;html=1;glass=0;opacity=80;" vertex="1" parent="1">
+          <mxGeometry x="435.54" y="1320" width="66" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-39" value="&lt;h1&gt;END&lt;/h1&gt;" style="rounded=1;whiteSpace=wrap;html=1;opacity=80;glass=0;perimeterSpacing=7;arcSize=50;" vertex="1" parent="1">
+          <mxGeometry x="68.75" y="1400" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-40" value="NO" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.487;entryY=0.095;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-33" target="LpWBtAVl-2Sken_FvuLC-39">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="480" y="1270" as="sourcePoint" />
+            <mxPoint x="530" y="1220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-42" value="" style="endArrow=classic;html=1;entryX=0.669;entryY=0.083;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="LpWBtAVl-2Sken_FvuLC-39">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="260" y="1230" as="sourcePoint" />
+            <mxPoint x="310" y="1270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-43" value="NO" style="endArrow=none;html=1;" edge="1" parent="1" target="LpWBtAVl-2Sken_FvuLC-37">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="260" y="1230" as="sourcePoint" />
+            <mxPoint x="520" y="1330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-44" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-37" target="LpWBtAVl-2Sken_FvuLC-38">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="470" y="1380" as="sourcePoint" />
+            <mxPoint x="520" y="1330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-45" value="YES" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="LpWBtAVl-2Sken_FvuLC-44">
+          <mxGeometry x="-0.4572" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-46" value="" style="endArrow=classic;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-38">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="470" y="1380" as="sourcePoint" />
+            <mxPoint x="260" y="1335" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-48" value="" style="endArrow=none;html=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="60" y="280" as="sourcePoint" />
+            <mxPoint x="50" y="1330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-49" value="" style="endArrow=none;html=1;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="50" y="1330" as="sourcePoint" />
+            <mxPoint x="150" y="1330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-51" value="" style="endArrow=classic;html=1;entryX=0.297;entryY=0.106;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="LpWBtAVl-2Sken_FvuLC-39">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="150" y="1330" as="sourcePoint" />
+            <mxPoint x="520" y="1250" as="targetPoint" />
           </mxGeometry>
         </mxCell>
       </root>
