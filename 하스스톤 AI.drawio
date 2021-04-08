@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2021-04-08T15:47:13.371Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" etag="R0tz45bEG9LDI4dOjpvN" version="14.4.9" type="github">
+<mxfile host="app.diagrams.net" modified="2021-04-08T15:48:27.969Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" etag="uH-u6Yy-RagWR3jbWAgP" version="14.4.9" type="github">
   <diagram id="4cKAdu8nWia-SeCUqdoe" name="Page-1">
-    <mxGraphModel dx="1673" dy="829" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="470" pageHeight="1500" background="#A9C4EB" math="0" shadow="0">
+    <mxGraphModel dx="1422" dy="705" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="470" pageHeight="1500" background="#A9C4EB" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -10,7 +10,7 @@
         <mxCell id="g4oUFbZknNhTbgNnMIni-3" value="현재 패와 필드의 카드로 &lt;br&gt;플레이어를 제압할 수 있는가?" style="rhombus;whiteSpace=wrap;html=1;rounded=1;glass=0;opacity=80;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="75" y="140" width="272.22" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="g4oUFbZknNhTbgNnMIni-4" value="YES" style="endArrow=classic;html=1;" parent="1" target="g4oUFbZknNhTbgNnMIni-6" edge="1">
+        <mxCell id="g4oUFbZknNhTbgNnMIni-4" value="YES" style="endArrow=classic;html=1;labelBackgroundColor=#A9C4EB;" parent="1" target="g4oUFbZknNhTbgNnMIni-6" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="73" y="180" as="sourcePoint" />
             <mxPoint x="75" y="246" as="targetPoint" />
@@ -25,7 +25,7 @@
         <mxCell id="g4oUFbZknNhTbgNnMIni-6" value="플레이어를 제압" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="10" y="246" width="125" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="g4oUFbZknNhTbgNnMIni-7" value="NO" style="endArrow=classic;html=1;" parent="1" edge="1">
+        <mxCell id="g4oUFbZknNhTbgNnMIni-7" value="NO" style="endArrow=classic;html=1;labelBackgroundColor=#A9C4EB;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="208.9100000000001" y="210" as="sourcePoint" />
             <mxPoint x="208.50000000000003" y="286" as="targetPoint" />
@@ -34,7 +34,7 @@
         <mxCell id="g4oUFbZknNhTbgNnMIni-9" value="해당 하수인으로 공격하는 것이 &lt;br&gt;이득인가?" style="rhombus;whiteSpace=wrap;html=1;rounded=1;glass=0;opacity=80;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="361.17" y="360" width="233.33" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="g4oUFbZknNhTbgNnMIni-10" value="YES" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="g4oUFbZknNhTbgNnMIni-9" target="g4oUFbZknNhTbgNnMIni-11" edge="1">
+        <mxCell id="g4oUFbZknNhTbgNnMIni-10" value="YES" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;labelBackgroundColor=#A9C4EB;" parent="1" source="g4oUFbZknNhTbgNnMIni-9" target="g4oUFbZknNhTbgNnMIni-11" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="66" y="508" as="sourcePoint" />
             <mxPoint x="66.625" y="618" as="targetPoint" />
@@ -55,7 +55,7 @@
             <mxPoint x="58.5" y="516" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="g4oUFbZknNhTbgNnMIni-22" value="NO" style="endArrow=classic;html=1;exitX=0.978;exitY=0.442;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="g4oUFbZknNhTbgNnMIni-14" edge="1">
+        <mxCell id="g4oUFbZknNhTbgNnMIni-22" value="NO" style="endArrow=classic;html=1;exitX=0.978;exitY=0.442;exitDx=0;exitDy=0;exitPerimeter=0;labelBackgroundColor=#A9C4EB;" parent="1" source="g4oUFbZknNhTbgNnMIni-14" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="210.50000000000003" y="346" as="sourcePoint" />
             <mxPoint x="389.09" y="313" as="targetPoint" />
@@ -64,7 +64,7 @@
         <mxCell id="g4oUFbZknNhTbgNnMIni-25" value="다른 하수인 선택" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="650.55" y="377.5" width="100.85" height="25" as="geometry" />
         </mxCell>
-        <mxCell id="g4oUFbZknNhTbgNnMIni-36" value="NO" style="endArrow=classic;html=1;exitX=0.978;exitY=0.442;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1">
+        <mxCell id="g4oUFbZknNhTbgNnMIni-36" value="NO" style="endArrow=classic;html=1;exitX=0.978;exitY=0.442;exitDx=0;exitDy=0;exitPerimeter=0;labelBackgroundColor=#A9C4EB;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="594.4969600000002" y="389.5800000000001" as="sourcePoint" />
             <mxPoint x="650.55" y="390" as="targetPoint" />
@@ -100,7 +100,7 @@
             <mxPoint x="810" y="390" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="g4oUFbZknNhTbgNnMIni-45" value="YES" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" target="g4oUFbZknNhTbgNnMIni-46" edge="1">
+        <mxCell id="g4oUFbZknNhTbgNnMIni-45" value="YES" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;labelBackgroundColor=#A9C4EB;" parent="1" target="g4oUFbZknNhTbgNnMIni-46" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="211" y="350" as="sourcePoint" />
             <mxPoint x="210.58999999999992" y="420" as="targetPoint" />
@@ -112,7 +112,7 @@
         <mxCell id="g4oUFbZknNhTbgNnMIni-48" value="보유중인 주문을 선택" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="389.09" y="623" width="177.5" height="44" as="geometry" />
         </mxCell>
-        <mxCell id="g4oUFbZknNhTbgNnMIni-49" value="NO" style="endArrow=classic;html=1;exitX=0.978;exitY=0.442;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1">
+        <mxCell id="g4oUFbZknNhTbgNnMIni-49" value="NO" style="endArrow=classic;html=1;exitX=0.978;exitY=0.442;exitDx=0;exitDy=0;exitPerimeter=0;labelBackgroundColor=#A9C4EB;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="322.52696000000014" y="644.6599999999999" as="sourcePoint" />
             <mxPoint x="389.0899999999999" y="645.14" as="targetPoint" />
@@ -121,7 +121,7 @@
         <mxCell id="g4oUFbZknNhTbgNnMIni-50" value="해당 주문을 사용하면 이득인가?" style="rhombus;whiteSpace=wrap;html=1;rounded=1;glass=0;opacity=80;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="361.17" y="700" width="233.33" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="g4oUFbZknNhTbgNnMIni-51" value="YES" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="g4oUFbZknNhTbgNnMIni-50" target="g4oUFbZknNhTbgNnMIni-52" edge="1">
+        <mxCell id="g4oUFbZknNhTbgNnMIni-51" value="YES" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;labelBackgroundColor=#A9C4EB;" parent="1" source="g4oUFbZknNhTbgNnMIni-50" target="g4oUFbZknNhTbgNnMIni-52" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="66" y="848" as="sourcePoint" />
             <mxPoint x="66.625" y="958" as="targetPoint" />
@@ -133,7 +133,7 @@
         <mxCell id="g4oUFbZknNhTbgNnMIni-53" value="다른 주문 선택" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="650.55" y="717.5" width="100.85" height="25" as="geometry" />
         </mxCell>
-        <mxCell id="g4oUFbZknNhTbgNnMIni-54" value="NO" style="endArrow=classic;html=1;exitX=0.978;exitY=0.442;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1">
+        <mxCell id="g4oUFbZknNhTbgNnMIni-54" value="NO" style="endArrow=classic;html=1;exitX=0.978;exitY=0.442;exitDx=0;exitDy=0;exitPerimeter=0;labelBackgroundColor=#A9C4EB;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="594.4969600000002" y="729.5800000000002" as="sourcePoint" />
             <mxPoint x="650.55" y="730.0000000000001" as="targetPoint" />
@@ -175,7 +175,7 @@
             <mxPoint x="490" y="540" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="g4oUFbZknNhTbgNnMIni-63" value="YES" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1" target="LpWBtAVl-2Sken_FvuLC-1">
+        <mxCell id="g4oUFbZknNhTbgNnMIni-63" value="YES" style="endArrow=classic;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;labelBackgroundColor=#A9C4EB;" parent="1" edge="1" target="LpWBtAVl-2Sken_FvuLC-1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="209" y="680" as="sourcePoint" />
             <mxPoint x="208.96499999999992" y="864.9839999999999" as="targetPoint" />
@@ -184,7 +184,7 @@
         <mxCell id="LpWBtAVl-2Sken_FvuLC-1" value="소환할수 있는 하수인이 존재하는가?" style="rhombus;whiteSpace=wrap;html=1;rounded=1;glass=0;opacity=80;spacing=0;" vertex="1" parent="1">
           <mxGeometry x="75.42" y="940" width="261.66" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="LpWBtAVl-2Sken_FvuLC-3" value="YES" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-1" target="LpWBtAVl-2Sken_FvuLC-10">
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-3" value="YES" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;labelBackgroundColor=#A9C4EB;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-1" target="LpWBtAVl-2Sken_FvuLC-10">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="335.25" y="980" as="sourcePoint" />
             <mxPoint x="380.25" y="985" as="targetPoint" />
@@ -196,7 +196,7 @@
         <mxCell id="LpWBtAVl-2Sken_FvuLC-10" value="하수인을 선택한다." style="rounded=0;whiteSpace=wrap;html=1;glass=0;opacity=80;" vertex="1" parent="1">
           <mxGeometry x="405.25" y="967.5" width="121.82" height="35" as="geometry" />
         </mxCell>
-        <mxCell id="LpWBtAVl-2Sken_FvuLC-13" value="NO" style="endArrow=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" target="LpWBtAVl-2Sken_FvuLC-5">
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-13" value="NO" style="endArrow=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;labelBackgroundColor=#A9C4EB;" edge="1" parent="1" target="LpWBtAVl-2Sken_FvuLC-5">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="738.25" y="910" as="sourcePoint" />
             <mxPoint x="345.25" y="960" as="targetPoint" />
@@ -226,7 +226,7 @@
         <mxCell id="LpWBtAVl-2Sken_FvuLC-20" value="하수인소환" style="rounded=0;whiteSpace=wrap;html=1;glass=0;opacity=80;" vertex="1" parent="1">
           <mxGeometry x="827" y="870" width="80" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="LpWBtAVl-2Sken_FvuLC-21" value="" style="endArrow=classic;html=1;exitX=0.969;exitY=0.44;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-5" target="LpWBtAVl-2Sken_FvuLC-20">
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-21" value="" style="endArrow=classic;html=1;exitX=0.969;exitY=0.44;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;labelBackgroundColor=#A9C4EB;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-5" target="LpWBtAVl-2Sken_FvuLC-20">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="680" y="950" as="sourcePoint" />
             <mxPoint x="730" y="900" as="targetPoint" />
@@ -237,7 +237,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="LpWBtAVl-2Sken_FvuLC-25" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-1">
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-25" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;labelBackgroundColor=#A9C4EB;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="480" y="1110" as="sourcePoint" />
             <mxPoint x="206" y="1090" as="targetPoint" />
@@ -263,7 +263,7 @@
         <mxCell id="LpWBtAVl-2Sken_FvuLC-33" value="영웅능력을 사용할 수 있는가?" style="rhombus;whiteSpace=wrap;html=1;rounded=1;glass=0;opacity=80;" vertex="1" parent="1">
           <mxGeometry x="68.75" y="1090" width="275" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="LpWBtAVl-2Sken_FvuLC-34" value="YES" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-34" value="YES" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;labelBackgroundColor=#A9C4EB;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="343.75000000000017" y="1129.58" as="sourcePoint" />
             <mxPoint x="411.92" y="1129.58" as="targetPoint" />
@@ -287,7 +287,7 @@
         <mxCell id="LpWBtAVl-2Sken_FvuLC-39" value="&lt;h1&gt;END&lt;/h1&gt;" style="rounded=1;whiteSpace=wrap;html=1;opacity=80;glass=0;perimeterSpacing=7;arcSize=50;" vertex="1" parent="1">
           <mxGeometry x="68.75" y="1400" width="280" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="LpWBtAVl-2Sken_FvuLC-40" value="NO" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.487;entryY=0.095;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-33" target="LpWBtAVl-2Sken_FvuLC-39">
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-40" value="NO" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.487;entryY=0.095;entryDx=0;entryDy=0;entryPerimeter=0;labelBackgroundColor=#A9C4EB;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-33" target="LpWBtAVl-2Sken_FvuLC-39">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="480" y="1270" as="sourcePoint" />
             <mxPoint x="530" y="1220" as="targetPoint" />
@@ -299,19 +299,19 @@
             <mxPoint x="310" y="1270" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="LpWBtAVl-2Sken_FvuLC-43" value="NO" style="endArrow=none;html=1;" edge="1" parent="1" target="LpWBtAVl-2Sken_FvuLC-37">
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-43" value="NO" style="endArrow=none;html=1;labelBackgroundColor=#A9C4EB;" edge="1" parent="1" target="LpWBtAVl-2Sken_FvuLC-37">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="260" y="1230" as="sourcePoint" />
             <mxPoint x="520" y="1330" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="LpWBtAVl-2Sken_FvuLC-44" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-37" target="LpWBtAVl-2Sken_FvuLC-38">
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-44" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;labelBackgroundColor=#A9C4EB;" edge="1" parent="1" source="LpWBtAVl-2Sken_FvuLC-37" target="LpWBtAVl-2Sken_FvuLC-38">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="470" y="1380" as="sourcePoint" />
             <mxPoint x="520" y="1330" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="LpWBtAVl-2Sken_FvuLC-45" value="YES" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="LpWBtAVl-2Sken_FvuLC-44">
+        <mxCell id="LpWBtAVl-2Sken_FvuLC-45" value="YES" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#A9C4EB;" vertex="1" connectable="0" parent="LpWBtAVl-2Sken_FvuLC-44">
           <mxGeometry x="-0.4572" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
