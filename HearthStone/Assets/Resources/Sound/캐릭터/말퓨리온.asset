@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d517b90248b925848ad6f27da4021170, type: 3}
+  m_Name: "\uB9D0\uD4E8\uB9AC\uC628"
+  m_EditorClassIdentifier: 
+  battleStart_Player: {fileID: 8300000, guid: 0fb85cf0d0a4f1442b795a7088d81659, type: 3}
+  battleStart_Enemy: {fileID: 8300000, guid: b50f369f4bdfe4c42bc6b7598ba3277b, type: 3}
+  deckLittle: {fileID: 8300000, guid: 802efe49f312c4c449a6c41f1b72fa7c, type: 3}
+  deckEmpty: {fileID: 8300000, guid: 4aef59bcc02fe9d49bd81aeecd14dc84, type: 3}
+  attack: {fileID: 8300000, guid: 614843b4ec280eb46974de4c793312e6, type: 3}
+  death: {fileID: 8300000, guid: ff065f54eb52a9a4f86ae267452454a4, type: 3}

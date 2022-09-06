@@ -22,12 +22,15 @@ public class LoadingScene : MonoBehaviour
     private IEnumerator LoadingData()
     {
         yield return new WaitUntil(() => (DataMng.instance != null));
-
-        //데이터 매니저가 준비됬으니 데이터 로드 시작
-        DataMng.instance.StartLoadData();
+        yield return new WaitUntil(() => (SoundManager.instance != null));
 
         //직업별 카드 데이터 로드
+        DataMng.instance.StartLoadData();
         yield return new WaitUntil(() => DataMng.instance.dataLoadSuccess);
+
+        //게임 사운드 데이터 로드
+        SoundManager.instance.StartLoadData();
+        yield return new WaitUntil(() => SoundManager.instance.dataLoadSuccess);
 
         //로딩완료 애니메이션 실행
         loadingAni.Play();

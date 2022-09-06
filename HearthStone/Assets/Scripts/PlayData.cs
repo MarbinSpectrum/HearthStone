@@ -298,11 +298,4 @@ public class PlayData
         }
     }
     #endregion
-
-    public void Print()
-    {
-        string str = JsonUtility.ToJson(new DataMng.Serialization<Deck>(deck));
-        //for (int i = 0; i < hasCard.Count; i++)
-        //        Debug.Log(hasCard[i]);
-    }
 }

@@ -13,82 +13,19 @@ public class SoundManager : MonoBehaviour
     public AudioSource BGM;
     public AudioSource SE;
 
-    public Dictionary<string, MinionSound> minionSound = new Dictionary<string, MinionSound>();
-    public Dictionary<string, SpellSound> spellSound = new Dictionary<string, SpellSound>();
-    public Dictionary<string, CharacterSound> characterSound = new Dictionary<string, CharacterSound>();
+    [Range(0, 1)] public float maxBGM = 1;
+    [Range(0, 1)] public float maxSE = 1;
 
-    AudioClip gameIntro;
+    private Dictionary<string, MinionSoundObj> minionSound = new Dictionary<string, MinionSoundObj>();
+    private Dictionary<string, SpellSoundObj> spellSound = new Dictionary<string, SpellSoundObj>();
+    private Dictionary<string, CharacterSoundObj> characterSound = new Dictionary<string, CharacterSoundObj>();
+    private Dictionary<string, AudioClip> etcSound = new Dictionary<string, AudioClip>();
 
-    AudioClip mainMenuBGM;
-    AudioClip myCollectMenuBGM;
-    AudioClip battleMapBGM;
-    AudioClip[] findBattle = new AudioClip[6];
-
-    AudioClip findBattleSlotEnd;
-    AudioClip selectMulliganFirst;
-    AudioClip selectMulliganSecond;
-    AudioClip selectMulligan;
-
-    AudioClip createCard;
-    AudioClip deleteCard;
-    AudioClip drawCard;
-    AudioClip deckDelete;
-    AudioClip deckOpen;
-    AudioClip deckInputCard;
-
-    AudioClip tinyBtn;
-    AudioClip clickBtn;
-    AudioClip paperFlip;
-    AudioClip checkCard;
-    AudioClip getCoin;
-    AudioClip turnEndPlz;
-
-    AudioClip battleVs;
-    AudioClip battleMalfurion;
-    AudioClip battleValeera;
-
-    AudioClip turnStart;
-    AudioClip playerTurnBtnDown;
-    AudioClip AITurnBtnDown;
-
-    AudioClip equitWeapon;
-    AudioClip openWeapon;
-    AudioClip closeWeapon;
-
-    AudioClip heroAttackStart;
-    AudioClip heroAttackEnd;
-
-    AudioClip spawnMininon_normal;
-    AudioClip attackMinion_normal;
-    AudioClip attackMinion_middle;
-    AudioClip attackMinion_hard;
-
-    AudioClip victory;
-    AudioClip defeat;
-    AudioClip victoryCheer;
-    AudioClip victoryFirecracker;
-    AudioClip heroCrash;
-    AudioClip heroExplode;
-
-    AudioClip questClear;
-
-    AudioClip buyEnd;
-    AudioClip packArea;
-    AudioClip packOpen;
-    AudioClip packDown;
-
-    AudioClip getRare;
-    AudioClip getSpecial;
-    AudioClip getLegend;
-
-    AudioClip[] cheerSmall = new AudioClip[5];
-    AudioClip[] cheerNormal = new AudioClip[5];
-    AudioClip[] cheerBig = new AudioClip[5];
-
-    [Range(0, 1)]
-    public float maxBGM = 1;
-    [Range(0, 1)]
-    public float maxSE = 1;
+    private bool DataLoadSuccess;
+    public bool dataLoadSuccess
+    {
+        get { return DataLoadSuccess; }
+    }
 
     #region[Awake]
     void Awake()
@@ -103,105 +40,83 @@ public class SoundManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
-        gameIntro = Resources.Load("Sound/여관주인 게임시작시") as AudioClip;
-
-        mainMenuBGM = Resources.Load("Sound/메인화면배경음") as AudioClip;
-        myCollectMenuBGM = Resources.Load("Sound/수집함배경음") as AudioClip;
-        battleMapBGM = Resources.Load("Sound/대전맵배경음") as AudioClip;
-        packArea = Resources.Load("Sound/팩개봉시설") as AudioClip;
-
-        for (int i = 0; i < 6; i++)
-            findBattle[i] = Resources.Load("Sound/대전상대찾기" + (i + 1)) as AudioClip;
-        findBattleSlotEnd = Resources.Load("Sound/대전상대찾기슬롯멈춤") as AudioClip;
-
-        selectMulliganFirst = Resources.Load("Sound/멀리건선택선공") as AudioClip;
-        selectMulliganSecond = Resources.Load("Sound/멀리건선택후공") as AudioClip;
-        selectMulligan = Resources.Load("Sound/멀리건선택") as AudioClip;
-
-        createCard = Resources.Load("Sound/카드생성") as AudioClip;
-        deleteCard = Resources.Load("Sound/카드삭제") as AudioClip;
-        drawCard = Resources.Load("Sound/카드드로우") as AudioClip;
-        deckDelete = Resources.Load("Sound/덱삭제") as AudioClip;
-        deckOpen  = Resources.Load("Sound/덱펼치기") as AudioClip;
-        deckInputCard = Resources.Load("Sound/덱에카드넣기") as AudioClip;
-
-        tinyBtn = Resources.Load("Sound/작은버튼") as AudioClip;
-        clickBtn = Resources.Load("Sound/버튼클릭") as AudioClip;
-        paperFlip = Resources.Load("Sound/페이지넘기기") as AudioClip;
-        checkCard = Resources.Load("Sound/수집함카드선택") as AudioClip;
-        getCoin = Resources.Load("Sound/코인얻기") as AudioClip;
-        turnEndPlz = Resources.Load("Sound/해당턴에할게없습니다") as AudioClip;
-        battleVs = Resources.Load("Sound/대전자 소개/그 상대는") as AudioClip;
-        battleMalfurion = Resources.Load("Sound/대전자 소개/여관주인_말퓨리온") as AudioClip;
-        battleValeera = Resources.Load("Sound/대전자 소개/여관주인_발리라") as AudioClip;
-
-        turnStart = Resources.Load("Sound/턴시작") as AudioClip;
-        playerTurnBtnDown = Resources.Load("Sound/턴종료버튼누름") as AudioClip;
-        AITurnBtnDown = Resources.Load("Sound/상대가턴종료버튼누름") as AudioClip;
-
-        equitWeapon = Resources.Load("Sound/무기장착") as AudioClip;
-        openWeapon = Resources.Load("Sound/무기열기") as AudioClip;
-        closeWeapon = Resources.Load("Sound/무기닫기") as AudioClip;
-
-        heroAttackStart = Resources.Load("Sound/영웅공격시작") as AudioClip;
-        heroAttackEnd = Resources.Load("Sound/영웅공격끝") as AudioClip;
-
-        spawnMininon_normal = Resources.Load("Sound/미니언소환_일반") as AudioClip;
-        attackMinion_normal = Resources.Load("Sound/약한공격") as AudioClip;
-        attackMinion_middle = Resources.Load("Sound/중간공격") as AudioClip;
-        attackMinion_hard = Resources.Load("Sound/강한공격") as AudioClip;
-
-        victory = Resources.Load("Sound/승리시") as AudioClip;
-        victoryCheer = Resources.Load("Sound/승리의환호") as AudioClip;
-        victoryFirecracker = Resources.Load("Sound/승리의폭죽") as AudioClip;
-        defeat = Resources.Load("Sound/패배시") as AudioClip;
-        heroCrash = Resources.Load("Sound/영웅깨짐") as AudioClip;
-        heroExplode = Resources.Load("Sound/영웅폭발") as AudioClip;
-
-        questClear = Resources.Load("Sound/퀘스트클리어") as AudioClip;
-        buyEnd = Resources.Load("Sound/구매완료") as AudioClip;
-
-        packOpen = Resources.Load("Sound/팩개봉") as AudioClip;
-        packDown = Resources.Load("Sound/팩내려놓기") as AudioClip;
-
-        getRare = Resources.Load("Sound/희귀카드") as AudioClip;
-        getSpecial = Resources.Load("Sound/특급카드") as AudioClip;
-        getLegend = Resources.Load("Sound/전설카드") as AudioClip;
-
-        for (int i = 0; i < 5; i++)
-            cheerSmall[i] = Resources.Load("Sound/관객반응/환호_작음" + (i + 1)) as AudioClip;
-        for (int i = 0; i < 5; i++)
-            cheerNormal[i] = Resources.Load("Sound/관객반응/환호_보통" + (i + 1)) as AudioClip;
-        for (int i = 0; i < 5; i++)
-            cheerBig[i] = Resources.Load("Sound/관객반응/환호_큼" + (i + 1)) as AudioClip;
-
-        GetMinionSound();
-        GetSpellSound();
-        GetHeroSound();
     }
     #endregion
 
-    private void GetMinionSound()
+    #region[데이터 로드]
+    public void StartLoadData()
     {
-        Transform sounds = transform.Find("MinionSounds");
-        for (int i = 0; i < sounds.childCount; i++)
-            minionSound.Add(sounds.GetChild(i).transform.name, sounds.GetChild(i).GetComponent<MinionSound>());
+        if (dataLoadSuccess)
+        {
+            //이미 데이터 로드가 끝났다.
+            return;
+        }
+        StartCoroutine(LoadData());
     }
 
-    private void GetSpellSound()
+    private IEnumerator LoadData()
     {
-        Transform sounds = transform.Find("SpellSounds");
-        for (int i = 0; i < sounds.childCount; i++)
-            spellSound.Add(sounds.GetChild(i).transform.name, sounds.GetChild(i).GetComponent<SpellSound>());
+        //사운드 데이터 로드
+        yield return new WaitUntil(() => LoadEtcSound());
+        yield return new WaitUntil(() => LoadMinionSound());
+        yield return new WaitUntil(() => LoadSpellSound());
+        yield return new WaitUntil(() => LoadCharacterSound());
+
+        DataLoadSuccess = true;
     }
 
-    private void GetHeroSound()
+    private bool LoadEtcSound()
     {
-        Transform sounds = transform.Find("CharacterSounds");
-        for (int i = 0; i < sounds.childCount; i++)
-            characterSound.Add(sounds.GetChild(i).transform.name, sounds.GetChild(i).GetComponent<CharacterSound>());
+        //CSV파일로 되어있는 데이터를 로드(Key,Path)
+        LowBase lowBase = new LowBase();
+        lowBase.Load("Table/기타음향");
+
+        for (int i = 1; i <= lowBase.m_table.Count; i++)
+        {
+            //키에 해당 하는 음향파일 로드
+            string name = lowBase.ToString(i, "Key");
+            string path = lowBase.ToString(i, "Path");
+
+            //사운드를 등록
+            etcSound[name] = Resources.Load("Sound/" + path) as AudioClip;
+        }
+        return true;
     }
+    private bool LoadMinionSound()
+    {
+        //스크립터블 오브젝트로 등록되어있는 미니언 사운드를 로드
+        MinionSoundObj[] minionSounds = Resources.LoadAll<MinionSoundObj>("Sound/미니언");
+        for (int i = 0; i < minionSounds.Length; i++)
+        {
+            //미니언 사운드 오브젝트를 등록
+            minionSound.Add(minionSounds[i].name, minionSounds[i]);
+        }
+        return true;
+    }
+
+    private bool LoadSpellSound()
+    {
+        //스크립터블 오브젝트로 등록되어있는 주문 사운드를 로드
+        SpellSoundObj[] spellSounds = Resources.LoadAll<SpellSoundObj>("Sound/주문");
+        for (int i = 0; i < spellSounds.Length; i++)
+        {
+            //주문 사운드 오브젝트를 등록
+            spellSound.Add(spellSounds[i].name, spellSounds[i]);
+        }
+        return true;
+    }
+    private bool LoadCharacterSound()
+    {
+        //스크립터블 오브젝트로 등록되어있는 캐릭터 사운드를 로드
+        CharacterSoundObj[] characterSounds = Resources.LoadAll<CharacterSoundObj>("Sound/캐릭터");
+        for (int i = 0; i < characterSounds.Length; i++)
+        {
+            //캐릭터 사운드 오브젝트를 등록
+            characterSound.Add(characterSounds[i].name, characterSounds[i]);
+        }
+        return true;
+    }
+    #endregion
 
     public void PlayBGM()
     {
@@ -259,7 +174,7 @@ public class SoundManager : MonoBehaviour
         BGM.volume = maxBGM;
     }
 
-    private IEnumerator PlayNewBGM(string s)
+    private IEnumerator PlayNewBGM(string sound)
     {
         bool isPlayNow = false;
         AudioClip newBGM = null;
@@ -267,72 +182,24 @@ public class SoundManager : MonoBehaviour
         while (BGM.volume < maxBGM)
             yield return new WaitForSeconds(0.001f);
 
-        switch (s)
+        if(sound == "대전상대찾기")
         {
-            case "메인화면배경음":
-                if (BGM.clip == mainMenuBGM)
-                    isPlayNow = true;
-                else
-                    newBGM = mainMenuBGM;
-                break;
-            case "수집함배경음":
-                if (BGM.clip == myCollectMenuBGM)
-                    isPlayNow = true;
-                else
-                    newBGM = myCollectMenuBGM;
-                break;
-            case "대전상대찾기1":
-            case "대전상대찾기2":
-            case "대전상대찾기3":
-            case "대전상대찾기4":
-            case "대전상대찾기5":
-            case "대전상대찾기6":
-                int n = s[6] - '0';
-                n--;
-                if (BGM.clip == findBattle[n])
-                    isPlayNow = true;
-                else
-                    newBGM = findBattle[n];
-                break;
-            case "대전상대찾기":
-                n = Random.Range(0, 6);
-                if (BGM.clip == findBattle[n])
-                    isPlayNow = true;
-                else
-                    newBGM = findBattle[n];
-                break;
-
-            case "대전맵배경음":
-                if (BGM.clip == battleMapBGM)
-                    isPlayNow = true;
-                else
-                    newBGM = battleMapBGM;
-                break;
-
-            case "팩개봉시설":
-                if (BGM.clip == packArea)
-                    isPlayNow = true;
-                else
-                    newBGM = packArea;
-                break;
-
-            default:
-                newBGM = null;
-                break;
-
+            int n = Random.Range(0, 6) + 1;
+            sound += n.ToString();
         }
+
+        if (etcSound.ContainsKey(sound) == false)
+            yield break;
+
+        if (BGM.clip == etcSound[sound])
+            isPlayNow = true;
+        else
+            newBGM = etcSound[sound];
 
         if (!isPlayNow)
         {
-            //float v = BGM.volume * maxBGM;
-            //for (int i = 0; i < 50; i++)
-            //{
-            //    yield return new WaitForSeconds(0.002f);
-            //    BGM.volume -= 0.02f * maxBGM;
-            //}
             BGM.clip = null;
             BGM.clip = newBGM;
-            //BGM.volume = v;
             BGM.Play();
         }
     }
@@ -391,154 +258,27 @@ public class SoundManager : MonoBehaviour
         catch { }
     }
 
-    public void PlaySE(string s)
+    public void PlaySE(string sound)
     {
-        switch (s)
+        if(sound == "환호작음")
         {
-            case "게임인트로":
-                PlaySE(gameIntro);
-                break;
-            case "작은버튼":
-                PlaySE(tinyBtn);
-                break;
-            case "버튼클릭":
-                PlaySE(clickBtn);
-                break;
-            case "페이지넘기기":
-                PlaySE(paperFlip);
-                break;
-            case "수집함카드선택":
-                PlaySE(checkCard);
-                break;
-            case "코인얻기":
-                PlaySE(getCoin);
-                break;
-            case "해당턴에할게없습니다":
-                PlaySE(turnEndPlz);
-                break;
-            case "그상대는":
-                PlaySE(battleVs);
-                break;
-            case "말퓨리온":
-                PlaySE(battleMalfurion);
-                break;
-            case "발리라":
-                PlaySE(battleValeera);
-                break;
-            case "카드생성":
-                PlaySE(createCard);
-                break;
-            case "카드삭제":
-                PlaySE(deleteCard);
-                break;
-            case "카드드로우":
-                PlaySE(drawCard);
-                break;
-            case "덱펼치기":
-                PlaySE(deckOpen);
-                break;
-            case "덱삭제":
-                PlaySE(deckDelete);
-                break;
-            case "덱에카드넣기":
-                PlaySE(deckInputCard);
-                break;
-            case "대전상대찾기슬롯멈춤":
-                PlaySE(findBattleSlotEnd);
-                break;
-            case "멀리건선택선공":
-                PlaySE(selectMulliganFirst);
-                break;
-            case "멀리건선택후공":
-                PlaySE(selectMulliganSecond);
-                break;
-            case "멀리건선택":
-                PlaySE(selectMulligan);
-                break;
-            case "턴시작":
-                PlaySE(turnStart);
-                break;
-            case "무기장착":
-                PlaySE(equitWeapon);
-                break;
-            case "무기열기":
-                PlaySE(openWeapon);
-                break;
-            case "무기닫기":
-                PlaySE(closeWeapon);
-                break;
-            case "영웅깨짐":
-                PlaySE(heroCrash);
-                break;
-            case "영웅폭발":
-                PlaySE(heroExplode);
-                break;
-            case "승리시":
-                PlaySE(victory);
-                break;
-            case "승리의환호":
-                PlaySE(victoryCheer);
-                break;
-            case "승리의폭죽":
-                PlaySE(victoryFirecracker);
-                break;
-            case "패배시":
-                PlaySE(defeat);
-                break;
-            case "미니언소환일반":
-                PlaySE(spawnMininon_normal);
-                break;
-            case "약한공격":
-                PlaySE(attackMinion_normal);
-                break;
-            case "중간공격":
-                PlaySE(attackMinion_middle);
-                break;
-            case "강한공격":
-                PlaySE(attackMinion_hard);
-                break;
-            case "상대가턴종료버튼누름":
-                PlaySE(AITurnBtnDown);
-                break;
-            case "턴종료버튼누름":
-                PlaySE(playerTurnBtnDown);
-                break;
-            case "영웅공격시작":
-                PlaySE(heroAttackStart);
-                break;
-            case "영웅공격끝":
-                PlaySE(heroAttackEnd);
-                break;
-            case "환호작음":
-                PlaySE(cheerSmall[Random.Range(0, cheerSmall.Length)]);
-                break;
-            case "환호보통":
-                PlaySE(cheerNormal[Random.Range(0, cheerNormal.Length)]);
-                break;
-            case "환호큼":
-                PlaySE(cheerBig[Random.Range(0, cheerBig.Length)]);
-                break;
-            case "퀘스트클리어":
-                PlaySE(questClear);
-                break;
-            case "구매완료":
-                PlaySE(buyEnd);
-                break;
-            case "팩개봉":
-                PlaySE(packOpen);
-                break;
-            case "팩내려놓기":
-                PlaySE(packDown);
-                break;
-            case "희귀카드":
-                PlaySE(getRare);
-                break;
-            case "특급카드":
-                PlaySE(getSpecial);
-                break;
-            case "전설카드":
-                PlaySE(getLegend);
-                break;
+            int n = Random.Range(0, 5) + 1;
+            sound += n.ToString();
         }
+        else if (sound == "환호보통")
+        {
+            int n = Random.Range(0, 5) + 1;
+            sound += n.ToString();
+        }
+        else if (sound == "환호큼")
+        {
+            int n = Random.Range(0, 5) + 1;
+            sound += n.ToString();
+        }
+
+        if (etcSound.ContainsKey(sound) == false)
+            return;
+
+        PlaySE(etcSound[sound]);
     }
 }

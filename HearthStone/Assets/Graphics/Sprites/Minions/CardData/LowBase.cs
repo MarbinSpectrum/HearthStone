@@ -37,6 +37,7 @@ public class LowBase
                     if (!m_table[tableID].ContainsKey(subjects[c]))
                     {
                         string temp = subjects[c].Replace('\r', ' ').Trim();
+                        values[c] = values[c].Replace('\r', ' ').Trim();
                         m_table[tableID].Add(temp, values[c]);
                     }
 

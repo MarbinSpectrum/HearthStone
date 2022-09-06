@@ -88,8 +88,8 @@
     <Compile Include="Assets\Graphics\Sprites\UI\상점\ShopBuyBtn.cs" />
     <Compile Include="Assets\Scripts\UI\QuestClearBtn.cs" />
     <Compile Include="Assets\Graphics\Shaders\BreakPorait.cs" />
-    <Compile Include="Assets\Scripts\Sound\CharacterSound.cs" />
     <Compile Include="Assets\Graphics\JMO Assets\WarFX\Demo\Assets\CFX_AutoStopLoopedEffect.cs" />
+    <Compile Include="Assets\Scripts\UI\Loading\LoadingScene.cs" />
     <Compile Include="Assets\Scripts\UI\btns\BattleToMainBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\Btn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\OpenPackToMainBtn.cs" />
@@ -223,11 +223,9 @@
     <Compile Include="Assets\Scripts\UI\Main\OpenPackMenu.cs" />
     <Compile Include="Assets\Graphics\Shaders\CircleRange.cs" />
     <Compile Include="Assets\Scripts\UI\Field\EnemyMinionField.cs" />
-    <Compile Include="Assets\Scripts\Sound\MinionSound.cs" />
     <Compile Include="Assets\Scripts\UI\Field\BattleUI.cs" />
     <Compile Include="Assets\Scripts\UI\btns\HeroDrag.cs" />
     <Compile Include="Assets\Scripts\UI\Spell\SpellAbility.cs" />
-    <Compile Include="Assets\Scripts\Sound\SpellSound.cs" />
     <Compile Include="Assets\Scripts\UI\Field\DragCardObject.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MyCollectionsToBackBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MyCollectionsRemoveCard.cs" />
@@ -244,7 +242,9 @@
     <Compile Include="Assets\Graphics\52SpecialEffectPack\EffectEditor\ShurikenEffectEditor\csShurikenEffectChanger.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToAdventureBtn.cs" />
     <Compile Include="Assets\Graphics\52SpecialEffectPack\Animation&amp;Script\csDestroyEffect.cs" />
-    <Compile Include="Assets\Scripts\UI\Loading\LoadingScene.cs" />
+    <Compile Include="Assets\Scripts\Sound\MinionSoundObj.cs" />
+    <Compile Include="Assets\Scripts\Sound\SpellSoundObj.cs" />
+    <Compile Include="Assets\Scripts\Sound\CharacterSoundObj.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />

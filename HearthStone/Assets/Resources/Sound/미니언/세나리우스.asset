@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76333aecd1b2da04c90dd76323221f75, type: 3}
+  m_Name: "\uC138\uB098\uB9AC\uC6B0\uC2A4"
+  m_EditorClassIdentifier: 
+  spawnSound: {fileID: 8300000, guid: 4a7719c614caf4a46ae8a2b4b94472d7, type: 3}
+  attackSound: {fileID: 8300000, guid: 71160fe6b0ddfde4aac08cd0d735116b, type: 3}
+  deathSound: {fileID: 8300000, guid: cb0b1bfd46566d5469b3d4021a7dc461, type: 3}
+  effectSound: {fileID: 0}
