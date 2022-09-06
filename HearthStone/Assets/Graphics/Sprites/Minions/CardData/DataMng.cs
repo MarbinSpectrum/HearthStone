@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using System;
 using System.IO;
 using System.Text;
@@ -19,11 +18,14 @@ public class DataMng : MonoBehaviour
     public Dictionary<TableType, LowBase> m_dic = new Dictionary<TableType, LowBase>();
     public Dictionary<string, Sprite> cardImg = new Dictionary<string, Sprite>();
     public Dictionary<string, Vector2> dragCardPos = new Dictionary<string, Vector2>();
-    [HideInInspector]
-    public PlayData playData;
-    [HideInInspector]
-    public Sprite[] num;
-    public Animator loadingAni;
+    [HideInInspector] public PlayData playData;
+    [HideInInspector] public Sprite[] num;
+
+    private bool DataLoadSuccess;
+    public bool dataLoadSuccess
+    {
+        get { return DataLoadSuccess; }
+    }
 
     #region[Awake]
     public void Awake()
@@ -38,11 +40,6 @@ public class DataMng : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        if (SceneManager.GetActiveScene().name.Equals("Loading"))
-            StartCoroutine(LoadData());
-        else
-            LoadDatas();
-
     }
     #endregion
 
@@ -53,6 +50,7 @@ public class DataMng : MonoBehaviour
     }
     #endregion
 
+    #region[SaveData]
     public void SaveData()
     {
         string jsonData = ObjectToJson(playData);
@@ -62,13 +60,117 @@ public class DataMng : MonoBehaviour
         else
             CreateJsonFile(Application.dataPath, "Resources/PlayData", jsonData);
     }
+    #endregion
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    #region[데이터 로드]
+    public void StartLoadData()
+    {
+        if (dataLoadSuccess)
+        {
+            //이미 데이터 로드가 끝났다.
+            return;
+        }
+        StartCoroutine(LoadData());
+    }
+
+    private IEnumerator LoadData()
+    {
+        //카드 숫자 폰트 로드
+        num = Resources.LoadAll<Sprite>("Card/Number");
+
+        //직업별 카드 데이터 로드
+        yield return new WaitUntil(() => Load(TableType.드루이드));
+        yield return new WaitUntil(() => Load(TableType.도적));
+        yield return new WaitUntil(() => Load(TableType.중립));
+
+        //카드 데이터 피봇위치 로드
+        yield return new WaitUntil(() => SettingDragCardPos());
+
+        //플레이어 데이터 로드
+        yield return new WaitUntil(() => LoadPlayData());
+
+        DataLoadSuccess = true;
+    }
+
+    public bool Load(TableType table)
+    {
+        if (!m_dic.ContainsKey(table))
+        {
+            LowBase lowBase = new LowBase();
+            lowBase.Load("Table/" + table.ToString());
+            m_dic.Add(table, lowBase);
+        }
+
+        for (int j = 1; j <= m_dic[table].m_table.Count; j++)
+        {
+            //인덱스에 해당하는 카드 이미지 로드
+            string name = ToString(table, j, "카드이름");
+            Texture2D temp = Resources.Load("CardImg/" + name) as Texture2D;
+            if (temp)
+            {
+                //카드 이미지 등록
+                cardImg[name] = Sprite.Create(temp, new Rect(0, 0, temp.width, temp.height), new Vector2(0.5f, 0.5f));
+            }
+        }
+        return true;
+    }
+    #endregion
+
+    #region[플레이더 데이터 로드]
+    private bool LoadPlayData()
+    {
+        string filePath = Application.persistentDataPath + "/PlayData.json";
+        if (Application.isEditor)
+        {
+            filePath = Application.dataPath + "/Resources/PlayData.json";
+            if (File.Exists(filePath))
+            {
+                var jtc = LoadJsonFile<PlayData>(Application.dataPath, "Resources/PlayData");
+                playData = jtc;
+                playData.Print();
+            }
+            else
+            {
+
+                playData = new PlayData(true);
+                string jsonData = ObjectToJson(playData);
+                var jtc = JsonToOject<PlayData>(jsonData);
+                CreateJsonFile(Application.dataPath, "Resources/PlayData", jsonData);
+                jtc = LoadJsonFile<PlayData>(Application.dataPath, "Resources/PlayData");
+                playData = jtc;
+                playData.Print();
+            }
+        }
+        else
+        {
+            if (File.Exists(filePath))
+            {
+                var jtc = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
+                playData = jtc;
+                playData.Print();
+            }
+            else
+            {
+
+                playData = new PlayData(true);
+                string jsonData = ObjectToJson(playData);
+                var jtc = JsonToOject<PlayData>(jsonData);
+                CreateJsonFile(Application.persistentDataPath, "PlayData", jsonData);
+                jtc = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
+                playData = jtc;
+                playData.Print();
+            }
+        }
+        return true;
+    }
+    #endregion
 
     #region[드래그 카드 이미지]
-    public void SettingDragCardPos()
+    public bool SettingDragCardPos()
     {
         dragCardPos.Add("SI7 요원", new Vector2(90, -82));
         dragCardPos.Add("가시덤불 호랑이", new Vector2(62, -49));
@@ -195,123 +297,7 @@ public class DataMng : MonoBehaviour
         dragCardPos.Add("혼절시키기", new Vector2(72, -26));
         dragCardPos.Add("휘둘러치기", new Vector2(131, -53));
         dragCardPos.Add("흑기사", new Vector2(111, -39));
-    }
-    #endregion
-
-    #region[데이터 로드]
-    public void LoadDatas()
-    {
-        num = Resources.LoadAll<Sprite>("Card/Number");
-        Load(TableType.드루이드);
-        Load(TableType.도적);
-        Load(TableType.중립);
-        for (int i = 0; i < 3; i++)
-            for (int j = 1; j <= m_dic[(TableType)i].m_table.Count; j++)
-            {
-                string name = ToString((TableType)i, j, "카드이름");
-                Texture2D temp = Resources.Load("CardImg/" + name) as Texture2D;
-                if (temp)
-                    cardImg[name] = Sprite.Create(temp, new Rect(0, 0, temp.width, temp.height), new Vector2(0.5f, 0.5f));
-            }
-        SettingDragCardPos();
-        LoadPlayData();
-
-    }
-
-    void LoadPlayData()
-    {
-        string filePath = Application.persistentDataPath + "/PlayData.json";
-        if(Application.isEditor)
-        {
-            filePath = Application.dataPath + "/Resources/PlayData.json";
-            if (File.Exists(filePath))
-            {
-                var jtc = LoadJsonFile<PlayData>(Application.dataPath, "Resources/PlayData");
-                playData = jtc;
-                playData.Print();
-            }
-            else
-            {
-
-                playData = new PlayData(true);
-                string jsonData = ObjectToJson(playData);
-                var jtc = JsonToOject<PlayData>(jsonData);
-                CreateJsonFile(Application.dataPath, "Resources/PlayData", jsonData);
-                jtc = LoadJsonFile<PlayData>(Application.dataPath, "Resources/PlayData");
-                playData = jtc;
-                playData.Print();
-            }
-        }
-        else
-        {
-            if (File.Exists(filePath))
-            {
-                var jtc = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
-                playData = jtc;
-                playData.Print();
-            }
-            else
-            {
-
-                playData = new PlayData(true);
-                string jsonData = ObjectToJson(playData);
-                var jtc = JsonToOject<PlayData>(jsonData);
-                CreateJsonFile(Application.persistentDataPath, "PlayData", jsonData);
-                jtc = LoadJsonFile<PlayData>(Application.persistentDataPath, "PlayData");
-                playData = jtc;
-                playData.Print();
-            }
-        }
-    }
-
-    IEnumerator LoadData()
-    {
-        num = Resources.LoadAll<Sprite>("Card/Number");
-        yield return new WaitForSeconds(0.01f);
-        Load(TableType.드루이드);
-        Debug.Log("드루이드 로드 완료");
-        yield return new WaitForSeconds(0.01f);
-        Load(TableType.도적);
-        Debug.Log("도적 로드 완료");
-        yield return new WaitForSeconds(0.01f);
-        Load(TableType.중립);
-        Debug.Log("중립 로드 완료");
-        yield return new WaitForSeconds(0.01f);
-        for (int i = 0; i < 3; i++)
-            for (int j = 1; j <= m_dic[(TableType)i].m_table.Count; j++)
-            {
-                yield return new WaitForSeconds(0.01f);
-                string name = ToString((TableType)i, j, "카드이름");
-                Texture2D temp = Resources.Load("CardImg/" + name) as Texture2D;
-                if (temp)
-                    cardImg[name] = Sprite.Create(temp, new Rect(0, 0, temp.width, temp.height), new Vector2(0.5f, 0.5f));
-            }
-        Debug.Log("카드 이미지 완료");
-        yield return new WaitForSeconds(0.1f);
-        SettingDragCardPos();
-        Debug.Log("카드 위치 설정 롼료");
-        yield return new WaitForSeconds(0.1f);
-        LoadPlayData();
-        Debug.Log("저장 기록 로드 완료");
-        if (loadingAni)
-            loadingAni.enabled = true;
-        yield return new WaitForSeconds(1f);
-        SceneManager.LoadScene("Main");
-        yield return new WaitForSeconds(1f);
-        SoundManager.instance.PlayBGM("메인화면배경음");
-        SoundManager.instance.PlaySE("게임인트로");
-        yield return new WaitForSeconds(2f);
-        Destroy(loadingAni.gameObject);
-    }
-
-    public void Load(TableType table)
-    {
-        if(!m_dic.ContainsKey(table))
-        {
-            LowBase lowBase = new LowBase();
-            lowBase.Load("Table/" + table.ToString());
-            m_dic.Add(table, lowBase);
-        }
+        return true;
     }
     #endregion
 

@@ -1833,8 +1833,7 @@ public class MinionManager : MonoBehaviour
     #region[죽음의 메아리 이벤트]
     private IEnumerator DeathrattleEvent(Queue<MinionAbility> deathrattleEventQueue, bool minion_enemy,Vector2 actPos)
     {
-        while (GameEventManager.instance.GetEventValue() > 0.1f)
-            yield return new WaitForSeconds(0.001f);
+        yield return new WaitWhile(() => { return GameEventManager.instance.GetEventValue() > 0.1f; });
         GameEventManager.instance.EventAdd(0.1f);
 
         int minionNum = 0;

@@ -52,3 +52,4 @@ Material:
     - Color_8AF24D67: {r: 0, g: 1.0045338, b: 1.5157166, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 0, g: 0.5598835, b: 2.6082377, a: 1}
+  m_BuildTextureStacks: []

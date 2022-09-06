@@ -11,7 +11,6 @@ public enum Quest
     드루이드_전문가,  //드루이드 카드 30장 내기 // 60골드
     주문술사,//주문카드 25장 내기 //50골드
     영웅의격려,//영웅능력 20번 사용하기 // 50골드
-
     약자의반격,//2마나 이하 하수인 20장 내기 //50골드
     초토화,//하수인 25장 파괴하기 //50골드
 }
@@ -19,7 +18,6 @@ public enum Quest
 public enum Job
 {
     도적,드루이드
-
 }
 public class QuestManager : MonoBehaviour
 {
