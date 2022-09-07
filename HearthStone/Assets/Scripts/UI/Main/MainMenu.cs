@@ -61,7 +61,8 @@ public class MainMenu : MonoBehaviour
     #region[메인화면으로 이동했는지 체크]
     public void CheckMainMenu()
     {
-        if (!mainMenuAni.GetCurrentAnimatorStateInfo(0).IsName("CenterUI") && !mainMenuAni.GetCurrentAnimatorStateInfo(0).IsName("StartTurn"))
+        AnimatorStateInfo stateInfo = mainMenuAni.GetCurrentAnimatorStateInfo(0);
+        if (!stateInfo.IsName("CenterUI") && !stateInfo.IsName("StartTurn"))
         {
             inMainMenu = false;
             return;
