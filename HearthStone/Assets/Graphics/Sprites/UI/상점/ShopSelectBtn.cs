@@ -56,9 +56,8 @@ public class ShopSelectBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        if (MainMenu.instance.shopUI.selectMenu - 100 == num)
-            return;
-        MainMenu.instance.shopUI.selectMenu = num;
+        MainMenu mainMenu = MainMenu.instance;
+        mainMenu.ShopSelectMenu(num);
     }
     #endregion
 }

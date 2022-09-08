@@ -65,10 +65,9 @@ public class MainToShopBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        if (MainMenu.instance.shopUI.animator.GetBool("Run") == flag)
-            return;
-        MainMenu.instance.shopUI.gameObject.SetActive(flag);
-        MainMenu.instance.shopUI.animator.SetBool("Run", flag);
+        MainMenu mainMenu = MainMenu.instance;
+
+        mainMenu.ShopMenu(flag);
     }
     #endregion
 }

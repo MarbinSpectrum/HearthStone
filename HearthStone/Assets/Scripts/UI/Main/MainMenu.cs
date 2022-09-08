@@ -10,14 +10,14 @@ public class MainMenu : MonoBehaviour
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public Animator mainMenuAni;
-    public Animator outSideMenuAni;
+    [SerializeField] private Animator mainMenuAni;
+    [SerializeField] private Animator outSideMenuAni;
 
-    public GameObject battleMenuUI;
-    public GameObject myCollectionsMenuUI;
-    public GameObject openPackUI;
-    public ShopScript shopUI;
-    public Animator questUI;
+    [SerializeField] private GameObject battleMenuUI;
+    [SerializeField] private GameObject myCollectionsMenuUI;
+    [SerializeField] private GameObject openPackUI;
+    [SerializeField] private ShopScript shopUI;
+    [SerializeField] private Animator questUI;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -110,4 +110,45 @@ public class MainMenu : MonoBehaviour
         outSideMenuAni.SetBool("In", state);
     }
     #endregion
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    public void BattleMenu(bool state)
+    {
+        //BattleMenu 활성/비활성 설정
+        battleMenuUI.SetActive(state);
+    }
+
+    public void CollectMenu(bool state)
+    {
+        //CollectMenu 활성/비활성 설정
+        myCollectionsMenuUI.SetActive(state);
+    }
+
+    public void PackOpenMenu(bool state)
+    {
+        openPackUI.SetActive(state);
+    }
+
+    public void ShopMenu(bool state)
+    {
+        shopUI.SetShopState(state);
+    }
+
+    public void ShopSelectMenu(int n)
+    {
+        shopUI.SetSelectMenu(n);
+    }
+
+    public void BuySelectMenu(bool state)
+    {
+        shopUI.BuySelectMenu(state);
+    }
+
+    public void QuestMenu(bool state)
+    {
+        questUI.SetBool("Open", state);
+    }
 }

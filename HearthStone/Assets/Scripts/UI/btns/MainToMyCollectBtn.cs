@@ -59,9 +59,10 @@ public class MainToMyCollectBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        Debug.Log("수집품");
-        MainMenu.instance.OpenBoard();
-        MainMenu.instance.myCollectionsMenuUI.SetActive(true);
+        MainMenu mainMenu = MainMenu.instance;
+
+        mainMenu.OpenBoard();
+        mainMenu.CollectMenu(true);
     }
     #endregion
 }

@@ -22,6 +22,13 @@ public enum Job
 public class QuestManager : MonoBehaviour
 {
     public static QuestManager instance;
+    public LowBase questData = new LowBase();
+
+    private bool DataLoadSuccess;
+    public bool dataLoadSuccess
+    {
+        get { return DataLoadSuccess; }
+    }
 
     #region[Awake]
     public void Awake()
@@ -39,12 +46,45 @@ public class QuestManager : MonoBehaviour
     }
     #endregion
 
+    #region[데이터 로드]
+    public void StartLoadData()
+    {
+        if (dataLoadSuccess)
+        {
+            //이미 데이터 로드가 끝났다.
+            return;
+        }
+        StartCoroutine(LoadData());
+    }
+
+    private IEnumerator LoadData()
+    {
+        //사운드 데이터 로드
+        yield return new WaitUntil(() => LoadQuestData());
+
+        DataLoadSuccess = true;
+    }
+
+    private bool LoadQuestData()
+    {
+        questData.Load("Table/퀘스트데이터");
+        return true;
+    }
+    #endregion
+
     /// <summary> 상대영웅에게 n만큼 데미지.</summary>
     public void HeroDamage(int n)
     {
-        for(int i = 0; i < DataMng.instance.playData.quests.Count; i++)
-            if ((Quest)DataMng.instance.playData.quests[i].questNum == Quest.때려눕히기)
-                DataMng.instance.playData.quests[i].value += n;
+        //영웅에게 데미지를 주었다면
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
+        List<PlayData.Quest> quest = playData.quests;
+        for (int i = 0; i < quest.Count; i++)
+            if ((Quest)quest[i].questNum == Quest.때려눕히기)
+            {
+                //때려눕히기 퀘스트들의 진행상태를 변경해준다.
+                quest[i].value += n;
+            }
     }
 
 

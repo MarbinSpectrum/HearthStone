@@ -66,6 +66,7 @@
     <Compile Include="Assets\Graphics\Sprites\UI\Battery\BatteryUI.cs" />
     <Compile Include="Assets\Scripts\UI\Field\MinionField.cs" />
     <Compile Include="Assets\Scripts\UI\Field\ManaManager.cs" />
+    <Compile Include="Assets\Scripts\Sound\SpellSoundObj.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckReUIBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckReNameBtn.cs" />
     <Compile Include="Assets\Scripts\Effect\FireBallEffect.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Assets\Graphics\Sprites\UI\시작영상\StartAni.cs" />
     <Compile Include="Assets\Scripts\UI\Field\HeroPowerManager.cs" />
     <Compile Include="Assets\Graphics\Shaders\BreakPiece.cs" />
+    <Compile Include="Assets\Scripts\Sound\CharacterSoundObj.cs" />
     <Compile Include="Assets\Scripts\PlayData.cs" />
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\FairyMeteorAddForceDemo.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MyCollectionsSelectCostBtn.cs" />
@@ -129,6 +131,7 @@
     <Compile Include="Assets\Scripts\UI\CurlEf.cs" />
     <Compile Include="Assets\Scripts\UI\Spell\SpellManager.cs" />
     <Compile Include="Assets\Graphics\Animation\ShowPlayerText.cs" />
+    <Compile Include="Assets\Scripts\UI\Main\GoldText.cs" />
     <Compile Include="Assets\Scripts\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToShopBtn.cs" />
     <Compile Include="Assets\Scripts\UI\Field\InGameDeck.cs" />
@@ -234,6 +237,7 @@
     <Compile Include="Assets\Graphics\Shaders\Gray.cs" />
     <Compile Include="Assets\Scripts\UI\Field\FieldManaCost.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\Water Wheel\WaterWheel.cs" />
+    <Compile Include="Assets\Scripts\Sound\MinionSoundObj.cs" />
     <Compile Include="Assets\Graphics\JMO Assets\WarFX\Demo\Assets\WFX_Demo_New.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToMyCollectBtn.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\CardData\CardDragObject.cs" />
@@ -242,9 +246,7 @@
     <Compile Include="Assets\Graphics\52SpecialEffectPack\EffectEditor\ShurikenEffectEditor\csShurikenEffectChanger.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToAdventureBtn.cs" />
     <Compile Include="Assets\Graphics\52SpecialEffectPack\Animation&amp;Script\csDestroyEffect.cs" />
-    <Compile Include="Assets\Scripts\Sound\MinionSoundObj.cs" />
-    <Compile Include="Assets\Scripts\Sound\SpellSoundObj.cs" />
-    <Compile Include="Assets\Scripts\Sound\CharacterSoundObj.cs" />
+    <Compile Include="Assets\Scripts\UI\ShopManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />

@@ -896,7 +896,9 @@ public class MyCollectionsMenu : MonoBehaviour
     private IEnumerator ShowBattleMenu(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        MainMenu.instance.battleMenuUI.SetActive(true);
+
+        MainMenu mainMenu = MainMenu.instance;
+        mainMenu.BattleMenu(true);
     }
     #endregion
 

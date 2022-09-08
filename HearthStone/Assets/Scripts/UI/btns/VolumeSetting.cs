@@ -8,21 +8,31 @@ public class VolumeSetting : MonoBehaviour
     public Slider BGM;
     public Slider SE;
 
-    void Update()
+    private void OnEnable()
     {
-        BGM.value = SoundManager.instance.maxBGM;
-        SE.value = SoundManager.instance.maxSE;
+        Init();
+    }
+
+    private void Init()
+    {
+        SoundManager soundManager = SoundManager.instance;
+        BGM.value = soundManager.GetBGM_value();
+        SE.value = soundManager.GetSE_value();
     }
 
     public void ChangeBGM()
     {
-        SoundManager.instance.maxBGM = BGM.value;
-        SoundManager.instance.BGM.volume = SoundManager.instance.maxBGM;
+        //슬라이드바가 움직이면
+        //사운드 매니저를 참조해서 배경음 크기를 변경
+        SoundManager soundManager = SoundManager.instance;
+        soundManager.SetBGM_value(BGM.value);
     }
 
     public void ChangeSE()
     {
-        SoundManager.instance.maxSE = SE.value;
-        SoundManager.instance.SE.volume = SoundManager.instance.maxSE;
+        //슬라이드바가 움직이면
+        //사운드 매니저를 참조해서 효과음 크기를 변경
+        SoundManager soundManager = SoundManager.instance;
+        soundManager.SetSE_value(SE.value);
     }
 }

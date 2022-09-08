@@ -23,6 +23,8 @@ public class LoadingScene : MonoBehaviour
     {
         yield return new WaitUntil(() => (DataMng.instance != null));
         yield return new WaitUntil(() => (SoundManager.instance != null));
+        yield return new WaitUntil(() => (QuestManager.instance != null));
+        yield return new WaitUntil(() => (ShopManager.instance != null));
 
         //직업별 카드 데이터 로드
         DataMng.instance.StartLoadData();
@@ -31,6 +33,14 @@ public class LoadingScene : MonoBehaviour
         //게임 사운드 데이터 로드
         SoundManager.instance.StartLoadData();
         yield return new WaitUntil(() => SoundManager.instance.dataLoadSuccess);
+
+        //퀘스트 데이터 로드
+        QuestManager.instance.StartLoadData();
+        yield return new WaitUntil(() => QuestManager.instance.dataLoadSuccess);
+
+        //상점 데이터 로드
+        ShopManager.instance.StartLoadData();
+        yield return new WaitUntil(() => ShopManager.instance.dataLoadSuccess);
 
         //로딩완료 애니메이션 실행
         loadingAni.Play();

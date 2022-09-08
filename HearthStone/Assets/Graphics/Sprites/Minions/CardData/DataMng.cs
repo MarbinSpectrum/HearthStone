@@ -18,6 +18,8 @@ public class DataMng : MonoBehaviour
     public Dictionary<TableType, LowBase> m_dic = new Dictionary<TableType, LowBase>();
     public Dictionary<string, Sprite> cardImg = new Dictionary<string, Sprite>();
     public Dictionary<string, Vector2> dragCardPos = new Dictionary<string, Vector2>();
+    public LowBase shopData = new LowBase();
+
     [HideInInspector] public PlayData playData;
     [HideInInspector] public Sprite[] num;
 
@@ -90,6 +92,9 @@ public class DataMng : MonoBehaviour
         //플레이어 데이터 로드
         yield return new WaitUntil(() => LoadPlayData());
 
+        //상점 데이터 로드
+        yield return new WaitUntil(() => LoadShopData());
+
         DataLoadSuccess = true;
     }
 
@@ -137,6 +142,12 @@ public class DataMng : MonoBehaviour
             Vector2 pivot = new Vector2(floatList[0], floatList[1]);
             dragCardPos.Add(name, pivot);
         }
+        return true;
+    }
+
+    private bool LoadShopData()
+    {
+        shopData.Load("Table/상점데이터");    
         return true;
     }
     #endregion

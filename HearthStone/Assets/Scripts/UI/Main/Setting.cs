@@ -7,8 +7,6 @@ public class Setting : MonoBehaviour
 {
     public static Setting instance;
 
-    public Text goldText;
-
     public GameObject settingBtn;
     public GameObject setting;
 
@@ -23,9 +21,6 @@ public class Setting : MonoBehaviour
     #region[Update]
     private void Update()
     {
-        if(DataMng.instance && goldText)
-            goldText.text = DataMng.instance.playData.gold.ToString();
-
         if(BattleUI.instance)
         {
             settingBtn.SetActive(BattleUI.instance.gameStart);

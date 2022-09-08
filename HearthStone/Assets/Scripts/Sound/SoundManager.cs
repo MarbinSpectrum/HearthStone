@@ -13,8 +13,8 @@ public class SoundManager : MonoBehaviour
     public AudioSource BGM;
     public AudioSource SE;
 
-    [Range(0, 1)] public float maxBGM = 1;
-    [Range(0, 1)] public float maxSE = 1;
+    [Range(0, 1)][SerializeField] private float BGM_value = 1;
+    [Range(0, 1)][SerializeField] private float SE_value = 1;
 
     private Dictionary<string, MinionSoundObj> minionSound = new Dictionary<string, MinionSoundObj>();
     private Dictionary<string, SpellSoundObj> spellSound = new Dictionary<string, SpellSoundObj>();
@@ -118,6 +118,28 @@ public class SoundManager : MonoBehaviour
     }
     #endregion
 
+    public float GetBGM_value()
+    {
+        return BGM_value;
+    }
+
+    public float GetSE_value()
+    {
+        return SE_value;
+    }
+
+    public void SetBGM_value(float v)
+    {
+        BGM_value = v;
+        BGM.volume = v;
+    }
+
+    public void SetSE_value(float v)
+    {
+        SE_value = v;
+        SE.volume = v;
+    }
+
     public void PlayBGM()
     {
         BGM.Play();
@@ -132,7 +154,6 @@ public class SoundManager : MonoBehaviour
         BGM.clip = null;
         BGM.Stop();
     }
-
 
     public void MuteBGM(bool mute)
     {
@@ -171,7 +192,7 @@ public class SoundManager : MonoBehaviour
             yield return new WaitForSeconds(0.004f);
             BGM.volume += v;
         }
-        BGM.volume = maxBGM;
+        BGM.volume = BGM_value;
     }
 
     private IEnumerator PlayNewBGM(string sound)
@@ -179,7 +200,7 @@ public class SoundManager : MonoBehaviour
         bool isPlayNow = false;
         AudioClip newBGM = null;
 
-        while (BGM.volume < maxBGM)
+        while (BGM.volume < BGM_value)
             yield return new WaitForSeconds(0.001f);
 
         if(sound == "대전상대찾기")
@@ -206,7 +227,7 @@ public class SoundManager : MonoBehaviour
 
     public void PlaySE(AudioClip c)
     {
-        SE.volume = maxSE;
+        SE.volume = SE_value;
         SE.PlayOneShot(c);
     }
 

@@ -64,9 +64,10 @@ public class MainToBattleBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        Debug.Log("대전");
-        MainMenu.instance.OpenBoard();
-        MainMenu.instance.battleMenuUI.SetActive(true);
+        MainMenu mainMenu = MainMenu.instance;
+
+        mainMenu.OpenBoard();
+        mainMenu.BattleMenu(true);
     }
     #endregion
 }

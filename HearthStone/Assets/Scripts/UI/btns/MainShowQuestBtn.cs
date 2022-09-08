@@ -64,8 +64,8 @@ public class MainShowQuestBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        Debug.Log("상점");
-        MainMenu.instance.questUI.SetBool("Open", flag);
+        MainMenu mainMenu = MainMenu.instance;
+        mainMenu.QuestMenu(flag);
     }
     #endregion
 }

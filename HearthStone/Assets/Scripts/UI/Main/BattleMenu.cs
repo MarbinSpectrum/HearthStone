@@ -163,7 +163,9 @@ public class BattleMenu : MonoBehaviour
     public IEnumerator ShowMyCollectionsMenu(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        MainMenu.instance.myCollectionsMenuUI.SetActive(true);
+
+        MainMenu mainMenu = MainMenu.instance;
+        mainMenu.CollectMenu(true);
     }
     #endregion
 }
