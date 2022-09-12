@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class BuyCheckBtn : Btn
 {
-    public bool flag;
+    [SerializeField] private bool flag;
+    [SerializeField] private ShopScript shopScript;
 
     #region[Awake]
     public override void Awake()
@@ -56,8 +57,7 @@ public class BuyCheckBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        MainMenu mainMenu = MainMenu.instance;
-        mainMenu.BuySelectMenu(flag);
+        shopScript.BuySelectMenu(flag);
     }
     #endregion
 }

@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class ShopSelectBtn : Btn
 {
-    public int num;
+    [SerializeField] private int num;
+    [SerializeField] private ShopScript shopScript;
 
     #region[Awake]
     public override void Awake()
@@ -56,8 +57,7 @@ public class ShopSelectBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        MainMenu mainMenu = MainMenu.instance;
-        mainMenu.ShopSelectMenu(num);
+        shopScript.SetSelectMenu(num);
     }
     #endregion
 }

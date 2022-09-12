@@ -71,6 +71,7 @@
     <Compile Include="Assets\Scripts\UI\btns\DeckReNameBtn.cs" />
     <Compile Include="Assets\Scripts\Effect\FireBallEffect.cs" />
     <Compile Include="Assets\Graphics\JMO Assets\WarFX\Demo\Assets\WFX_Demo.cs" />
+    <Compile Include="Assets\Scripts\UI\ShopManager.cs" />
     <Compile Include="Assets\Graphics\Particle Ribbon by Moonflower Carnivore\Scripts\rotation.cs" />
     <Compile Include="Assets\Graphics\52SpecialEffectPack\Animation&amp;Script\csAnimationSpin.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToMeleeBtn.cs" />
@@ -246,7 +247,7 @@
     <Compile Include="Assets\Graphics\52SpecialEffectPack\EffectEditor\ShurikenEffectEditor\csShurikenEffectChanger.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToAdventureBtn.cs" />
     <Compile Include="Assets\Graphics\52SpecialEffectPack\Animation&amp;Script\csDestroyEffect.cs" />
-    <Compile Include="Assets\Scripts\UI\ShopManager.cs" />
+    <Compile Include="Assets\Scripts\Pack.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />

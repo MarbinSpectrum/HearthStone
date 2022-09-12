@@ -18,7 +18,7 @@ public class DataMng : MonoBehaviour
     public Dictionary<TableType, LowBase> m_dic = new Dictionary<TableType, LowBase>();
     public Dictionary<string, Sprite> cardImg = new Dictionary<string, Sprite>();
     public Dictionary<string, Vector2> dragCardPos = new Dictionary<string, Vector2>();
-    public LowBase shopData = new LowBase();
+    public LowBase cardPer = new LowBase();
 
     [HideInInspector] public PlayData playData;
     [HideInInspector] public Sprite[] num;
@@ -89,11 +89,12 @@ public class DataMng : MonoBehaviour
         yield return new WaitUntil(() => Load(TableType.도적));
         yield return new WaitUntil(() => Load(TableType.중립));
 
+        //카드 별 상세 확률 로드
+        yield return new WaitUntil(() => LoadCarPercentData());
+
         //플레이어 데이터 로드
         yield return new WaitUntil(() => LoadPlayData());
 
-        //상점 데이터 로드
-        yield return new WaitUntil(() => LoadShopData());
 
         DataLoadSuccess = true;
     }
@@ -145,9 +146,9 @@ public class DataMng : MonoBehaviour
         return true;
     }
 
-    private bool LoadShopData()
+    private bool LoadCarPercentData()
     {
-        shopData.Load("Table/상점데이터");    
+        cardPer.Load("Table/카드확률데이터");    
         return true;
     }
     #endregion

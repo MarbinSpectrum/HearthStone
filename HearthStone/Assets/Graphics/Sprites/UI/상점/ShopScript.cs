@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 public class ShopScript : MonoBehaviour
 {
-    public Animator animator;
-    public List<Animator> packAni = new List<Animator>();
-    public Text packNumText;
-    public Text priceText;
-    public Image []selectImg = new Image[5];
-    public Animator checkBuy;
+    [SerializeField] private Animator animator;
+    [SerializeField] private List<Animator> packAni = new List<Animator>();
+    [SerializeField] private Text packNumText;
+    [SerializeField] private Text priceText;
+    [SerializeField] private Image []selectImg = new Image[5];
+    [SerializeField] private Animator checkBuy;
 
     [HideInInspector] public int selectMenu = 0;
     public void OnEnable()
@@ -20,16 +20,21 @@ public class ShopScript : MonoBehaviour
 
     private void MenuSelect(int n)
     {
+        //n번째 메뉴를 선택
         selectMenu = n;
 
         ShopManager shopManager = ShopManager.instance;
         LowBase data = shopManager.shopData;
 
+        //n번째 메뉴에 해당하는 (표기이름,가격,팩갯수)를 가져온다.
         string shopText = data.ToString(n + 1, "표기이름");
         int price = data.ToInteger(n + 1, "가격");
         int cnt = data.ToInteger(n + 1, "팩갯수");
 
-        StartCoroutine(SetPack(cnt));
+        //팩이 쌓이는 애니메이션 실행
+        SetAnimation(cnt);
+
+        //UI에 팩 정보를 표시
         packNumText.text = shopText;
         priceText.text = price.ToString();
         for (int i = 0; i < selectImg.Length; i++)
@@ -53,33 +58,26 @@ public class ShopScript : MonoBehaviour
 
     public void BuySelectMenu(bool state)
     {
+        ShopManager shopManager = ShopManager.instance;
+        if (shopManager == null)
+            return;
+
         if(state)
         {
-            DataMng dataMng = DataMng.instance;
-            LowBase data = dataMng.shopData;
-            string shopText = data.ToString(selectMenu + 1, "표기이름");
-            int price = data.ToInteger(selectMenu + 1, "가격");
-            int cnt = data.ToInteger(selectMenu + 1, "팩갯수");
-
-            PlayData playData = dataMng.playData;
-
-            if (playData.gold < price)
-                return;
-            else
-            {
-                SoundManager.instance.PlaySE("구매완료");
-                playData.gold -= price;
-                for (int i = 0; i < cnt; i++)
-                    DataMng.instance.playData.packs.Add(new PlayData.Pack());
-            }
-
-            DataMng.instance.SaveData();
+            //팩을 구매
+            shopManager.BuyPack(selectMenu);
         }
 
+        //state상태에 따른 구매완료 메세지 출력 
         checkBuy.SetBool("Open", state);
     }
 
     #region[팩배치 보여주기]
+    private void SetAnimation(int n)
+    {
+        StartCoroutine(SetPack(n));
+    }
+
     private IEnumerator SetPack(int n)
     {
         for (int i = 0; i < n; i++)

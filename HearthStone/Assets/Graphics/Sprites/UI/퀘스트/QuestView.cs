@@ -46,9 +46,13 @@ public class QuestView : MonoBehaviour
             return;
         }
 
+        //플레이어의 퀘스트를 받아오고
+
         QuestManager questManager = QuestManager.instance;
         LowBase questData = questManager.questData;
-
+        //퀘스트매니저에 등록되어있는
+        //퀘스트정보를 토대로 현재퀘스트가 어떤 것인지 표시한다.
+        
         int qIdx = quests[questNum].questNum + 1;
         string qName = questData.ToString(qIdx, "QuestName");
         string qExplain = questData.ToString(qIdx, "QuestExplain");

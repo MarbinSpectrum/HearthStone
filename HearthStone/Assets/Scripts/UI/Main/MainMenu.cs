@@ -137,16 +137,6 @@ public class MainMenu : MonoBehaviour
         shopUI.SetShopState(state);
     }
 
-    public void ShopSelectMenu(int n)
-    {
-        shopUI.SetSelectMenu(n);
-    }
-
-    public void BuySelectMenu(bool state)
-    {
-        shopUI.BuySelectMenu(state);
-    }
-
     public void QuestMenu(bool state)
     {
         questUI.SetBool("Open", state);
