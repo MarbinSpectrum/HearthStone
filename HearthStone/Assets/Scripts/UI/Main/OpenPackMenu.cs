@@ -7,20 +7,20 @@ public class OpenPackMenu : MonoBehaviour
 {
     public static OpenPackMenu instance;
 
-    public GameObject numFlag;
-    public Text packNum;
-    public GameObject packObj;
+    [SerializeField] private GameObject numFlag;
+    [SerializeField] private Text packNum;
+    [SerializeField] private GameObject packObj;
+    [SerializeField] private Animator packAni;
     public Animator dragObj;
     public Animator packOpenAni;
-    public Animator packAni;
-    public CardView []packCardView = new CardView[5];
+    public CardView[] packCardView = new CardView[5];
     public OpenPack[] openPackBtn = new OpenPack[5];
     public GameObject openCheckBtn;
 
     [HideInInspector] public int dragPackNum = 0;
     [HideInInspector] public int cardOpenNum = 0;
 
-    float dragtime = 0;
+    private float dragtime = 0;
 
     #region[Awake]
     private void Awake()
@@ -38,42 +38,67 @@ public class OpenPackMenu : MonoBehaviour
     }
     #endregion
 
-    #region[OnEnable]
-    void OnEnable()
-    {
-
-    }
-    #endregion
-
     #region[Update]
     public void Update()
     {
-        if (DataMng.instance)
+        UpdatePackActive();
+        UpdatePackAnimation();
+    }
+    #endregion
+
+    #region[메인메뉴로 이동]
+    public void GoToMain(float waitTime)
+    {
+        MainMenu.instance.CloseBoard();
+        StartCoroutine(CloseOpenPackMenu(waitTime));
+    }
+    public IEnumerator CloseOpenPackMenu(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        gameObject.SetActive(false);
+    }
+    #endregion
+
+    #region[UpdatePackActive]
+    private void UpdatePackActive()
+    {
+        DataMng dataMng = DataMng.instance;
+        if (dataMng == null)
+            return;
+
+        PlayData playData = dataMng.playData;
+        if (playData == null)
+            return;
+
+        int packN = playData.packs.Count;
+
+        dragPackNum = dragObj.gameObject.activeSelf ? 1 : 0;
+
+        packN -= dragPackNum;
+
+        if (packN <= 0)
         {
-            int packN = DataMng.instance.playData.packs.Count;
-
-            dragPackNum = dragObj.gameObject.activeSelf ? 1 : 0;
-
-            packN -= dragPackNum;
-            if (packN <= 0)
-            {
-                packObj.SetActive(false);
-                numFlag.SetActive(false);
-            }
-            else if (packN == 1)
-            {
-                packObj.SetActive(true);
-                numFlag.SetActive(false);
-            }
-            else
-            {
-                packObj.SetActive(true);
-                numFlag.SetActive(true);
-                packNum.text = packN.ToString();
-            }
+            packObj.SetActive(false);
+            numFlag.SetActive(false);
         }
+        else if (packN == 1)
+        {
+            packObj.SetActive(true);
+            numFlag.SetActive(false);
+        }
+        else
+        {
+            packObj.SetActive(true);
+            numFlag.SetActive(true);
+            packNum.text = packN.ToString();
+        }
+    }
+    #endregion
 
-        if(dragObj.gameObject.activeSelf)
+    #region[UpdatePackAnimation]
+    private void UpdatePackAnimation()
+    {
+        if (dragObj.gameObject.activeSelf)
         {
             if (Mathf.Abs(dragObj.transform.position.x - Input.mousePosition.x) > 0.01f)
             {
@@ -101,36 +126,52 @@ public class OpenPackMenu : MonoBehaviour
                     dragObj.SetInteger("Dic", 0);
             }
 
-            dragObj.transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, dragObj.transform.position.z);
+            dragObj.transform.position =
+                new Vector3(Input.mousePosition.x, Input.mousePosition.y, dragObj.transform.position.z);
         }
     }
     #endregion
 
-    #region[메인메뉴로 이동]
-    public void GoToMain(float waitTime)
-    {
-        MainMenu.instance.CloseBoard();
-        StartCoroutine(CloseOpenPackMenu(waitTime));
-    }
-    public IEnumerator CloseOpenPackMenu(float waitTime)
-    {
-        yield return new WaitForSeconds(waitTime);
-        gameObject.SetActive(false);
-    }
-    #endregion
-
+    #region[OpenCardPack]
     public void OpenCardPack()
     {
-        for(int i = 0; i < packCardView.Length; i++)
+        DataMng dataMng = DataMng.instance;
+        if (dataMng == null)
+            return;
+
+        PlayData playData = dataMng.playData;
+        if (playData == null)
+            return;
+
+        CardViewManager cardViewManager = CardViewManager.instance;
+        if (cardViewManager == null)
+            return;
+
+        //팩 개봉 애니메이션 및 효과음 출력
+        packOpenAni.SetBool("Light", false);
+        packAni.SetBool("Open", true);
+        SoundManager.instance.PlaySE("팩개봉");
+
+        for (int i = 0; i < packCardView.Length; i++)
         {
-            string cardName = DataMng.instance.playData.packs[0].card[i];
-            CardViewManager.instance.CardShow(ref packCardView[i], cardName);
-            int cardNum = DataMng.instance.playData.GetCardNum(cardName);
-            DataMng.instance.playData.SetCardNum(cardName, cardNum + 1);
+            //카드팩의 카드 정보를 토대로 카드를 만든다.
+            string cardName = playData.packs[0].card[i];
+
+            //CardShow에서 카드이름을 토대로 
+            //이미지,이름,텍스트를 작성해서 진짜카드를 만든다.
+            cardViewManager.CardShow(ref packCardView[i], cardName);
+
+            //플레이어에게 카드를 추가한다.
+            playData.AddCard(cardName, 1);
         }
-        DataMng.instance.playData.packs.RemoveAt(0);
-        DataMng.instance.SaveData();
+
+        //개봉한 카드를 제거
+        playData.packs.RemoveAt(0);
+
+        //현재상태를 저장
+        dataMng.SaveData();
     }
+    #endregion
 
     public void ActOpenCheck(float waitTime)
     {
@@ -140,7 +181,7 @@ public class OpenPackMenu : MonoBehaviour
     public IEnumerator ActOpenCheckBtn(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        OpenPackMenu.instance.openCheckBtn.SetActive(true);
+        openCheckBtn.SetActive(true);
     }
 
 

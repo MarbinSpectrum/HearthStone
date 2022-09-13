@@ -12,13 +12,13 @@ public class MyCollectionsMenu : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     [Header("취소")]
-    public GameObject cancleBtn;
+    [SerializeField] private GameObject cancleBtn;
 
     [Header("필터")]
-    public GameObject filterBtn;
+    [SerializeField] private GameObject filterBtn;
     public Animator filterAni;
-    public GameObject costCancleObject;
-    public Image cancleCost;
+    [SerializeField] private GameObject costCancleObject;
+    [SerializeField] private Image cancleCost;
     public GameObject stringCancleObject;
     public InputField searchText;
     public Text searchCancleText;
@@ -35,12 +35,12 @@ public class MyCollectionsMenu : MonoBehaviour
     Image[] nowMagicPowderNumMakeUI;
 
     [Header("페이지넘기기")]
-    public GameObject nextArrow;
-    public GameObject backArrow;
-    public Animator pageAni;
+    [SerializeField] private GameObject nextArrow;
+    [SerializeField] private GameObject backArrow;
+    [SerializeField] private Animator pageAni;
 
     [Header("직업버튼")]
-    public GameObject[] JobBtn;
+    [SerializeField] private GameObject[] JobBtn;
     public Text selectjobText;
     public Animator jobListAni;
 
@@ -126,10 +126,10 @@ public class MyCollectionsMenu : MonoBehaviour
     public Animator checkDeckDeleteAni;
     public GameObject newCreateDeck;
     public Animator newCreateDeckAni;
-    public DeckBtn newCreateDeckBtn;
+    [SerializeField] private DeckBtn newCreateDeckBtn;
     public GameObject dontClick_remove;
-    int deleteDeckNum = -1;
-    TouchScreenKeyboard keyboard;
+    private int deleteDeckNum = -1;
+    private TouchScreenKeyboard keyboard;
     string keyboardText = "";
     public Animator reNameUI;
     public InputField reNameInput;
@@ -239,7 +239,10 @@ public class MyCollectionsMenu : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #region[내수집품설정]
-    public void CardDataInput(DataMng.TableType job = DataMng.TableType.모두,int cost = -1, string search = "",bool make = false)
+    public void CardDataInput(DataMng.TableType job = DataMng.TableType.모두,
+        int cost = -1, string search = "",
+        bool make = false)
+        //cost : 가격, search : 이름,make : 제작여부
     {
         for (int i = 0; i < 3; i++)
             cardDatas[i].Clear();
@@ -306,21 +309,19 @@ public class MyCollectionsMenu : MonoBehaviour
     #endregion
 
     #region[카드데이터받기]
-    public CardData GetCardData(int num,DataMng.TableType job)
+    public CardData GetCardData(int num, DataMng.TableType job)
     {
+        //해당 직업의 num번째에 해당하는 카드를 받아온다.
         DataMng dataMng = DataMng.instance;
 
-        return new CardData
-            (
-            job,
+        return new CardData(job,
             dataMng.ToString(job, num, "등급"),
             dataMng.ToString(job, num, "카드이름"),
             dataMng.ToString(job, num, "카드종류"),
             dataMng.ToInteger(job, num, "코스트"),
             dataMng.ToInteger(job, num, "공격력"),
             dataMng.ToInteger(job, num, "체력"),
-            dataMng.ToString(job, num, "카드설명")
-            );
+            dataMng.ToString(job, num, "카드설명"));
     }
     #endregion
 
@@ -330,28 +331,33 @@ public class MyCollectionsMenu : MonoBehaviour
         //카드리스트
         ShowCard();
 
+        //플레이어 덱리스트
         DeckUpdate();
 
-        bool arrowFlag = (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop") &&  pageAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.2f);
-        backArrow.gameObject.SetActive(arrowFlag && hasBackPage);
-        nextArrow.gameObject.SetActive(arrowFlag && hasNextPage);
+        //페이지가 넘어가는 애니메이션 진행중인지 확인
+        AnimatorStateInfo paperAnimator = pageAni.GetCurrentAnimatorStateInfo(0);
+        bool arrowFlag = (paperAnimator.IsName("PaperStop") && paperAnimator.normalizedTime >= 0.2f);
 
+        //좌우 이동 화살표 활성화
+        backArrow.SetActive(arrowFlag && hasBackPage);
+        nextArrow.SetActive(arrowFlag && hasNextPage);
 
         //직업표시
         bool jobTextFlag = false;
         for (int i = 0; i < cardDatas.Length; i++)
-            if (cardDatas[i].Count > 0)
-            {
-                jobTextFlag = true;
-                JobBtn[i].gameObject.SetActive(true);
-            }
-            else
-                JobBtn[i].gameObject.SetActive(false);
+        {
+            //직업카드가 존재하는지 확인후
+            //존재하면 직업카드가 존재함을 표시
+            bool hasJobCard = cardDatas[i].Count > 0;
+            jobTextFlag |= hasJobCard;
+            JobBtn[i].gameObject.SetActive(hasJobCard);
+        }
 
         //직업선택
         DataMng.TableType tableName = (DataMng.TableType)(nowJobIndex);
         selectjobText.text = jobTextFlag ? tableName.ToString() : "";
 
+        //삭제할 덱이 있다
         if (deleteDeckNum != -1)
         {
             if (newCreateDeckBtn.characterDeckRect.anchoredPosition.y < 0)
@@ -714,7 +720,8 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[카드페이지 넘기기]
     public void NextPage()
     {
-        if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop"))
+        AnimatorStateInfo paperAnimator = pageAni.GetCurrentAnimatorStateInfo(0);
+        if (paperAnimator.IsName("PaperStop"))
         {
             nextPageFlag = true;
 
@@ -751,7 +758,8 @@ public class MyCollectionsMenu : MonoBehaviour
 
     public void BackPage()
     {
-        if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop"))
+        AnimatorStateInfo paperAnimator = pageAni.GetCurrentAnimatorStateInfo(0);
+        if (paperAnimator.IsName("PaperStop"))
         {
             backPageFlag = true;
 
@@ -799,7 +807,8 @@ public class MyCollectionsMenu : MonoBehaviour
 
     public void MovePage(int n)
     {
-        if (pageAni.GetCurrentAnimatorStateInfo(0).IsName("PaperStop"))
+        AnimatorStateInfo paperAnimator = pageAni.GetCurrentAnimatorStateInfo(0);
+        if (paperAnimator.IsName("PaperStop"))
         {
             if (nowJobIndex < n)
             {

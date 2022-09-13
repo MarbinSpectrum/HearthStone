@@ -30,11 +30,6 @@ public class CardViewManager : MonoBehaviour
         for (int i = 0; i < cardview.Count; i++)
             if(cardview[i] != null)
                 cardview[i].updateCard = true;
-            //else
-            //{
-            //    cardview.RemoveAt(i);
-            //    break;
-            //}
     }
 
     public void UpdateCardView(float waitTime)

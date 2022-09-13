@@ -242,4 +242,12 @@ public class PlayData
         }
     }
     #endregion
+
+    #region[카드추가]
+    public void AddCard(string s, int n)
+    {
+        int cardNum = GetCardNum(s);
+        SetCardNum(s, cardNum + 1);
+    }
+    #endregion
 }

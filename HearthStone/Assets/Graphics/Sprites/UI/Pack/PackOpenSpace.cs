@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class PackOpenSpace : Btn
 {
-    bool flag;
-
-    bool bgmFlag;
+    private bool inOpenSpace;
+    private bool bgmFlag;
 
     #region[Awake]
     public override void Awake()
@@ -18,23 +17,39 @@ public class PackOpenSpace : Btn
     #region[Update]
     public override void Update()
     {
-        if(Input.GetMouseButtonUp(0) && flag)
-        {
-            OpenPackMenu.instance.packOpenAni.SetBool("Light", false);
-            flag = false;
-            bgmFlag = true;
-            OpenPackMenu.instance.packAni.SetBool("Open", true);
-            OpenPackMenu.instance.OpenCardPack();
-            SoundManager.instance.PlaySE("팩개봉");
-        }
+        UpdateOpenPack();
+        UpdatePackOpenBgm();
+    }
+    #endregion
 
-        if (!bgmFlag && flag)
+    #region[UpdateOpenPack]
+    private void UpdateOpenPack()
+    {
+        OpenPackMenu openPackMenu = OpenPackMenu.instance;
+        if (openPackMenu == null)
+            return;
+
+        if (Input.GetMouseButtonUp(0) && inOpenSpace)
+        {
+            //팩을 개봉장소까지 끌고갔을 경우
+            inOpenSpace = false;
+            bgmFlag = true;
+
+            //카드팩을 개봉
+            openPackMenu.OpenCardPack();
+        }
+    }
+    #endregion
+
+    #region[UpdatePackOpenBgm]
+    private void UpdatePackOpenBgm()
+    {
+        if (!bgmFlag && inOpenSpace)
         {
             SoundManager.instance.PlayBGM("팩개봉시설");
-
             bgmFlag = true;
         }
-        else if(bgmFlag && !flag)
+        else if (bgmFlag && !inOpenSpace)
         {
             SoundManager.instance.PlayBGM("");
             bgmFlag = false;
@@ -52,7 +67,7 @@ public class PackOpenSpace : Btn
         if (OpenPackMenu.instance.dragObj.gameObject.activeSelf)
         {
             OpenPackMenu.instance.packOpenAni.SetBool("Light", true);
-            flag = true;
+            inOpenSpace = true;
             bgmFlag = false;
         }
     }
@@ -71,7 +86,7 @@ public class PackOpenSpace : Btn
         if (OpenPackMenu.instance.dragObj.gameObject.activeSelf)
         {
             OpenPackMenu.instance.packOpenAni.SetBool("Light", false);
-            flag = false;
+            inOpenSpace = false;
             bgmFlag = true;
         }
     }
