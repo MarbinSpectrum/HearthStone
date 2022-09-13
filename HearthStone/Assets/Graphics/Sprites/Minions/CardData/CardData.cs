@@ -1,6 +1,8 @@
 ﻿
 public class CardData
 {
+    public const int MAX_CARD_NUM = 9;
+
     public DataMng.TableType cardJob;
     public string cardLevel;
     public string cardName;
@@ -9,6 +11,8 @@ public class CardData
     public int cardAttack;
     public int cardHp;
     public string cardExplain;
+    public int cardBuyPowder;
+    public int cardSellPowder;
 
     public CardData
         (
@@ -19,7 +23,9 @@ public class CardData
         int acardCost,
         int acardAttack,
         int acardHp,
-        string acardExplain
+        string acardExplain,
+        int acardBuyPowder,
+        int acardSellPowder
         )
     {
         cardJob = acardJob;
@@ -30,31 +36,9 @@ public class CardData
         cardAttack = acardAttack;
         cardHp = acardHp;
         cardExplain = acardExplain;
+        cardBuyPowder = acardBuyPowder;
+        cardSellPowder = acardSellPowder;
     }
 
-    public static int CostCardPowder(string s)
-    {
-        if (s.Equals("일반"))
-            return 40;
-        else if (s.Equals("희귀"))
-            return 100;
-        else if (s.Equals("특급"))
-            return 400;
-        else if (s.Equals("전설"))
-            return 1600;
-        return 0;
-    }
 
-    public static int GetCardPowder(string s)
-    {
-        if (s.Equals("일반"))
-            return 5;
-        else if (s.Equals("희귀"))
-            return 20;
-        else if (s.Equals("특급"))
-            return 100;
-        else if (s.Equals("전설"))
-            return 400;
-        return 0;
-    }
 }

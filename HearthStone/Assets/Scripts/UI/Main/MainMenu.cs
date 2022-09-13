@@ -71,8 +71,7 @@ public class MainMenu : MonoBehaviour
         if (!inMainMenu)
         {
             inMainMenu = true;
-            Setting.instance.setting.SetActive(true);
-            Setting.instance.settingBtn.SetActive(true);
+            Setting.instance.OnOffSetting(true);
             DataMng.instance.SaveData();
             SoundManager.instance.PlayBGM("메인화면배경음");
             Setting.instance.gameObject.SetActive(true);

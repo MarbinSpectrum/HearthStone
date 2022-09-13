@@ -9,6 +9,9 @@ public class PlayData
     [System.Serializable]
     public class Deck
     {
+        public const int MAX_DECK_CARD = 30;
+        public const int MAX_DECK_NUM = 9;
+
         [SerializeField] public string name;
         [SerializeField] public List<string> card;
         [SerializeField] public DataMng.TableType job;
@@ -84,6 +87,15 @@ public class PlayData
             }
 
             return c;
+        }
+
+        public bool IsEffective()
+        {
+            if(CountCardNum() != 30)
+            {
+                return false;
+            }
+            return true;
         }
     }
 
@@ -247,7 +259,25 @@ public class PlayData
     public void AddCard(string s, int n)
     {
         int cardNum = GetCardNum(s);
-        SetCardNum(s, cardNum + 1);
+        SetCardNum(s, cardNum + n);
+    }
+    public void AddCard(string s)
+    {
+        AddCard(s, 1);
+    }
+    #endregion
+
+    #region[카드제거]
+    public void RemoveCard(string s, int n)
+    {
+        int cardNum = GetCardNum(s);
+        if(cardNum >= n)
+            SetCardNum(s, cardNum - n);
+    }
+
+    public void RemoveCard(string s)
+    {
+        RemoveCard(s, 1);
     }
     #endregion
 }

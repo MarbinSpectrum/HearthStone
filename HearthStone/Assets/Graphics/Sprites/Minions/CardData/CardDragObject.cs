@@ -49,9 +49,13 @@ public class CardDragObject : MonoBehaviour
 
     public void UiUpdate()
     {
+        MyCollectionsMenu myCollectionsMenu = MyCollectionsMenu.instance;
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
+
         inDeck = !(transform.position.x < changeDragObject.transform.position.x);
         transform.position = Input.mousePosition;
-        if (isDrag && MyCollectionsMenu.instance.deckCardViewFlag)
+        if (isDrag && myCollectionsMenu.deckCardViewFlag)
         {
             if(!inDeck)
             {
@@ -90,14 +94,19 @@ public class CardDragObject : MonoBehaviour
 
         if (isDrag && inDeck)
         {
+            //드래그 중이고 
+            //드래그 객체가 덱 위치인 경우
             if (Input.GetMouseButtonUp(0))
             {
-                if (DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].CountCardNum() < 30)
+                //마우스 포인터를 땟을때
+                if (playData.deck[myCollectionsMenu.nowDeck].CountCardNum() < 30)
                 {
+                    //덱의 카드 갯수가 30개 미만일때
+                    //카드를 덱에 넣는다.
                     string cardName = cardDrag.cardName_Data;
-                    DataMng.instance.playData.deck[MyCollectionsMenu.instance.nowDeck].AddCard(cardName);
+                    playData.deck[myCollectionsMenu.nowDeck].AddCard(cardName);
                     SoundManager.instance.PlaySE("덱에카드넣기");
-                    MyCollectionsMenu.instance.DeckSort();
+                    myCollectionsMenu.DeckSort();
                 }
             }
         }

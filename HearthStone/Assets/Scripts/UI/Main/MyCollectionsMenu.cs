@@ -47,15 +47,15 @@ public class MyCollectionsMenu : MonoBehaviour
     [Header("현재페이지 카드")]
     public GameObject nowCard;
     public GameObject nowNotCard;
-    CardView[] nowCards = new CardView[8];
-    public GameObject[] pageCardNum_Obj = new GameObject[8];
-    Text[] pageCardNum_Txt = new Text[8];
-    public GameObject[] pageCardLock = new GameObject[8];
-    Text[] pageCardLock_Txt = new Text[8];
-    public GameObject[] pageCardLockFrame = new GameObject[8];
-    Image[] pageCardLockFrame_Img = new Image[8];
-    public Sprite lockFrame_M;
-    public Sprite lockFrame_S;
+    private CardView[] nowCards = new CardView[8];
+    [SerializeField] private GameObject[] pageCardNum_Obj = new GameObject[8];
+    private Text[] pageCardNum_Txt = new Text[8];
+    [SerializeField] private GameObject[] pageCardLock = new GameObject[8];
+    private Text[] pageCardLock_Txt = new Text[8];
+    [SerializeField] private GameObject[] pageCardLockFrame = new GameObject[8];
+    private Image[] pageCardLockFrame_Img = new Image[8];
+    [SerializeField] private Sprite lockFrame_M;
+    [SerializeField] private Sprite lockFrame_S;
 
     [Header("뒷페이지 카드")]
     public GameObject backCard;
@@ -73,9 +73,10 @@ public class MyCollectionsMenu : MonoBehaviour
     public GameObject powderUI;
     public Animator cardCloseUpAni;
     CardView[] closeUpCards = new CardView[8];
-    string nowCloseUpcardName;
-    string nowCloseUpcardLevel;
-    string nowCloseUpcardType;
+    CardData closeUpCardData;
+    //string nowCloseUpcardName;
+    //string nowCloseUpcardLevel;
+    //string nowCloseUpcardType;
     public GameObject hasCardNumUI;
     public Text hasCardNumText;
     int nowCloseUpCardView;
@@ -93,39 +94,42 @@ public class MyCollectionsMenu : MonoBehaviour
     public GameObject CostMagicPowder;
     Image[] CostMagicPowderNum;
 
-    [Header("덱리스트")]
-    public GameObject viewDeckCount;
-    public Image hasDeckNum;
+    [Header("덱 갯수 표시")]
+    [SerializeField] private GameObject viewDeckCount;  //덱 갯수 표시 오브젝트
+    [SerializeField] private Image hasDeckNum;          //덱 갯수 표시
+
+    [Header("덱 리스트")]
     public RectTransform deckContext;
     public DeckBtn[] deckBtn;
-    public GameObject deckListView;
-    public GameObject deckCardView;
-    public GameObject deckBannerView;
-    public DeckBtn deckBannerBtn;
-    public RectTransform deckCardContext;
+    [SerializeField] private GameObject deckListView;
+    [SerializeField] private GameObject deckCardView;
+    [SerializeField] private GameObject deckBannerView;
+    [SerializeField] private DeckBtn deckBannerBtn;
+    [SerializeField] private RectTransform deckCardContext;
     public RectTransform newDeckPos;
     public RectTransform deckObject;
     [HideInInspector] public bool deckCardViewFlag;
-    public CardDrag[] deckCardObject;
-    [HideInInspector] public int nowDeck = -1;
-    List<string> deckCardList = new List<string>();
-    float deckCardShow = 0;
-    public GameObject viewDeckCardCount;
-    public Image []hasDeckCardNum;
-    public GameObject dontClick;
-    public Animator checkDeckMakeAni;
-    public GameObject checkDeckMake;
-    public Animator deckSettingAni;
+
+    [Header("덱 세부 정보")]
+    [HideInInspector] public int nowDeck = -1;  //현재 선택중인 덱
+    [SerializeField] private CardDrag[] deckCardObject;
+    private List<string> deckCardList = new List<string>();
+    private float deckCardShow = 0;
+    [SerializeField] private GameObject viewDeckCardCount;
+    [SerializeField] private Image []hasDeckCardNum;
+    [SerializeField] private GameObject dontClick;
+    [SerializeField] private Animator checkDeckMakeAni;
+    [SerializeField] private GameObject checkDeckMake;
+    [SerializeField] private Animator deckSettingAni;
     public GameObject deckSetting;
-    public Image[] deckHeroPower;
-    public Text heroPowerName;
-    public Text heroPowerExplain;
-    public RectTransform[] deckCardCostNum;
-    public RectTransform[] deckCardCostBar;
-    public GameObject checkDeckDelete;
-    public Animator checkDeckDeleteAni;
+    [SerializeField] private Image[] deckHeroPower;
+    [SerializeField] private Text heroPowerName;
+    [SerializeField] private Text heroPowerExplain;
+    [SerializeField] private RectTransform[] deckCardCostNum;
+    [SerializeField] private RectTransform[] deckCardCostBar;
+    [SerializeField] private GameObject checkDeckDelete;
+    [SerializeField] private Animator checkDeckDeleteAni;
     public GameObject newCreateDeck;
-    public Animator newCreateDeckAni;
     [SerializeField] private DeckBtn newCreateDeckBtn;
     public GameObject dontClick_remove;
     private int deleteDeckNum = -1;
@@ -216,14 +220,7 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[OnEnable]
     void OnEnable()
     {
-        StartCoroutine(CardCloseUpCard(0.1f));
-        nowJobIndex = 0;
-        nowCardIndex = 0;
-        nowJob = DataMng.TableType.모두;
-        SoundManager.instance.PlayBGM("수집함배경음");
-        Setting.instance.setting.SetActive(false);
-        Setting.instance.settingBtn.SetActive(false);
-        CardViewManager.instance.UpdateCardView();
+        InitCollectMenu();
     }
     #endregion
 
@@ -238,53 +235,112 @@ public class MyCollectionsMenu : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    #region[InitCollectMenu]
+    private void InitCollectMenu()
+    {
+        StartCoroutine(CardCloseUpCard(0.1f));
+
+        nowJobIndex = 0;
+        nowCardIndex = 0;
+        nowJob = DataMng.TableType.모두;
+        SoundManager.instance.PlayBGM("수집함배경음");
+        Setting.instance.OnOffSetting(false);
+        CardViewManager.instance.UpdateCardView();
+    }
+    #endregion
+
     #region[내수집품설정]
     public void CardDataInput(DataMng.TableType job = DataMng.TableType.모두,
         int cost = -1, string search = "",
         bool make = false)
-        //cost : 가격, search : 이름,make : 제작여부
     {
+        //job : 직업, cost : 가격, search : 이름,make : 제작여부
+
+        DataMng dataMng = DataMng.instance;
+        if (dataMng == null)
+            return;
+
+        PlayData playData = dataMng.playData;
+        if (playData == null)
+            return;
+
         for (int i = 0; i < 3; i++)
             cardDatas[i].Clear();
 
         for (int i = 0; i < 3; i++)
         {
-            for (int j = 1; j <= DataMng.instance.m_dic[(DataMng.TableType)i].m_table.Count; j++)
+            DataMng.TableType nowJobCard = (DataMng.TableType)i;
+            LowBase cardTable = dataMng.m_dic[nowJobCard];
+
+            for (int j = 1; j <= cardTable.m_table.Count; j++)
             {
                 if(job != DataMng.TableType.모두)
-                {
-                    if ((DataMng.TableType)(i) != DataMng.TableType.중립)
-                        if (job != (DataMng.TableType)(i))
+                    if (nowJobCard != DataMng.TableType.중립)
+                        if (job != nowJobCard)
+                        {
+                            //모두를 선택한 경우가 아니고
+                            //중립카드가 아니며
+                            //필터에서 찾고자 하는 직업군이 아닐때는
+                            //표시할 카드군에서 제외한다.
                             continue;
+                        }
+
+                string cardLevel = cardTable.ToString(j, "등급");
+                string cardName = cardTable.ToString(j, "카드이름");
+                string cardExplain = cardTable.ToString(j, "카드설명");
+                int cardCost = cardTable.ToInteger(j, "코스트");
+
+                if (cardLevel.Equals("토큰"))
+                {
+                    //토큰 카드는 표시하지 않는다.
+                    continue;
                 }
 
-                if (DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "등급").Equals("토큰"))
-                    continue;
-
-                if (cost != -1)
+                if(cost == -1)
                 {
-                    if (cost == 7)
-                    {
-                        if (DataMng.instance.m_dic[(DataMng.TableType)i].ToInteger(j, "코스트") < cost)
-                            continue;
-                    }
-                    else if (DataMng.instance.m_dic[(DataMng.TableType)i].ToInteger(j, "코스트") != cost)
-                        continue;
+                    //cost = -1은
+                    //코스트 상관없이 카드를 찾는다는 뜻
+                }
+                else if (cost == 7 && cardCost < cost)
+                {
+                    //cost = 7은
+                    //7 코스트 이상은 모두 찾는다는 뜻
+                    continue;
+                }
+                else if (cardCost != cost)
+                {
+                    //나머지는
+                    //찾고자 하는 코스트가 아니라면 제외한다.
+                    continue;
                 }
 
-                if (!search.Equals(""))
-                    if (!DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "카드이름").Contains(search) &&
-                        !DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "카드설명").Contains(search))
-                        continue;
-                string cardName = DataMng.instance.m_dic[(DataMng.TableType)i].ToString(j, "카드이름");
-                if (!make && DataMng.instance.playData != null && DataMng.instance.playData.GetCardNum(cardName) == 0)
+                if(String.IsNullOrEmpty(search))
+                {
+                    //공백이라면
+                    //검색하고자하는 내용이 없다는 뜻이다.
+                }
+                else if(cardName.Contains(search) == false &&
+                        cardExplain.Contains(search) == false)
+                {
+                    //찾고자하는 내용이
+                    //카드의 이름과 설명에 없다면
+                    //해당 카드는 제외한다.
                     continue;
+                }
 
+                if (make == false && playData.GetCardNum(cardName) == 0)
+                {
+                    //제작모드가 아니고
+                    //플레이어가 해당카드를 보유하지 않았다면
+                    //해당 카드는 제외한다.
+                    continue;
+                }
+
+                //위의 필터에 걸리지 않은 카드는 카드데이터에 등록한다.
                 cardDatas[i].Add(GetCardData(j, (DataMng.TableType)i));
-
             }
 
-
+            //카드를 코스트 별로 정렬한다.
             cardDatas[i].Sort(delegate(CardData A,CardData B)
             {
                 if (A.cardCost > B.cardCost)
@@ -304,6 +360,7 @@ public class MyCollectionsMenu : MonoBehaviour
                 nowCardIndex = 0;
                 break;
             }
+
         CardViewManager.instance.UpdateCardView();
     }
     #endregion
@@ -321,7 +378,9 @@ public class MyCollectionsMenu : MonoBehaviour
             dataMng.ToInteger(job, num, "코스트"),
             dataMng.ToInteger(job, num, "공격력"),
             dataMng.ToInteger(job, num, "체력"),
-            dataMng.ToString(job, num, "카드설명"));
+            dataMng.ToString(job, num, "카드설명"),
+            dataMng.ToInteger(job, num, "BuyPowder"),
+            dataMng.ToInteger(job, num, "SellPowder"));
     }
     #endregion
 
@@ -352,11 +411,95 @@ public class MyCollectionsMenu : MonoBehaviour
             jobTextFlag |= hasJobCard;
             JobBtn[i].gameObject.SetActive(hasJobCard);
         }
-
-        //직업선택
+        //현재선택중인 직업을 UI에 표시
         DataMng.TableType tableName = (DataMng.TableType)(nowJobIndex);
         selectjobText.text = jobTextFlag ? tableName.ToString() : "";
 
+        //삭제할 덱이 있다면 나오는 애니메이션
+        UpdateDeckRemoveAni();
+
+        //덱이 선택되었을때 애니메이션
+        UpdateSelectDeckAni();
+        
+        if(nowDeck == -1)
+        {
+            //덱 미선택시, 덱 갯수를 표시
+            viewDeckCardCount.SetActive(false);
+            viewDeckCount.SetActive(true);
+        }
+        else
+        {
+            //덱 선택시, 덱의 카드 갯수를 표시
+            viewDeckCardCount.SetActive(true);
+            viewDeckCount.SetActive(false);
+        }
+
+        //덱 보여주기
+        UpdatePlayerDeck();
+
+        //덱이름 짓기 처리
+        UpdateNamedDeck();
+    }
+
+    public void DeckUpdate()
+    {
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
+
+        int deckNum = playData.deck.Count;
+        hasDeckNum.sprite = dataMng.num[deckNum];
+        deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1, 9));
+
+        for (int i = 0; i < deckNum; i++)
+        {
+            //플레이어의 덱을 표시해준다.
+            deckBtn[i].deckNameTxt.text = playData.deck[i].name;
+            deckBtn[i].nowCharacter = (int)playData.deck[i].job;
+        }
+
+        for (int i = 0; i < 9; i++)
+        {
+            //덱 표시 오브젝트들을 업데이트한다.
+            deckBtn[i].gameObject.SetActive(i < Mathf.Min(deckNum + 1, 9));
+            deckBtn[i].hasDeck = (i < deckNum);
+            deckBtn[i].ImageUpdate();
+        }
+    }
+
+    public void DeckSort(int idx)
+    {
+        deckCardList.Clear();
+        for (int i = 0; i < DataMng.instance.playData.deck[idx].card.Count; i++)
+            deckCardList.Add(DataMng.instance.playData.deck[idx].card[i]);
+
+        deckCardList.Sort(delegate (string A, string B)
+        {
+            int costA = 0;
+            int costB = 0;
+
+            Vector2 pairA = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(A));
+            Vector2 pairB = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(B));
+            // Debug.Log(pairA == pairB);
+            costA = DataMng.instance.ToInteger((DataMng.TableType)pairA.x, (int)pairA.y, "코스트");
+            costB = DataMng.instance.ToInteger((DataMng.TableType)pairB.x, (int)pairB.y, "코스트");
+            //  Debug.Log(costA == costB);
+            if (costA > costB)
+                return 1;
+            if (costA == costB)
+                return A.CompareTo(B);
+            return -1;
+
+        });
+    }
+    public void DeckSort()
+    {
+        DeckSort(nowDeck);
+    }
+    #endregion
+
+    #region[UpdateDeckRemoveAni]
+    private void UpdateDeckRemoveAni()
+    {
         //삭제할 덱이 있다
         if (deleteDeckNum != -1)
         {
@@ -367,9 +510,9 @@ public class MyCollectionsMenu : MonoBehaviour
                 else
                     newCreateDeckBtn.hide = true;
 
-                newCreateDeckBtn.characterDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime)* 400;
+                newCreateDeckBtn.characterDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime) * 400;
                 newCreateDeckBtn.newDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime) * 400;
-                for(int i = deleteDeckNum; i < 9; i++)
+                for (int i = deleteDeckNum; i < 9; i++)
                 {
                     deckBtn[i].characterDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime) * 400;
                     deckBtn[i].newDeckRect.anchoredPosition += new Vector2(0, Time.deltaTime) * 400;
@@ -394,8 +537,12 @@ public class MyCollectionsMenu : MonoBehaviour
         {
             newCreateDeckBtn.hide = true;
         }
+    }
+    #endregion
 
-        //덱이 선택되었을때 애니메이션
+    #region[UpdateSelectDeckAni]
+    private void UpdateSelectDeckAni()
+    {
         if (deckCardViewFlag)
         {
             if (deckObject.anchoredPosition.y < newDeckPos.anchoredPosition.y + 2.5f)
@@ -405,7 +552,8 @@ public class MyCollectionsMenu : MonoBehaviour
                 deckCardShow = 0;
             }
             else if (deckObject.anchoredPosition.y < 0)
-                deckObject.anchoredPosition += new Vector2(0, Mathf.Max(2, Time.deltaTime * Mathf.Pow(Mathf.Abs(deckObject.anchoredPosition.y), 1.4f)));
+                deckObject.anchoredPosition += new Vector2(0, Mathf.Max(2, 
+                    Time.deltaTime * Mathf.Pow(Mathf.Abs(deckObject.anchoredPosition.y), 1.4f)));
             else if (deckCardShow == 0)
             {
                 ActCancleBtn(false);
@@ -425,10 +573,9 @@ public class MyCollectionsMenu : MonoBehaviour
             if (deckCardShow > 0)
             {
                 deckCardShow = 0;
-                //deckCardShow -= Time.deltaTime * 100;
                 dontClick.SetActive(true);
             }
-            else if(nowJob != DataMng.TableType.모두)
+            else if (nowJob != DataMng.TableType.모두)
             {
                 int j = nowJobIndex;
                 int c = nowCardIndex;
@@ -440,10 +587,10 @@ public class MyCollectionsMenu : MonoBehaviour
                 nowJobIndex = j;
                 nowCardIndex = c;
                 deckCardList.Clear();
-
             }
             else if (deckObject.anchoredPosition.y > newDeckPos.anchoredPosition.y + 2.5f)
-                deckObject.anchoredPosition -= new Vector2(0, Mathf.Max(2, Time.deltaTime * Mathf.Pow(Mathf.Abs(newDeckPos.anchoredPosition.y - deckObject.anchoredPosition.y), 1.3f)));
+                deckObject.anchoredPosition -= new Vector2(0, Mathf.Max(2, Time.deltaTime *
+                    Mathf.Pow(Mathf.Abs(newDeckPos.anchoredPosition.y - deckObject.anchoredPosition.y), 1.3f)));
             else if (deckObject.anchoredPosition.y > newDeckPos.anchoredPosition.y)
                 deckObject.anchoredPosition -= new Vector2(0, 20 * Time.deltaTime);
             else
@@ -460,37 +607,50 @@ public class MyCollectionsMenu : MonoBehaviour
             }
             CardViewManager.instance.UpdateCardView();
         }
+    }
+    #endregion
 
-        viewDeckCardCount.SetActive(nowDeck != -1);
-        viewDeckCount.SetActive(nowDeck == -1);
-
-        //덱보여주기
+    #region[UpdatePlayerDeck]
+    private void UpdatePlayerDeck()
+    {
         if (nowDeck != -1)
         {
-            if (deckCardList.Count != DataMng.instance.playData.deck[nowDeck].card.Count)
+            DataMng dataMng = DataMng.instance;
+            PlayData playData = dataMng.playData;
+
+            if (deckCardList.Count != playData.deck[nowDeck].card.Count)
                 DeckSort();
 
-            deckBannerBtn.deckNameTxt.text = DataMng.instance.playData.deck[nowDeck].name;
-            deckBannerBtn.nowCharacter = (int)DataMng.instance.playData.deck[nowDeck].job;
+            deckBannerBtn.deckNameTxt.text = playData.deck[nowDeck].name;
+            deckBannerBtn.nowCharacter = (int)playData.deck[nowDeck].job;
 
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < PlayData.Deck.MAX_DECK_CARD; i++)
             {
-                if(i < Mathf.Min((int)deckCardShow,DataMng.instance.playData.deck[nowDeck].card.Count))
+                //덱의 카드를 UI로 표시
+                //PlayData.Deck.MAX_DECK_CARD = 30
+                if (i < Mathf.Min((int)deckCardShow, playData.deck[nowDeck].card.Count))
                 {
-                    deckCardObject[i].cardName_Data = DataMng.instance.playData.GetCardName(deckCardList[i]);
-                    deckCardObject[i].hasCardNum = DataMng.instance.playData.GetCardNumber(deckCardList[i]);
+                    //카드를 표시할 슬롯에 
+                    //정보를 기입한다.
+                    string cardName = playData.GetCardName(deckCardList[i]);
+                    int cardNum = playData.GetCardNumber(deckCardList[i]);
+                    deckCardObject[i].cardName_Data = cardName;
+                    deckCardObject[i].hasCardNum = cardNum;
                     deckCardObject[i].gameObject.SetActive(true);
                 }
                 else
+                {
+                    //남는 슬롯은 비활성화
                     deckCardObject[i].gameObject.SetActive(false);
+                }
             }
 
             //덱의 카드 수만큼 UI조절
             int deckCardNum = 0;
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < PlayData.Deck.MAX_DECK_CARD; i++)
                 if (deckCardObject[i].gameObject.activeSelf)
                     deckCardNum++;
-            deckCardContext.sizeDelta = new Vector2(deckCardContext.sizeDelta.x, 86f * (deckCardNum+1));
+            deckCardContext.sizeDelta = new Vector2(deckCardContext.sizeDelta.x, 86f * (deckCardNum + 1));
 
             int cardN = DataMng.instance.playData.deck[nowDeck].CountCardNum();
             if (cardN / 10 > 0)
@@ -503,7 +663,12 @@ public class MyCollectionsMenu : MonoBehaviour
 
             hasDeckCardNum[1].sprite = DataMng.instance.num[cardN % 10];
         }
+    }
+    #endregion
 
+    #region[UpdateNamedDeck]
+    private void UpdateNamedDeck()
+    {
         if (TouchScreenKeyboard.visible == false && keyboard != null)
         {
             if (keyboard.done == true)
@@ -516,106 +681,93 @@ public class MyCollectionsMenu : MonoBehaviour
             }
         }
     }
-
-    public void DeckUpdate()
-    {
-        int deckNum = DataMng.instance.playData.deck.Count;
-        hasDeckNum.sprite = DataMng.instance.num[deckNum];
-        deckContext.sizeDelta = new Vector2(deckContext.sizeDelta.x, 185.4f * Mathf.Min(deckNum + 1, 9));
-
-        for (int i = 0; i < deckNum; i++)
-        {
-            deckBtn[i].deckNameTxt.text = DataMng.instance.playData.deck[i].name;
-            deckBtn[i].nowCharacter = (int)DataMng.instance.playData.deck[i].job;
-        }
-
-        //덱조절
-        for (int i = 0; i < 9; i++)
-        {
-            deckBtn[i].gameObject.SetActive(i < Mathf.Min(deckNum + 1, 9));
-            deckBtn[i].hasDeck = (i < deckNum);
-            deckBtn[i].ImageUpdate();
-        }
-    }
-
-    public void DeckSort()
-    {
-        deckCardList.Clear();
-        for (int i = 0; i < DataMng.instance.playData.deck[nowDeck].card.Count; i++)
-            deckCardList.Add(DataMng.instance.playData.deck[nowDeck].card[i]);
-
-        deckCardList.Sort(delegate (string A, string B)
-        {
-            int costA = 0;
-            int costB = 0;
-
-            Vector2 pairA = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(A));
-            Vector2 pairB = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(B));
-            // Debug.Log(pairA == pairB);
-            costA = DataMng.instance.ToInteger((DataMng.TableType)pairA.x, (int)pairA.y, "코스트");
-            costB = DataMng.instance.ToInteger((DataMng.TableType)pairB.x, (int)pairB.y, "코스트");
-            //  Debug.Log(costA == costB);
-            if (costA > costB)
-                return 1;
-            if (costA == costB)
-                return A.CompareTo(B);
-            return -1;
-
-        });
-    }
     #endregion
 
     #region[카드들표시]
     public void ShowCard()
     {
-        hasBackPage = false;
-        for (int i = 0; i < nowJobIndex; i++)
-            hasBackPage = hasBackPage || (cardDatas[i].Count > 0);
-        hasBackPage = hasBackPage || (nowCardIndex > 0);
-
+        //다음 페이지가 있는지 검사
         hasNextPage = false;
-        for (int i = nowJobIndex + 1; i < 3; i++)
-            hasNextPage = hasNextPage || (cardDatas[i].Count > 0);
+        //현재 직업의 다음페이지에 해당하는 카드군이 존재하는지 확인
         hasNextPage = hasNextPage || (nowCardIndex + 8 < cardDatas[nowJobIndex].Count);
+        for (int i = nowJobIndex + 1; i < 3; i++)
+        {
+            //현재의 다음순서 직업의 카드가 존재하는지 확인
+            hasNextPage = hasNextPage || (cardDatas[i].Count > 0);
+        }
+
+        //이전 페이지가 있는지 검사
+        hasBackPage = false;
+        //현재 직업의 이전페이지에 해당하는 카드군이 존재하는지 확인
+        hasBackPage = hasBackPage || (nowCardIndex > 0);
+        for (int i = 0; i < nowJobIndex; i++)
+        {
+            //현재의 이전순서 직업의 카드가 존재하는지 확인
+            hasBackPage = hasBackPage || (cardDatas[i].Count > 0);
+        }
+
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
 
         #region[카드표시]
         for (int i = 0; i < 8; i++)
         {
+            //카드는 한페이지당 8개씩 묶음으로 표시된다.
+            //마지막 페이지는 남은 카드를 모두 표시해준다.
             int tempCardIndex = i + nowCardIndex;
-            if (tempCardIndex >= Mathf.Min(nowCardIndex + 8, cardDatas[nowJobIndex].Count))
+            if (tempCardIndex < Mathf.Min(nowCardIndex + 8, cardDatas[nowJobIndex].Count))
             {
-                pageCardNum_Obj[i].SetActive(false);
-                nowCards[i].gameObject.SetActive(false);
-                pageCardLock[i].SetActive(false);
-                pageCardLockFrame[i].SetActive(false);
-            }
-            else
-            {
-                string nowCardName = cardDatas[nowJobIndex][tempCardIndex].cardName;
-                int cardNum = DataMng.instance.playData.GetCardNum(nowCardName);
-                if(cardCloseUpAni.GetCurrentAnimatorStateInfo(0).IsName("CardCloseUpStop"))
-                    pageCardNum_Obj[i].SetActive(cardNum > 0);
-                else
-                    pageCardNum_Obj[i].SetActive(cardNum > 0 && i != nowCloseUpCardView);
+                //활성화해야하는 카드 객체인지 검사
 
-                if(nowDeck == -1)
+                //카드 정보를 가져온다.
+                CardData nowCardData = cardDatas[nowJobIndex][tempCardIndex];
+                string nowCardName = nowCardData.cardName;
+                string nowCardLevel = nowCardData.cardLevel;
+                string nowCardType = nowCardData.cardType;
+
+                //플레이어가 보유중인 해당카드의 갯수
+                int cardNum = playData.GetCardNum(nowCardName);
+
+                AnimatorStateInfo cardCloseUpAnimator = cardCloseUpAni.GetCurrentAnimatorStateInfo(0);
+                if (cardCloseUpAnimator.IsName("CardCloseUpStop"))
                 {
+                    //카드를 확대해서 보고 있는 중이 아니고
+                    //해당 카드를 한개 이상 보유중이라면
+                    //카드 갯수 표시 UI를 활성화
+                    pageCardNum_Obj[i].SetActive(cardNum > 0);
+                }
+                else
+                {
+                    //카드를 확대해서 보고 있는 중이고
+                    //해당 카드를 한개 이상 보유중이라면
+                    //현재 확대중인 카드를 제외한 객체들의
+                    //카드 갯수 표시 UI를 활성화
+                    pageCardNum_Obj[i].SetActive(cardNum > 0 && i != nowCloseUpCardView);
+                }
+
+                if (nowDeck == -1)
+                {
+                    //현재 덱을 선택중이 아니라면
+                    //잠금표시(더이상 덱에 해당 카드를 추가할 수 없다는것을 알린다) UI를 비활성화
                     pageCardLock[i].SetActive(false);
                     pageCardLockFrame[i].SetActive(false);
                     pageCardNum_Txt[i].text = "X" + cardNum;
                 }
                 else
                 {
+                    //전설 등급카드는 덱에 종류별로 한장씩만 넣을 수 있다.
+                    //다른 등급카드는 두장씩 넣을 수 있다.
+                    int maxNum = nowCardLevel.Equals("전설") ? 1 : 2;
 
-                    Vector2 pair = DataMng.instance.GetPairByName(nowCardName);
-
-                    string level = DataMng.instance.m_dic[(DataMng.TableType)pair.x].ToString((int)pair.y, "등급");
-                    int maxNum = level.Equals("전설") ? 1 : 2;
                     //덱에있는 카드수
-                    int cardInDeckNum = DataMng.instance.playData.deck[nowDeck].HasCardNum(nowCardName);
+                    int cardInDeckNum = playData.deck[nowDeck].HasCardNum(nowCardName);
 
-                    if(Mathf.Min(maxNum,cardNum) - cardInDeckNum == 0 && cardInDeckNum != 0)
+                    if (Mathf.Min(maxNum, cardNum) - cardInDeckNum == 0 && cardInDeckNum != 0)
                     {
+                        //덱에 있는 카드 갯수를 파악후
+                        //덱에 넣을 수 있는지를 표시
+                        //덱에 넣을 수 없다면
+                        //잠금표시(더이상 덱에 해당 카드를 추가할 수 없다는것을 알린다) UI를 활성화
                         if (maxNum == 1)
                             pageCardLock_Txt[i].text = "덱 한도:1";
                         else if (maxNum == 2 && cardNum == 2)
@@ -623,30 +775,49 @@ public class MyCollectionsMenu : MonoBehaviour
                         else if (maxNum == 2 && cardNum == 1)
                             pageCardLock_Txt[i].text = "카드없음";
 
-                        string cardType = DataMng.instance.m_dic[(DataMng.TableType)pair.x].ToString((int)pair.y, "카드종류");
-                        Sprite lockSprite = cardType.Equals("주문") ? lockFrame_S : lockFrame_M;
+                        //카드가 주문인지 하수인인지에 따라서
+                        //잠금표시 UI의 이미지가 다르다.
+                        //필요한 스프라이트를 골라서 배치한다.
+                        Sprite lockSprite = nowCardType.Equals("주문") ? lockFrame_S : lockFrame_M;
                         pageCardLockFrame_Img[i].sprite = lockSprite;
 
-                        if (cardCloseUpAni.GetCurrentAnimatorStateInfo(0).IsName("CardCloseUpStop"))
+                        if (cardCloseUpAnimator.IsName("CardCloseUpStop"))
                         {
+                            //카드를 확대해서 보고 있는 중이 아니라면
+                            //모든 객체에게 잠금표시 UI를 표시
                             pageCardLock[i].SetActive(true);
                             pageCardLockFrame[i].SetActive(true);
                         }
                         else
                         {
+                            //카드를 확대해서 보고 있는 중이라면
+                            //현재 확대중인 카드를 제외한 객체들의
+                            //잠금표시 UI를 표시
                             pageCardLock[i].SetActive(i != nowCloseUpCardView);
                             pageCardLockFrame[i].SetActive(i != nowCloseUpCardView);
                         }
                     }
                     else
                     {
+                        //덱에 넣을 수 있는 상태라면
+                        //현재 수집함에 남은 카드 수를 표시해준다.
                         pageCardNum_Txt[i].text = "X" + (cardNum - cardInDeckNum);
                         pageCardLock[i].SetActive(false);
                         pageCardLockFrame[i].SetActive(false);
                     }
                 }
 
-                CardShow(ref nowCards[i], nowJobIndex, tempCardIndex);
+                //카드 오브젝트를 카드데이터에 따라서 갱신
+                CardShow(ref nowCards[i], nowCardData);
+            }
+            else
+            {
+                //카드 오브젝트 비활성화
+                //아마 마지막 페이지에서만 활성화 될것이다.
+                pageCardNum_Obj[i].SetActive(false);
+                nowCards[i].gameObject.SetActive(false);
+                pageCardLock[i].SetActive(false);
+                pageCardLockFrame[i].SetActive(false);
             }
         }
         #endregion
@@ -681,39 +852,56 @@ public class MyCollectionsMenu : MonoBehaviour
     #endregion
 
     #region[카드표시]
-    public void CardShow(ref CardView card,int nowJobIndex,int cardIndex)
+    public void CardShow(ref CardView card, CardData cardData)
     {
         if (card == null)
             return;
+        if (cardData == null)
+            return;
         card.gameObject.SetActive(true);
-        if (cardDatas[nowJobIndex][cardIndex].cardType.Equals("하수인"))
+        string cardType = cardData.cardType;
+
+        if (cardType.Equals("하수인"))
         {
+            //하수운카드 표시
             card.cardType = CardType.하수인;
-            card.MinionsCostData = cardDatas[nowJobIndex][cardIndex].cardCost;
-            card.MinionsAttackData = cardDatas[nowJobIndex][cardIndex].cardAttack;
-            card.MinionsHpData = cardDatas[nowJobIndex][cardIndex].cardHp;
-            card.MinionsCardNameData = cardDatas[nowJobIndex][cardIndex].cardName;
-            card.MinionsCardExplainData = cardDatas[nowJobIndex][cardIndex].cardExplain;
+            card.MinionsCostData = cardData.cardCost;
+            card.MinionsAttackData = cardData.cardAttack;
+            card.MinionsHpData = cardData.cardHp;
+            card.MinionsCardNameData = cardData.cardName;
+            card.MinionsCardExplainData = cardData.cardExplain;
         }
-        else if (cardDatas[nowJobIndex][cardIndex].cardType.Equals("주문"))
+        else if (cardType.Equals("주문"))
         {
+            //주문카드 표시
             card.cardType = CardType.주문;
-            card.SpellCostData = cardDatas[nowJobIndex][cardIndex].cardCost;
-            card.SpellCardNameData = cardDatas[nowJobIndex][cardIndex].cardName;
-            card.SpellCardExplainData = cardDatas[nowJobIndex][cardIndex].cardExplain;
+            card.SpellCostData = cardData.cardCost;
+            card.SpellCardNameData = cardData.cardName;
+            card.SpellCardExplainData = cardData.cardExplain;
         }
-        else if (cardDatas[nowJobIndex][cardIndex].cardType.Equals("무기"))
+        else if (cardType.Equals("무기"))
         {
+            //무기카드 표시
             card.cardType = CardType.무기;
-            card.WeaponCostData = cardDatas[nowJobIndex][cardIndex].cardCost;
-            card.WeaponAttackData = cardDatas[nowJobIndex][cardIndex].cardAttack;
-            card.WeaponHpData = cardDatas[nowJobIndex][cardIndex].cardHp;
-            card.WeaponCardNameData = cardDatas[nowJobIndex][cardIndex].cardName;
-            card.WeaponCardExplainData = cardDatas[nowJobIndex][cardIndex].cardExplain;
+            card.WeaponCostData = cardData.cardCost;
+            card.WeaponAttackData = cardData.cardAttack;
+            card.WeaponHpData = cardData.cardHp;
+            card.WeaponCardNameData = cardData.cardName;
+            card.WeaponCardExplainData = cardData.cardExplain;
         }
-        card.cardLevel = cardDatas[nowJobIndex][cardIndex].cardLevel;
+
+        //등급
+        card.cardLevel = cardData.cardLevel;
+
+        //직업
         DataMng.TableType tableName = (DataMng.TableType)(nowJobIndex);
         card.cardJob = tableName.ToString();
+    }
+
+    public void CardShow(ref CardView card,int nowJobIndex,int cardIndex)
+    {
+        CardData cardData = cardDatas[nowJobIndex][cardIndex];
+        CardShow(ref card, cardData);       
     }
     #endregion
 
@@ -958,8 +1146,6 @@ public class MyCollectionsMenu : MonoBehaviour
         }
         nowJobIndex = j;
         CardViewManager.instance.UpdateCardView();
-
-
     }
     #endregion
 
@@ -984,6 +1170,9 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[카드 클로우즈업]
     public void CardCloseUp(int n)
     {
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
+
         CardViewManager.instance.UpdateCardView();
         for(int i = 0; i < 8; i++)
             closeUpCards[i].gameObject.SetActive(false);
@@ -991,28 +1180,23 @@ public class MyCollectionsMenu : MonoBehaviour
         SoundManager.instance.PlaySE("수집함카드선택");
 
         CardShow(ref closeUpCards[n], nowJobIndex, nowCardIndex + n);
-        nowCloseUpcardName = cardDatas[nowJobIndex][nowCardIndex + n].cardName;
-        nowCloseUpcardType = cardDatas[nowJobIndex][nowCardIndex + n].cardType;
-        int cardNum = DataMng.instance.playData.GetCardNum(nowCloseUpcardName);
+        closeUpCardData = cardDatas[nowJobIndex][nowCardIndex + n];
+
+        int cardNum = playData.GetCardNum(closeUpCardData.cardName);
         hasCardNumText.text = cardNum.ToString();
 
-        int nowM = DataMng.instance.playData.magicPowder;
+        int nowM = playData.magicPowder;
         for(int i = 0; i < 6; i++)
         {
             nowMagicPowderNum[i].sprite = DataMng.instance.num[nowM % 10];
             nowMagicPowderNum[i].gameObject.SetActive((nowM != 0));
-            nowM /= 10;
-        }
-        nowM = DataMng.instance.playData.magicPowder;
-        for (int i = 0; i < 6; i++)
-        {
             nowMagicPowderNumMakeUI[i].sprite = DataMng.instance.num[nowM % 10];
             nowMagicPowderNumMakeUI[i].gameObject.SetActive((nowM != 0));
             nowM /= 10;
         }
+
         int temp;
-        nowCloseUpcardLevel = cardDatas[nowJobIndex][nowCardIndex + n].cardLevel;
-        temp = CardData.GetCardPowder(nowCloseUpcardLevel);
+        temp = closeUpCardData.cardSellPowder;
         for (int i = 0; i < 4; i++)
         {
             GetMagicPowderNum[i].sprite = DataMng.instance.num[temp % 10];
@@ -1020,15 +1204,16 @@ public class MyCollectionsMenu : MonoBehaviour
             temp /= 10;
         }
 
-        temp = CardData.CostCardPowder(nowCloseUpcardLevel);
+        temp = closeUpCardData.cardBuyPowder;
         for (int i = 0; i < 4; i++)
         {
             CostMagicPowderNum[i].sprite = DataMng.instance.num[temp % 10];
             CostMagicPowderNum[i].gameObject.SetActive((temp != 0));
             temp /= 10;
         }
-        powderUI.SetActive(!nowCloseUpcardLevel.Equals("기본"));
-        basicCardUI.SetActive(nowCloseUpcardLevel.Equals("기본"));
+
+        powderUI.SetActive(closeUpCardData.cardLevel.Equals("기본") == false);
+        basicCardUI.SetActive(closeUpCardData.cardLevel.Equals("기본"));
         closeUpCards[n].gameObject.SetActive(true);
         nowCloseUpCardView = n;
         nowCards[nowCloseUpCardView].hide = true;
@@ -1046,6 +1231,9 @@ public class MyCollectionsMenu : MonoBehaviour
 
     public void CardCloseOut()
     {
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
+
         hasCardNumUI.SetActive(false);
         StopCoroutine(showCardNum);
         cardCloseUpAni.SetTrigger("Close");
@@ -1059,7 +1247,7 @@ public class MyCollectionsMenu : MonoBehaviour
         nowJobIndex = jobtemp;
         nowCardIndex = cardtemp;
 
-        int cardNum = DataMng.instance.playData.GetCardNum(nowCloseUpcardName);
+        int cardNum = playData.GetCardNum(closeUpCardData.cardName);
         if (cardNum == 0 && !cardmakeFlag)
             for (int i = 0; i < 8; i++)
                 closeUpCards[i].gameObject.SetActive(false);
@@ -1078,44 +1266,64 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[카드제조]
     public void MakeCard()
     {
-        int cardNum = DataMng.instance.playData.GetCardNum(nowCloseUpcardName);
-        if (cardNum == 9)
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
+
+        int cardNum = playData.GetCardNum(closeUpCardData.cardName);
+        if (cardNum == CardData.MAX_CARD_NUM)
+        {
+            //카드 최대 소지갯수는 9개
+            //MAX_CARD_NUM = 9
             return;
-        if (nowCloseUpcardLevel.Equals("토큰") || nowCloseUpcardLevel.Equals("기본"))
+        }
+
+        if (closeUpCardData.cardLevel.Equals("토큰") ||
+            closeUpCardData.cardLevel.Equals("기본"))
+        {
+            //토큰이나 기본 카드는 만들수 없다.
             return;
-        if (CardData.CostCardPowder(nowCloseUpcardLevel) > DataMng.instance.playData.magicPowder)
+        }
+
+        if (closeUpCardData.cardBuyPowder > playData.magicPowder)
+        {
+            //매직파우더가 부족하다.
             return;
+        }
+
         SoundManager.instance.PlaySE("카드생성");
-        StartCoroutine(MakeCardEffect(cardNum,1.5f));
+        StartCoroutine(MakeCard(cardNum, 1.5f));
         StartCoroutine(ShowCardNum(cardNum + 1, 1.5f));
     }
 
-    private IEnumerator MakeCardEffect(int cardNum, float waitTime)
+    private IEnumerator MakeCard(int cardNum, float waitTime)
     {
-        if(nowCloseUpcardType.Equals("하수인"))
+        //카드 종류에 따른 이펙트
+        if(closeUpCardData.cardType.Equals("하수인"))
             makeEffectAni.SetTrigger("M_CardCreate");
-        else if (nowCloseUpcardType.Equals("주문"))
+        else if (closeUpCardData.cardType.Equals("주문"))
             makeEffectAni.SetTrigger("S_CardCreate");
-        else if (nowCloseUpcardType.Equals("무기"))
+        else if (closeUpCardData.cardType.Equals("무기"))
             makeEffectAni.SetTrigger("W_CardCreate");
+
         yield return new WaitForSeconds(waitTime);
-        DataMng.instance.playData.magicPowder -= CardData.CostCardPowder(nowCloseUpcardLevel);
-        int nowM = DataMng.instance.playData.magicPowder;
+
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
+
+        playData.magicPowder -= closeUpCardData.cardBuyPowder;
+        playData.AddCard(closeUpCardData.cardName, 1);
+
+        int nowM = playData.magicPowder;
         for (int i = 0; i < 6; i++)
         {
-            nowMagicPowderNum[i].sprite = DataMng.instance.num[nowM % 10];
+            nowMagicPowderNum[i].sprite = dataMng.num[nowM % 10];
+            nowMagicPowderNumMakeUI[i].sprite = dataMng.num[nowM % 10];
             nowMagicPowderNum[i].gameObject.SetActive((nowM != 0));
-            nowM /= 10;
-        }
-        nowM = DataMng.instance.playData.magicPowder;
-        for (int i = 0; i < 6; i++)
-        {
-            nowMagicPowderNumMakeUI[i].sprite = DataMng.instance.num[nowM % 10];
             nowMagicPowderNumMakeUI[i].gameObject.SetActive((nowM != 0));
             nowM /= 10;
         }
-        DataMng.instance.playData.SetCardNum(nowCloseUpcardName, cardNum + 1);
         hasCardNumText.text = (cardNum + 1).ToString();
+
         CardViewManager.instance.UpdateCardView();
     }
     #endregion
@@ -1123,46 +1331,63 @@ public class MyCollectionsMenu : MonoBehaviour
     #region[카드제거]
     public void RemoveCard()
     {
-        int cardNum = DataMng.instance.playData.GetCardNum(nowCloseUpcardName);
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
+
+        int cardNum = playData.GetCardNum(closeUpCardData.cardName);
         if (cardNum == 0)
-            return;
-        if (nowCloseUpcardLevel.Equals("토큰") || nowCloseUpcardLevel.Equals("기본"))
-            return;
-        SoundManager.instance.PlaySE("카드삭제");
-        if (nowDeck != -1)
         {
-            if(DataMng.instance.playData.deck[nowDeck].HasCardNum(nowCloseUpcardName) > cardNum - 1)
+            //카드가 0개면 제거할 수 없다.
+            return;
+        }
+        if (closeUpCardData.cardLevel.Equals("토큰") || 
+            closeUpCardData.cardLevel.Equals("기본"))
+        {
+            //토큰이나 기본카드는 제거할 수 없다.
+            return;
+        }
+
+        for(int i = 0; i < playData.deck.Count; i++)
+        {
+            //해당 카드가 덱에 존재한다면
+            if(playData.deck[i].HasCardNum(closeUpCardData.cardName) > 0)
             {
-                DataMng.instance.playData.deck[nowDeck].PopCard(nowCloseUpcardName);
-                DeckSort();
+                //해당 카드를 덱에서 제거한다.
+                playData.deck[i].PopCard(closeUpCardData.cardName);
+
+                //덱리스트 정렬
+                DeckSort(i);
             }
         }
 
-        StartCoroutine(RemoveCardEffect(cardNum, 0.5f));
+        SoundManager.instance.PlaySE("카드삭제");
+        StartCoroutine(RemoveCard(cardNum, 0.5f));
         StartCoroutine(ShowCardNum(cardNum - 1, 0.5f));
     }
 
-    private IEnumerator RemoveCardEffect(int cardNum, float waitTime)
+    private IEnumerator RemoveCard(int cardNum, float waitTime)
     {
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
+
         removeEffectAni.SetTrigger("CardRemove");
+
         yield return new WaitForSeconds(waitTime);
-        DataMng.instance.playData.magicPowder += CardData.GetCardPowder(nowCloseUpcardLevel);
-        int nowM = DataMng.instance.playData.magicPowder;
+
+        playData.magicPowder += closeUpCardData.cardSellPowder;
+        playData.RemoveCard(closeUpCardData.cardName, 1);
+
+        int nowM = playData.magicPowder;
         for (int i = 0; i < 6; i++)
         {
-            nowMagicPowderNum[i].sprite = DataMng.instance.num[nowM % 10];
+            nowMagicPowderNum[i].sprite = dataMng.num[nowM % 10];
             nowMagicPowderNum[i].gameObject.SetActive((nowM != 0));
-            nowM /= 10;
-        }
-        nowM = DataMng.instance.playData.magicPowder;
-        for (int i = 0; i < 6; i++)
-        {
-            nowMagicPowderNumMakeUI[i].sprite = DataMng.instance.num[nowM % 10];
+            nowMagicPowderNumMakeUI[i].sprite = dataMng.num[nowM % 10];
             nowMagicPowderNumMakeUI[i].gameObject.SetActive((nowM != 0));
             nowM /= 10;
         }
-        DataMng.instance.playData.SetCardNum(nowCloseUpcardName, cardNum - 1);
         hasCardNumText.text = (cardNum - 1).ToString();
+
         CardViewManager.instance.UpdateCardView();
     }
     #endregion
@@ -1204,25 +1429,25 @@ public class MyCollectionsMenu : MonoBehaviour
         selectCharacterAni.SetBool("Show", b);
     }
 
-    public void SelectCharacterOK(bool b,int n = -1)
+    public void SelectCharacterOK(bool b,int job = -1)
     {
         selectCharacterOKAni.SetBool("Show", b);
 
-        if(n != -1)
+        if(job != -1)
         {
             for (int i = 0; i < characterImg.Length; i++)
                 characterImg[i].enabled = false;
-            characterImg[n].enabled = true;
-            switch (n)
+            characterImg[job].enabled = true;
+            nowJob = (DataMng.TableType)job;
+            switch (nowJob)
             {
-                case 0:
+                case DataMng.TableType.드루이드:
                     characterNameTxt.text = "말퓨리온 스톰레이지";
                     break;
-                case 1:
+                case DataMng.TableType.도적:
                     characterNameTxt.text = "발리라 생귀나르";
                     break;
             }
-            nowJob = (DataMng.TableType)n;
         }
     }
 
@@ -1411,7 +1636,8 @@ public class MyCollectionsMenu : MonoBehaviour
     public void DeckReName()
     {
         if (Application.platform == RuntimePlatform.Android)
-            keyboard = TouchScreenKeyboard.Open(deckBannerBtn.deckNameTxt.text, TouchScreenKeyboardType.Default, false, false, false, false);
+            keyboard = TouchScreenKeyboard.Open(deckBannerBtn.deckNameTxt.text, 
+                TouchScreenKeyboardType.Default, false, false, false, false);
         else
         {
             reNameUI.SetBool("Show", true);

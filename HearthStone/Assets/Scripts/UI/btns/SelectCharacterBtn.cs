@@ -58,14 +58,25 @@ public class SelectCharacterBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        DataMng.instance.playData.deck.Add(
-            new PlayData.Deck("나만의 " + MyCollectionsMenu.instance.nowJob.ToString() + " 덱", 
-            MyCollectionsMenu.instance.nowJob, 
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
+        MyCollectionsMenu myCollectionsMenu = MyCollectionsMenu.instance;
+
+        if (playData.deck.Count >= PlayData.Deck.MAX_DECK_NUM)
+        {
+            //현재 덱 최대 매수는 9개다.
+            //PlayData.Deck.MAX_DECK_NUM = 9
+            return;
+        }
+
+        playData.deck.Add(
+            new PlayData.Deck("나만의 " + myCollectionsMenu.nowJob.ToString() + " 덱",
+            myCollectionsMenu.nowJob, 
             new List<string>() { }
             ));
-       // MyCollectionsMenu.instance.newDeckPos = transform.parent.GetComponent<RectTransform>();
-        MyCollectionsMenu.instance.MovePage((int)MyCollectionsMenu.instance.nowJob);
-        MyCollectionsMenu.instance.DeckCardView(DataMng.instance.playData.deck.Count - 1);
+
+        myCollectionsMenu.MovePage((int)myCollectionsMenu.nowJob);
+        myCollectionsMenu.DeckCardView(playData.deck.Count - 1);
     }
     #endregion
 

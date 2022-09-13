@@ -13,6 +13,7 @@ public class BattleMenu : MonoBehaviour
 
     [HideInInspector] public bool battleCollections;
 
+    [HideInInspector] public List<PlayData.Deck> decks = new List<PlayData.Deck>();
     public DeckBtn[] deckList = new DeckBtn[9];
 
     //덱선택
@@ -52,7 +53,7 @@ public class BattleMenu : MonoBehaviour
     #region[OnEnable]
     void OnEnable()
     {
-        SoundManager.instance.PlayBGM("");
+        Init();
     }
     #endregion
 
@@ -67,21 +68,50 @@ public class BattleMenu : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    #region[Init]
+    private void Init()
+    {
+        SoundManager.instance.PlayBGM("");
+
+        DataMng dataMng = DataMng.instance;
+        PlayData playData = dataMng.playData;
+
+        //덱리스트 초기화
+        decks.Clear();
+
+        for (int i = 0; i < playData.deck.Count; i++)
+        {
+            //플레이어의 덱들을 검사
+            if (playData.deck[i].IsEffective() == false)
+            {
+                //해당 덱은 유효화지 않다. 패스
+                continue;
+            }
+            //전투에 사용할 덱리스트에 추가
+            decks.Add(playData.deck[i]);
+        }
+    }
+    #endregion
+
     #region[UpdateUI]
     public void UpdateUI()
     {
-        for(int i = 0; i < 9; i++)
+        for (int i = 0; i < PlayData.Deck.MAX_DECK_NUM; i++)
         {
-            if (DataMng.instance.playData.deck.Count <= i)
+            if (decks.Count <= i)
+            {
+                //필요 없는 슬롯 비활성화
                 deckList[i].hide = true;
+            }
             else
             {
+                //필요한 슬롯은 덱이름과 덱직업을 설정
                 deckList[i].hide = false;
-                deckList[i].deckNameTxt.text = DataMng.instance.playData.deck[i].name;
-                deckList[i].nowCharacter = (int)DataMng.instance.playData.deck[i].job;
-
+                deckList[i].deckNameTxt.text = decks[i].name;
+                deckList[i].nowCharacter = (int)decks[i].job;
             }
         }
+
         if (findBattleZoomAni.GetBool("Find"))
         {
             if (findBattleAni.GetCurrentAnimatorStateInfo(0).IsName("FindBattle") && findBattleAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.977f)
@@ -111,7 +141,7 @@ public class BattleMenu : MonoBehaviour
         if (n != -1)
         {
             InGameDeck.nowDeck = n;
-            int jobNum = (int)DataMng.instance.playData.deck[n].job;
+            int jobNum = (int)decks[n].job;
             for (int i = 0; i < characterImg.Length; i++)
                 characterImg[i].enabled = false;
             characterImg[jobNum].enabled = true;

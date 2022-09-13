@@ -29,4 +29,12 @@ public class Setting : MonoBehaviour
         }
     }
     #endregion
+
+    #region[On/Off Setting]
+    public void OnOffSetting(bool state)
+    {
+        settingBtn.SetActive(state);
+        setting.SetActive(state);
+    }
+    #endregion
 }
