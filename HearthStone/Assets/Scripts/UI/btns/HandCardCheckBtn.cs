@@ -102,7 +102,11 @@ public class HandCardCheckBtn : Btn
     {
         CardHandCheck.instance.checkCard.hide = true;
         CardViewManager.instance.UpdateCardView();
-        if (!GameEventManager.instance.EventCheck() && BattleUI.instance.gameStart && TurnManager.instance.turnAniEnd && TurnManager.instance.turn == 턴.플레이어 && CardHand.instance.canUse[cardNum])
+        if (!GameEventManager.instance.EventCheck() && 
+            BattleUI.instance.gameStart && 
+            TurnManager.instance.turnAniEnd && 
+            TurnManager.instance.turn == Turn.플레이어 && 
+            CardHand.instance.canUse[cardNum])
         {
             DragCardObject.instance.ShowDragCard(cardView);
             DragCardObject.instance.dragCardNum = cardNum;

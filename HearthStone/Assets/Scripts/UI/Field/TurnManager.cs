@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum 턴
+public enum Turn
 {
     플레이어 , 상대방
 }
@@ -11,7 +11,7 @@ public class TurnManager : MonoBehaviour
 {
     public static TurnManager instance;
 
-    public 턴 turn;
+    public Turn turn;
     public bool turnEndTrigger;
     [HideInInspector] public bool turnAniEnd = true;
 
@@ -29,9 +29,7 @@ public class TurnManager : MonoBehaviour
     public Color glowStateColor;
 
     float time = 2;
-
     float checkTime = 0;
-
     bool trunEndplz = false;
 
     public void Awake()
@@ -45,13 +43,13 @@ public class TurnManager : MonoBehaviour
         {
             turnEndTrigger = false;
             turnAniEnd = false;
-            if (turn == 턴.플레이어)
+            if (turn == Turn.플레이어)
             {
                 HeroManager.instance.MeltFreeze();
                 CardHand.instance.useCardNum = 0;
                 CardHand.instance.UsePreparation = 0;
                 time = 0.5f;
-                turn = 턴.상대방;
+                turn = Turn.상대방;
                 manaManager.enemyMaxMana++;
                 manaManager.enemyMaxMana = Mathf.Min(manaManager.enemyMaxMana, 10);
                 manaManager.enemyNowMana = manaManager.enemyMaxMana;
@@ -67,7 +65,7 @@ public class TurnManager : MonoBehaviour
                 SoundManager.instance.PlaySE("턴시작");
                 HeroManager.instance.MeltFreeze();
                 time = 1;
-                turn = 턴.플레이어;
+                turn = Turn.플레이어;
                 trunEndplz = false;
                 manaManager.playerMaxMana++;
                 manaManager.playerMaxMana = Mathf.Min(manaManager.playerMaxMana, 10);
@@ -105,7 +103,7 @@ public class TurnManager : MonoBehaviour
             turnBtnMat.SetColor("_ImgColor", normalStateColor);
             checkTime = 2;
         }
-        else if (BattleUI.instance.gameStart && turn == 턴.플레이어 && !trunEndplz)
+        else if (BattleUI.instance.gameStart && turn == Turn.플레이어 && !trunEndplz)
         {
             checkTime -= Time.deltaTime;
 
@@ -120,6 +118,18 @@ public class TurnManager : MonoBehaviour
             checkTime = 2;
     }
 
+    #region[첫 턴 시작 플레이어 설정]
+    public void FirstTurnPlayer(Turn t)
+    {
+        //내부적으로 상대한테 턴을주데
+        //아무것도 안하고 해당유저가
+        ////턴을 맞치게 설정해놓았다.
+        if (t == Turn.상대방)
+            turn = Turn.플레이어;
+        else if (t == Turn.플레이어)
+            turn = Turn.상대방;
+    }
+    #endregion
 
     #region[턴 시작시 카드 드로우 처리]
     public void CardDraw()
@@ -131,7 +141,7 @@ public class TurnManager : MonoBehaviour
             else if (!turnAniEnd)
             {
                 turnAniEnd = true;
-                if (turn == 턴.상대방)
+                if (turn == Turn.상대방)
                     EnemyCardHand.instance.DrawCard();
                 else
                     CardHand.instance.CardDrawAct();

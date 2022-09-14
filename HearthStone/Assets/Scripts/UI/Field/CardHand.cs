@@ -134,7 +134,7 @@ public class CardHand : MonoBehaviour
                     !GameEventManager.instance.EventCheck() &&
                     BattleUI.instance.gameStart &&
                     TurnManager.instance.turnAniEnd &&
-                    TurnManager.instance.turn == 턴.플레이어 &&
+                    TurnManager.instance.turn == Turn.플레이어 &&
                     !handCardView[i].hide &&
                     card[i].gameObject.activeSelf &&
                     cost <= ManaManager.instance.playerNowMana &&
@@ -297,7 +297,8 @@ public class CardHand : MonoBehaviour
         }
         else if (nowHandNum >= 10)
         {
-            if (InGameDeck.instance.playDeck.Count == 1)
+            int pDeckNum = InGameDeck.instance.GetDeckCardNum();
+            if (pDeckNum == 1)
             {
                 if (HeroManager.instance.heroPowerManager.playerHeroName == "발리라")
                     BattleUI.instance.playerText.ShowText("카드가 없어!!");
@@ -305,7 +306,7 @@ public class CardHand : MonoBehaviour
                     BattleUI.instance.playerText.ShowText("카드가 없다!!");
                 SoundManager.instance.PlayCharacterSE(HeroManager.instance.heroPowerManager.playerHeroName, 영웅상태.덱이없다);
             }
-            else if (InGameDeck.instance.playDeck.Count == 2)
+            else if (pDeckNum == 2)
             {
                 if (HeroManager.instance.heroPowerManager.playerHeroName == "발리라")
                     BattleUI.instance.playerText.ShowText("카드가 거의 없어.");
@@ -316,13 +317,14 @@ public class CardHand : MonoBehaviour
 
             GameEventManager.instance.EventAdd(0.3f);
             BattleUI.instance.playerCardAni[index].SetTrigger("Draw");
-            string s = InGameDeck.instance.playDeck[0];
-            InGameDeck.instance.playDeck.RemoveAt(0);
-            DrawCardRemove.instance.RemoveCard(s, false);
+            string topCard = InGameDeck.instance.GetTopCard();
+            InGameDeck.instance.PopTopCard();
+            DrawCardRemove.instance.RemoveCard(topCard, false);
         }
         else
         {
-            if (InGameDeck.instance.playDeck.Count == 1)
+            int pDeckNum = InGameDeck.instance.GetDeckCardNum();
+            if (pDeckNum == 1)
             {
                 if (HeroManager.instance.heroPowerManager.playerHeroName == "발리라")
                     BattleUI.instance.playerText.ShowText("카드가 없어!");
@@ -330,7 +332,7 @@ public class CardHand : MonoBehaviour
                     BattleUI.instance.playerText.ShowText("카드가 없다!");
                 SoundManager.instance.PlayCharacterSE(HeroManager.instance.heroPowerManager.playerHeroName, 영웅상태.덱이없다);
             }
-            else if (InGameDeck.instance.playDeck.Count == 2)
+            else if (pDeckNum == 2)
             {
                 if (HeroManager.instance.heroPowerManager.playerHeroName == "발리라")
                     BattleUI.instance.playerText.ShowText("카드가 거의 없어.");
@@ -343,9 +345,9 @@ public class CardHand : MonoBehaviour
             BattleUI.instance.playerCardAni[index].SetTrigger("Draw");
             SoundManager.instance.PlaySE("카드드로우");
             DrawCard();
-            string s = InGameDeck.instance.playDeck[0];
-            InGameDeck.instance.playDeck.RemoveAt(0);
-            CardMove(s, nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
+            string topCard = InGameDeck.instance.GetTopCard();
+            InGameDeck.instance.PopTopCard();
+            CardMove(topCard, nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
             CardViewManager.instance.UpdateCardView(0.001f);
         }
 

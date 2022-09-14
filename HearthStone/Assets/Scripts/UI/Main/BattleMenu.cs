@@ -13,14 +13,14 @@ public class BattleMenu : MonoBehaviour
 
     [HideInInspector] public bool battleCollections;
 
-    [HideInInspector] public List<PlayData.Deck> decks = new List<PlayData.Deck>();
+    [HideInInspector] public List<Deck> decks = new List<Deck>();
     public DeckBtn[] deckList = new DeckBtn[9];
 
     //덱선택
     public Animator jobSelectAni;
     public Image[] characterImg;
     public Text characterNameTxt;
-    [HideInInspector] public int selectDeck = 0;
+    [HideInInspector] public Deck nowDeck;
 
     //대전탐색
     public Animator findBattleZoomAni;
@@ -96,7 +96,7 @@ public class BattleMenu : MonoBehaviour
     #region[UpdateUI]
     public void UpdateUI()
     {
-        for (int i = 0; i < PlayData.Deck.MAX_DECK_NUM; i++)
+        for (int i = 0; i < Deck.MAX_DECK_NUM; i++)
         {
             if (decks.Count <= i)
             {
@@ -135,27 +135,34 @@ public class BattleMenu : MonoBehaviour
     #endregion
 
     #region[덱선택확인]
-    public void JobSelectCheck(int n = -1)
+    public void JobSelectCheck(int deckNum = -1)
     {
-        jobSelectAni.SetBool("Show", (n != -1));
-        if (n != -1)
+        //deckNum : 선택한 덱 번호, -1이면 덱을 선택하지 않겠다는 것
+
+        jobSelectAni.SetBool("Show", (deckNum != -1));
+        if (deckNum != -1)
         {
-            InGameDeck.nowDeck = n;
-            int jobNum = (int)decks[n].job;
+            int jobNum = (int)decks[deckNum].job;
             for (int i = 0; i < characterImg.Length; i++)
-                characterImg[i].enabled = false;
-            characterImg[jobNum].enabled = true;
-            switch (jobNum)
             {
-                case 0:
+                //영웅에 해당하는 초상화 이미지만 활성화
+                characterImg[i].enabled = (jobNum == i);
+            }
+
+            switch (decks[deckNum].job)
+            {
+                //영웅 이름 표시
+                case Job.드루이드:
                     characterNameTxt.text = "말퓨리온 스톰레이지";
                     break;
-                case 1:
+                case Job.도적:
                     characterNameTxt.text = "발리라 생귀나르";
                     break;
             }
+
+            //배틀에 사용할 덱 결정
+            nowDeck = decks[deckNum];
         }
-        selectDeck = n;
     }
     #endregion
 

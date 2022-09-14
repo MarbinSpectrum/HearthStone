@@ -65,6 +65,7 @@
     <Compile Include="Assets\Scripts\UI\btns\DeckBtn.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\Battery\BatteryUI.cs" />
     <Compile Include="Assets\Scripts\UI\Field\MinionField.cs" />
+    <Compile Include="Assets\Scripts\Pack.cs" />
     <Compile Include="Assets\Scripts\UI\Field\ManaManager.cs" />
     <Compile Include="Assets\Scripts\Sound\SpellSoundObj.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckReUIBtn.cs" />
@@ -247,7 +248,8 @@
     <Compile Include="Assets\Graphics\52SpecialEffectPack\EffectEditor\ShurikenEffectEditor\csShurikenEffectChanger.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToAdventureBtn.cs" />
     <Compile Include="Assets\Graphics\52SpecialEffectPack\Animation&amp;Script\csDestroyEffect.cs" />
-    <Compile Include="Assets\Scripts\Pack.cs" />
+    <Compile Include="Assets\Scripts\Deck.cs" />
+    <Compile Include="Assets\Scripts\Quest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
@@ -259,6 +261,7 @@
     <None Include="Assets\Graphics\Particle Ribbon by Moonflower Carnivore\readme_Simple_Particle_Ribbon.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\Graphics\Sprites\Minions\미니언.shader" />
+    <None Include="Assets\Resources\AI\AI_Deck.txt" />
     <None Include="Assets\Graphics\JMO Assets\WarFX\_Effects\MuzzleFlashes\!MuzzleFlash Differences.txt" />
     <None Include="Assets\Graphics\Shaders\UI_Gray.shader" />
     <None Include="Assets\Graphics\Shaders\CustomGlowOutlin.shader" />

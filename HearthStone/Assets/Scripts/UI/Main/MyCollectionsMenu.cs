@@ -624,7 +624,7 @@ public class MyCollectionsMenu : MonoBehaviour
             deckBannerBtn.deckNameTxt.text = playData.deck[nowDeck].name;
             deckBannerBtn.nowCharacter = (int)playData.deck[nowDeck].job;
 
-            for (int i = 0; i < PlayData.Deck.MAX_DECK_CARD; i++)
+            for (int i = 0; i < Deck.MAX_DECK_CARD; i++)
             {
                 //덱의 카드를 UI로 표시
                 //PlayData.Deck.MAX_DECK_CARD = 30
@@ -647,7 +647,7 @@ public class MyCollectionsMenu : MonoBehaviour
 
             //덱의 카드 수만큼 UI조절
             int deckCardNum = 0;
-            for (int i = 0; i < PlayData.Deck.MAX_DECK_CARD; i++)
+            for (int i = 0; i < Deck.MAX_DECK_CARD; i++)
                 if (deckCardObject[i].gameObject.activeSelf)
                     deckCardNum++;
             deckCardContext.sizeDelta = new Vector2(deckCardContext.sizeDelta.x, 86f * (deckCardNum + 1));

@@ -31,7 +31,7 @@ public class QuestView : MonoBehaviour
             return;
         }
 
-        List<PlayData.Quest> quests = playData.quests;
+        List<Quest> quests = playData.quests;
         bool isAct = (quests.Count > questNum);
 
         questWindow.gameObject.SetActive(isAct);

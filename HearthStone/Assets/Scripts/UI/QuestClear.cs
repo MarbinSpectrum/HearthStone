@@ -30,57 +30,57 @@ public class QuestClear : MonoBehaviour
             {
                 animator.SetBool("Open", true);
 
-                Quest quest = (Quest)clearQuest[0];
+                QuestType quest = (QuestType)clearQuest[0];
 
-                if (quest == Quest.때려눕히기)
+                if (quest == QuestType.때려눕히기)
                 {
                     questName.text = "때려눕히기";
                     questValue.text = "50";
                     questExplain.text = "상대영웅에게 총 30피해 입히기";
                 }
-                else if (quest == Quest.도적_또는_드루이드의_달인)
+                else if (quest == QuestType.도적_또는_드루이드의_달인)
                 {
                     questName.text = "도적 또는 드루이드의 달인";
                     questValue.text = "60";
                     questExplain.text = "도적 또는 드루이드로 3승";
                 }
-                else if (quest == Quest.도적_또는_드루이드로_승리)
+                else if (quest == QuestType.도적_또는_드루이드로_승리)
                 {
                     questName.text = "도적 또는 드루이드로 승리";
                     questValue.text = "50";
                     questExplain.text = "도적 또는 드루이드로 2승";
                 }
-                else if (quest == Quest.도적_전문가)
+                else if (quest == QuestType.도적_전문가)
                 {
                     questName.text = "도적 전문가";
                     questValue.text = "60";
                     questExplain.text = "도적 카드 30장 내기";
                 }
-                else if (quest == Quest.드루이드_전문가)
+                else if (quest == QuestType.드루이드_전문가)
                 {
                     questName.text = "드루이드 전문가";
                     questValue.text = "60";
                     questExplain.text = "드루이드 카드 30장 내기";
                 }
-                else if (quest == Quest.주문술사)
+                else if (quest == QuestType.주문술사)
                 {
                     questName.text = "주문술사";
                     questValue.text = "50";
                     questExplain.text = "주문카드 25장 내기";
                 }
-                else if (quest == Quest.약자의반격)
+                else if (quest == QuestType.약자의반격)
                 {
                     questName.text = "약자의반격";
                     questValue.text = "50";
                     questExplain.text = "2마나 이하 하수인 20장 내기";
                 }
-                else if (quest == Quest.초토화)
+                else if (quest == QuestType.초토화)
                 {
                     questName.text = "초토화";
                     questValue.text = "50";
                     questExplain.text = "하수인 25장 파괴하기";
                 }
-                else if (quest == Quest.영웅의격려)
+                else if (quest == QuestType.영웅의격려)
                 {
                     questName.text = "영웅의격려";
                     questValue.text = "50";

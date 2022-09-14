@@ -231,7 +231,7 @@ public class MinionObject : MonoBehaviour
             canAttackObj.SetActive(
                 !GameEventManager.instance.EventCheck() && 
                 final_atk != 0 && 
-                TurnManager.instance.turn == 턴.플레이어 && 
+                TurnManager.instance.turn == Turn.플레이어 && 
                 canAttack && 
                 canAttackNum > 0 &&
                 !sleep &&
@@ -244,7 +244,7 @@ public class MinionObject : MonoBehaviour
         else
             checkCanAtttack = !GameEventManager.instance.EventCheck() &&
                 final_atk != 0 &&
-                TurnManager.instance.turn == 턴.상대방 &&
+                TurnManager.instance.turn == Turn.상대방 &&
                 canAttack &&
                 canAttackNum > 0 &&
                 !sleep &&

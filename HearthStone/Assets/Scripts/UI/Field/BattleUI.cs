@@ -79,7 +79,8 @@ public class BattleUI : MonoBehaviour
         StartCoroutine(PlayHeroSound(7, "말퓨리온", 영웅상태.게임시작_아군));
         mulligan.SetGoing(9.5f);
 
-        int jobNum = (int)DataMng.instance.playData.deck[InGameDeck.nowDeck].job;
+        int jobNum = (int)BattleMenu.instance.nowDeck.job;
+
         StartCoroutine(BattleVsSound(0.2f, "말퓨리온", jobNum == 0 ? "말퓨리온" : "발리라"));
         for (int i = 0; i < characterImg.Length; i++)
             characterImg[i].SetActive(false);

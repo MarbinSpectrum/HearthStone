@@ -166,8 +166,8 @@ public class EnemyCardHand : MonoBehaviour
         else if (nowHandNum >= 10)
         {
             BattleUI.instance.enemyCardAni[index].SetTrigger("Draw");
-            string s = InGameDeck.instance.AIDeck[0];
-            InGameDeck.instance.AIDeck.RemoveAt(0);
+            string s = DruidAI.instance.AIDeck[0];
+            DruidAI.instance.AIDeck.RemoveAt(0);
             DrawCardRemove.instance.RemoveCard(s, true);
             GameEventManager.instance.EventAdd(0.5f);
         }
@@ -177,8 +177,8 @@ public class EnemyCardHand : MonoBehaviour
             CardMove(nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
             BattleUI.instance.enemyCardAni[index].SetTrigger("Draw");
             SoundManager.instance.PlaySE("카드드로우");
-            string s = InGameDeck.instance.AIDeck[0];
-            InGameDeck.instance.AIDeck.RemoveAt(0);
+            string s = DruidAI.instance.AIDeck[0];
+            DruidAI.instance.AIDeck.RemoveAt(0);
             nowCard.Add(s);
             for (int j = 0; j < nowHandNum - 1; j++)
                 CardMove(j, card[j].transform.position, defaultSize, card[j].transform.eulerAngles.z);

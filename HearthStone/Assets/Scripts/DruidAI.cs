@@ -6,6 +6,8 @@ public class DruidAI : MonoBehaviour
 {
     public static DruidAI instance;
 
+    [HideInInspector] public List<string> AIDeck;
+
     public enum AI_Act
     {
         SpawnMinion,  //하수인을 소환할 수 있다면
@@ -200,7 +202,6 @@ public class DruidAI : MonoBehaviour
 
         #endregion
 
-
         return AI_Act.TurnEnd;
     }
 
@@ -208,6 +209,30 @@ public class DruidAI : MonoBehaviour
     public void Awake()
     {
         instance = this;
+
+        AI_Case_Setting();
+        AI_Deck_Setting();
+    }
+    #endregion
+
+    #region[AI Deck Setting]
+    private void AI_Deck_Setting()
+    {
+        //덱정보 읽어오기
+        TextAsset AI_DeckData = (TextAsset)Resources.Load("AI/AI_Deck");
+
+        //덱 등록
+        Deck ai_deck = new Deck("AI", Job.드루이드, AI_DeckData.text);
+        AIDeck = ai_deck.GetInGameDeck();
+
+        //덱 셔플
+        Deck.Shuffle(AIDeck, 1000);
+    }
+    #endregion
+
+    #region[AI Case Setting]
+    private void AI_Case_Setting()
+    {
         for (int i = 0; i < caseNum; i++)
             caseByCard[i] = new List<string>();
         //상황0 . 자신영웅의 체력이 적을경우
@@ -267,7 +292,7 @@ public class DruidAI : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
 
-        while (TurnManager.instance.turn == 턴.상대방)
+        while (TurnManager.instance.turn == Turn.상대방)
         {
             while (GameEventManager.instance.GetEventValue() > 0.001f)
                 yield return new WaitForSeconds(0.001f);

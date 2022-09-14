@@ -64,10 +64,6 @@ public class BattleMenuFindBattle : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
-        Debug.Log("수집품");
-        int deck = BattleMenu.instance.selectDeck;
-        BattleMenu.instance.JobSelectCheck(-1);
-        BattleMenu.instance.selectDeck = deck;
         BattleMenu.instance.FindBattle(find);
         if (find)
         {

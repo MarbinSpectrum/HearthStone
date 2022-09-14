@@ -62,7 +62,7 @@ public class SelectCharacterBtn : Btn
         PlayData playData = dataMng.playData;
         MyCollectionsMenu myCollectionsMenu = MyCollectionsMenu.instance;
 
-        if (playData.deck.Count >= PlayData.Deck.MAX_DECK_NUM)
+        if (playData.deck.Count >= Deck.MAX_DECK_NUM)
         {
             //현재 덱 최대 매수는 9개다.
             //PlayData.Deck.MAX_DECK_NUM = 9
@@ -70,8 +70,8 @@ public class SelectCharacterBtn : Btn
         }
 
         playData.deck.Add(
-            new PlayData.Deck("나만의 " + myCollectionsMenu.nowJob.ToString() + " 덱",
-            myCollectionsMenu.nowJob, 
+            new Deck("나만의 " + myCollectionsMenu.nowJob.ToString() + " 덱",
+            (Job)myCollectionsMenu.nowJob, 
             new List<string>() { }
             ));
 
