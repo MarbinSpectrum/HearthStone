@@ -1,4 +1,5 @@
-﻿
+﻿using UnityEngine;
+
 public class CardData
 {
     public const int MAX_CARD_NUM = 9;
@@ -40,5 +41,32 @@ public class CardData
         cardSellPowder = acardSellPowder;
     }
 
+    public CardData()
+    {
+        cardName = "NULL";
+    }
+
+    public CardData(string name)
+    {
+        NewCardData(name);
+    }
+
+    public void NewCardData(string name)
+    {
+        DataMng dataMng = DataMng.instance;
+        Vector2Int pair = dataMng.GetPairByName(name);
+        LowBase table = dataMng.m_dic[(DataMng.TableType)pair.x];
+
+        cardJob = (DataMng.TableType)pair.x;
+        cardLevel = table.ToString(pair.y, "등급");
+        cardName = table.ToString(pair.y, "카드이름");
+        cardType = table.ToString(pair.y, "카드종류");
+        cardCost = table.ToInteger(pair.y, "코스트");
+        cardAttack = table.ToInteger(pair.y, "공격력");
+        cardHp = table.ToInteger(pair.y, "체력");
+        cardExplain = table.ToString(pair.y, "카드설명");
+        cardBuyPowder = table.ToInteger(pair.y, "BuyPowder");
+        cardSellPowder = table.ToInteger(pair.y, "SellPowder");
+    }
 
 }

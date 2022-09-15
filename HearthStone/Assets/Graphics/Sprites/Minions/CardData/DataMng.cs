@@ -202,17 +202,21 @@ public class DataMng : MonoBehaviour
     #endregion
 
     #region[데이터쌍 얻기]
-    public Vector2 GetPairByName(string s)
+    public Vector2Int GetPairByName(string s)
     {
         for (int i = 0; i < 3; i++)
             for (int j = 1; j <= m_dic[(TableType)i].m_table.Count; j++)
                 if (ToString((TableType)i, j, "카드이름").Equals(s))
-                    return new Vector2(i, j);
-        return new Vector2(0, 0);
+                    return new Vector2Int(i, j);
+        return new Vector2Int(0, 0);
     }
     #endregion
 
     #region[값 얻기]
+    public int ToInteger(int tableType, int mainKey, string subKey)
+    {
+        return ToInteger((TableType)tableType, mainKey, subKey);
+    }
     public int ToInteger(TableType tableType, int mainKey, string subKey)
     {
         if (m_dic.ContainsKey(tableType))
@@ -220,6 +224,10 @@ public class DataMng : MonoBehaviour
         return -1;
     }
 
+    public float ToFloat(int tableType, int mainKey, string subKey)
+    {
+        return ToFloat((TableType)tableType, mainKey, subKey);
+    }
     public float ToFloat(TableType tableType, int mainKey, string subKey)
     {
         if (m_dic.ContainsKey(tableType))
@@ -227,6 +235,10 @@ public class DataMng : MonoBehaviour
         return -1;
     }
 
+    public string ToString(int tableType, int mainKey, string subKey)
+    {
+        return ToString((TableType)tableType, mainKey, subKey);
+    }
     public string ToString(TableType tableType, int mainKey, string subKey)
     {
         if (m_dic.ContainsKey(tableType))

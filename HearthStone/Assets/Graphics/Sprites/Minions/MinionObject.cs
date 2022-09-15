@@ -270,9 +270,9 @@ public class MinionObject : MonoBehaviour
         }
 
         SpellRunCheck();
-        if (!enemy && HeroManager.instance.heroAtkManager.playerWeaponDurability > 0)
+        if (!enemy && HeroManager.instance.EquipWeapon())
             MinionManager.instance.EquipWeaponMinionAbility(this);
-        else if (enemy && HeroManager.instance.heroAtkManager.enemyWeaponDurability > 0)
+        else if (enemy && HeroManager.instance.EnemyEquipWeapon())
             MinionManager.instance.EquipWeaponMinionAbility(this);
     }
     #endregion
@@ -357,7 +357,8 @@ public class MinionObject : MonoBehaviour
         if (CardHand.instance.nowHandNum < 10)
         {
             CardHand.instance.nowHandNum++;
-            CardHand.instance.CardMove(minion_name, CardHand.instance.nowHandNum - 1, transform.position, CardHand.instance.defaultSize, 0);
+            CardHand.instance.SetCardHand(minion_name, 
+                CardHand.instance.nowHandNum - 1, transform.position, CardHand.instance.defaultSize, 0);
             CardViewManager.instance.UpdateCardView();
         }
 
@@ -461,10 +462,10 @@ public class MinionObject : MonoBehaviour
     {
         abilityList.Clear();
         buffList.Clear();
-        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minion_name));
-        baseHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
+        Vector2Int pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minion_name));
+        baseHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
         final_hp = Mathf.Min(baseHp, final_hp);
-        baseAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+        baseAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
         nowAtk = Mathf.Min(baseAtk, nowAtk);
         taunt = false;
         stealth = false;
@@ -484,10 +485,10 @@ public class MinionObject : MonoBehaviour
         InitTrigger = false;
         TestInitTrigger = false;
         meshRenderer.material = MinionManager.instance.minionMaterial[minion_name];
-        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minion_name));
-        baseHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
-        baseAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
-        legend = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "등급").Equals("전설");
+        Vector2Int pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minion_name));
+        baseHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
+        baseAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
+        legend = DataMng.instance.ToString(pair.x, pair.y, "등급").Equals("전설");
         buffList.Clear();
         final_hp = baseHp;
         nowAtk = baseAtk;
@@ -502,7 +503,7 @@ public class MinionObject : MonoBehaviour
 
         ////////////////////////////////////////////////////////////////////////////////////////
 
-        string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
+        string ability_string = DataMng.instance.ToString(pair.x, pair.y, "명령어");
         abilityList.Clear();
         abilityList = MinionManager.instance.MinionAbilityParsing(ability_string);
         SoundManager.instance.PlayMinionSE(minion_name, 미니언상태.소환);

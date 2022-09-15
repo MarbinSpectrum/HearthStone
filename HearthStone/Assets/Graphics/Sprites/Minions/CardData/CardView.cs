@@ -46,10 +46,10 @@ public class CardView : MonoBehaviour
 
     #region[하수인카드 정보]
     GameObject MinionsCard;
-    [HideInInspector] public int MinionsCostData;
+    private int MinionsCostData;
     [HideInInspector] public int MinionsAttackData;
     [HideInInspector] public int MinionsHpData;
-    [HideInInspector] public string MinionsCardNameData;
+    private string MinionsCardNameData;
     [HideInInspector] public string MinionsCardExplainData;
 
     GameObject[] MinionsCost;
@@ -66,8 +66,8 @@ public class CardView : MonoBehaviour
 
     #region[주문카드 정보]
     GameObject SpellCard;
-    [HideInInspector] public int SpellCostData;
-    [HideInInspector] public string SpellCardNameData;
+    private int SpellCostData;
+    private string SpellCardNameData;
     [HideInInspector] public string SpellCardExplainData;
 
     GameObject[] SpellCost;
@@ -80,10 +80,10 @@ public class CardView : MonoBehaviour
 
     #region[무기카드 정보]
     GameObject WeaponCard;
-    [HideInInspector] public int WeaponCostData;
+    private int WeaponCostData;
     [HideInInspector] public int WeaponAttackData;
     [HideInInspector] public int WeaponHpData;
-    [HideInInspector] public string WeaponCardNameData;
+    private string WeaponCardNameData;
     [HideInInspector] public string WeaponCardExplainData;
 
     GameObject[] WeaponCost;
@@ -584,35 +584,45 @@ public class CardView : MonoBehaviour
     #region[ShowName]
     void ShowName()
     {
-        string temp = "";
-        for (int i = 0; i < MinionsCardNameData.Length; i++)
+        if (MinionsCardNameData != null)
         {
-            if (MinionsCardNameData[i].Equals('('))
-                break;
-            else
-                temp += MinionsCardNameData[i];
+            string temp = "";
+            for (int i = 0; i < MinionsCardNameData.Length; i++)
+            {
+                if (MinionsCardNameData[i].Equals('('))
+                    break;
+                else
+                    temp += MinionsCardNameData[i];
+            }
+            MinionsCardName.text = temp;
         }
-        MinionsCardName.text = temp;
 
-        temp = "";
-        for (int i = 0; i < SpellCardNameData.Length; i++)
-        {
-            if (SpellCardNameData[i].Equals('('))
-                break;
-            else
-                temp += SpellCardNameData[i];
-        }
-        SpellCardName.text = temp;
 
-        temp = "";
-        for (int i = 0; i < WeaponCardNameData.Length; i++)
+        if (SpellCardNameData != null)
         {
-            if (WeaponCardNameData[i].Equals('('))
-                break;
-            else
-                temp += WeaponCardNameData[i];
+            string temp = "";
+            for (int i = 0; i < SpellCardNameData.Length; i++)
+            {
+                if (SpellCardNameData[i].Equals('('))
+                    break;
+                else
+                    temp += SpellCardNameData[i];
+            }
+            SpellCardName.text = temp;
         }
-        WeaponCardName.text = temp;
+
+        if (WeaponCardNameData != null)
+        {
+            string temp = "";
+            for (int i = 0; i < WeaponCardNameData.Length; i++)
+            {
+                if (WeaponCardNameData[i].Equals('('))
+                    break;
+                else
+                    temp += WeaponCardNameData[i];
+            }
+            WeaponCardName.text = temp;
+        }
     }
     #endregion
 
@@ -774,6 +784,52 @@ public class CardView : MonoBehaviour
             WeaponCardImg.material = tempMa;
 
         }
+    }
+    #endregion
+
+    #region[카드 비용]
+    public int GetCost()
+    {
+        if (cardType == CardType.무기)
+            return WeaponCostData;
+        else if (cardType == CardType.주문)
+            return SpellCostData;
+        else if (cardType == CardType.하수인)
+            return MinionsCostData;
+        return 0;
+    }
+
+    public void SetCost(int v)
+    {
+        if (cardType == CardType.무기)
+            WeaponCostData = v;
+        else if (cardType == CardType.주문)
+            SpellCostData = v;
+        else if (cardType == CardType.하수인)
+            MinionsCostData = v;
+    }
+    #endregion
+
+    #region[카드 이름]
+    public string GetName()
+    {
+        if (cardType == CardType.무기)
+            return WeaponCardNameData;
+        else if (cardType == CardType.주문)
+            return SpellCardNameData;
+        else if (cardType == CardType.하수인)
+            return MinionsCardNameData;
+        return string.Empty;
+    }
+
+    public void SetName(string v)
+    {
+        if (cardType == CardType.무기)
+            WeaponCardNameData = v;
+        else if (cardType == CardType.주문)
+            SpellCardNameData = v;
+        else if (cardType == CardType.하수인)
+            MinionsCardNameData = v;
     }
     #endregion
 }

@@ -5,32 +5,44 @@ using UnityEngine.UI;
 
 public class ChangeCardGlow : MonoBehaviour
 {
-    public Image thisImg;
-    public Sprite minionImg_legend;
-    public Sprite minionImg;
-    public Sprite spellImg;
-    public Sprite weaponImg;
-    public CardView cardView;
-    public CardChangeBtn cardChangeBtn;
+    [SerializeField] private Image thisImg;
+    [SerializeField] private Sprite minionImg_legend;
+    [SerializeField] private Sprite minionImg;
+    [SerializeField] private Sprite spellImg;
+    [SerializeField] private Sprite weaponImg;
+    [SerializeField] private CardView cardView;
+    public bool isRun = true;
 
-    void Update()
+    private void Update()
     {
-        thisImg.enabled = !cardChangeBtn.change;
+        UpdateGlowEffect();
+    }
 
-        if (thisImg && cardView)
+    private void UpdateGlowEffect()
+    {
+
+        if (thisImg == null)
+            return;
+        if (cardView == null)
+            return;
+
+        if (isRun == false)
         {
-            if (cardView.cardType == CardType.하수인)
-            {
-                if(cardView.cardLevel.Equals("전설"))
-                    thisImg.sprite = minionImg_legend;
-                else
-                    thisImg.sprite = minionImg;
-            }
-            else if (cardView.cardType == CardType.주문)
-                thisImg.sprite = spellImg;
-            else if (cardView.cardType == CardType.무기)
-                thisImg.sprite = weaponImg;
-
+            thisImg.enabled = false;
+            return;
         }
+        thisImg.enabled = true;
+
+        if (cardView.cardType == CardType.하수인)
+        {
+            if (cardView.cardLevel.Equals("전설"))
+                thisImg.sprite = minionImg_legend;
+            else
+                thisImg.sprite = minionImg;
+        }
+        else if (cardView.cardType == CardType.주문)
+            thisImg.sprite = spellImg;
+        else if (cardView.cardType == CardType.무기)
+            thisImg.sprite = weaponImg;
     }
 }

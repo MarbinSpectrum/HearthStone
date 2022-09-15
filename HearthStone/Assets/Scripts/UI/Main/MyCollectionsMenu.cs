@@ -477,11 +477,13 @@ public class MyCollectionsMenu : MonoBehaviour
             int costA = 0;
             int costB = 0;
 
-            Vector2 pairA = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(A));
-            Vector2 pairB = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(B));
+            Vector2Int pairA = DataMng.instance.GetPairByName(
+                DataMng.instance.playData.GetCardName(A));
+            Vector2Int pairB = DataMng.instance.GetPairByName(
+                DataMng.instance.playData.GetCardName(B));
             // Debug.Log(pairA == pairB);
-            costA = DataMng.instance.ToInteger((DataMng.TableType)pairA.x, (int)pairA.y, "코스트");
-            costB = DataMng.instance.ToInteger((DataMng.TableType)pairB.x, (int)pairB.y, "코스트");
+            costA = DataMng.instance.ToInteger(pairA.x, pairA.y, "코스트");
+            costB = DataMng.instance.ToInteger(pairB.x, pairB.y, "코스트");
             //  Debug.Log(costA == costB);
             if (costA > costB)
                 return 1;
@@ -865,28 +867,28 @@ public class MyCollectionsMenu : MonoBehaviour
         {
             //하수운카드 표시
             card.cardType = CardType.하수인;
-            card.MinionsCostData = cardData.cardCost;
+            card.SetCost(cardData.cardCost);
             card.MinionsAttackData = cardData.cardAttack;
             card.MinionsHpData = cardData.cardHp;
-            card.MinionsCardNameData = cardData.cardName;
+            card.SetName(cardData.cardName);
             card.MinionsCardExplainData = cardData.cardExplain;
         }
         else if (cardType.Equals("주문"))
         {
             //주문카드 표시
             card.cardType = CardType.주문;
-            card.SpellCostData = cardData.cardCost;
-            card.SpellCardNameData = cardData.cardName;
+            card.SetCost(cardData.cardCost);
+            card.SetName(cardData.cardName);
             card.SpellCardExplainData = cardData.cardExplain;
         }
         else if (cardType.Equals("무기"))
         {
             //무기카드 표시
             card.cardType = CardType.무기;
-            card.WeaponCostData = cardData.cardCost;
+            card.SetCost(cardData.cardCost);
             card.WeaponAttackData = cardData.cardAttack;
             card.WeaponHpData = cardData.cardHp;
-            card.WeaponCardNameData = cardData.cardName;
+            card.SetName(cardData.cardName);
             card.WeaponCardExplainData = cardData.cardExplain;
         }
 
@@ -1572,9 +1574,10 @@ public class MyCollectionsMenu : MonoBehaviour
                 for (int j = 0; j < DataMng.instance.playData.deck[nowDeck].card.Count; j++)
                 {
                     string name = DataMng.instance.playData.GetCardName(DataMng.instance.playData.deck[nowDeck].card[j]);
-                    Vector2 pair = DataMng.instance.GetPairByName(name);
-                    int cardC = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
-                    int cardN = DataMng.instance.playData.GetCardNumber(DataMng.instance.playData.deck[nowDeck].card[j]);
+                    Vector2Int pair = DataMng.instance.GetPairByName(name);
+                    int cardC = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
+                    int cardN = DataMng.instance.playData.GetCardNumber(
+                        DataMng.instance.playData.deck[nowDeck].card[j]);
                     if (cardC == i)
                         n += cardN;
                     else if(i == 7 && cardC >= 7)

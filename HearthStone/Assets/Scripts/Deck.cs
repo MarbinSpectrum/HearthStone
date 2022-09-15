@@ -52,8 +52,8 @@ public class Deck
         {
             string name = DataMng.instance.playData.GetCardName(card[i]);
             int num = DataMng.instance.playData.GetCardNumber(card[i]);
-            Vector2 pair = DataMng.instance.GetPairByName(name);
-            string level = DataMng.instance.m_dic[(DataMng.TableType)pair.x].ToString((int)pair.y, "등급");
+            Vector2Int pair = DataMng.instance.GetPairByName(name);
+            string level = DataMng.instance.ToString(pair.x, pair.y, "등급");
             int maxNum = level.Equals("전설") ? 1 : 2;
             if (name.Equals(s))
             {

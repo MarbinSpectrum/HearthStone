@@ -74,11 +74,13 @@ public class DragCardObject : MonoBehaviour
 
         List<SpellAbility> spellList = new List<SpellAbility>();
 
-        if ((dragCardView.cardType == CardType.무기 || dragCardView.cardType == CardType.주문) && dragCard)
+        if ((dragCardView.cardType == CardType.무기 || dragCardView.cardType == CardType.주문) 
+            && dragCard)
         {
-            dragCardName = dragCardView.cardType == CardType.주문 ? dragCardView.SpellCardNameData : dragCardView.WeaponCardNameData;
-            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(dragCardName));
-            string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
+            dragCardName = dragCardView.GetName();
+            Vector2Int pair = DataMng.instance.GetPairByName(
+                DataMng.instance.playData.GetCardName(dragCardName));
+            string ability_string = DataMng.instance.ToString(pair.x, pair.y, "명령어");
             spellList = SpellManager.instance.SpellParsing(ability_string);
             spellList.Sort((a, b) =>
             {
@@ -93,7 +95,8 @@ public class DragCardObject : MonoBehaviour
                 }
             });
             for (int i = 0; i < spellList.Count; i++)
-                if (spellList[i].Condition_type != SpellAbility.Condition.선택 && SpellManager.instance.CheckEvent(spellList[i]) == SpellManager.EventType.대상선택)
+                if (spellList[i].Condition_type != SpellAbility.Condition.선택 &&
+                    SpellManager.instance.CheckEvent(spellList[i]) == SpellManager.EventType.대상선택)
                 {
                     dragSelectCard = true;
                     CardHand.instance.handAni.SetBool("패내리기", true);
@@ -113,7 +116,8 @@ public class DragCardObject : MonoBehaviour
             if (SpellManager.instance.targetMinion)
             {
                 Debug.Log("드래그미니언");
-                SpellManager.instance.RunSpellTargetMinion(dragCardName, dragCardNum, SpellManager.instance.targetMinion, false);
+                SpellManager.instance.RunSpellTargetMinion(
+                    dragCardName, dragCardNum, SpellManager.instance.targetMinion, false);
             }
             else if (SpellManager.instance.targetHero != -1)
             {
@@ -137,7 +141,11 @@ public class DragCardObject : MonoBehaviour
     public void DragAndDropCard()
     {
         if (CardHand.instance.canUse[dragCardNum])
+        {
+            //드래그 중인 카드가 사용가능하다고
+            //내려놓았을때
             CardHand.instance.UseCard(dragCardNum);
+        }
         HideDragCard();
     }
 

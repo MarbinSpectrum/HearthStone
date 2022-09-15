@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class CardChangeBtn : Btn
 {
-    public GameObject changeItemObj;
-    public bool change;
+    [SerializeField] private GameObject changeItemObj;
+    private bool change;
+    [SerializeField] private int num;
 
     #region[Awake]
     public override void Awake()
@@ -55,8 +56,13 @@ public class CardChangeBtn : Btn
     #region[ActBtn]
     public override void ActBtn()
     {
+        BattleUI battleUI = BattleUI.instance;
+        Mulligan mulligan = battleUI.mulligan;
+
         SoundManager.instance.PlaySE("멀리건선택");
+
         change = !change;
+        mulligan.ChangeMulligan(num, change);
         changeItemObj.SetActive(change);
     }
     #endregion

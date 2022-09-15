@@ -14,25 +14,41 @@ public class Mulligan : MonoBehaviour
     DrawType drawType;
     private int[] drawNum = { 0, 4, 3 };
 
-    public CardView[] cardView;
-    public Animator cardAnimator;
-    public GameObject[] cardGlow;
-    public GameObject mulliganUI;
+    //멀리건 관련
+    [Header("멀리건")]
+    [SerializeField] private ChangeCardGlow[] mulliganGlow;
+    [SerializeField] private CardView[] mulliganCardView;
+    [SerializeField] private Animator mulliganAnimator;
+    [SerializeField] private GameObject mulliganUI;
+    private bool[] changeIdx = new bool[4];
+    private string[] mulliganCard = new string[4];
 
-    public Animator coinAnimator;
-    public Material coinMat;
-    public Animator createCoinCard;
-    public Transform coinCardPos;
+    //코인관련
+    [Header("코인")]
+    [SerializeField] private Animator coinAnimator;
+    [SerializeField] private Material coinMat;
+    [SerializeField] private Animator createCoinCard;
+    [SerializeField] private Transform coinCardPos;
 
-    public CardChangeBtn[] cardChangeBtns;
+    //카드교환 버튼
+    [Header("카드교환 버튼")]
+    [SerializeField] private CardChangeBtn[] cardChangeBtns;
 
-    public Animator firstCardAni;
-    public CardView[] firstTurnCardView;
+    //선공 애니메이션
+    [Header("선공")]
+    [SerializeField] private Animator firstCardAni;
+    [SerializeField] private CardView[] firstTurnCardView;
 
-    public Animator secondCardAni;
-    public CardView[] secondTurnCardView;
+    //후공 애니메이션
+    [Header("후공")]
+    [SerializeField] private Animator secondCardAni;
+    [SerializeField] private CardView[] secondTurnCardView;
 
-    public Animator showCharacterAni;
+    public void ChangeMulligan(int idx, bool state)
+    {
+        changeIdx[idx] = state;
+        mulliganGlow[idx].isRun = !state;
+    }
 
     #region[카드세트]
     public void MulliganCardSet()
@@ -46,13 +62,14 @@ public class Mulligan : MonoBehaviour
 
         int drawCardNum = drawNum[(int)drawType];
         for (int i = 0; i < drawCardNum; i++)
-        {
-            cardViews[i].gameObject.SetActive(cardChangeBtns[i].change);
-            CardViewManager.instance.CardShow(ref cardViews[i], cardView[i]);
-            cardView[i].gameObject.SetActive(!cardChangeBtns[i].change);
+        { 
+            cardViews[i].gameObject.SetActive(changeIdx[i]);
+            CardViewManager.instance.CardShow(ref cardViews[i], mulliganCardView[i]);
+
+            mulliganCardView[i].gameObject.SetActive(changeIdx[i] == false);
             cardChangeBtns[i].btnImg.enabled = false;
             cardChangeBtns[i].enabled = false;
-            cardChangeBtns[i].change = true;
+            mulliganGlow[i].isRun = false;
         }
         cardAni.gameObject.SetActive(true);
         cardAni.SetInteger("State", 1);
@@ -79,106 +96,108 @@ public class Mulligan : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
 
         StartCoroutine(DrawCard(0.1f));
-        bool changeCard = false;
+
+        //선후공에 따라 사용하는 카드 객체와
+        //카드 애니메이션이 다르기 때문에 알맞는것을 선택한다.
+        CardView[] cardViews = (drawType == DrawType.후공) ?
+            secondTurnCardView : firstTurnCardView;
+        Animator cardAni = (drawType == DrawType.후공) ?
+            secondCardAni : firstCardAni;
+
+        //선후공에 따라 뽑는 카드의 수도 다르다.
+        int playerDrawNum = drawNum[(int)drawType];
+        int enemyDrawNum = (drawType == DrawType.후공) ?
+            drawNum[(int)DrawType.선공] : drawNum[(int)DrawType.후공];
+
+        float cardPushDelay = 0.1f;
+        for (int i = 0; i < playerDrawNum; i++)
+        {
+            if (changeIdx[i])
+            {
+                //해당 위치의 패가 교환된다면
+
+                cardPushDelay = 1.5f;
+
+                //해당 위치의 카드를 덱에 다시 넣는다.
+                InGameDeck.instance.PushCard(mulliganCard[i]);
+
+                //덱 맨위의 카드를 해당 위치에 추가한다.
+                string topCard = InGameDeck.instance.GetTopCard();
+                InGameDeck.instance.PopTopCard();
+                mulliganCard[i] = topCard;
+
+                //카드 객체로 해당카드를 표시한다.
+                CardViewManager.instance.CardShow(ref mulliganCardView[i], topCard);
+                CardViewManager.instance.CardShow(ref cardViews[i], topCard);
+                CardViewManager.instance.UpdateCardView();
+
+                //덱을 섞는다.
+                InGameDeck.instance.Shuffle(1000);
+            }
+        }
+
+        for (int i = 0; i < playerDrawNum; i++)
+        {
+            //결정된 손패를 적용한다.
+            CardHand.instance.SetCardHand(i, mulliganCard[i]);
+        }
+
+        cardAni.SetInteger("State", 2);
+        StartCoroutine(EnemyDrawCard(enemyDrawNum));
+
+        yield return new WaitForSeconds(cardPushDelay);
+        CardHand.instance.nowHandNum = playerDrawNum;
+        for (int i = 0; i < playerDrawNum; i++)
+            CardHand.instance.SetCardHand(i, mulliganCardView[i].transform.position,
+                CardHand.handCardSize, 0);
+
+        yield return new WaitForSeconds(0.001f);
+        CardViewManager.instance.UpdateCardView();
+        for (int i = 0; i < mulliganCardView.Length; i++)
+            mulliganCardView[i].gameObject.SetActive(false);
+        firstCardAni.gameObject.SetActive(false);
+        secondCardAni.gameObject.SetActive(false);
+
+        yield return new WaitForSeconds(1f);
+        coinAnimator.SetInteger("State", 3);
+
         if (drawType == DrawType.후공)
         {
-            StartCoroutine(EnemyDrawCard(drawNum[(int)DrawType.선공]));
-            for (int i = 0; i < drawNum[(int)drawType]; i++)
-            {
-                if (secondTurnCardView[i].gameObject.activeSelf)
-                {
-                    changeCard = true;
-                    string name = "";
-                    if (secondTurnCardView[i].cardType == CardType.무기)
-                        name = secondTurnCardView[i].WeaponCardNameData;
-                    else if (secondTurnCardView[i].cardType == CardType.주문)
-                        name = secondTurnCardView[i].SpellCardNameData;
-                    else if (secondTurnCardView[i].cardType == CardType.하수인)
-                        name = secondTurnCardView[i].MinionsCardNameData;
-                    InGameDeck.instance.PushCard(name);
-                    string topCard = InGameDeck.instance.GetTopCard();
-                    CardViewManager.instance.CardShow(ref secondTurnCardView[i], topCard);
-                    CardViewManager.instance.UpdateCardView();
-                    InGameDeck.instance.PopTopCard();
-                    InGameDeck.instance.Shuffle(1000);
-                }
-            }
-            secondCardAni.SetInteger("State", 2);
-            yield return new WaitForSeconds(changeCard ? 1.5f : 0.1f);
-            CardHand.instance.nowHandNum = drawNum[(int)drawType];
-            for (int i = 0; i < 4; i++)
-                CardHand.instance.CardMove(secondTurnCardView[i], i, cardView[i].transform.position, new Vector2(10.685f, 13.714f), 0);
-            yield return new WaitForSeconds(0.001f);
-            CardViewManager.instance.UpdateCardView();
-            for (int i = 0; i < cardView.Length; i++)
-                cardView[i].gameObject.SetActive(false);
-            firstCardAni.gameObject.SetActive(false);
-            secondCardAni.gameObject.SetActive(false);
-            yield return new WaitForSeconds(1f);
-            coinAnimator.SetInteger("State", 3);
+            //코인 카드 생성 애니메이션 실행
             yield return new WaitForSeconds(1f);
             createCoinCard.SetBool("Hide", false);
             SoundManager.instance.PlaySE("코인얻기");
+
             yield return new WaitForSeconds(2f);
             createCoinCard.SetBool("Hide", true);
             BattleUI.instance.fieldShadowAni.SetInteger("State", 1);
             CardHand.instance.DrawCard();
-            CardHand.instance.CardMove("동전 한 닢", 4, coinCardPos.position, new Vector2(10.685f, 13.714f), 0);
+            CardHand.instance.SetCardHand("동전 한 닢", 4, coinCardPos.position,
+                CardHand.handCardSize, 0);
+
             yield return new WaitForSeconds(0.001f);
             CardViewManager.instance.UpdateCardView();
         }
         else if (drawType == DrawType.선공)
         {
-            StartCoroutine(EnemyDrawCard(drawNum[(int)DrawType.후공], true));
-            for (int i = 0; i < drawNum[(int)drawType]; i++)
-            {
-                if (firstTurnCardView[i].gameObject.activeSelf)
-                {
-                    changeCard = true;
-                    string name = "";
-                    if (firstTurnCardView[i].cardType == CardType.무기)
-                        name = firstTurnCardView[i].WeaponCardNameData;
-                    else if (firstTurnCardView[i].cardType == CardType.주문)
-                        name = firstTurnCardView[i].SpellCardNameData;
-                    else if (firstTurnCardView[i].cardType == CardType.하수인)
-                        name = firstTurnCardView[i].MinionsCardNameData;
-                    InGameDeck.instance.PushCard(name);
-                    string topCard = InGameDeck.instance.GetTopCard();
-                    CardViewManager.instance.CardShow(ref firstTurnCardView[i], topCard);
-                    CardViewManager.instance.UpdateCardView();
-                    InGameDeck.instance.PopTopCard();
-                    InGameDeck.instance.Shuffle(1000);
-                }
-            }
-            firstCardAni.SetInteger("State", 2);
-            yield return new WaitForSeconds(changeCard ? 1.5f : 0.1f);
-            CardHand.instance.nowHandNum = drawNum[(int)drawType];
-            for (int i = 0; i < drawNum[(int)drawType]; i++)
-                CardHand.instance.CardMove(firstTurnCardView[i], i, cardView[i].transform.position, new Vector2(10.685f, 13.714f), 0);
-            yield return new WaitForSeconds(0.001f);
-            CardViewManager.instance.UpdateCardView();
-            for (int i = 0; i < cardView.Length; i++)
-                cardView[i].gameObject.SetActive(false);
-            firstCardAni.gameObject.SetActive(false);
-            secondCardAni.gameObject.SetActive(false);
-            yield return new WaitForSeconds(1f);
-            coinAnimator.SetInteger("State", 3);
             yield return new WaitForSeconds(1f);
             BattleUI.instance.fieldShadowAni.SetInteger("State", 1);
         }
         yield return new WaitForSeconds(1f);
+
         HeroManager.instance.playerHero.gameObject.SetActive(true);
         HeroManager.instance.enemyHero.gameObject.SetActive(true);
         HeroManager.instance.heroHpManager.playerHp.SetActive(true);
         HeroManager.instance.heroHpManager.enemyHp.SetActive(true);
         TurnManager.instance.turnBtn.SetActive(true);
+
         if (drawType == DrawType.후공)
             TurnManager.instance.turnBtnAni.SetTrigger("상대턴");      
 
         BattleUI.instance.gameStart = true;
         SoundManager.instance.PlayBGM("대전맵배경음");
         TurnManager.instance.turnEndTrigger = true;
-        showCharacterAni.enabled = false;
+        BattleUI.instance.RunShowCharacterAni(false);
         HeroManager.instance.heroAtkManager.playerObjectAni.enabled = true;
         HeroManager.instance.heroAtkManager.enemyObjectAni.enabled = true;
     }
@@ -222,9 +241,10 @@ public class Mulligan : MonoBehaviour
             //덱 맨위의 카드를 뽑는다.
             string topCard = InGameDeck.instance.GetTopCard();
             InGameDeck.instance.PopTopCard();
+            mulliganCard[i] = topCard;
 
             //카드객체로 해당 카드를 표시한다.
-            CardViewManager.instance.CardShow(ref cardView[i], topCard);
+            CardViewManager.instance.CardShow(ref mulliganCardView[i], topCard);
             CardViewManager.instance.UpdateCardView();
         }
 
@@ -235,7 +255,7 @@ public class Mulligan : MonoBehaviour
     private IEnumerator ShowMulligan(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        cardAnimator.SetInteger("State", 1);
+        mulliganAnimator.SetInteger("State", 1);
     }
 
     private IEnumerator DrawCard(float waitTime)
@@ -267,7 +287,7 @@ public class Mulligan : MonoBehaviour
     private IEnumerator SetCoin(float waitTime, DrawType draw)
     {
         yield return new WaitForSeconds(waitTime);
-        cardAnimator.SetInteger("State", (int)draw);
+        mulliganAnimator.SetInteger("State", (int)draw);
         coinAnimator.SetInteger("State", (int)draw);
     }
     #endregion
@@ -276,7 +296,8 @@ public class Mulligan : MonoBehaviour
     private IEnumerator CardGlow(float waitTime, DrawType draw)
     {
         yield return new WaitForSeconds(waitTime);
-        cardGlow[(int)draw - 1].SetActive(true);
+        for (int i = 0; i < mulliganGlow.Length; i++)
+            mulliganGlow[i].isRun = true;
         mulliganUI.SetActive(true);
     }
     #endregion

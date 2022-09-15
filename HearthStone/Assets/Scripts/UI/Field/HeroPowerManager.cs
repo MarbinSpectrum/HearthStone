@@ -118,8 +118,9 @@ public class HeroPowerManager : MonoBehaviour
                 abilityName = "변신";
         }
 
-        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(abilityName));
-        string ability = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
+        Vector2Int pair = DataMng.instance.GetPairByName(
+            DataMng.instance.playData.GetCardName(abilityName));
+        string ability = DataMng.instance.ToString(pair.x, pair.y, "명령어");
 
         if (!enemy)
             playerheroPower = SpellManager.instance.SpellParsing(ability);

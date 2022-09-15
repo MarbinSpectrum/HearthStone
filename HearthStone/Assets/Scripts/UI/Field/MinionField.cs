@@ -5,8 +5,9 @@ using UnityEngine;
 public class MinionField : MonoBehaviour
 {
     public static MinionField instance;
+    private const int MINION_SLOT_NUM = 7;
 
-    [Range(0,7)]
+    [Range(0, MINION_SLOT_NUM)]
     public int minionNum;
 
     [Range(0, 1920)]
@@ -32,10 +33,10 @@ public class MinionField : MonoBehaviour
     [Header("-----------------------------------------")]
     [Space(20)]
 
-    public MinionObject[] minions = new MinionObject[7];
-    Vector3[] minions_pos = new Vector3[7];
-    [HideInInspector] public Vector3[] minions_Attack_pos = new Vector3[7];
-    [HideInInspector] public float[] minions_attack_delay = new float[7];
+    public MinionObject[] minions = new MinionObject[MINION_SLOT_NUM];
+    private Vector3[] minions_pos = new Vector3[MINION_SLOT_NUM];
+    [HideInInspector] public Vector3[] minions_Attack_pos = new Vector3[MINION_SLOT_NUM];
+    [HideInInspector] public float[] minions_attack_delay = new float[MINION_SLOT_NUM];
     [HideInInspector] public float attack_ready;
     [HideInInspector] public int mousePos;
     [HideInInspector] public bool setMinionPos = true;
@@ -101,7 +102,7 @@ public class MinionField : MonoBehaviour
         if (!setMinionPos)
             return;
         //새로 설치할 미니언에 따른 위치 설정
-        bool flag = (minionNum == 7);   //미니언을 설치할 위치가 없을때
+        bool flag = FullField();   //미니언을 설치할 위치가 없을때
         flag = flag || (DragCardObject.instance.dragCardView.cardType != CardType.하수인);   //하수인을 드래그하는게 아닐때
         flag = flag || (!DragCardObject.instance.mouseInField);   //필드로 뭔가를 드래그하는게 아닐때
 
@@ -227,9 +228,30 @@ public class MinionField : MonoBehaviour
     #endregion
 
     #region[미니언 추가]
+    public void AddMinion(string mName, bool cardHandSpawn)
+    {
+        AddMinion(mousePos, mName, cardHandSpawn);
+    }
+
+    public void AddMinion(int n, string mName, bool cardHandSpawn)
+    {
+        switch (mName)
+        {
+            case "데스윙":
+                AddMinion(n, mName, cardHandSpawn, 2);
+                break;
+            case "그룰":
+                AddMinion(n, mName, cardHandSpawn, 3);
+                break;
+            default:
+                AddMinion(n, mName, cardHandSpawn, 0);
+                break;
+        }
+    }
+
     public void AddMinion(int n, string name, bool cardHandSpawn, int spawnAni = 0)
     {
-        if (minionNum == 7)
+        if (FullField())
             return;
         if (cardHandSpawn)
             GameEventManager.instance.EventAdd(2f);
@@ -339,6 +361,13 @@ public class MinionField : MonoBehaviour
         for (int i = 0; i < minionNum; i++)
             minions[i].turnEndTrigger = true;
 
+    }
+    #endregion
+
+    #region[필드가 꽉찼는가?]
+    public bool FullField()
+    {
+        return (minionNum >= MINION_SLOT_NUM);
     }
     #endregion
 

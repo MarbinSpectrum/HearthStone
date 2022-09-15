@@ -7,6 +7,9 @@ public class BattleUI : MonoBehaviour
 {
     public static BattleUI instance;
 
+    [Header("캐릭터 초상화 애니메이션")]
+    [SerializeField] private Animator showCharacterAni;
+
     public MeshRenderer playerHeroPower;
     public Material druidMat;
     public Material rogueMat;
@@ -73,6 +76,7 @@ public class BattleUI : MonoBehaviour
     #region[Start]
     private void Start()
     {
+        RunShowCharacterAni(true);
         StartCoroutine(PlayerSetEffect(7));
         StartCoroutine(CameraVibrationEffect(7, 12,0.5f));
         StartCoroutine(ShowEnermyText(7, "내가 대자연을 수호하겠다!"));
@@ -109,7 +113,13 @@ public class BattleUI : MonoBehaviour
     }
     #endregion
 
+
     #region[대전자소개]
+    public void RunShowCharacterAni(bool state)
+    {
+        showCharacterAni.enabled = state;
+    }
+
     private IEnumerator BattleVsSound(float waitTime, string name1, string name2)
     {
         yield return new WaitForSeconds(waitTime);

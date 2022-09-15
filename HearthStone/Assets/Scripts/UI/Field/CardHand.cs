@@ -9,9 +9,20 @@ public class CardHand : MonoBehaviour
 {
     public static CardHand instance;
 
+    private static Vector2 HandCardSize = new Vector2(10.685f, 13.714f);
+    public static Vector2 handCardSize
+    {
+        get
+        {
+            return HandCardSize;
+        }
+    }
+
+
     [Header("패 오브젝트")]
     public List<RectTransform> card = new List<RectTransform>();
-    CardView[] handCardView;
+    private CardView[] handCard;
+
     List<Vector3> cardStartPos = new List<Vector3>();
     List<Vector2> cardStartSize = new List<Vector2>();
     [HideInInspector] public List<bool> canUse = new List<bool>();
@@ -51,8 +62,13 @@ public class CardHand : MonoBehaviour
 
     [HideInInspector] public int useCardNum = 0;
 
-    public int[] handCostOffset;
-    public int UsePreparation;
+    //손패 카드 코스트 증감처리
+    [HideInInspector] public int[] handCostOffset;
+
+    //마음가짐 발동 처리
+    [HideInInspector] public int UsePreparation;
+
+
     [HideInInspector] public int removeCostOffset = 0;
 
     int exhaustion = 0;
@@ -63,15 +79,16 @@ public class CardHand : MonoBehaviour
         instance = this;
         if (card.Count <= 0)
             return;
-        handCardView = new CardView[card.Count];
+        handCard = new CardView[card.Count];
         handCostOffset = new int[card.Count];
+
         for (int i = 0; i < card.Count; i++)
         {
             cardStartPos.Add(Vector4.zero);
             cardStartSize.Add(Vector2.zero);
             cardStartAngle.Add(0);
             canUse.Add(false);
-            handCardView[i] = card[i].transform.Find("Card").GetComponent<CardView>();
+            handCard[i] = card[i].transform.Find("Card").GetComponent<CardView>();
             handLerp.Add(1);
         }
 
@@ -100,30 +117,24 @@ public class CardHand : MonoBehaviour
             card[i].gameObject.SetActive(i < nowHandNum);
             if (!card[i].gameObject.activeSelf)
                 card[i].transform.position = drawCardPos.position;
-            handCardView[i].cardCostOffset = handCostOffset[i];
-            if (handCardView[i].cardType == CardType.주문)
-                handCardView[i].cardCostOffset -= UsePreparation;
+            handCard[i].cardCostOffset = handCostOffset[i];
+            if (handCard[i].cardType == CardType.주문)
+                handCard[i].cardCostOffset -= UsePreparation;
         }
 
         for (int i = 0; i < card.Count; i++)
         {
             if (Application.isPlaying)
             {
-                int cost = 0;
-                if (handCardView[i].cardType == CardType.무기)
-                    cost = handCardView[i].WeaponCostData + handCostOffset[i];
-                else if (handCardView[i].cardType == CardType.주문)
-                    cost = handCardView[i].SpellCostData + handCostOffset[i] - UsePreparation;
-                else if (handCardView[i].cardType == CardType.하수인)
-                    cost = handCardView[i].MinionsCostData + handCostOffset[i];
+                int cost = GetCardCost(i);
 
-                if (handCardView[i].cardType == CardType.무기)
+                if (handCard[i].cardType == CardType.무기)
                     glowImg[i].sprite = weaponImg;
-                else if (handCardView[i].cardType == CardType.주문)
+                else if (handCard[i].cardType == CardType.주문)
                     glowImg[i].sprite = spellImg;
-                else if (handCardView[i].cardType == CardType.하수인)
+                else if (handCard[i].cardType == CardType.하수인)
                 {
-                    if (handCardView[i].cardLevel.Equals("전설"))
+                    if (handCard[i].cardLevel.Equals("전설"))
                         glowImg[i].sprite = minionImg_legend;
                     else
                         glowImg[i].sprite = minionImg;
@@ -135,19 +146,23 @@ public class CardHand : MonoBehaviour
                     BattleUI.instance.gameStart &&
                     TurnManager.instance.turnAniEnd &&
                     TurnManager.instance.turn == Turn.플레이어 &&
-                    !handCardView[i].hide &&
+                    !handCard[i].hide &&
                     card[i].gameObject.activeSelf &&
                     cost <= ManaManager.instance.playerNowMana &&
                     DragCardObject.instance.dropEffect.dropEffectAni.GetCurrentAnimatorStateInfo(0).IsName("DropEffect_Stop") &&
-                    ((handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대중") && handAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99) ||
+                    ((handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대중") && 
+                    handAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99) ||
                     handAni.GetCurrentAnimatorStateInfo(0).IsName("패확대") ||
                     handAni.GetCurrentAnimatorStateInfo(0).IsName("패 기본상태")));
 
-                if (useCardNum > 0 && handCardView[i].cardType == CardType.무기 && handCardView[i].WeaponCardExplainData.Contains("연계"))
+                if (useCardNum > 0 && handCard[i].cardType == CardType.무기 &&
+                    handCard[i].WeaponCardExplainData.Contains("연계"))
                     glowImg[i].material = glowComboMat;
-                else if (useCardNum > 0 && handCardView[i].cardType == CardType.주문 && handCardView[i].SpellCardExplainData.Contains("연계"))
+                else if (useCardNum > 0 && handCard[i].cardType == CardType.주문 &&
+                    handCard[i].SpellCardExplainData.Contains("연계"))
                     glowImg[i].material = glowComboMat;
-                else if (useCardNum > 0 && handCardView[i].cardType == CardType.하수인 && handCardView[i].MinionsCardExplainData.Contains("연계"))
+                else if (useCardNum > 0 && handCard[i].cardType == CardType.하수인 &&
+                    handCard[i].MinionsCardExplainData.Contains("연계"))
                     glowImg[i].material = glowComboMat;
                 else
                     glowImg[i].material = glowNormalMat;
@@ -210,48 +225,78 @@ public class CardHand : MonoBehaviour
     #region[카드 사용 가능 여부]
     public void SetCardUse()
     {
+        if (Application.isPlaying == false)
+            return;
+
         for (int i = 0; i < card.Count; i++)
         {
-            if (Application.isPlaying)
+            //게임이 시작되어야지 카드를 사용 할 수 있다.
+            canUse[i] = BattleUI.instance.gameStart;
+
+            //마나가 충분해야지 사용가능
+            int cost = GetCardCost(i);
+            canUse[i] = (cost <= ManaManager.instance.playerNowMana);
+
+            if (handCard[i].cardType == CardType.무기)
             {
-                int cost = 0;
-                if (handCardView[i].cardType == CardType.무기)
-                {
-                    cost = handCardView[i].WeaponCostData + handCostOffset[i];
-                    canUse[i] = (cost <= ManaManager.instance.playerNowMana);
+                //무기는 사용할 마나만 충분하면 바로 사용가능하다.
+            }
+            else if (handCard[i].cardType == CardType.주문)
+            {
+                //주문의 명령어 코드를 읽어들인다.
+                DataMng dataMng = DataMng.instance;
+                Vector2Int pair = dataMng.GetPairByName(dataMng.playData.
+                    GetCardName(handCard[i].GetName()));
+                string ability_string = dataMng.ToString(pair.x, pair.y, "명령어");
+                List<SpellAbility> spellList =
+                    SpellManager.instance.SpellParsing(ability_string);
 
-                }
-                else if (handCardView[i].cardType == CardType.주문)
+                foreach (SpellAbility sAbility in spellList)
                 {
-                    bool canUseCheck = true;
-                    Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(handCardView[i].SpellCardNameData));
-                    string ability_string = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "명령어");
-                    List<SpellAbility> spellList = SpellManager.instance.SpellParsing(ability_string);
-                    for(int s = 0; s < spellList.Count; s++)
+                    //명령어를 탐색해본다.
+                    if (HeroManager.instance.EquipWeapon() == false)
                     {
-                        if (HeroManager.instance.heroAtkManager.playerWeaponDurability <= 0)
-                            if (spellList[s].Ability_type == SpellAbility.Ability.무기에_공격력부여)
-                                canUseCheck = false;
-                            else if (spellList[s].Ability_type == SpellAbility.Ability.무기파괴)
-                                canUseCheck = false;
-                            else if (spellList[s].Ability_type == SpellAbility.Ability.무기의_공격력만큼능력부여)
-                                canUseCheck = false;
+                        //무기를 장착중이지 않은 상태
+                        //무기관련 효과는 발동 할 수 없다.
+                        switch (sAbility.Ability_type)
+                        {
+                            case SpellAbility.Ability.무기에_공격력부여:
+                            case SpellAbility.Ability.무기파괴:
+                            case SpellAbility.Ability.무기의_공격력만큼능력부여:
+                                {
+                                    canUse[i] &= false;
+                                    break;
+                                }
+                            default:
+                                break;
+                        }
                     }
-
-                    cost = handCardView[i].SpellCostData + handCostOffset[i] - UsePreparation;
-                    canUse[i] = canUseCheck && (cost <= ManaManager.instance.playerNowMana);
                 }
-                else if (handCardView[i].cardType == CardType.하수인)
+            }
+            else if (handCard[i].cardType == CardType.하수인)
+            {
+                if (MinionField.instance.FullField())
                 {
-                    cost = handCardView[i].MinionsCostData + handCostOffset[i];
-                    canUse[i] = (cost <= ManaManager.instance.playerNowMana);
-                    canUse[i] = canUse[i] && (MinionField.instance.minionNum < 7);
+                    //필드가 꽉차면 하수인 카드를 사용할 수 없다.
+                    canUse[i] &= false;
                 }
-                canUse[i] = canUse[i] && BattleUI.instance.gameStart;
-
-
             }
         }
+    }
+    #endregion
+
+    #region[카드 비용 계산]
+    private int GetCardCost(int n)
+    {
+        //카드 비용 계산
+        int cost = handCard[n].GetCost() + handCostOffset[n];
+        if (handCard[n].cardType == CardType.주문)
+        {
+            //마음가짐 카드 효과처리
+            cost -= UsePreparation;
+        }
+        cost = Mathf.Max(0, cost);
+        return cost;
     }
     #endregion
 
@@ -347,7 +392,7 @@ public class CardHand : MonoBehaviour
             DrawCard();
             string topCard = InGameDeck.instance.GetTopCard();
             InGameDeck.instance.PopTopCard();
-            CardMove(topCard, nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
+            SetCardHand(topCard, nowHandNum - 1, drawCardPos.transform.position, defaultSize, 0);
             CardViewManager.instance.UpdateCardView(0.001f);
         }
 
@@ -362,39 +407,55 @@ public class CardHand : MonoBehaviour
         nowHandNum++;
         for (int i = 0; i < nowHandNum-1; i++)
         {
-            CardMove(i, card[i].transform.position,
+            SetCardHand(i, card[i].transform.position,
                 defaultSize,
-                card[i].transform.rotation.eulerAngles.z > 180 ? instance.card[i].transform.rotation.eulerAngles.z - 360 : instance.card[i].transform.rotation.eulerAngles.z);
+                card[i].transform.rotation.eulerAngles.z > 180 ?
+                instance.card[i].transform.rotation.eulerAngles.z - 360 : 
+                instance.card[i].transform.rotation.eulerAngles.z);
         }
     }
     #endregion
 
-    #region[카드 이동]
-    public void CardMove(int n, Vector3 pos, Vector2 size, float angle = 0)
+    #region[패에 카드 배치]
+    public void SetCardHand(int n, Vector3 pos, Vector2 size, float angle = 0)
     {
+        //n번째 카드를 pos위치,size크기,angle각도인 상태에서
+        //원래 있어야할 패위치로 이동한다.
         handLerp[n] = 0;
         cardStartPos[n] = pos;
         cardStartSize[n] = size;
         cardStartAngle[n] = angle;
     }
 
-    public void CardMove(string name, int n, Vector3 pos, Vector2 size, float angle = 0)
+    public void SetCardHand(string name, int n, Vector3 pos, Vector2 size, float angle = 0)
     {
+        //n번째 카드를 name기준으로 변환하고
+        //pos위치,size크기,angle각도인 상태에서
+        //원래 있어야할 패위치로 이동한다.
         handLerp[n] = 0;
         cardStartPos[n] = pos;
         cardStartSize[n] = size;
         cardStartAngle[n] = angle;
-        CardViewManager.instance.CardShow(ref handCardView[n], name);
+        CardViewManager.instance.CardShow(ref handCard[n], name);
         CardViewManager.instance.UpdateCardView();
     }
 
-    public void CardMove(CardView cardView, int n, Vector3 pos, Vector2 size, float angle = 0)
+    public void SetCardHand(CardView cardView, int n, Vector3 pos, Vector2 size, float angle = 0)
     {
+        //n번째 카드를 cardView와 같이 변환하고
+        //pos위치,size크기,angle각도인 상태에서
+        //원래 있어야할 패위치로 이동한다.
         handLerp[n] = 0;
         cardStartPos[n] = pos;
         cardStartSize[n] = size;
         cardStartAngle[n] = angle;
-        CardViewManager.instance.CardShow(ref handCardView[n], cardView);
+        CardViewManager.instance.CardShow(ref handCard[n], cardView);
+        CardViewManager.instance.UpdateCardView();
+    }
+    public void SetCardHand(int n, string name)
+    {
+        //n번째 카드를 name기준으로 변환하고
+        CardViewManager.instance.CardShow(ref handCard[n], name);
         CardViewManager.instance.UpdateCardView();
     }
     #endregion
@@ -402,55 +463,42 @@ public class CardHand : MonoBehaviour
     #region[카드 사용]
     public void UseCard(int n)
     {
-        int cost = 0;
-        if (handCardView[n].cardType == CardType.무기)
-            cost = handCardView[n].WeaponCostData + handCostOffset[n];
-        else if (handCardView[n].cardType == CardType.주문)
-            cost = handCardView[n].SpellCostData + handCostOffset[n] - UsePreparation;
-        else if (handCardView[n].cardType == CardType.하수인)
-            cost = handCardView[n].MinionsCostData + handCostOffset[n];
-        cost = Mathf.Max(0,cost);
+        if (DragCardObject.instance.dragSelectCard)
+        {
+            //카드를 드래그중이면 발동이 안된다.
+            return;
+        }
 
-        if (handCardView[n].cardType == CardType.무기)
+        //카드 비용 계산
+        int cost = GetCardCost(n);
+        ManaManager.instance.playerNowMana -= cost;
+
+        //사용갯수 
+        useCardNum++;
+
+        //카드 사용이 취소될때 받을값
+        removeCostOffset = handCostOffset[n];
+
+        if (handCard[n].cardType == CardType.주문)
         {
-            if (!DragCardObject.instance.dragSelectCard)
-            {
-                ManaManager.instance.playerNowMana -= cost;
-                useCardNum++;
-                removeCostOffset = handCostOffset[n];
-                if (handCardView[n].cardJob == "드루이드")
-                    QuestManager.instance.CharacterCard(Job.드루이드);
-                else if (handCardView[n].cardJob == "도적")
-                    QuestManager.instance.CharacterCard(Job.도적);
-                SpellManager.instance.RunSpell(handCardView[n].WeaponCardNameData);
-                CardRemove(n);
-            }
+            //주문 이펙트가 켜지고
+            //주문이 실행된다.
+            DragCardObject.instance.ShowDropEffectSpell(Input.mousePosition, 0);
+            SpellManager.instance.RunSpell(handCard[n].GetName());
         }
-        else if (handCardView[n].cardType == CardType.주문)
+        else if (handCard[n].cardType == CardType.무기)
         {
-            if (!DragCardObject.instance.dragSelectCard)
-            {
-                ManaManager.instance.playerNowMana -= cost;
-                useCardNum++;
-                removeCostOffset = handCostOffset[n];
-                DragCardObject.instance.ShowDropEffectSpell(Input.mousePosition, 0);
-                SpellManager.instance.RunSpell(handCardView[n].SpellCardNameData);
-                CardRemove(n);
-            }
+            //무기카드도 주문카드의 일종으로 취급되서 발동된다.
+            SpellManager.instance.RunSpell(handCard[n].GetName());
         }
-        else if (handCardView[n].cardType == CardType.하수인)
+        else if (handCard[n].cardType == CardType.하수인)
         {
-            ManaManager.instance.playerNowMana -= cost;
-            useCardNum++;
-            removeCostOffset = handCostOffset[n];
-            if (handCardView[n].MinionsCardNameData.Equals("데스윙"))
-                MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData, true, 2);
-            else if (handCardView[n].MinionsCardNameData.Equals("그룰"))
-                MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData, true, 3);
-            else
-                MinionField.instance.AddMinion(MinionField.instance.mousePos, handCardView[n].MinionsCardNameData,true);
-            CardRemove(n);
+            //하수인을  소환
+            MinionField.instance.AddMinion(handCard[n].GetName(), true);
         }
+
+        //n번째 카드를 패에서 제거
+        CardRemove(n);
     }
     #endregion
 
@@ -480,10 +528,8 @@ public class CardHand : MonoBehaviour
             }
             float tempAngle = fullAngle / 2f;
             tempAngle -= i * addAngle;
-            //Vector3 destinationPos = Quaternion.Euler(0, 0, tempAngle) * Vector3.up;
-            //destinationPos = transform.position + (Vector3)destinationPos * range;
             int cardViewNum = (i >= n) ? i + 1 : i;
-            CardMove(handCardView[cardViewNum], i, card[cardViewNum].transform.position, defaultSize, tempAngle);
+            SetCardHand(handCard[cardViewNum], i, card[cardViewNum].transform.position, defaultSize, tempAngle);
         }
         CardViewManager.instance.UpdateCardView(0.001f);
     }

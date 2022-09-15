@@ -54,8 +54,8 @@ public class CardDrag : MonoBehaviour
     public void CardCost()
     {
         int cardCost_Data = 0;
-        Vector2 pair = DataMng.instance.GetPairByName(cardName_Data);
-        cardCost_Data = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+        Vector2Int pair = DataMng.instance.GetPairByName(cardName_Data);
+        cardCost_Data = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
         cardCost.sprite = DataMng.instance.num[Mathf.Min(cardCost_Data, 9)];
     }
     #endregion

@@ -28,7 +28,7 @@ public class HeroManager : MonoBehaviour
         instance = this;
     }
 
-    void Update()
+    private void Update()
     {
         playerFreezeObj.SetActive(playerFreezeCount > 0);
         enemyFreezeObj.SetActive(enemyFreezeCount > 0);
@@ -119,4 +119,25 @@ public class HeroManager : MonoBehaviour
         enemyFreezeCount--;
         playerFreezeCount--;
     }
+
+    public bool EquipWeapon()
+    {
+        return (heroAtkManager.GetPlayerDurability() > 0);
+    }
+
+    public void SetPlayerDurability(int v)
+    {
+        heroAtkManager.SetPlayerDurability(v);
+    }
+
+    public bool EnemyEquipWeapon()
+    {
+        return (heroAtkManager.GetEnemyDurability() > 0);
+    }
+
+    public void SetEnemyDurability(int v)
+    {
+        heroAtkManager.SetEnemyDurability(v);
+    }
+
 }

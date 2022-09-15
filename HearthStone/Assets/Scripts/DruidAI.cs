@@ -34,9 +34,10 @@ public class DruidAI : MonoBehaviour
             {
                 int nowMana = ManaManager.instance.enemyNowMana;
                 string cardName = EnemyCardHand.instance.nowCard[i];
-                Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(cardName));
-                string cardType = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드종류");
-                int cardCost = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+                Vector2Int pair = DataMng.instance.GetPairByName(
+                    DataMng.instance.playData.GetCardName(cardName));
+                string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
+                int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
                 if (cardType != "하수인")
                     continue;
                 if (nowMana >= cardCost)
@@ -49,9 +50,9 @@ public class DruidAI : MonoBehaviour
         {
             int nowMana = ManaManager.instance.enemyNowMana;
             string cardName = EnemyCardHand.instance.nowCard[i];
-            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(cardName));
-            string cardType = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드종류");
-            int cardCost = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+            Vector2Int pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(cardName));
+            string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
+            int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
             if (cardType != "주문")
                 continue;
             if (nowMana < cardCost)
@@ -186,14 +187,7 @@ public class DruidAI : MonoBehaviour
         #region[영웅능력을 사용하는 것을 고려]
         if (ManaManager.instance.enemyNowMana >= 2 && HeroManager.instance.heroPowerManager.enemyCanUse)
         {
-            if (HeroManager.instance.heroPowerManager.enemyHeroName.Equals("발리라"))
-            {
-                //무기공격력이 1이하이고 내구도가 2미만일때
-                if (HeroManager.instance.heroAtkManager.enemyWeaponAtk <= 1 && HeroManager.instance.heroAtkManager.enemyWeaponDurability < 2)
-                    return AI_Act.AttackHero;
-            }
-            else if (HeroManager.instance.heroPowerManager.enemyHeroName.Equals("말퓨리온"))
-                return AI_Act.AttackHero;
+            return AI_Act.AttackHero;
         }
         else if (HeroManager.instance.heroAtkManager.enemyAttackCheck && !HeroManager.instance.enemyFreezeObj.activeSelf)
         {
@@ -311,9 +305,10 @@ public class DruidAI : MonoBehaviour
                 {
                     int nowMana = ManaManager.instance.enemyNowMana;
                     string cardName = EnemyCardHand.instance.nowCard[i];
-                    Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(cardName));
-                    string cardType = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드종류");
-                    int cardCost = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+                    Vector2Int pair = DataMng.instance.GetPairByName(
+                        DataMng.instance.playData.GetCardName(cardName));
+                    string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
+                    int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
                     if (cardType != "하수인")
                         continue;
                     if (cardCost >= minionCost && nowMana >= cardCost)
@@ -339,9 +334,10 @@ public class DruidAI : MonoBehaviour
                 {
                     int nowMana = ManaManager.instance.enemyNowMana;
                     string cardName = EnemyCardHand.instance.nowCard[i];
-                    Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(cardName));
-                    string cardType = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드종류");
-                    int cardCost = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+                    Vector2Int pair = DataMng.instance.GetPairByName(
+                        DataMng.instance.playData.GetCardName(cardName));
+                    string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
+                    int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
                     if (cardType != "주문")
                         continue;
                     for(int c = 0; c < caseNum; c++)
@@ -500,21 +496,8 @@ public class DruidAI : MonoBehaviour
                 //영웅능력사용조건
                 if (ManaManager.instance.enemyNowMana >= 2 && HeroManager.instance.heroPowerManager.enemyCanUse)
                 {
-                    if (HeroManager.instance.heroPowerManager.enemyHeroName.Equals("발리라"))
-                    {
-                        //무기공격력이 1이하이고 내구도가 2미만일때
-                        if (HeroManager.instance.heroAtkManager.enemyWeaponAtk <= 1 && HeroManager.instance.heroAtkManager.enemyWeaponDurability < 2)
-                        {
-                            HeroManager.instance.heroPowerManager.UseHeroAbility(true);
-                            yield return new WaitForSeconds(2f);
-                        }
-
-                    }
-                    else if (HeroManager.instance.heroPowerManager.enemyHeroName.Equals("말퓨리온"))
-                    {
-                        HeroManager.instance.heroPowerManager.UseHeroAbility(true);
-                        yield return new WaitForSeconds(2f);
-                    }
+                    HeroManager.instance.heroPowerManager.UseHeroAbility(true);
+                    yield return new WaitForSeconds(2f);
                 }
                 else if (HeroManager.instance.heroAtkManager.enemyAttackCheck && !HeroManager.instance.enemyFreezeObj.activeSelf)
                 {
@@ -1495,9 +1478,10 @@ public class DruidAI : MonoBehaviour
             {
                     int nowMana = ManaManager.instance.enemyNowMana + addMana;
                 string cardName = EnemyCardHand.instance.nowCard[i];
-                Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(cardName));
-                string cardType = DataMng.instance.ToString((DataMng.TableType)pair.x, (int)pair.y, "카드종류");
-                int cardCost = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+                Vector2Int pair = DataMng.instance.GetPairByName(
+                    DataMng.instance.playData.GetCardName(cardName));
+                string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
+                int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
                 if (cardType != "하수인")
                     continue;
                 if (nowMana >= cardCost)

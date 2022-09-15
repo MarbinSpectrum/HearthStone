@@ -977,8 +977,9 @@ public class MinionManager : MonoBehaviour
         GameEventManager.instance.EventAdd(1.4f);
         BattleUI.instance.grayFilterAni.SetBool("On", false);
         BattleUI.instance.selectMinion.gameObject.SetActive(false);
-        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(eventMininon.minion_name));
-        int mana = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "코스트");
+        Vector2Int pair = DataMng.instance.GetPairByName(
+            DataMng.instance.playData.GetCardName(eventMininon.minion_name));
+        int mana = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
         mana += CardHand.instance.removeCostOffset;
         mana = mana < 0 ? 0 : mana;
         ManaManager.instance.playerNowMana += mana;

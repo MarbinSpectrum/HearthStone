@@ -12,7 +12,7 @@ public class HeroAtkManager : MonoBehaviour
     public string playerWeaponName;
     public int playerWeaponAtk;
     int flagPlayerWeaponAtk;
-    public int playerWeaponDurability;
+    private int playerWeaponDurability;
     int flagPlayerWeaponDurability;
 
     [Header("플레이어 최종공격력")]
@@ -29,7 +29,7 @@ public class HeroAtkManager : MonoBehaviour
     public string enemyWeaponName;
     public int enemyWeaponAtk;
     int flagEnemyWeaponAtk;
-    public int enemyWeaponDurability;
+    private int enemyWeaponDurability;
     int flagEnemyWeaponDurability;
 
     [Header("적 최종공격력")]
@@ -278,9 +278,10 @@ public class HeroAtkManager : MonoBehaviour
         if (playerWeaponDurability <= 0 && playerWeaponAtk != 0)
             playerWeaponAtk = 0;
 
-        Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(playerWeaponName));
-        int playerWeaponBaseHp = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "체력");
-        int playerWeaponBaseAtk = DataMng.instance.ToInteger((DataMng.TableType)pair.x, (int)pair.y, "공격력");
+        Vector2Int pair = DataMng.instance.GetPairByName(
+            DataMng.instance.playData.GetCardName(playerWeaponName));
+        int playerWeaponBaseHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
+        int playerWeaponBaseAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
         for (int i = 0; i < playerWeapons.Length; i++)
             playerWeapons[i].gameObject.SetActive(playerWeapons[i].transform.name.Equals(playerWeaponName));
 
@@ -368,9 +369,10 @@ public class HeroAtkManager : MonoBehaviour
         if (enemyWeaponDurability <= 0 && enemyWeaponAtk != 0)
             enemyWeaponAtk = 0;
 
-        Vector2 pair2 = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(enemyWeaponName));
-        int enemyWeaponBaseHp = DataMng.instance.ToInteger((DataMng.TableType)pair2.x, (int)pair2.y, "체력");
-        int enemyWeaponBaseAtk = DataMng.instance.ToInteger((DataMng.TableType)pair2.x, (int)pair2.y, "공격력");
+        Vector2Int pair2 = DataMng.instance.GetPairByName(
+            DataMng.instance.playData.GetCardName(enemyWeaponName));
+        int enemyWeaponBaseHp = DataMng.instance.ToInteger(pair2.x, pair2.y, "체력");
+        int enemyWeaponBaseAtk = DataMng.instance.ToInteger(pair2.x, pair2.y, "공격력");
         for (int i = 0; i < enemyWeapons.Length; i++)
             enemyWeapons[i].gameObject.SetActive(enemyWeapons[i].transform.name.Equals(enemyWeaponName));
 
@@ -508,5 +510,25 @@ public class HeroAtkManager : MonoBehaviour
             yield return new WaitForSeconds(0.01f);
         }
         obj.transform.position = v;
+    }
+
+    public void SetPlayerDurability(int v)
+    {
+        playerWeaponDurability = v;
+    }
+
+    public int GetPlayerDurability()
+    {
+        return playerWeaponDurability;
+    }
+
+    public void SetEnemyDurability(int v)
+    {
+        enemyWeaponDurability = v;
+    }
+
+    public int GetEnemyDurability()
+    {
+        return enemyWeaponDurability;
     }
 }
