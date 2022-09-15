@@ -82,18 +82,6 @@ public class DragCardObject : MonoBehaviour
                 DataMng.instance.playData.GetCardName(dragCardName));
             string ability_string = DataMng.instance.ToString(pair.x, pair.y, "명령어");
             spellList = SpellManager.instance.SpellParsing(ability_string);
-            spellList.Sort((a, b) =>
-            {
-                if (a.Condition_type > b.Condition_type)
-                    return 1;
-                else
-                {
-                    if (a.Ability_type == SpellAbility.Ability.무기장착)
-                        return +1;
-                    else
-                        return -1;
-                }
-            });
             for (int i = 0; i < spellList.Count; i++)
                 if (spellList[i].Condition_type != SpellAbility.Condition.선택 &&
                     SpellManager.instance.CheckEvent(spellList[i]) == SpellManager.EventType.대상선택)

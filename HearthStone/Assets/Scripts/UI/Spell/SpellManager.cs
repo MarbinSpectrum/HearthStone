@@ -132,7 +132,20 @@ public class SpellManager : MonoBehaviour
                     inputType = 입력.능력;
             }
         }
-
+        abilityList.Sort((a, b) =>
+        {
+            if (a.Condition_type > b.Condition_type)
+                return 1;
+            else if (a.Condition_type < b.Condition_type)
+                return -1;
+            else
+            {
+                if (a.Ability_type == SpellAbility.Ability.무기장착)
+                    return +1;
+                else
+                    return -1;
+            }
+        });
         return abilityList;
     }
     #endregion
@@ -165,18 +178,6 @@ public class SpellManager : MonoBehaviour
         while (GameEventManager.instance.GetEventValue() > 0.1f)
             yield return new WaitForSeconds(0.001f);
         GameEventManager.instance.EventAdd(0.1f);
-        spellList.Sort((a, b) =>
-        {
-            if (a.Condition_type > b.Condition_type)
-                return 1;
-            else
-            {
-                if (a.Ability_type == SpellAbility.Ability.무기장착)
-                    return +1;
-                else
-                    return -1;
-            }
-        });
 
         bool checkCombo = false;
         bool checkPreparation = false;
@@ -1028,18 +1029,7 @@ public class SpellManager : MonoBehaviour
 
     private IEnumerator RunSpellTargetMinion(List<SpellAbility> spellList, MinionObject minionObject,bool enemy)
     {
-        spellList.Sort((a, b) =>
-        {
-            if (a.Condition_type > b.Condition_type)
-                return 1;
-            else
-            {
-                if (a.Ability_type == SpellAbility.Ability.무기장착)
-                    return +1;
-                else
-                    return -1;
-            }
-        });
+
 
         bool checkCombo = false;
         List<SpellAbility> chooseOneList = new List<SpellAbility>();
@@ -1632,18 +1622,6 @@ public class SpellManager : MonoBehaviour
         while (GameEventManager.instance.GetEventValue() > 0.1f)
             yield return new WaitForSeconds(0.001f);
         GameEventManager.instance.EventAdd(0.1f);
-        spellList.Sort((a, b) =>
-        {
-            if (a.Condition_type > b.Condition_type)
-                return 1;
-            else
-            {
-                if (a.Ability_type == SpellAbility.Ability.무기장착)
-                    return +1;
-                else
-                    return -1;
-            }
-        });
 
         bool checkCombo = false;
         List<SpellAbility> chooseOneList = new List<SpellAbility>();
