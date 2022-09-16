@@ -63,6 +63,7 @@
     <Compile Include="Assets\Graphics\Shaders\GoToHandEffect.cs" />
     <Compile Include="Assets\Scripts\Effect\SwordEffect.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckBtn.cs" />
+    <Compile Include="Assets\Scripts\Deck.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\Battery\BatteryUI.cs" />
     <Compile Include="Assets\Scripts\UI\Field\MinionField.cs" />
     <Compile Include="Assets\Scripts\Pack.cs" />
@@ -194,9 +195,11 @@
     <Compile Include="Assets\Scripts\UI\btns\MinionSelect.cs" />
     <Compile Include="Assets\Scripts\UI\Field\EnemyCardHand.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MyCollectionsShowMakingBtn.cs" />
+    <Compile Include="Assets\Scripts\Effect\CardGotoHandEffect.cs" />
     <Compile Include="Assets\Scripts\UI\btns\DeckCardDragBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\CardHandBtn.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\MinionObject.cs" />
+    <Compile Include="Assets\Scripts\Quest.cs" />
     <Compile Include="Assets\Scripts\UI\btns\BattleMenuFindBattle.cs" />
     <Compile Include="Assets\Scripts\UI\btns\HandCardCheckBtn.cs" />
     <Compile Include="Assets\Scripts\UI\CurvedText.cs" />
@@ -248,8 +251,7 @@
     <Compile Include="Assets\Graphics\52SpecialEffectPack\EffectEditor\ShurikenEffectEditor\csShurikenEffectChanger.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToAdventureBtn.cs" />
     <Compile Include="Assets\Graphics\52SpecialEffectPack\Animation&amp;Script\csDestroyEffect.cs" />
-    <Compile Include="Assets\Scripts\Deck.cs" />
-    <Compile Include="Assets\Scripts\Quest.cs" />
+    <Compile Include="Assets\Scripts\DataParse.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />

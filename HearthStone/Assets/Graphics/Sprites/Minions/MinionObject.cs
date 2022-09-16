@@ -277,6 +277,13 @@ public class MinionObject : MonoBehaviour
     }
     #endregion
 
+    #region[소환완료 애니메이션이 끝남]
+    public bool SpawnAniEnd()
+    {
+        return animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료");
+    }
+    #endregion
+
     #region[주문시전시]
     public void SpellRunCheck()
     {
@@ -462,7 +469,7 @@ public class MinionObject : MonoBehaviour
     {
         abilityList.Clear();
         buffList.Clear();
-        Vector2Int pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minion_name));
+        Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(minion_name));
         baseHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
         final_hp = Mathf.Min(baseHp, final_hp);
         baseAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
@@ -485,7 +492,7 @@ public class MinionObject : MonoBehaviour
         InitTrigger = false;
         TestInitTrigger = false;
         meshRenderer.material = MinionManager.instance.minionMaterial[minion_name];
-        Vector2Int pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minion_name));
+        Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(minion_name));
         baseHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
         baseAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
         legend = DataMng.instance.ToString(pair.x, pair.y, "등급").Equals("전설");

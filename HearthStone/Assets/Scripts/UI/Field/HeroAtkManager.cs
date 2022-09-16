@@ -279,7 +279,7 @@ public class HeroAtkManager : MonoBehaviour
             playerWeaponAtk = 0;
 
         Vector2Int pair = DataMng.instance.GetPairByName(
-            DataMng.instance.playData.GetCardName(playerWeaponName));
+            DataParse.GetCardName(playerWeaponName));
         int playerWeaponBaseHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
         int playerWeaponBaseAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
         for (int i = 0; i < playerWeapons.Length; i++)
@@ -370,7 +370,7 @@ public class HeroAtkManager : MonoBehaviour
             enemyWeaponAtk = 0;
 
         Vector2Int pair2 = DataMng.instance.GetPairByName(
-            DataMng.instance.playData.GetCardName(enemyWeaponName));
+            DataParse.GetCardName(enemyWeaponName));
         int enemyWeaponBaseHp = DataMng.instance.ToInteger(pair2.x, pair2.y, "체력");
         int enemyWeaponBaseAtk = DataMng.instance.ToInteger(pair2.x, pair2.y, "공격력");
         for (int i = 0; i < enemyWeapons.Length; i++)

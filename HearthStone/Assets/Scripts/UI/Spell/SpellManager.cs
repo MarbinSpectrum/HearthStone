@@ -55,23 +55,28 @@ public class SpellManager : MonoBehaviour
     {
         List<SpellAbility> abilityList = new List<SpellAbility>();
 
-        char[] splitChar = { '[', ']' };
-        string[] ability_Split = ability_string.Split(splitChar);
-        List<string> ability_Data = new List<string>();
-        for (int i = 0; i < ability_Split.Length; i++)
-            if (ability_Split[i].Length != 0)
-                ability_Data.Add(ability_Split[i]);
+        string[] aSplit = ability_string.Split('[', ']');
+        List<string> abilityData = new List<string>();
+        for (int i = 0; i < aSplit.Length; i++)
+        {
+            if(string.IsNullOrEmpty(aSplit[i]))
+            {
+                continue;
+            }
+            abilityData.Add(aSplit[i]);
+        }
 
         입력 inputType = 입력.조건;
         SpellAbility temp = null;
         int dataNum = 0;
-        for (int i = 0; i < ability_Data.Count; i++)
+        for (int i = 0; i < abilityData.Count; i++)
         {
             if (inputType == 입력.조건)
             {
                 temp = new SpellAbility();
 
-                SpellAbility.Condition condition = SpellAbility.GetCondition(ability_Data[i]);
+                SpellAbility.Condition condition = 
+                    SpellAbility.GetCondition(abilityData[i]);
                 temp.Condition_type = condition;
 
                 if (SpellAbility.CheckDataCondition(condition))
@@ -84,7 +89,7 @@ public class SpellManager : MonoBehaviour
             }
             else if (inputType == 입력.능력)
             {
-                SpellAbility.Ability ability = SpellAbility.GetAbility(ability_Data[i]);
+                SpellAbility.Ability ability = SpellAbility.GetAbility(abilityData[i]);
                 temp.Ability_type = ability;
                 if (SpellAbility.CheckDataAbility(ability))
                 {
@@ -100,26 +105,26 @@ public class SpellManager : MonoBehaviour
             else if (inputType == 입력.수치)
             {
                 int value = 0;
-                int.TryParse(ability_Data[i], out value);
+                int.TryParse(abilityData[i], out value);
                 switch (dataNum)
                 {
                     case 1:
-                        temp.Ability_data = new Vector3(temp.Ability_data.x, temp.Ability_data.y, value);
+                        temp.Ability_data.z = value;
                         break;
                     case 2:
-                        temp.Ability_data = new Vector3(temp.Ability_data.x, value, temp.Ability_data.z);
+                        temp.Ability_data.y = value;
                         break;
                     case 3:
-                        temp.Ability_data = new Vector3(value, temp.Ability_data.y, temp.Ability_data.z);
+                        temp.Ability_data.x = value;
                         break;
                     case 4:
-                        temp.Condition_data = new Vector3(temp.Condition_data.x, temp.Condition_data.y, value);
+                        temp.Condition_data.z = value;                
                         break;
                     case 5:
-                        temp.Condition_data = new Vector3(temp.Condition_data.x, value, temp.Condition_data.z);
+                        temp.Condition_data.y = value;
                         break;
                     case 6:
-                        temp.Condition_data = new Vector3(value, temp.Condition_data.y, temp.Condition_data.z);
+                        temp.Condition_data.x = value;
                         break;
                 }
                 dataNum--;
@@ -161,7 +166,7 @@ public class SpellManager : MonoBehaviour
         targetMinion = null;
         targetHero = -1;
         spellSelectCancle = false;
-        Vector2Int pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(name));
+        Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(name));
         string ability_string = DataMng.instance.ToString(pair.x, pair.y, "명령어");
         List<SpellAbility> spellList = SpellParsing(ability_string);
         nowSpellName = name;
@@ -698,7 +703,7 @@ public class SpellManager : MonoBehaviour
                         {
                             GameEventManager.instance.EventAdd(1.4f);
                             Vector2Int pair = DataMng.instance.GetPairByName(
-                                DataMng.instance.playData.GetCardName("넘치는마나"));
+                                DataParse.GetCardName("넘치는마나"));
                             string cardName = DataMng.instance.ToString(pair.x, pair.y, "카드이름");
                             int n = EnemyCardHand.instance.nowHandNum;
                             EnemyCardHand.instance.DrawCard();
@@ -717,7 +722,7 @@ public class SpellManager : MonoBehaviour
                         {
                             GameEventManager.instance.EventAdd(1.4f);
                             Vector2Int pair = DataMng.instance.GetPairByName(
-                                DataMng.instance.playData.GetCardName("넘치는마나"));
+                               DataParse.GetCardName("넘치는마나"));
                             string cardName = DataMng.instance.ToString(pair.x, pair.y, "카드이름");
                             int n = CardHand.instance.nowHandNum;
                             CardHand.instance.DrawCard();
@@ -835,7 +840,7 @@ public class SpellManager : MonoBehaviour
                     {
                         string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
                         Vector2Int pair = DataMng.instance.GetPairByName(
-                            DataMng.instance.playData.GetCardName(weapon_name));
+                            DataParse.GetCardName(weapon_name));
                         int weaponHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
                         int weaponAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
                         HeroManager.instance.heroAtkManager.enemyWeaponName = weapon_name;
@@ -855,7 +860,7 @@ public class SpellManager : MonoBehaviour
                             yield return new WaitForSeconds(0.1f);
 
                         Vector2Int pair = DataMng.instance.GetPairByName(
-                            DataMng.instance.playData.GetCardName(weapon_name));
+                            DataParse.GetCardName(weapon_name));
                         int weaponHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
                         int weaponAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
                         HeroManager.instance.heroAtkManager.playerWeaponName = weapon_name;
@@ -996,7 +1001,7 @@ public class SpellManager : MonoBehaviour
         if(!enemy && !heroPower)
         {
             QuestManager.instance.SpellCard();
-            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(nowSpellName));
+            Vector2 pair = DataMng.instance.GetPairByName(DataParse.GetCardName(nowSpellName));
             if (pair.x == 0)
                 QuestManager.instance.CharacterCard(Job.드루이드);
             else if (pair.x == 1)
@@ -1015,22 +1020,24 @@ public class SpellManager : MonoBehaviour
         targetMinion = null;
         targetHero = -1;
         spellSelectCancle = false;
-        Vector2Int pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(name));
-        string ability_string = DataMng.instance.ToString(pair.x, pair.y, "명령어");
-        List<SpellAbility> spellList = SpellParsing(ability_string);
         nowSpellName = name;
-        int cost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
-        cost = Mathf.Max(0, cost + CardHand.instance.handCostOffset[handNum] - CardHand.instance.UsePreparation);
+
+        int cost = CardHand.instance.GetCardCost(handNum);
         ManaManager.instance.playerNowMana -= cost;
+
         CardHand.instance.useCardNum++;
         CardHand.instance.CardRemove(handNum);
+
+        Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(name));
+        string ability_string = DataMng.instance.ToString(pair.x, pair.y, "명령어");
+        List<SpellAbility> spellList = SpellParsing(ability_string);
+
         StartCoroutine(RunSpellTargetMinion(spellList, minionObject, enemy));
     }
 
-    private IEnumerator RunSpellTargetMinion(List<SpellAbility> spellList, MinionObject minionObject,bool enemy)
+    private IEnumerator RunSpellTargetMinion(List<SpellAbility> spellList,
+        MinionObject minionObject,bool enemy)
     {
-
-
         bool checkCombo = false;
         List<SpellAbility> chooseOneList = new List<SpellAbility>();
         for (int i = 0; i < spellList.Count; i++)
@@ -1426,7 +1433,7 @@ public class SpellManager : MonoBehaviour
                         {
                             GameEventManager.instance.EventAdd(1.4f);
                             Vector2Int pair = DataMng.instance.GetPairByName(
-                                DataMng.instance.playData.GetCardName("넘치는마나"));
+                                DataParse.GetCardName("넘치는마나"));
                             string cardName = DataMng.instance.ToString(pair.x, pair.y, "카드이름");
                             int n = CardHand.instance.nowHandNum;
                             CardHand.instance.DrawCard();
@@ -1541,7 +1548,7 @@ public class SpellManager : MonoBehaviour
                     {
                         string weapon_name = DataMng.instance.ToString((DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
                         Vector2Int pair = DataMng.instance.GetPairByName(
-                            DataMng.instance.playData.GetCardName(weapon_name));
+                            DataParse.GetCardName(weapon_name));
                         int weaponHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
                         int weaponAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
                         HeroManager.instance.heroAtkManager.enemyWeaponName = weapon_name;
@@ -1559,7 +1566,7 @@ public class SpellManager : MonoBehaviour
                         string weapon_name = DataMng.instance.ToString(
                             (DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
                         Vector2Int pair = DataMng.instance.GetPairByName(
-                            DataMng.instance.playData.GetCardName(weapon_name));
+                            DataParse.GetCardName(weapon_name));
                         int weaponHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
                         int weaponAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
                         HeroManager.instance.heroAtkManager.playerWeaponName = weapon_name;
@@ -1588,7 +1595,7 @@ public class SpellManager : MonoBehaviour
         if (!enemy)
         {
             QuestManager.instance.SpellCard();
-            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(nowSpellName));
+            Vector2 pair = DataMng.instance.GetPairByName(DataParse.GetCardName(nowSpellName));
             if (pair.x == 0)
                 QuestManager.instance.CharacterCard(Job.드루이드);
             else if (pair.x == 1)
@@ -1605,7 +1612,7 @@ public class SpellManager : MonoBehaviour
         targetMinion = null;
         targetHero = -1;
         spellSelectCancle = false;
-        Vector2Int pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(name));
+        Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(name));
         string ability_string = DataMng.instance.ToString(pair.x, pair.y, "명령어");
         List<SpellAbility> spellList = SpellParsing(ability_string);
         nowSpellName = name;
@@ -2020,7 +2027,7 @@ public class SpellManager : MonoBehaviour
                         {
                             GameEventManager.instance.EventAdd(1.4f);
                             Vector2Int pair = DataMng.instance.GetPairByName(
-                                DataMng.instance.playData.GetCardName("넘치는마나"));
+                                DataParse.GetCardName("넘치는마나"));
                             string cardName = DataMng.instance.ToString(pair.x, pair.y, "카드이름");
                             int n = CardHand.instance.nowHandNum;
                             CardHand.instance.DrawCard();
@@ -2136,7 +2143,7 @@ public class SpellManager : MonoBehaviour
                         string weapon_name = DataMng.instance.ToString(
                             (DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
                         Vector2Int pair = DataMng.instance.GetPairByName(
-                            DataMng.instance.playData.GetCardName(weapon_name));
+                            DataParse.GetCardName(weapon_name));
                         int weaponHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
                         int weaponAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
                         HeroManager.instance.heroAtkManager.enemyWeaponName = weapon_name;
@@ -2154,7 +2161,7 @@ public class SpellManager : MonoBehaviour
                         string weapon_name = DataMng.instance.ToString(
                             (DataMng.TableType)ability.Ability_data.x, (int)ability.Ability_data.y, "카드이름");
                         Vector2Int pair = DataMng.instance.GetPairByName(
-                            DataMng.instance.playData.GetCardName(weapon_name));
+                            DataParse.GetCardName(weapon_name));
                         int weaponHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
                         int weaponAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
                         HeroManager.instance.heroAtkManager.playerWeaponName = weapon_name;
@@ -2183,7 +2190,7 @@ public class SpellManager : MonoBehaviour
         if (!enemy)
         {
             QuestManager.instance.SpellCard();
-            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(nowSpellName));
+            Vector2 pair = DataMng.instance.GetPairByName(DataParse.GetCardName(nowSpellName));
             if (pair.x == 0)
                 QuestManager.instance.CharacterCard(Job.드루이드);
             else if (pair.x == 1)
@@ -2959,7 +2966,7 @@ public class SpellManager : MonoBehaviour
         GameEventManager.instance.EventAdd(1.4f);
         BattleUI.instance.grayFilterAni.SetBool("On", false);
         BattleUI.instance.selectMinion.gameObject.SetActive(false);
-        Vector2Int pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(nowSpellName));
+        Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(nowSpellName));
         int mana = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
         string cardName = DataMng.instance.ToString(pair.x, pair.y, "카드이름");
         int n = CardHand.instance.nowHandNum;

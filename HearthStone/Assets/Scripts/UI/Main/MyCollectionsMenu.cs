@@ -478,9 +478,9 @@ public class MyCollectionsMenu : MonoBehaviour
             int costB = 0;
 
             Vector2Int pairA = DataMng.instance.GetPairByName(
-                DataMng.instance.playData.GetCardName(A));
+                DataParse.GetCardName(A));
             Vector2Int pairB = DataMng.instance.GetPairByName(
-                DataMng.instance.playData.GetCardName(B));
+                DataParse.GetCardName(B));
             // Debug.Log(pairA == pairB);
             costA = DataMng.instance.ToInteger(pairA.x, pairA.y, "코스트");
             costB = DataMng.instance.ToInteger(pairB.x, pairB.y, "코스트");
@@ -634,8 +634,8 @@ public class MyCollectionsMenu : MonoBehaviour
                 {
                     //카드를 표시할 슬롯에 
                     //정보를 기입한다.
-                    string cardName = playData.GetCardName(deckCardList[i]);
-                    int cardNum = playData.GetCardNumber(deckCardList[i]);
+                    string cardName = DataParse.GetCardName(deckCardList[i]);
+                    int cardNum = DataParse.GetCardNumber(deckCardList[i]);
                     deckCardObject[i].cardName_Data = cardName;
                     deckCardObject[i].hasCardNum = cardNum;
                     deckCardObject[i].gameObject.SetActive(true);
@@ -1573,10 +1573,10 @@ public class MyCollectionsMenu : MonoBehaviour
                 int n = 0;
                 for (int j = 0; j < DataMng.instance.playData.deck[nowDeck].card.Count; j++)
                 {
-                    string name = DataMng.instance.playData.GetCardName(DataMng.instance.playData.deck[nowDeck].card[j]);
+                    string name = DataParse.GetCardName(DataMng.instance.playData.deck[nowDeck].card[j]);
                     Vector2Int pair = DataMng.instance.GetPairByName(name);
                     int cardC = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
-                    int cardN = DataMng.instance.playData.GetCardNumber(
+                    int cardN = DataParse.GetCardNumber(
                         DataMng.instance.playData.deck[nowDeck].card[j]);
                     if (cardC == i)
                         n += cardN;

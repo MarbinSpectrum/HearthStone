@@ -892,7 +892,8 @@ public class MinionManager : MonoBehaviour
                             else
                             {
                                 int index = MinionField.instance.minionNum;
-                                MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false, 1);
+                                MinionField.instance.AddMinion(
+                                    MinionField.instance.minionNum, minion_name, false, MinionField.SpawnAni.Set);
                                 MinionCopy(randomMinion[r], MinionField.instance.minions[index]);
                                 MinionField.instance.setMinionPos = false;
                                 EnemyMinionField.instance.setMinionPos = false;
@@ -978,7 +979,7 @@ public class MinionManager : MonoBehaviour
         BattleUI.instance.grayFilterAni.SetBool("On", false);
         BattleUI.instance.selectMinion.gameObject.SetActive(false);
         Vector2Int pair = DataMng.instance.GetPairByName(
-            DataMng.instance.playData.GetCardName(eventMininon.minion_name));
+           DataParse.GetCardName(eventMininon.minion_name));
         int mana = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
         mana += CardHand.instance.removeCostOffset;
         mana = mana < 0 ? 0 : mana;
@@ -1737,7 +1738,7 @@ public class MinionManager : MonoBehaviour
                             else
                             {
                                 int index = MinionField.instance.minionNum;
-                                MinionField.instance.AddMinion(index, minion_name, false, 1);
+                                MinionField.instance.AddMinion(index, minion_name, false, MinionField.SpawnAni.Set);
                                 yield return new WaitForSeconds(0.5f);
                                 MinionCopy(randomMinion[r], MinionField.instance.minions[index]);
                             }
@@ -1984,7 +1985,8 @@ public class MinionManager : MonoBehaviour
                     else
                     {
                         int index = MinionField.instance.minionNum;
-                        MinionField.instance.AddMinion(MinionField.instance.minionNum, minion_name, false, 1);
+                        MinionField.instance.AddMinion(
+                            MinionField.instance.minionNum, minion_name, false, MinionField.SpawnAni.Set);
                         MinionCopy(randomMinion[r], MinionField.instance.minions[index]);
                         MinionField.instance.setMinionPos = false;
                         EnemyMinionField.instance.setMinionPos = false;

@@ -51,7 +51,7 @@ public class HeroPowerManager : MonoBehaviour
             enemyHeroPowerObjAni.SetBool("CanUse", false);
 
 
-            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(abilityName));
+            Vector2 pair = DataMng.instance.GetPairByName(DataParse.GetCardName(abilityName));
 
             showHeroPower.SetActive(true);
             heroPowerName.text = abilityName;
@@ -119,7 +119,7 @@ public class HeroPowerManager : MonoBehaviour
         }
 
         Vector2Int pair = DataMng.instance.GetPairByName(
-            DataMng.instance.playData.GetCardName(abilityName));
+            DataParse.GetCardName(abilityName));
         string ability = DataMng.instance.ToString(pair.x, pair.y, "명령어");
 
         if (!enemy)

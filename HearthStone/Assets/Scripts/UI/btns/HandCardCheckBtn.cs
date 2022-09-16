@@ -102,13 +102,16 @@ public class HandCardCheckBtn : Btn
     {
         CardHandCheck.instance.checkCard.hide = true;
         CardViewManager.instance.UpdateCardView();
-        if (!GameEventManager.instance.EventCheck() && 
-            BattleUI.instance.gameStart && 
-            TurnManager.instance.turnAniEnd && 
-            TurnManager.instance.turn == Turn.플레이어 && 
-            CardHand.instance.canUse[cardNum])
+        if (GameEventManager.instance.EventCheck() == false && //이벤트가 없는 상태
+            BattleUI.instance.gameStart && //게임이 시작되어있는 상태
+            TurnManager.instance.turnAniEnd && //턴 애니메이션이 종료된상태
+            TurnManager.instance.turn == Turn.플레이어 && //플레이어 턴인 상태
+            CardHand.instance.canUse[cardNum]) //해당카드를 사용가능한 상태
         {
+            //드래그카드를 표시하고
             DragCardObject.instance.ShowDragCard(cardView);
+
+            //cardNum번째 카드를 드래그중이라고 표시한다.
             DragCardObject.instance.dragCardNum = cardNum;
         }
     }

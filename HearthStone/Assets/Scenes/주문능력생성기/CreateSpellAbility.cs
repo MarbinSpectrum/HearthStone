@@ -16,7 +16,7 @@ public class CreateSpellAbility : MonoBehaviour
     public InputField a_data2;
     public InputField a_data3;
     public InputField outData;
-    void Awake()
+    private void Awake()
     {
         List<Dropdown.OptionData> temp = new List<Dropdown.OptionData>();
         for (SpellAbility.Condition i = SpellAbility.Condition.조건없음; i <= SpellAbility.Condition.버그; i++)
@@ -37,7 +37,7 @@ public class CreateSpellAbility : MonoBehaviour
         ability.AddOptions(temp);
     }
 
-    void Update()
+    private void Update()
     {
         SpellAbility.Condition c = (SpellAbility.Condition)condition.value;
         condition_data.SetActive(SpellAbility.CheckDataCondition(c));

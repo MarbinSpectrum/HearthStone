@@ -169,7 +169,7 @@ public class DataMng : MonoBehaviour
             else
             {
 
-                playData = new PlayData(true);
+                playData = new PlayData();
                 string jsonData = ObjectToJson(playData);
                 var jtc = JsonToOject<PlayData>(jsonData);
                 CreateJsonFile(Application.dataPath, "Resources/PlayData", jsonData);
@@ -188,7 +188,7 @@ public class DataMng : MonoBehaviour
             else
             {
                 //데이터가 없다면 데이터를 새로 생성
-                playData = new PlayData(true);
+                playData = new PlayData();
                 string jsonData = ObjectToJson(playData);
                 var jtc = JsonToOject<PlayData>(jsonData);
 
@@ -248,30 +248,40 @@ public class DataMng : MonoBehaviour
     #endregion
 
     #region[JSON 관리]
-    string ObjectToJson(object obj)
+    private string ObjectToJson(object obj)
     {
+        //클레스를 Json형식 문자열로 변환
         return JsonUtility.ToJson(obj);
     }
 
-    T JsonToOject<T>(string jsonData)
+    private T JsonToOject<T>(string jsonData)
     {
+        //Json형식 문자열을 클레스로 변환
         return JsonUtility.FromJson<T>(jsonData);
     }
 
-    void CreateJsonFile(string createPath, string fileName, string jsonData)
+    private void CreateJsonFile(string createPath, string fileName, string jsonData)
     {
-        FileStream fileStream = new FileStream(string.Format("{0}/{1}.json", createPath, fileName), FileMode.Create);
+        //Json형식의 문자열을
+        //바이트 시퀀스로 인코딩한후 파일을 생성
+        FileStream fileStream = new FileStream(
+            string.Format("{0}/{1}.json", createPath, fileName), FileMode.Create);
         byte[] data = Encoding.UTF8.GetBytes(jsonData);
         fileStream.Write(data, 0, data.Length);
         fileStream.Close();
     }
 
-    T LoadJsonFile<T>(string loadPath, string fileName)
+    private T LoadJsonFile<T>(string loadPath, string fileName)
     {
-        FileStream fileStream = new FileStream(string.Format("{0}/{1}.json", loadPath, fileName), FileMode.Open);
+        //바이트 시퀀스로 저장된 파일을
+        //Json형식으로 디코딩한후
+        //JsonUtility를 통해 클레스로 변환
+        FileStream fileStream = new FileStream(
+            string.Format("{0}/{1}.json", loadPath, fileName), FileMode.Open);
         byte[] data = new byte[fileStream.Length];
         fileStream.Read(data, 0, data.Length);
         fileStream.Close();
+
         string jsonData = Encoding.UTF8.GetString(data);
         return JsonUtility.FromJson<T>(jsonData);
     }
@@ -281,6 +291,7 @@ public class DataMng : MonoBehaviour
     {
         [SerializeField]
         List<TKey> keys;
+
         [SerializeField]
         List<TValue> values;
 

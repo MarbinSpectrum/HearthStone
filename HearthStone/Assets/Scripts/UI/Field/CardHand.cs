@@ -245,7 +245,7 @@ public class CardHand : MonoBehaviour
             {
                 //주문의 명령어 코드를 읽어들인다.
                 DataMng dataMng = DataMng.instance;
-                Vector2Int pair = dataMng.GetPairByName(dataMng.playData.
+                Vector2Int pair = dataMng.GetPairByName(DataParse.
                     GetCardName(handCard[i].GetName()));
                 string ability_string = dataMng.ToString(pair.x, pair.y, "명령어");
                 List<SpellAbility> spellList =
@@ -286,7 +286,7 @@ public class CardHand : MonoBehaviour
     #endregion
 
     #region[카드 비용 계산]
-    private int GetCardCost(int n)
+    public int GetCardCost(int n)
     {
         //카드 비용 계산
         int cost = handCard[n].GetCost() + handCostOffset[n];

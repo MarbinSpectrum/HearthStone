@@ -35,8 +35,8 @@ public class Deck
     {
         for (int i = 0; i < card.Count; i++)
         {
-            string name = DataMng.instance.playData.GetCardName(card[i]);
-            int num = DataMng.instance.playData.GetCardNumber(card[i]);
+            string name = DataParse.GetCardName(card[i]);
+            int num = DataParse.GetCardNumber(card[i]);
             if (name.Equals(s))
                 return num;
         }
@@ -50,8 +50,8 @@ public class Deck
 
         for (int i = 0; i < card.Count; i++)
         {
-            string name = DataMng.instance.playData.GetCardName(card[i]);
-            int num = DataMng.instance.playData.GetCardNumber(card[i]);
+            string name = DataParse.GetCardName(card[i]);
+            int num = DataParse.GetCardNumber(card[i]);
             Vector2Int pair = DataMng.instance.GetPairByName(name);
             string level = DataMng.instance.ToString(pair.x, pair.y, "등급");
             int maxNum = level.Equals("전설") ? 1 : 2;
@@ -70,8 +70,8 @@ public class Deck
     {
         for (int i = 0; i < card.Count; i++)
         {
-            string name = DataMng.instance.playData.GetCardName(card[i]);
-            int num = DataMng.instance.playData.GetCardNumber(card[i]);
+            string name = DataParse.GetCardName(card[i]);
+            int num = DataParse.GetCardNumber(card[i]);
             if (name.Equals(s))
             {
                 if (num >= 2)
@@ -90,7 +90,7 @@ public class Deck
 
         for (int i = 0; i < card.Count; i++)
         {
-            int num = DataMng.instance.playData.GetCardNumber(card[i]);
+            int num = DataParse.GetCardNumber(card[i]);
             c += num;
         }
 

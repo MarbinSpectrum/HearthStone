@@ -7,7 +7,8 @@ public class SpellAbility
 {
     public SpellAbility() { }
 
-    public SpellAbility(Condition condition_type, Vector3 condition_data, Ability ability_type, Vector3 ability_data)
+    public SpellAbility(Condition condition_type, Vector3 condition_data, 
+        Ability ability_type, Vector3 ability_data)
     {
         Condition_type = condition_type;
         Condition_data = condition_data;
@@ -27,14 +28,10 @@ public class SpellAbility
         버그
     }
 
-    public static Condition GetCondition(string s)
+    public static Condition GetCondition(string str)
     {
-        for (Condition i = Condition.조건없음; i <= Condition.버그; i++)
-        {
-            if (i.ToString().Equals(s))
-                return i;
-        }
-        return Condition.버그;
+        Condition condition = (Condition)System.Enum.Parse(typeof(Condition), str);
+        return condition;
     }
 
     public static bool CheckDataCondition(Condition a)
@@ -103,7 +100,7 @@ public class SpellAbility
         return Ability.버그;
     }
 
-    public static bool CheckDataAbility(Ability a)
+    public static int GetParameterNum(Ability a)
     {
         switch (a)
         {
@@ -115,32 +112,34 @@ public class SpellAbility
             case Ability.모든_적군하수인_피해주기:
             case Ability.모든_아군하수인_피해주기:
             case Ability.모든_하수인_피해주기:
-            case Ability.하수인소환:
-            case Ability.능력부여:
-            case Ability.모든하수인에게_능력부여:
-            case Ability.카드뽑기:
             case Ability.방어도얻기:
             case Ability.영웅공격력얻기:
+            case Ability.생명력회복:
             case Ability.하수인의_생명력회복:
             case Ability.하수인의_생명력설정:
             case Ability.영웅의_생명력회복:
             case Ability.영웅의_생명력설정:
-            case Ability.생명력회복:
+            case Ability.다른모든_적군에게_피해주기:
+            case Ability.적에게피해주기:
+            case Ability.무기에_공격력부여:
+            case Ability.다음카드비용감소:
+            case Ability.다음주문카드비용감소:
+            case Ability.마나획득:
+            case Ability.마나수정획득:
+            case Ability.무작위_패_버리기:
+            case Ability.하수인_주인의패로되돌리면서_비용감소:
+                return 1;
+            case Ability.능력부여:
+            case Ability.모든하수인에게_능력부여:
+            case Ability.카드뽑기:
             case Ability.모든하수인에게_능력치부여:
             case Ability.능력치부여:
             case Ability.해당턴동안_능력치부여:
-            case Ability.무작위_패_버리기:
-            case Ability.마나수정획득:
-            case Ability.마나획득:
-            case Ability.다음카드비용감소:
-            case Ability.다음주문카드비용감소:
-            case Ability.하수인_주인의패로되돌리면서_비용감소:
-            case Ability.무기에_공격력부여:
-            case Ability.적에게피해주기:
-            case Ability.다른모든_적군에게_피해주기:
-            case Ability.무기장착:
             case Ability.모든하수인에게_해당턴동안_능력치부여:
-                return true;
+            case Ability.무기장착:
+                return 2;
+            case Ability.하수인소환:
+                return 3;
             case Ability.도발부여:
             case Ability.하수인처치:
             case Ability.모든_하수인_주인의패로되돌리기:
@@ -152,11 +151,16 @@ public class SpellAbility
             case Ability.내손으로다시가져오기:
             case Ability.영웅의공격력만큼_피해주기:
             case Ability.대상이_양옆하수인을_공격:
-                return false;
+                return 0;
             default:
                 Debug.Log(a.ToString() + " : 설정값에 등록이안됨!!");
-                return false;
+                return -1;
         }
-        return false;
+        return -1;
+    }
+
+    public static bool CheckDataAbility(Ability a)
+    {
+        return GetParameterNum(a) > 0;
     }
 }

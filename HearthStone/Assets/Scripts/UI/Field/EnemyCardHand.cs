@@ -207,7 +207,7 @@ public class EnemyCardHand : MonoBehaviour
         int cost = 0;
         string cardName = nowCard[n];
         Vector2Int pair = DataMng.instance.GetPairByName(
-            DataMng.instance.playData.GetCardName(cardName));
+            DataParse.GetCardName(cardName));
         string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
         int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
 

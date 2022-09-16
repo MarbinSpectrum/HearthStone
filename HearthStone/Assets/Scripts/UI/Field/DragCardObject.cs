@@ -72,28 +72,44 @@ public class DragCardObject : MonoBehaviour
 
         dragCard = !dragCardView.hide;
 
-        List<SpellAbility> spellList = new List<SpellAbility>();
 
         if ((dragCardView.cardType == CardType.무기 || dragCardView.cardType == CardType.주문) 
             && dragCard)
         {
+            //드래그 중인 카드명을 통해서
             dragCardName = dragCardView.GetName();
             Vector2Int pair = DataMng.instance.GetPairByName(
-                DataMng.instance.playData.GetCardName(dragCardName));
+                DataParse.GetCardName(dragCardName));
+
+            //카드의 명령어를 가져온다.
             string ability_string = DataMng.instance.ToString(pair.x, pair.y, "명령어");
-            spellList = SpellManager.instance.SpellParsing(ability_string);
+            List<SpellAbility> spellList = SpellManager.instance.SpellParsing(ability_string);
+
             for (int i = 0; i < spellList.Count; i++)
-                if (spellList[i].Condition_type != SpellAbility.Condition.선택 &&
-                    SpellManager.instance.CheckEvent(spellList[i]) == SpellManager.EventType.대상선택)
+            {
+                //명령어를 순회하면서 대상지정효과인지 파악한다.
+                if (SpellManager.instance.CheckEvent(spellList[i]) == SpellManager.EventType.대상선택)
                 {
+                    if (spellList[i].Condition_type == SpellAbility.Condition.선택)
+                    {
+                        //선택효과는 선택을하고나서 대상지정인지 아닌지 결정된다.
+                        //대상지정인지 비확정이기 때문에 보류한다.
+                        continue;
+                    }
+
+                    //능력에 따라 효과대상이 지정되어있다.
+                    //효과대상을 지정해준다.
+                    SpellManager.instance.SetSelectMask(spellList[i].Ability_type);
+
                     dragSelectCard = true;
+
                     CardHand.instance.handAni.SetBool("패내리기", true);
                     DragLineRenderer.instance.activeObj = gameObject;
                     DragLineRenderer.instance.lineRenderer.enabled = true;
                     DragLineRenderer.instance.startPos = BattleUI.instance.playerSpellPos.transform.position;
-                    SpellManager.instance.SetSelectMask(spellList[i].Ability_type);
                     break;
                 }
+            }
 
             for (int i = 0; i < spellList.Count; i++)
                 if (spellList[i].Condition_type == SpellAbility.Condition.피해입지않은하수인)
@@ -101,19 +117,23 @@ public class DragCardObject : MonoBehaviour
         }
         else if(dragSelectCard)
         {
+            //대상에게 드랍했다 효과처리한다.
             if (SpellManager.instance.targetMinion)
             {
-                Debug.Log("드래그미니언");
+                //하수인에게 효과처리
                 SpellManager.instance.RunSpellTargetMinion(
                     dragCardName, dragCardNum, SpellManager.instance.targetMinion, false);
             }
             else if (SpellManager.instance.targetHero != -1)
             {
-                Debug.Log("드래그영웅");
-                SpellManager.instance.RunSpellTargetHero(dragCardName, dragCardNum, false, SpellManager.instance.targetHero == 2);
+                //영웅에게 효과처리
+                bool enemy = (SpellManager.instance.targetHero == 2);
+                SpellManager.instance.RunSpellTargetHero(dragCardName, dragCardNum, 
+                    false, enemy);
             }
-            CardHand.instance.handAni.SetBool("패내리기", false);
+
             dragSelectCard = false;
+            CardHand.instance.handAni.SetBool("패내리기", false);
             DragLineRenderer.instance.InitMask();
             DragLineRenderer.instance.lineRenderer.enabled = false;
             checkNotDamageMinion = false;

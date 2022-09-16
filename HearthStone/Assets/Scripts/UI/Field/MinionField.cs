@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class MinionField : MonoBehaviour
 {
+    public enum SpawnAni
+    {
+        Normal,
+        Set,
+        DeathWing,
+        Strong
+    }
+
     public static MinionField instance;
     private const int MINION_SLOT_NUM = 7;
 
@@ -72,9 +80,10 @@ public class MinionField : MonoBehaviour
         float minX = minionDistance * (minionNum - 1) / 2f;
         for (int i = 0; i < minionNum + 1; i++)
         {
-            Vector3 v = new Vector3(transform.position.x - minX + minionDistance * i, transform.position.y, transform.position.z);
+            Vector3 v = new Vector3(transform.position.x - minX + minionDistance * i,
+                transform.position.y, transform.position.z);
             v = Camera.main.WorldToScreenPoint(v);
-            if(Input.mousePosition.x < v.x)
+            if (Input.mousePosition.x < v.x)
             {
                 mousePos = i;
                 break;
@@ -171,7 +180,7 @@ public class MinionField : MonoBehaviour
         min_speed = Mathf.Min(min_speed, max_speed);
         min_attack_speed = Mathf.Min(min_attack_speed, max_attack_speed);
 
-        if(attack_ready > 0)
+        if (attack_ready > 0)
         {
             attack_ready -= Time.deltaTime;
             return;
@@ -180,7 +189,7 @@ public class MinionField : MonoBehaviour
         for (int i = 0; i < minionNum; i++)
         {
             //일반적인 위치 조정
-            if(Mathf.Abs(transform.position.y - minions[i].transform.position.y) < 1)
+            if (Mathf.Abs(transform.position.y - minions[i].transform.position.y) < 1)
             {
                 minions[i].transform.localPosition = new Vector3(minions[i].transform.localPosition.x, minions[i].transform.localPosition.y, -40);
                 Vector2 v = minions_pos[i] - minions[i].transform.position;
@@ -191,7 +200,7 @@ public class MinionField : MonoBehaviour
                 if (Vector2.Distance(Vector3.zero, v) < Vector2.Distance(Vector3.zero, v.normalized * Time.deltaTime * min_speed))
                     v = v.normalized * Time.deltaTime * min_speed;
                 if (Vector2.Distance(minions_pos[i], minions[i].transform.position) < Vector2.Distance(Vector3.zero, v))
-                    minions[i].transform.position = new Vector3(minions_pos[i].x, minions_pos[i].y,transform.position.z);
+                    minions[i].transform.position = new Vector3(minions_pos[i].x, minions_pos[i].y, transform.position.z);
                 else
                     minions[i].transform.position += new Vector3(v.x, v.y, 0);
             }
@@ -238,109 +247,132 @@ public class MinionField : MonoBehaviour
         switch (mName)
         {
             case "데스윙":
-                AddMinion(n, mName, cardHandSpawn, 2);
+                AddMinion(n, mName, cardHandSpawn, SpawnAni.DeathWing);
                 break;
             case "그룰":
-                AddMinion(n, mName, cardHandSpawn, 3);
+                AddMinion(n, mName, cardHandSpawn, SpawnAni.Strong);
                 break;
             default:
-                AddMinion(n, mName, cardHandSpawn, 0);
+                AddMinion(n, mName, cardHandSpawn, SpawnAni.Normal);
                 break;
         }
     }
 
-    public void AddMinion(int n, string name, bool cardHandSpawn, int spawnAni = 0)
+    public void AddMinion(int n, string name, bool cardHandSpawn, SpawnAni spawnAni = SpawnAni.Normal)
     {
+        //n : 소환위치
+        //name : 소환하수인
+        //cardHandSpawn : 손에서 소환했는지 여부
+        //spawnAni : 소환애니메이션
+
         if (FullField())
             return;
         if (cardHandSpawn)
             GameEventManager.instance.EventAdd(2f);
 
-        MinionObject temp = minions[6];
+        minionNum++;
+
+        //가장 마지막 미니언 오브젝트를
+        //n번째 미니언 오브젝트로 할당
+        MinionObject temp = minions[minions.Length - 1];
         for (int i = 5; i >= n; i--)
             minions[i + 1] = minions[i];
         minions[n] = temp;
         minions[n].minion_name = name;
-        minions[n].InitTrigger = true;
-
-        minionNum++;
+        minions[n].InitTrigger = true; //하수인의 이름을 참고해서 해당객체가 초기화됨
 
         //새로운 미니언 위치 지정
         float minX = minionDistance * (minionNum - 1) / 2f;
-        Vector3 v = new Vector3(transform.position.x - minX + minionDistance * n, transform.position.y, minions[n].transform.position.z);
+        Vector3 v = new Vector3(transform.position.x - minX + minionDistance * n,
+            transform.position.y, minions[n].transform.position.z);
         minions[n].transform.position = v;
 
-        if (cardHandSpawn && spawnAni != 2)
-            DragCardObject.instance.ShowDropEffectMinion(Camera.main.WorldToScreenPoint(v),0);
-        else if (cardHandSpawn && spawnAni == 2)
-            EffectManager.instance.FireField();
+        //직업카드 퀘스트 처리
+        DataMng dataMng = DataMng.instance;
+        Vector2 pair = dataMng.GetPairByName(
+            DataParse.GetCardName(name));
+        if (pair.x == 0)
+            QuestManager.instance.CharacterCard(Job.드루이드);
+        else if (pair.x == 1)
+            QuestManager.instance.CharacterCard(Job.도적);
+
         StartCoroutine(MinionDrop(n, spawnAni, cardHandSpawn));
+
     }
 
-    private IEnumerator MinionDrop(int n,int spawnType,bool cardHandSpawn)
+    private IEnumerator MinionDrop(int n, SpawnAni spawnAni, bool cardHandSpawn)
     {
-        while (!minions[n].animator.gameObject.activeSelf)
-            yield return new WaitForSeconds(0.001f);
         if (cardHandSpawn)
         {
-            while (!DragCardObject.instance.dropEffect.effectArrive)
-                yield return new WaitForSeconds(0.1f);
-            if(spawnType == 0)
+            switch (spawnAni)
             {
-                SoundManager.instance.PlaySE("미니언소환일반");
-                minions[n].animator.SetTrigger("NormalSpawn");
+                case SpawnAni.DeathWing:
+                    {
+                        EffectManager.instance.FireField();
+                    }
+                    break;
+                default:
+                    {
+                        DragCardObject.instance.ShowDropEffectMinion(
+                            Camera.main.WorldToScreenPoint(minions[n].transform.position), 0);
+                    }
+                    break;
             }
-            else if (spawnType == 1)
-            {
-                SoundManager.instance.PlaySE("미니언소환일반");
-                minions[n].animator.SetTrigger("SetSpawn");
-            }
-            else if (spawnType == 2)
-            {
-                Debug.Log("데스윙");
-                minions[n].animator.SetTrigger("DeathWingSpawn");
-                EffectManager.instance.VibrationEffect(2f, 20, 10);
-            }
-            else if (spawnType == 3)
-            {
-                minions[n].animator.SetTrigger("StrongSpawn");
-                EffectManager.instance.VibrationEffect(0.5f, 15, 4);
-            }
-            while (!minions[n].animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"))
-                yield return new WaitForSeconds(0.001f);
+        }
+
+        yield return new WaitWhile(() => !minions[n].animator.gameObject.activeSelf);
+
+        if (cardHandSpawn)
+        {
+            yield return new WaitWhile(() => !DragCardObject.instance.dropEffect.effectArrive);
+
+            SpawnEffect(n, spawnAni, true);
+
+            yield return new WaitWhile(() => !minions[n].SpawnAniEnd());
+
             minions[n].CardHandMinionSpawn();
             if (GameEventManager.instance.GetEventValue() > 1.5f)
                 GameEventManager.instance.EventSet(1.5f);
-
-            yield return new WaitForSeconds(2f);
-            while (!minions[n].animator.gameObject.activeSelf)
-                yield return new WaitForSeconds(0.001f);
-
-            Vector2 pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(minions[n].minion_name));
-
-            if (pair.x == 0)
-                QuestManager.instance.CharacterCard(Job.드루이드);
-            else if (pair.x == 1)
-                QuestManager.instance.CharacterCard(Job.도적);
-
         }
         else
         {
             yield return new WaitForSeconds(0.5f);
-            if (spawnType == 0)
-                minions[n].animator.SetTrigger("NormalSpawn");
-            else if (spawnType == 1)
-                minions[n].animator.SetTrigger("SetSpawn");
-            else if (spawnType == 2)
-            {
-                minions[n].animator.SetTrigger("DeathWingSpawn");
-                EffectManager.instance.VibrationEffect(2f, 20, 10);
-            }
-            else if (spawnType == 3)
-            {
-                minions[n].animator.SetTrigger("StrongSpawn");
-                EffectManager.instance.VibrationEffect(0.5f, 15, 4);
-            }
+            SpawnEffect(n, spawnAni, false);
+        }
+    }
+
+    private void SpawnEffect(int n, SpawnAni spawnAni, bool sound)
+    {
+        switch (spawnAni)
+        {
+            case SpawnAni.Normal:
+                {
+                    if (sound)
+                        SoundManager.instance.PlaySE("미니언소환일반");
+                    minions[n].animator.SetTrigger("NormalSpawn");
+                }
+                break;
+            case SpawnAni.Set:
+                {
+                    if (sound)
+                        SoundManager.instance.PlaySE("미니언소환일반");
+                    minions[n].animator.SetTrigger("SetSpawn");
+                }
+                break;
+            case SpawnAni.DeathWing:
+                {
+                    minions[n].animator.SetTrigger("DeathWingSpawn");
+                    EffectManager.instance.VibrationEffect(2f, 20, 10);
+                }
+                break;
+            case SpawnAni.Strong:
+                {
+                    minions[n].animator.SetTrigger("StrongSpawn");
+                    EffectManager.instance.VibrationEffect(0.5f, 15, 4);
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -378,7 +410,7 @@ public class MinionField : MonoBehaviour
     #region[OnDrawGizmos]
     private void OnDrawGizmos()
     {
-        float minX = minionDistance * (minionNum - 1)/2f;
+        float minX = minionDistance * (minionNum - 1) / 2f;
         for (int i = 0; i < minionNum; i++)
         {
             Vector3 v = new Vector3(transform.position.x - minX + minionDistance * i, transform.position.y, transform.position.z);

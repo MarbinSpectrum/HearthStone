@@ -35,7 +35,7 @@ public class DruidAI : MonoBehaviour
                 int nowMana = ManaManager.instance.enemyNowMana;
                 string cardName = EnemyCardHand.instance.nowCard[i];
                 Vector2Int pair = DataMng.instance.GetPairByName(
-                    DataMng.instance.playData.GetCardName(cardName));
+                    DataParse.GetCardName(cardName));
                 string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
                 int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
                 if (cardType != "하수인")
@@ -50,7 +50,7 @@ public class DruidAI : MonoBehaviour
         {
             int nowMana = ManaManager.instance.enemyNowMana;
             string cardName = EnemyCardHand.instance.nowCard[i];
-            Vector2Int pair = DataMng.instance.GetPairByName(DataMng.instance.playData.GetCardName(cardName));
+            Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(cardName));
             string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
             int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
             if (cardType != "주문")
@@ -306,7 +306,7 @@ public class DruidAI : MonoBehaviour
                     int nowMana = ManaManager.instance.enemyNowMana;
                     string cardName = EnemyCardHand.instance.nowCard[i];
                     Vector2Int pair = DataMng.instance.GetPairByName(
-                        DataMng.instance.playData.GetCardName(cardName));
+                        DataParse.GetCardName(cardName));
                     string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
                     int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
                     if (cardType != "하수인")
@@ -335,7 +335,7 @@ public class DruidAI : MonoBehaviour
                     int nowMana = ManaManager.instance.enemyNowMana;
                     string cardName = EnemyCardHand.instance.nowCard[i];
                     Vector2Int pair = DataMng.instance.GetPairByName(
-                        DataMng.instance.playData.GetCardName(cardName));
+                        DataParse.GetCardName(cardName));
                     string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
                     int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
                     if (cardType != "주문")
@@ -1479,7 +1479,7 @@ public class DruidAI : MonoBehaviour
                     int nowMana = ManaManager.instance.enemyNowMana + addMana;
                 string cardName = EnemyCardHand.instance.nowCard[i];
                 Vector2Int pair = DataMng.instance.GetPairByName(
-                    DataMng.instance.playData.GetCardName(cardName));
+                    DataParse.GetCardName(cardName));
                 string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
                 int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
                 if (cardType != "하수인")
