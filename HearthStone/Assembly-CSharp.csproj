@@ -214,6 +214,7 @@
     <Compile Include="Assets\Scripts\UI\Main\BattleMenu.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MyCollectionsCardCloseUpBtn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\BattleMenuDeckSelect.cs" />
+    <Compile Include="Assets\Scripts\DataParse.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\설정\OpenSettingBtn.cs" />
     <Compile Include="Assets\Graphics\JMO Assets\WarFX\Demo\Assets\CFX_Demo_Translate.cs" />
     <Compile Include="Assets\Scripts\UI\Main\MyCollectionsMenu.cs" />
@@ -251,7 +252,6 @@
     <Compile Include="Assets\Graphics\52SpecialEffectPack\EffectEditor\ShurikenEffectEditor\csShurikenEffectChanger.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToAdventureBtn.cs" />
     <Compile Include="Assets\Graphics\52SpecialEffectPack\Animation&amp;Script\csDestroyEffect.cs" />
-    <Compile Include="Assets\Scripts\DataParse.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />

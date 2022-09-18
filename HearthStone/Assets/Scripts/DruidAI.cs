@@ -810,7 +810,8 @@ public class DruidAI : MonoBehaviour
 
             #region[영웅 생명력설정]
             case MinionAbility.Ability.영웅의_생명력설정:
-                if (HeroManager.instance.heroHpManager.nowEnemyHp < (int)MinionManager.instance.eventMininon.abilityList[MinionManager.instance.eventNum].Ability_data.x)
+                if (HeroManager.instance.heroHpManager.nowEnemyHp < 
+                    MinionManager.instance.eventMininon.abilityList[MinionManager.instance.eventNum].Ability_data[0])
                     MinionManager.instance.HeroSelect(true);
                 else
                     MinionManager.instance.HeroSelect(false);
@@ -831,9 +832,9 @@ public class DruidAI : MonoBehaviour
         int minionAbilityCount = 0;
         int hpAds = 0;
         int hpAtkAds = 0;
-        int spellDamage = (int)spellAbility.Ability_data.x;
+        int spellDamage = spellAbility.AbilityData[0];
         MinionManager.instance.selectMinionEvent = true;
-        switch (spellAbility.Ability_type)
+        switch (spellAbility.AbilityType)
         {
             #region[빙결시키기]
             case SpellAbility.Ability.빙결시키기:

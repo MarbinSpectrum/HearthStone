@@ -227,30 +227,21 @@ public class MinionObject : MonoBehaviour
     #region[지속적인 처리]
     public void UpdateTrigger()
     {
-        if (!enemy)
-            canAttackObj.SetActive(
-                !GameEventManager.instance.EventCheck() && 
-                final_atk != 0 && 
-                TurnManager.instance.turn == Turn.플레이어 && 
-                canAttack && 
-                canAttackNum > 0 &&
-                !sleep &&
-                !freeze &&
-                !MinionField.instance.MinionAttackCheck() && 
-                animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료"));
-
-        if (!enemy)
-            checkCanAtttack = canAttackObj.activeSelf;
+        checkCanAtttack = !GameEventManager.instance.EventCheck();
+        checkCanAtttack &= (final_atk != 0);
+        checkCanAtttack &= canAttack;
+        checkCanAtttack &= canAttackNum > 0;
+        checkCanAtttack &= !sleep;
+        checkCanAtttack &= !freeze;
+        checkCanAtttack &= !EnemyMinionField.instance.MinionAttackCheck();
+        checkCanAtttack &= animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료");
+        if (enemy)
+            checkCanAtttack &= (TurnManager.instance.turn == Turn.상대방);
         else
-            checkCanAtttack = !GameEventManager.instance.EventCheck() &&
-                final_atk != 0 &&
-                TurnManager.instance.turn == Turn.상대방 &&
-                canAttack &&
-                canAttackNum > 0 &&
-                !sleep &&
-                !freeze &&
-                !EnemyMinionField.instance.MinionAttackCheck() &&
-                animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료");
+        {
+            checkCanAtttack &= (TurnManager.instance.turn == Turn.플레이어);
+            canAttackObj.SetActive(checkCanAtttack);
+        }
 
         tauntObj.SetActive(taunt);
         stealthObj.SetActive(stealth);
@@ -519,34 +510,5 @@ public class MinionObject : MonoBehaviour
         MinionManager.instance.BaseMinionAbility(this);
 
     }
-    #endregion
-
-    #region[능력발휘]
-    public void ActCondition(MinionAbility.Condition c)
-    {
-        for(int i = 0; i < abilityList.Count; i++)
-        {
-            if(abilityList[i].Condition_type == c)
-            {
-                MinionAbility.Ability a = abilityList[i].Ability_type;
-                switch(a)
-                {
-                    case MinionAbility.Ability.능력치부여:
-
-
-                        break;
-
-
-                }
-
-
-            }
-
-
-
-        }
-    }
-
-
     #endregion
 }

@@ -6,6 +6,22 @@ public class MinionManager : MonoBehaviour
 {
     public static MinionManager instance;
 
+    public enum EventType
+    {
+        없음,
+        대상선택,
+        자가버프,
+        하수인소환,
+        카드관련,
+        필드하수인_모두_파괴,
+        무작위_하수인뺏기,
+        무작위_피해,
+        다른모두에게_능력치부여,
+        변신,
+        죽음,
+        무작위_능력치부여
+    }
+
     [HideInInspector] public List<MinionObject> minionList = new List<MinionObject>();
 
     public List<Material> minionMat = new List<Material>();
@@ -41,85 +57,45 @@ public class MinionManager : MonoBehaviour
     public List<MinionAbility> MinionAbilityParsing(string ability_string)
     {
         List<MinionAbility> abilityList = new List<MinionAbility>();
-        char[] splitChar = { '[', ']' };
-        string[] ability_Split = ability_string.Split(splitChar);
-        List<string> ability_Data = new List<string>();
-        for (int i = 0; i < ability_Split.Length; i++)
-            if (ability_Split[i].Length != 0)
-                ability_Data.Add(ability_Split[i]);
 
-        입력 inputType = 입력.조건;
-        MinionAbility temp = null;
-        int dataNum = 0;
-        for (int i = 0; i < ability_Data.Count; i++)
+        string[] aSplit = ability_string.Split('[', ']');
+        List<string> abilityData = new List<string>();
+        for (int i = 0; i < aSplit.Length; i++)
         {
-            if (inputType == 입력.조건)
+            if (string.IsNullOrEmpty(aSplit[i]))
             {
-                temp = new MinionAbility();
-
-                MinionAbility.Condition condition = MinionAbility.GetCondition(ability_Data[i]);
-                temp.Condition_type = condition;
-
-                if (MinionAbility.CheckDataCondition(condition))
-                {
-                    inputType = 입력.수치;
-                    dataNum = 6;
-                }
-                else
-                    inputType = 입력.능력;
+                continue;
             }
-            else if (inputType == 입력.능력)
-            {
-                MinionAbility.Ability ability = MinionAbility.GetAbility(ability_Data[i]);
-                temp.Ability_type = ability;
-
-                if (MinionAbility.CheckDataAbility(ability))
-                {
-                    inputType = 입력.수치;
-                    dataNum = 3;
-                }
-                else
-                {
-                    inputType = 입력.조건;
-                    abilityList.Add(temp);
-                }
-            }
-            else if (inputType == 입력.수치)
-            {
-                int value = 0;
-                int.TryParse(ability_Data[i], out value);
-                switch (dataNum)
-                {
-                    case 1:
-                        temp.Ability_data = new Vector3(temp.Ability_data.x, temp.Ability_data.y, value);
-                        break;
-                    case 2:
-                        temp.Ability_data = new Vector3(temp.Ability_data.x, value, temp.Ability_data.z);
-                        break;
-                    case 3:
-                        temp.Ability_data = new Vector3(value, temp.Ability_data.y, temp.Ability_data.z);
-                        break;
-                    case 4:
-                        temp.Condition_data = new Vector3(temp.Condition_data.x, temp.Condition_data.y, value);
-                        break;
-                    case 5:
-                        temp.Condition_data = new Vector3(temp.Condition_data.x, value, temp.Condition_data.z);
-                        break;
-                    case 6:
-                        temp.Condition_data = new Vector3(value, temp.Condition_data.y, temp.Condition_data.z);
-                        break;
-                }
-                dataNum--;
-                if (dataNum == 0)
-                {
-                    inputType = 입력.조건;
-                    abilityList.Add(temp);
-                }
-                else if (dataNum == 3)
-                    inputType = 입력.능력;
-            }
+            abilityData.Add(aSplit[i]);
         }
 
+        for (int i = 0; i < abilityData.Count; i++)
+        {
+            MinionAbility newAbility = new MinionAbility();
+
+            MinionAbility.Condition condition = MinionAbility.GetCondition(abilityData[i]);
+            newAbility.Condition_type = condition;
+
+            int cparaNum = MinionAbility.GetParameterNum(condition);
+            for (int j = 1; j <= cparaNum; j++)
+            {
+                int value = int.Parse(abilityData[i + j]);
+                newAbility.Condition_data[j - 1] = value;
+            }
+            i += cparaNum;
+
+            MinionAbility.Ability ability = MinionAbility.GetAbility(abilityData[i + 1]);
+            newAbility.Ability_type = ability;
+
+            int aparaNum = MinionAbility.GetParameterNum(ability);
+            for (int j = 1; j <= aparaNum; j++)
+            {
+                int value = int.Parse(abilityData[i + 1 + j]);
+                newAbility.Ability_data[j - 1] = value;
+            }
+            i += aparaNum + 1;
+            abilityList.Add(newAbility);
+        }
         return abilityList;
     }
     #endregion
@@ -196,22 +172,24 @@ public class MinionManager : MonoBehaviour
                 {
                     for (int j = 0; j < minionList[i].abilityList.Count; j++)
                     {
-                        if (minionList[i].abilityList[j].Condition_type == MinionAbility.Condition.양옆_버프)
+                        if (minionList[i].abilityList[j].Ability_type == MinionAbility.Ability.양옆_버프)
                         {
-                            if (minionList[i].abilityList[j].Ability_type == MinionAbility.Ability.능력치부여)
+                            int buffObjectIndex = minionList[i].num;
+                            if (buffObjectIndex - 1 == minionList[k].num || buffObjectIndex + 1 == minionList[k].num)
                             {
-                                int buffObjectIndex = minionList[i].num;
-                                if (buffObjectIndex - 1 == minionList[k].num || buffObjectIndex + 1 == minionList[k].num)
-                                    AddStat += minionList[i].abilityList[j].Ability_data;
+                                AddStat.x += minionList[i].abilityList[j].Ability_data[0];
+                                AddStat.y += minionList[i].abilityList[j].Ability_data[1];
+                                AddStat.z += minionList[i].abilityList[j].Ability_data[2];
                             }
                         }
-                        else if (minionList[i].abilityList[j].Condition_type == MinionAbility.Condition.전체_버프)
+                        else if (minionList[i].abilityList[j].Ability_type == MinionAbility.Ability.전체_버프)
                         {
-                            if (minionList[i].abilityList[j].Ability_type == MinionAbility.Ability.능력치부여)
+                            int buffObjectIndex = minionList[i].num;
+                            if (buffObjectIndex != minionList[k].num)
                             {
-                                int buffObjectIndex = minionList[i].num;
-                                if (buffObjectIndex != minionList[k].num)
-                                    AddStat += minionList[i].abilityList[j].Ability_data;
+                                AddStat.x += minionList[i].abilityList[j].Ability_data[0];
+                                AddStat.y += minionList[i].abilityList[j].Ability_data[1];
+                                AddStat.z += minionList[i].abilityList[j].Ability_data[2];
                             }
                         }
                     }
@@ -235,11 +213,11 @@ public class MinionManager : MonoBehaviour
                     minionObject.canAttack = false;
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
                 {
-                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    minionObject.baseAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                    minionObject.baseHp += (int)minionObject.abilityList[j].Ability_data.y;
-                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                    minionObject.nowAtk += minionObject.abilityList[j].Ability_data[0];
+                    minionObject.baseAtk += minionObject.abilityList[j].Ability_data[0];
+                    minionObject.final_hp += minionObject.abilityList[j].Ability_data[1];
+                    minionObject.baseHp += minionObject.abilityList[j].Ability_data[1];
+                    minionObject.nowSpell += minionObject.abilityList[j].Ability_data[2];
                 }
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.도발)
                     minionObject.taunt = true;
@@ -251,6 +229,59 @@ public class MinionManager : MonoBehaviour
         }
 
 
+    }
+    #endregion
+
+    #region[능력 이벤트 타입]
+    private EventType CheckEvent(MinionAbility.Ability minionAbility)
+    {
+        switch(minionAbility)
+        {
+            case MinionAbility.Ability.빙결시키기:
+            case MinionAbility.Ability.생명력회복:
+            case MinionAbility.Ability.아군하수인_주인의패로되돌리기:
+            case MinionAbility.Ability.영웅에게_피해주기:
+            case MinionAbility.Ability.영웅의_생명력회복:
+            case MinionAbility.Ability.영웅의_생명력설정:
+            case MinionAbility.Ability.적군하수인_주인의패로되돌리기:
+            case MinionAbility.Ability.침묵시키기:
+            case MinionAbility.Ability.해당턴동안_능력치부여:
+            case MinionAbility.Ability.하수인처치:
+            case MinionAbility.Ability.하수인의_생명력회복:
+            case MinionAbility.Ability.하수인의_생명력설정:
+            case MinionAbility.Ability.피해주기:
+            case MinionAbility.Ability.하수인에게_피해주기:
+            case MinionAbility.Ability.대상의_공격력_생명력_교환:
+            case MinionAbility.Ability.능력치부여:
+                return EventType.대상선택;
+            case MinionAbility.Ability.능력치를얻음:
+            case MinionAbility.Ability.도발:
+            case MinionAbility.Ability.돌진:
+            case MinionAbility.Ability.은신:
+            case MinionAbility.Ability.무기의_공격력만큼_능력치획득:
+            case MinionAbility.Ability.연계횟수만큼_능력치획득:
+                return EventType.자가버프;
+            case MinionAbility.Ability.하수인소환:
+                return EventType.하수인소환;
+            case MinionAbility.Ability.카드뽑기:
+            case MinionAbility.Ability.무작위_패_버리기:
+                return EventType.카드관련;
+            case MinionAbility.Ability.모든하수인처치:
+                return EventType.필드하수인_모두_파괴;
+            case MinionAbility.Ability.무작위_하수인뺏기:
+                return EventType.무작위_하수인뺏기;
+            case MinionAbility.Ability.변신:
+                return EventType.변신;
+            case MinionAbility.Ability.다른모두에게_능력치부여:
+                return EventType.다른모두에게_능력치부여;
+            case MinionAbility.Ability.무작위_피해주기:
+                return EventType.무작위_피해;
+            case MinionAbility.Ability.죽음:
+                return EventType.죽음;
+            case MinionAbility.Ability.무작위_능력치부여:
+                return EventType.무작위_능력치부여;
+        }
+        return EventType.없음;
     }
     #endregion
 
@@ -274,37 +305,9 @@ public class MinionManager : MonoBehaviour
                 minionObject.abilityList[j].Condition_type == MinionAbility.Condition.조건을_만족하는_하수인선택 ||
                 (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.연계 && CheckCombo()))
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.빙결시키기)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.생명력회복)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.아군하수인_주인의패로되돌리기)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅에게_피해주기)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅의_생명력회복)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅의_생명력설정)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.적군하수인_주인의패로되돌리기)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.침묵시키기)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.해당턴동안_능력치부여)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인처치)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인의_생명력회복)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인의_생명력설정)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.피해주기)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인에게_피해주기)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.대상의_공격력_생명력_교환)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치부여)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType == EventType.대상선택)
                     BattlecryEventList.Add(j);
             }
         }
@@ -317,29 +320,9 @@ public class MinionManager : MonoBehaviour
                 minionObject.abilityList[j].Condition_type == MinionAbility.Condition.필드에_하수인이_일정수일때 ||
                 (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.연계 && CheckCombo()))
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.연계횟수만큼능력치부여)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_패_버리기)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.모든하수인처치)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_하수인뺏기)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.변신)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.도발)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.돌진)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.은신)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.다른모두에게_능력치부여)
-                    BattlecryEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무기의_공격력만큼능력부여)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType != EventType.대상선택 && eventType != EventType.하수인소환)
                     BattlecryEventList.Add(j);
             }
         }
@@ -351,7 +334,9 @@ public class MinionManager : MonoBehaviour
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.전투의함성 || 
                 (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.연계 && CheckCombo()))
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType == EventType.하수인소환)
                     BattlecryEventList.Add(j);
             }
         }
@@ -367,37 +352,9 @@ public class MinionManager : MonoBehaviour
         {
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.선택)
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.빙결시키기)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.생명력회복)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.아군하수인_주인의패로되돌리기)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅에게_피해주기)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅의_생명력회복)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅의_생명력설정)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.적군하수인_주인의패로되돌리기)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.침묵시키기)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.해당턴동안_능력치부여)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인처치)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인의_생명력회복)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인의_생명력설정)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.피해주기)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인에게_피해주기)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.대상의_공격력_생명력_교환)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치부여)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType == EventType.대상선택)
                     ChooseOneEventList.Add(j);
             }
         }
@@ -408,25 +365,9 @@ public class MinionManager : MonoBehaviour
         {
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.선택)
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_패_버리기)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.모든하수인처치)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_하수인뺏기)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.변신)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.도발)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.돌진)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.은신)
-                    ChooseOneEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.다른모두에게_능력치부여)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType != EventType.대상선택 && eventType != EventType.하수인소환)
                     ChooseOneEventList.Add(j);
 
             }
@@ -438,7 +379,9 @@ public class MinionManager : MonoBehaviour
         {
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.선택)
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType == EventType.하수인소환)
                     ChooseOneEventList.Add(j);
             }
         }
@@ -464,31 +407,37 @@ public class MinionManager : MonoBehaviour
             return true;
 
         #region[공격력이 조건을 만족하는지 검사]
-        if (conditionMinion.abilityList[abilityNum].Condition_data.z == 1)
+        if (conditionMinion.abilityList[abilityNum].Condition_data[2] == 1)
         {
-            if (conditionMinion.abilityList[abilityNum].Condition_data.y > 0 && targetMinion.final_atk >= conditionMinion.abilityList[abilityNum].Condition_data.x)
+            if (conditionMinion.abilityList[abilityNum].Condition_data[1] > 0 &&
+                targetMinion.final_atk >= conditionMinion.abilityList[abilityNum].Condition_data[0])
                 return true;
-            else if (conditionMinion.abilityList[abilityNum].Condition_data.y < 0 && targetMinion.final_atk <= conditionMinion.abilityList[abilityNum].Condition_data.x)
+            else if (conditionMinion.abilityList[abilityNum].Condition_data[1] < 0 &&
+                targetMinion.final_atk <= conditionMinion.abilityList[abilityNum].Condition_data[0])
                 return true;
-            else if (conditionMinion.abilityList[abilityNum].Condition_data.y == 0 && targetMinion.final_atk == conditionMinion.abilityList[abilityNum].Condition_data.x)
+            else if (conditionMinion.abilityList[abilityNum].Condition_data[1] == 0 && 
+                targetMinion.final_atk == conditionMinion.abilityList[abilityNum].Condition_data[0])
                 return true;
         }
         #endregion
 
         #region[생명력이 조건을 만족하는지 검사]
-        else if (conditionMinion.abilityList[abilityNum].Condition_data.z == 2)
+        else if (conditionMinion.abilityList[abilityNum].Condition_data[2] == 2)
         {
-            if (conditionMinion.abilityList[abilityNum].Condition_data.y > 0 && targetMinion.final_hp >= conditionMinion.abilityList[abilityNum].Condition_data.x)
+            if (conditionMinion.abilityList[abilityNum].Condition_data[1] > 0 && 
+                targetMinion.final_hp >= conditionMinion.abilityList[abilityNum].Condition_data[0])
                 return true;
-            else if (conditionMinion.abilityList[abilityNum].Condition_data.y < 0 && targetMinion.final_hp <= conditionMinion.abilityList[abilityNum].Condition_data.x)
+            else if (conditionMinion.abilityList[abilityNum].Condition_data[1] < 0 && 
+                targetMinion.final_hp <= conditionMinion.abilityList[abilityNum].Condition_data[0])
                 return true;
-            else if (conditionMinion.abilityList[abilityNum].Condition_data.y == 0 && targetMinion.final_hp == conditionMinion.abilityList[abilityNum].Condition_data.x)
+            else if (conditionMinion.abilityList[abilityNum].Condition_data[1] == 0 && 
+                targetMinion.final_hp == conditionMinion.abilityList[abilityNum].Condition_data[0])
                 return true;
         }
         #endregion
 
         #region[도발하수인인지 검사]
-        else if (conditionMinion.abilityList[abilityNum].Condition_data.z == 3)
+        else if (conditionMinion.abilityList[abilityNum].Condition_data[2] == 3)
         {
             if (targetMinion.taunt)
                 return true;
@@ -511,89 +460,12 @@ public class MinionManager : MonoBehaviour
                 break;
 
             int j = BattlecryEventList[i];
-            int NowEvent = 0;
+            MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+            EventType NowEvent = CheckEvent(nowAbility);
 
-            //이벤트 분류
-
-            #region[대상선택 이벤트]
-            if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.빙결시키기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.생명력회복)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.아군하수인_주인의패로되돌리기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.적군하수인_주인의패로되돌리기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅에게_피해주기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅의_생명력회복)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅의_생명력설정)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.침묵시키기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.해당턴동안_능력치부여)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인처치)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인의_생명력회복)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인의_생명력설정)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인에게_피해주기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.피해주기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.대상의_공격력_생명력_교환)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치부여)
-                NowEvent = 1;
-            #endregion
-
-            #region[자가버프 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                NowEvent = 2;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.도발)
-                NowEvent = 2;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.돌진)
-                NowEvent = 2;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.은신)
-                NowEvent = 2;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무기의_공격력만큼능력부여)
-                NowEvent = 2;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.연계횟수만큼능력치부여)
-                NowEvent = 2;
-            #endregion
-
-            #region[하수인 소환 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
-                NowEvent = 3;
-            #endregion
-
-            #region[카드관련 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
-                NowEvent = 4;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_패_버리기)
-                NowEvent = 4;
-            #endregion
-
-            #region[필드하수인 모두 파괴]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.모든하수인처치)
-                NowEvent = 5;
-            #endregion
-
-            #region[무작위 하수인뺏기]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_하수인뺏기)
-                NowEvent = 6;
-            #endregion
-
-            #region[변신]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.변신)
-                NowEvent = 7;
-            #endregion
 
             #region[이벤트 처리]
-            if (NowEvent == 1)
+            if (NowEvent == EventType.대상선택)
             {
                 SetSelectMask(minionObject.abilityList[j].Ability_type);
 
@@ -642,20 +514,30 @@ public class MinionManager : MonoBehaviour
                     }
                 }
             }
-            else if (NowEvent == 2)
+            else if (NowEvent == EventType.자가버프)
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
                 {
-                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                    minionObject.nowAtk += minionObject.abilityList[j].Ability_data[0];
+                    minionObject.final_hp += minionObject.abilityList[j].Ability_data[1];
+                    minionObject.nowSpell += minionObject.abilityList[j].Ability_data[2];
                 }
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무기의_공격력만큼능력부여)
+                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무기의_공격력만큼_능력치획득)
                 {
                     if (minionObject.enemy)
-                        minionObject.nowAtk += HeroManager.instance.heroAtkManager.enemyWeaponAtk;
+                    {
+                        int weaponAtk = HeroManager.instance.heroAtkManager.enemyWeaponAtk;
+                        minionObject.nowAtk += weaponAtk * minionObject.abilityList[j].Ability_data[0];
+                        minionObject.final_hp += weaponAtk * minionObject.abilityList[j].Ability_data[1];
+                        minionObject.nowSpell += weaponAtk * minionObject.abilityList[j].Ability_data[2];
+                    }
                     else
-                        minionObject.nowAtk += HeroManager.instance.heroAtkManager.playerWeaponAtk;
+                    {
+                        int weaponAtk = HeroManager.instance.heroAtkManager.playerWeaponAtk;
+                        minionObject.nowAtk += weaponAtk * minionObject.abilityList[j].Ability_data[0];
+                        minionObject.final_hp += weaponAtk * minionObject.abilityList[j].Ability_data[1];
+                        minionObject.nowSpell += weaponAtk * minionObject.abilityList[j].Ability_data[2];
+                    }
                 }
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.도발)
                     minionObject.taunt = true;
@@ -663,20 +545,22 @@ public class MinionManager : MonoBehaviour
                     minionObject.sleep = false;
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.은신)
                     minionObject.stealth = true;
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.연계횟수만큼능력치부여)
+                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.연계횟수만큼_능력치획득)
                 {   
-                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data.x * (CardHand.instance.useCardNum - 1);
-                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data.y * (CardHand.instance.useCardNum - 1);
-                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data.z * (CardHand.instance.useCardNum - 1);
+                    minionObject.nowAtk += minionObject.abilityList[j].Ability_data[0] * (CardHand.instance.useCardNum - 1);
+                    minionObject.final_hp += minionObject.abilityList[j].Ability_data[1] * (CardHand.instance.useCardNum - 1);
+                    minionObject.nowSpell += minionObject.abilityList[j].Ability_data[2] * (CardHand.instance.useCardNum - 1);
                 }
             }
-            else if (NowEvent == 3)
+            else if (NowEvent == EventType.하수인소환)
             {
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
                 SoundManager.instance.PlayMinionSE(minionObject.minion_name, 미니언상태.효과);
-                bool enemy = (int)minionObject.abilityList[j].Ability_data.z == 1 ? false : true;
-                string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
-                string minion_ability = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "명령어");
+                bool enemy = minionObject.abilityList[j].Ability_data[2] == 1 ? false : true;
+                string minion_name = DataMng.instance.ToString(
+                    minionObject.abilityList[j].Ability_data[0], minionObject.abilityList[j].Ability_data[1], "카드이름");
+                string minion_ability = DataMng.instance.ToString(
+                    minionObject.abilityList[j].Ability_data[0], minionObject.abilityList[j].Ability_data[1], "명령어");
                 if ((enemy && !minionObject.enemy) || (!enemy && minionObject.enemy))
                 {
                     int index = EnemyMinionField.instance.minionNum;
@@ -689,15 +573,16 @@ public class MinionManager : MonoBehaviour
                 }
                 minionNum++;
             }
-            else if (NowEvent == 4)
+            else if (NowEvent == EventType.카드관련)
             {
                 if(minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
                 {
-                    for (int draw = 0; draw < minionObject.abilityList[j].Ability_data.x; draw++)
+                    for (int draw = 0; draw < minionObject.abilityList[j].Ability_data[0]; draw++)
                     {
                         //0이면 발동한 플레이어가 뽑고 
                         //1이면 상대플레이어가 카드를 뽑음
-                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
+                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 0)) 
+                            || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
                             CardHand.instance.CardDrawAct();
@@ -707,7 +592,7 @@ public class MinionManager : MonoBehaviour
                 }
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_패_버리기)
                 {
-                    for (int c = 0; c < minionObject.abilityList[j].Ability_data.x; c++)
+                    for (int c = 0; c < minionObject.abilityList[j].Ability_data[0]; c++)
                     {
                         if (!minionObject.enemy)
                         {
@@ -726,7 +611,7 @@ public class MinionManager : MonoBehaviour
                     }
                 }
             }
-            else if (NowEvent == 5)
+            else if (NowEvent == EventType.필드하수인_모두_파괴)
             {
                 for (int m = 0; m < minionList.Count; m++)
                     if (minionList[m].gameObject.activeSelf && !minionList[m].Equals(minionObject))
@@ -807,7 +692,7 @@ public class MinionManager : MonoBehaviour
 
 
             }
-            else if (NowEvent == 6)
+            else if (NowEvent == EventType.무작위_하수인뺏기)
             {
                 if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.필드에_하수인이_일정수일때)
                 {
@@ -817,23 +702,27 @@ public class MinionManager : MonoBehaviour
                     {
                         if(minionList[m].gameObject.activeSelf)
                         {
-                            if (minionList[m].enemy && (minionObject.abilityList[j].Condition_data.z == 0 || minionObject.abilityList[j].Condition_data.z == -1))
+                            if (minionList[m].enemy && (minionObject.abilityList[j].Condition_data[2] == 0 ||
+                                minionObject.abilityList[j].Condition_data[2] == -1))
                                 targetMinionNum++;
-                            else if (!minionList[m].enemy && (minionObject.abilityList[j].Condition_data.z == 0 || minionObject.abilityList[j].Condition_data.z == 1))
+                            else if (!minionList[m].enemy && (minionObject.abilityList[j].Condition_data[2] == 0 || 
+                                minionObject.abilityList[j].Condition_data[2] == 1))
                                 targetMinionNum++;
                         }
                     }
 
-                    if (minionObject.abilityList[j].Condition_data.y > 0 && targetMinionNum >= minionObject.abilityList[j].Condition_data.x)
+                    if (minionObject.abilityList[j].Condition_data[1] > 0 && 
+                        targetMinionNum >= minionObject.abilityList[j].Condition_data[0])
                         conditionCheck = true;
-                    else if (minionObject.abilityList[j].Condition_data.y < 0 && targetMinionNum <= minionObject.abilityList[j].Condition_data.x)
+                    else if (minionObject.abilityList[j].Condition_data[1] < 0 && 
+                        targetMinionNum <= minionObject.abilityList[j].Condition_data[0])
                         conditionCheck = true;
-                    else if (minionObject.abilityList[j].Condition_data.y == 0 && targetMinionNum == minionObject.abilityList[j].Condition_data.x)
+                    else if (minionObject.abilityList[j].Condition_data[1] == 0 && 
+                        targetMinionNum == minionObject.abilityList[j].Condition_data[0])
                         conditionCheck = true;
 
                     if(conditionCheck)
                     {
-                        string minion_name = "데스윙";
 
                         List<MinionObject> randomMinion = new List<MinionObject>();
 
@@ -875,7 +764,7 @@ public class MinionManager : MonoBehaviour
                         {
                             GameEventManager.instance.EventSet(1.5f);
                             int r = Random.Range(0, randomMinion.Count);
-                            minion_name = randomMinion[r].minion_name;
+                            string minion_name = randomMinion[r].minion_name;
 
                             MinionObject tempMinion = randomMinion[r];
                             Vector2 pos = tempMinion.transform.position;
@@ -928,24 +817,25 @@ public class MinionManager : MonoBehaviour
                 }
 
             }
-            else if (NowEvent == 7)
+            else if (NowEvent == EventType.변신)
             {
                 SetSelectMask(minionObject.abilityList[j].Ability_type);
 
-                string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
+                string minion_name = DataMng.instance.ToString(minionObject.abilityList[j].Ability_data[0], 
+                    minionObject.abilityList[j].Ability_data[1], "카드이름");
                 minionObject.minion_name = minion_name;
                 minionObject.InitTrigger = true;
             }
-            else if (NowEvent == 8)
+            else if (NowEvent == EventType.다른모두에게_능력치부여)
             {
                 if (minionObject.enemy)
                 {
                     for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if (!EnemyMinionField.instance.minions[m].Equals(minionObject) && EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                         {
-                            EnemyMinionField.instance.minions[m].nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                            EnemyMinionField.instance.minions[m].final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                            EnemyMinionField.instance.minions[m].nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                            EnemyMinionField.instance.minions[m].nowAtk += minionObject.abilityList[j].Ability_data[0];
+                            EnemyMinionField.instance.minions[m].final_hp += minionObject.abilityList[j].Ability_data[1];
+                            EnemyMinionField.instance.minions[m].nowSpell += minionObject.abilityList[j].Ability_data[2];
                         }
                 }
                 else
@@ -953,9 +843,9 @@ public class MinionManager : MonoBehaviour
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (!MinionField.instance.minions[m].Equals(minionObject) && MinionField.instance.minions[m].gameObject.activeSelf)
                         {
-                            MinionField.instance.minions[m].nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                            MinionField.instance.minions[m].final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                            MinionField.instance.minions[m].nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                            MinionField.instance.minions[m].nowAtk += minionObject.abilityList[j].Ability_data[0];
+                            MinionField.instance.minions[m].final_hp += minionObject.abilityList[j].Ability_data[1];
+                            MinionField.instance.minions[m].nowSpell += minionObject.abilityList[j].Ability_data[2];
                         }
                 }
             }
@@ -1043,9 +933,9 @@ public class MinionManager : MonoBehaviour
             case MinionAbility.Ability.생명력회복:
             case MinionAbility.Ability.하수인의_생명력회복:
                 SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
-                minionObject.final_hp += (int)eventMininon.abilityList[eventNum].Ability_data.x;
+                minionObject.final_hp += eventMininon.abilityList[eventNum].Ability_data[0];
                 minionObject.final_hp = Mathf.Min(minionObject.final_hp, minionObject.baseHp);
-                EffectManager.instance.HealEffect(minionObject.transform.position, (int)eventMininon.abilityList[eventNum].Ability_data.x);
+                EffectManager.instance.HealEffect(minionObject.transform.position, eventMininon.abilityList[eventNum].Ability_data[0]);
                 break;
             case MinionAbility.Ability.피해주기:
             case MinionAbility.Ability.하수인에게_피해주기:
@@ -1073,11 +963,12 @@ public class MinionManager : MonoBehaviour
                 break;
             case MinionAbility.Ability.해당턴동안_능력치부여:
             case MinionAbility.Ability.능력치부여:
-                Vector4 buff = new Vector4((int)eventMininon.abilityList[eventNum].Ability_data.x, (int)eventMininon.abilityList[eventNum].Ability_data.y, (int)eventMininon.abilityList[eventNum].Ability_data.z, 1);
+                Vector4 buff = new Vector4(eventMininon.abilityList[eventNum].Ability_data[0], 
+                    eventMininon.abilityList[eventNum].Ability_data[1], eventMininon.abilityList[eventNum].Ability_data[2], 1);
                 if(eventMininon.abilityList[eventNum].Ability_type == MinionAbility.Ability.능력치부여)
                     buff -= new Vector4(0, 0, 0, 1);
                 minionObject.buffList.Add(buff);
-                minionObject.final_hp += (int)eventMininon.abilityList[eventNum].Ability_data.y;
+                minionObject.final_hp += eventMininon.abilityList[eventNum].Ability_data[1];
                 break;
         }
     }
@@ -1099,7 +990,7 @@ public class MinionManager : MonoBehaviour
             return;
         SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
         AttackManager.instance.PopAllDamageObj();
-        AttackManager.instance.AddDamageObj(invokeMinion.damageEffect, (int)eventMininon.abilityList[eventNum].Ability_data.x);
+        AttackManager.instance.AddDamageObj(invokeMinion.damageEffect, eventMininon.abilityList[eventNum].Ability_data[0]);
         AttackManager.instance.AttackEffectRun();
         invokeMinion = null;
     }
@@ -1175,20 +1066,20 @@ public class MinionManager : MonoBehaviour
                 SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
                 if (enemy)
                 {
-                    HeroManager.instance.heroHpManager.nowEnemyHp += (int)eventMininon.abilityList[eventNum].Ability_data.x;
-                    EffectManager.instance.HealEffect(HeroManager.instance.enemyHero.transform.position, (int)eventMininon.abilityList[eventNum].Ability_data.x);
+                    HeroManager.instance.heroHpManager.nowEnemyHp += eventMininon.abilityList[eventNum].Ability_data[0];
+                    EffectManager.instance.HealEffect(HeroManager.instance.enemyHero.transform.position, eventMininon.abilityList[eventNum].Ability_data[0]);
                 }
                 else
                 {
-                    HeroManager.instance.heroHpManager.nowPlayerHp += (int)eventMininon.abilityList[eventNum].Ability_data.x;
-                    EffectManager.instance.HealEffect(HeroManager.instance.playerHero.transform.position, (int)eventMininon.abilityList[eventNum].Ability_data.x);
+                    HeroManager.instance.heroHpManager.nowPlayerHp += eventMininon.abilityList[eventNum].Ability_data[0];
+                    EffectManager.instance.HealEffect(HeroManager.instance.playerHero.transform.position, eventMininon.abilityList[eventNum].Ability_data[0]);
                 }
                 break;
             case MinionAbility.Ability.영웅의_생명력설정:
                 if (enemy)
-                    HeroManager.instance.heroHpManager.nowEnemyHp = (int)eventMininon.abilityList[eventNum].Ability_data.x;
+                    HeroManager.instance.heroHpManager.nowEnemyHp = eventMininon.abilityList[eventNum].Ability_data[0];
                 else
-                    HeroManager.instance.heroHpManager.nowPlayerHp = (int)eventMininon.abilityList[eventNum].Ability_data.x;
+                    HeroManager.instance.heroHpManager.nowPlayerHp = eventMininon.abilityList[eventNum].Ability_data[0];
                 if (eventMininon.minion_name.Equals("알렉스트라자"))
                 {
                     List<List<float>> angleList = new List<List<float>>();
@@ -1243,9 +1134,9 @@ public class MinionManager : MonoBehaviour
         SoundManager.instance.PlayMinionSE(eventMininon.minion_name, 미니언상태.효과);
         AttackManager.instance.PopAllDamageObj();
         if (invokeHero == 2)
-            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)eventMininon.abilityList[eventNum].Ability_data.x);
+            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, eventMininon.abilityList[eventNum].Ability_data[0]);
         else if (invokeHero == 1)
-            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)eventMininon.abilityList[eventNum].Ability_data.x);
+            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, eventMininon.abilityList[eventNum].Ability_data[0]);
         AttackManager.instance.AttackEffectRun();
         invokeHero = 0;
     }
@@ -1333,8 +1224,7 @@ public class MinionManager : MonoBehaviour
     [HideInInspector] public int selectChoose = -1;
     private IEnumerator ChooseOneEvent(MinionObject minionObject)
     {
-        while (GameEventManager.instance.GetEventValue() > 0.1f)
-            yield return new WaitForSeconds(0.001f);
+        yield return new WaitWhile(() => GameEventManager.instance.GetEventValue() > 0.1f);
         GameEventManager.instance.EventAdd(0.1f);
 
 
@@ -1343,8 +1233,8 @@ public class MinionManager : MonoBehaviour
         for (int i = 0; i < ChooseOneEventList.Count; i++)
         {
             int j = ChooseOneEventList[i];
-            int chooseEventJobNum = (int)minionObject.abilityList[j].Condition_data.x;
-            int chooseEventCardNum = (int)minionObject.abilityList[j].Condition_data.y;
+            int chooseEventJobNum = minionObject.abilityList[j].Condition_data[0];
+            int chooseEventCardNum = minionObject.abilityList[j].Condition_data[1];
             if (!chooseOneList.Contains(new Vector2(chooseEventJobNum, chooseEventCardNum)))
                 chooseOneList.Add(new Vector2(chooseEventJobNum, chooseEventCardNum));
         }
@@ -1379,92 +1269,17 @@ public class MinionManager : MonoBehaviour
         for (int i = 0; i < ChooseOneEventList.Count; i++)
         {
             int nowChoose = (int)chooseOneList[selectChoose].y;
-            int NowEvent = 0;
+
             int j = ChooseOneEventList[i]; 
             
-            if (nowChoose != minionObject.abilityList[j].Condition_data.y)
+            if (nowChoose != minionObject.abilityList[j].Condition_data[1])
                 continue;
 
-            #region[대상선택 이벤트]
-            if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.빙결시키기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.생명력회복)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.아군하수인_주인의패로되돌리기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.적군하수인_주인의패로되돌리기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅에게_피해주기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅의_생명력회복)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.영웅의_생명력설정)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.침묵시키기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.해당턴동안_능력치부여)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인처치)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인의_생명력회복)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인의_생명력설정)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인에게_피해주기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.피해주기)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.대상의_공격력_생명력_교환)
-                NowEvent = 1;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치부여)
-                NowEvent = 1;
-            #endregion
-
-            #region[자가버프 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                NowEvent = 2;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.도발)
-                NowEvent = 2;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.돌진)
-                NowEvent = 2;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.은신)
-                NowEvent = 2;
-            #endregion
-
-            #region[하수인 소환 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
-                NowEvent = 3;
-            #endregion
-
-            #region[카드관련 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
-                NowEvent = 4;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_패_버리기)
-                NowEvent = 4;
-            #endregion
-
-            #region[필드하수인 모두 파괴]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.모든하수인처치)
-                NowEvent = 5;
-            #endregion
-
-            #region[무작위 하수인뺏기]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_하수인뺏기)
-                NowEvent = 6;
-            #endregion
-
-            #region[변신]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.변신)
-                NowEvent = 7;
-            #endregion
-
-            #region[다른모두에게 능력치 부여]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.다른모두에게_능력치부여)
-                NowEvent = 8;
-            #endregion
+            MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+            EventType NowEvent = CheckEvent(nowAbility);
 
             #region[이벤트 처리]
-            if (NowEvent == 1)
+            if (NowEvent == EventType.대상선택)
             {
                 SetSelectMask(minionObject.abilityList[j].Ability_type);
 
@@ -1511,13 +1326,13 @@ public class MinionManager : MonoBehaviour
                     }
                 }
             }
-            else if (NowEvent == 2)
+            else if (NowEvent == EventType.자가버프)
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
                 {
-                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data[0];
+                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data[1];
+                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data[2];
                 }
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.도발)
                     minionObject.taunt = true;
@@ -1526,12 +1341,14 @@ public class MinionManager : MonoBehaviour
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.은신)
                     minionObject.stealth = true;
             }
-            else if (NowEvent == 3)
+            else if (NowEvent == EventType.하수인소환)
             {
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
-                bool enemy = (int)minionObject.abilityList[j].Ability_data.z == 1 ? false : true;
-                string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
-                string minion_ability = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "명령어");
+                bool enemy = minionObject.abilityList[j].Ability_data[2] == 1 ? false : true;
+                string minion_name = DataMng.instance.ToString(minionObject.abilityList[j].Ability_data[0], 
+                    minionObject.abilityList[j].Ability_data[1], "카드이름");
+                string minion_ability = DataMng.instance.ToString(minionObject.abilityList[j].Ability_data[0],
+                    minionObject.abilityList[j].Ability_data[1], "명령어");
                 if ((enemy && !minionObject.enemy) || (!enemy && minionObject.enemy))
                 {
                     int index = EnemyMinionField.instance.minionNum;
@@ -1544,15 +1361,16 @@ public class MinionManager : MonoBehaviour
                 }
                 minionNum++;
             }
-            else if (NowEvent == 4)
+            else if (NowEvent == EventType.카드관련)
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
                 {
-                    for(int draw = 0; draw < minionObject.abilityList[j].Ability_data.x; draw++)
+                    for(int draw = 0; draw < minionObject.abilityList[j].Ability_data[0]; draw++)
                     {
                         //0이면 발동한 플레이어가 뽑고 
                         //1이면 상대플레이어가 카드를 뽑음
-                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
+                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 0)) || 
+                            (!minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
                             CardHand.instance.CardDrawAct();
@@ -1562,7 +1380,7 @@ public class MinionManager : MonoBehaviour
                 }
                 else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_패_버리기)
                 {
-                    for (int c = 0; c < minionObject.abilityList[j].Ability_data.x; c++)
+                    for (int c = 0; c < minionObject.abilityList[j].Ability_data[0]; c++)
                     {
                         if (!minionObject.enemy)
                         {
@@ -1581,7 +1399,7 @@ public class MinionManager : MonoBehaviour
                     }
                 }
             }
-            else if (NowEvent == 5)
+            else if (NowEvent == EventType.필드하수인_모두_파괴)
             {
                 for (int m = 0; m < minionList.Count; m++)
                     if (minionList[m].gameObject.activeSelf && !minionList[m].Equals(minionObject))
@@ -1660,7 +1478,7 @@ public class MinionManager : MonoBehaviour
                 #endregion
 
             }
-            else if (NowEvent == 6)
+            else if (NowEvent == EventType.무작위_하수인뺏기)
             {
                 if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.필드에_하수인이_일정수일때)
                 {
@@ -1670,23 +1488,24 @@ public class MinionManager : MonoBehaviour
                     {
                         if (minionList[m].gameObject.activeSelf)
                         {
-                            if (minionList[m].enemy && (minionObject.abilityList[j].Condition_data.z == 0 || minionObject.abilityList[j].Condition_data.z == -1))
+                            if (minionList[m].enemy && (minionObject.abilityList[j].Condition_data[2] == 0 ||
+                                minionObject.abilityList[j].Condition_data[2] == -1))
                                 targetMinionNum++;
-                            else if (!minionList[m].enemy && (minionObject.abilityList[j].Condition_data.z == 0 || minionObject.abilityList[j].Condition_data.z == 1))
+                            else if (!minionList[m].enemy && (minionObject.abilityList[j].Condition_data[2] == 0 ||
+                                minionObject.abilityList[j].Condition_data[2] == 1))
                                 targetMinionNum++;
                         }
                     }
 
-                    if (minionObject.abilityList[j].Condition_data.y > 0 && targetMinionNum >= minionObject.abilityList[j].Condition_data.x)
+                    if (minionObject.abilityList[j].Condition_data[1] > 0 && targetMinionNum >= minionObject.abilityList[j].Condition_data[0])
                         conditionCheck = true;
-                    else if (minionObject.abilityList[j].Condition_data.y < 0 && targetMinionNum <= minionObject.abilityList[j].Condition_data.x)
+                    else if (minionObject.abilityList[j].Condition_data[1] < 0 && targetMinionNum <= minionObject.abilityList[j].Condition_data[0])
                         conditionCheck = true;
-                    else if (minionObject.abilityList[j].Condition_data.y == 0 && targetMinionNum == minionObject.abilityList[j].Condition_data.x)
+                    else if (minionObject.abilityList[j].Condition_data[1] == 0 && targetMinionNum == minionObject.abilityList[j].Condition_data[0])
                         conditionCheck = true;
 
                     if (conditionCheck)
                     {
-                        string minion_name = "데스윙";
 
                         List<MinionObject> randomMinion = new List<MinionObject>();
 
@@ -1710,7 +1529,7 @@ public class MinionManager : MonoBehaviour
                         if (randomMinion.Count > 0)
                         {
                             int r = Random.Range(0, randomMinion.Count);
-                            minion_name = randomMinion[r].minion_name;
+                            string minion_name = randomMinion[r].minion_name;
                             MinionObject temp = randomMinion[r];
 
                             if (minionObject.enemy)
@@ -1749,24 +1568,25 @@ public class MinionManager : MonoBehaviour
                 }
 
             }
-            else if (NowEvent == 7)
+            else if (NowEvent == EventType.변신)
             {
                 SetSelectMask(minionObject.abilityList[j].Ability_type);
 
-                string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
+                string minion_name = DataMng.instance.ToString(
+                    minionObject.abilityList[j].Ability_data[0], minionObject.abilityList[j].Ability_data[1], "카드이름");
                 minionObject.minion_name = minion_name;
                 minionObject.InitTrigger = true;
             }
-            else if (NowEvent == 8)
+            else if (NowEvent == EventType.다른모두에게_능력치부여)
             {
                 if (minionObject.enemy)
                 {
                     for(int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                         if(!EnemyMinionField.instance.minions[m].Equals(minionObject) && EnemyMinionField.instance.minions[m].gameObject.activeSelf)
                         {
-                            EnemyMinionField.instance.minions[m].nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                            EnemyMinionField.instance.minions[m].final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                            EnemyMinionField.instance.minions[m].nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                            EnemyMinionField.instance.minions[m].nowAtk += minionObject.abilityList[j].Ability_data[0];
+                            EnemyMinionField.instance.minions[m].final_hp += minionObject.abilityList[j].Ability_data[1];
+                            EnemyMinionField.instance.minions[m].nowSpell += minionObject.abilityList[j].Ability_data[2];
                         }
                 }
                 else
@@ -1774,9 +1594,9 @@ public class MinionManager : MonoBehaviour
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (!MinionField.instance.minions[m].Equals(minionObject) && MinionField.instance.minions[m].gameObject.activeSelf)
                         {
-                            MinionField.instance.minions[m].nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                            MinionField.instance.minions[m].final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                            MinionField.instance.minions[m].nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                            MinionField.instance.minions[m].nowAtk += minionObject.abilityList[j].Ability_data[0];
+                            MinionField.instance.minions[m].final_hp += minionObject.abilityList[j].Ability_data[1];
+                            MinionField.instance.minions[m].nowSpell += minionObject.abilityList[j].Ability_data[2];
                         }
                 }
             }
@@ -1842,37 +1662,19 @@ public class MinionManager : MonoBehaviour
 
         while (deathrattleEventQueue.Count > 0)
         {
-            int NowEvent = 0;
-
             MinionAbility temp = deathrattleEventQueue.Dequeue();
-
-            #region[하수인 소환 이벤트]
-            if (temp.Ability_type == MinionAbility.Ability.하수인소환)
-                NowEvent = 3;
-            #endregion
-
-            #region[카드관련 이벤트]
-            else if (temp.Ability_type == MinionAbility.Ability.카드뽑기)
-                NowEvent = 4;
-            else if (temp.Ability_type == MinionAbility.Ability.무작위_패_버리기)
-                NowEvent = 4;
-            #endregion
-
-            #region[무작위 하수인뺏기]
-            else if (temp.Ability_type == MinionAbility.Ability.무작위_하수인뺏기)
-                NowEvent = 6;
-            #endregion
+            EventType NowEvent = CheckEvent(temp.Ability_type);
 
             #region[이벤트 처리]
-            if (NowEvent == 3)
+            if (NowEvent == EventType.하수인소환)
             {
                 GameEventManager.instance.EventSet(0.5f);
                 yield return new WaitForSeconds(0.5f);
 
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
-                bool enemy = (int)temp.Ability_data.z == 1 ? false : true;
-                string minion_name = DataMng.instance.ToString((DataMng.TableType)temp.Ability_data.x, (int)temp.Ability_data.y, "카드이름");
-                string minion_ability = DataMng.instance.ToString((DataMng.TableType)temp.Ability_data.x, (int)temp.Ability_data.y, "명령어");
+                bool enemy = temp.Ability_data[2] == 1 ? false : true;
+                string minion_name = DataMng.instance.ToString(temp.Ability_data[0], temp.Ability_data[1], "카드이름");
+                string minion_ability = DataMng.instance.ToString(temp.Ability_data[0], temp.Ability_data[1], "명령어");
                 if ((enemy && !minion_enemy) || (!enemy && minion_enemy))
                 {
                     int index = EnemyMinionField.instance.minionNum;
@@ -1885,15 +1687,15 @@ public class MinionManager : MonoBehaviour
                 }
                 minionNum++;
             }
-            else if (NowEvent == 4)
+            else if (NowEvent == EventType.카드관련)
             {
                 if (temp.Ability_type == MinionAbility.Ability.카드뽑기)
                 {
-                    for (int draw = 0; draw < temp.Ability_data.x; draw++)
+                    for (int draw = 0; draw < temp.Ability_data[0]; draw++)
                     {
                         //0이면 발동한 플레이어가 뽑고 
                         //1이면 상대플레이어가 카드를 뽑음
-                        if ((minion_enemy && (temp.Ability_data.y == 0)) || (!minion_enemy && (temp.Ability_data.y == 1)))
+                        if ((minion_enemy && (temp.Ability_data[1] == 0)) || (!minion_enemy && (temp.Ability_data[1] == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
                             CardHand.instance.CardDrawAct();
@@ -1901,7 +1703,7 @@ public class MinionManager : MonoBehaviour
                 }
                 else if (temp.Ability_type == MinionAbility.Ability.무작위_패_버리기)
                 {
-                    for (int c = 0; c < temp.Ability_data.x; c++)
+                    for (int c = 0; c < temp.Ability_data[0]; c++)
                     {
                         if (!minion_enemy)
                         {
@@ -1920,10 +1722,8 @@ public class MinionManager : MonoBehaviour
                     }
                 }
             }
-            else if (NowEvent == 6)
+            else if (NowEvent == EventType.무작위_하수인뺏기)
             {
-                string minion_name = "데스윙";
-
                 List<MinionObject> randomMinion = new List<MinionObject>();
 
                 //적군미니언효과이면
@@ -1964,7 +1764,7 @@ public class MinionManager : MonoBehaviour
                 {
                     GameEventManager.instance.EventSet(1.5f);
                     int r = Random.Range(0, randomMinion.Count);
-                    minion_name = randomMinion[r].minion_name;
+                    string minion_name =  randomMinion[r].minion_name;
 
                     MinionObject tempMinion = randomMinion[r];
                     Vector2 pos = tempMinion.transform.position;
@@ -2066,9 +1866,9 @@ public class MinionManager : MonoBehaviour
         {
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.주문시전)
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                    SpellRunEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType != EventType.대상선택 && eventType != EventType.하수인소환)
                     SpellRunEventList.Add(j);
             }
         }
@@ -2079,7 +1879,9 @@ public class MinionManager : MonoBehaviour
         {
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.주문시전)
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType == EventType.하수인소환)
                     SpellRunEventList.Add(j);
             }
         }
@@ -2091,8 +1893,7 @@ public class MinionManager : MonoBehaviour
 
     private IEnumerator SpellRunMinionAbilityRun(MinionObject minionObject,List<int> SpellRunEventList)
     {
-        while (GameEventManager.instance.GetEventValue() > 0.1f)
-            yield return new WaitForSeconds(0.001f);
+        yield return new WaitWhile(() => GameEventManager.instance.GetEventValue() > 0.1);
         GameEventManager.instance.EventAdd(0.1f);
         int minionNum = 0;
         for (int i = 0; i < SpellRunEventList.Count; i++)
@@ -2102,39 +1903,27 @@ public class MinionManager : MonoBehaviour
 
             int j = SpellRunEventList[i];
 
-            int NowEvent = 0;
-
-            #region[자가버프 이벤트]
-            if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                NowEvent = 2;
-            #endregion
-
-            #region[하수인 소환 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
-                NowEvent = 3;
-            #endregion
-
-            #region[카드관련 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
-                NowEvent = 4;
-            #endregion
+            MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+            EventType NowEvent = CheckEvent(nowAbility);
 
             #region[이벤트 처리]
-            if (NowEvent == 2)
+            if (NowEvent == EventType.자가버프)
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
                 {
-                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                    minionObject.nowAtk += minionObject.abilityList[j].Ability_data[0];
+                    minionObject.final_hp += minionObject.abilityList[j].Ability_data[1];
+                    minionObject.nowSpell += minionObject.abilityList[j].Ability_data[2];
                 }
             }
-            else if (NowEvent == 3)
+            else if (NowEvent == EventType.하수인소환)
             {
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
-                bool enemy = (int)minionObject.abilityList[j].Ability_data.z == 1 ? false : true;
-                string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
-                string minion_ability = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "명령어");
+                bool enemy = minionObject.abilityList[j].Ability_data[2] == 1 ? false : true;
+                string minion_name = DataMng.instance.ToString(
+                    minionObject.abilityList[j].Ability_data[0], minionObject.abilityList[j].Ability_data[1], "카드이름");
+                string minion_ability = DataMng.instance.ToString(
+                    minionObject.abilityList[j].Ability_data[0], minionObject.abilityList[j].Ability_data[1], "명령어");
                 if ((enemy && !minionObject.enemy) || (!enemy && minionObject.enemy))
                 {
                     int index = EnemyMinionField.instance.minionNum;
@@ -2147,11 +1936,11 @@ public class MinionManager : MonoBehaviour
                 }
                 minionNum++;
             }
-            else if (NowEvent == 4)
+            else if (NowEvent == EventType.카드관련)
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
                 {
-                    for (int draw = 0; draw < minionObject.abilityList[j].Ability_data.x; draw++)
+                    for (int draw = 0; draw < minionObject.abilityList[j].Ability_data[0]; draw++)
                     {
                         if (minionObject.minion_name == "가젯잔 경매인")
                         {
@@ -2160,7 +1949,8 @@ public class MinionManager : MonoBehaviour
                         }
                         //0이면 발동한 플레이어가 뽑고 
                         //1이면 상대플레이어가 카드를 뽑음
-                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
+                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 0)) || 
+                            (!minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
                             CardHand.instance.CardDrawAct();
@@ -2192,13 +1982,9 @@ public class MinionManager : MonoBehaviour
                 (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.상대턴의_시작 && minionObject.enemy != turnStartHero) ||
                 (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.내턴의_시작 && minionObject.enemy == turnStartHero))
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                    TurnStartEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
-                    TurnStartEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.확률_카드뽑기)
-                    TurnStartEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_능력치부여)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType != EventType.대상선택 && eventType != EventType.하수인소환)
                     TurnStartEventList.Add(j);
             }
         }
@@ -2211,7 +1997,9 @@ public class MinionManager : MonoBehaviour
                 (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.상대턴의_시작 && minionObject.enemy != turnStartHero) ||
                 (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.내턴의_시작 && minionObject.enemy == turnStartHero))
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType == EventType.하수인소환)
                     TurnStartEventList.Add(j);
             }
         }
@@ -2223,8 +2011,7 @@ public class MinionManager : MonoBehaviour
 
     private IEnumerator TurnStartMinionAbility(MinionObject minionObject, List<int> TurnStartEventList)
     {
-        while (GameEventManager.instance.GetEventValue() > 0.1f)
-            yield return new WaitForSeconds(0.001f);
+        yield return new WaitWhile(() => GameEventManager.instance.GetEventValue() > 0.1f);
         GameEventManager.instance.EventAdd(0.1f);
         int minionNum = 0;
         for (int i = 0; i < TurnStartEventList.Count; i++)
@@ -2234,32 +2021,11 @@ public class MinionManager : MonoBehaviour
 
             int j = TurnStartEventList[i];
 
-            int NowEvent = 0;
-
-            #region[무작위능력치부여 이벤트]
-            if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_능력치부여)
-                NowEvent = 1;
-            #endregion
-
-            #region[자가버프 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                NowEvent = 2;
-            #endregion
-
-            #region[하수인 소환 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
-                NowEvent = 3;
-            #endregion
-
-            #region[카드관련 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
-                NowEvent = 4;
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.확률_카드뽑기)
-                NowEvent = 4;
-            #endregion
+            MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+            EventType NowEvent = CheckEvent(nowAbility);
 
             #region[이벤트 처리]
-            if (NowEvent == 1)
+            if (NowEvent == EventType.무작위_능력치부여)
             {
                 List<MinionObject> minionList = new List<MinionObject>();
                 if (minionObject.enemy)
@@ -2278,26 +2044,28 @@ public class MinionManager : MonoBehaviour
                 if (minionList.Count > 0)
                 {
                     MinionObject targetMinion = minionList[Random.Range(0, minionList.Count)];
-                    targetMinion.nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    targetMinion.final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                    targetMinion.nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                    targetMinion.nowAtk += minionObject.abilityList[j].Ability_data[0];
+                    targetMinion.final_hp += minionObject.abilityList[j].Ability_data[1];
+                    targetMinion.nowSpell += minionObject.abilityList[j].Ability_data[2];
                 }
             }
-            else if (NowEvent == 2)
+            else if (NowEvent == EventType.자가버프)
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
                 {
-                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data[0];
+                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data[1];
+                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data[2] ;
                 }
             }
-            else if (NowEvent == 3)
+            else if (NowEvent == EventType.하수인소환)
             {
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
-                bool enemy = (int)minionObject.abilityList[j].Ability_data.z == 1 ? false : true;
-                string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
-                string minion_ability = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "명령어");
+                bool enemy = minionObject.abilityList[j].Ability_data[2] == 1 ? false : true;
+                string minion_name = DataMng.instance.ToString(
+                    minionObject.abilityList[j].Ability_data[0], minionObject.abilityList[j].Ability_data[1], "카드이름");
+                string minion_ability = DataMng.instance.ToString(
+                    minionObject.abilityList[j].Ability_data[0], (int)minionObject.abilityList[j].Ability_data[1], "명령어");
                 if ((enemy && !minionObject.enemy) || (!enemy && minionObject.enemy))
                 {
                     int index = EnemyMinionField.instance.minionNum;
@@ -2310,18 +2078,19 @@ public class MinionManager : MonoBehaviour
                 }
                 minionNum++;
             }
-            else if (NowEvent == 4)
+            else if (NowEvent == EventType.카드관련)
             {
                 int r = 100;
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.확률_카드뽑기)
                     r = Random.Range(0,100);
-                if (r > minionObject.abilityList[j].Ability_data.z)
+                if (r > minionObject.abilityList[j].Ability_data[2])
                 {
-                    for (int draw = 0; draw < minionObject.abilityList[j].Ability_data.x; draw++)
+                    for (int draw = 0; draw < minionObject.abilityList[j].Ability_data[0]; draw++)
                     {
                         //0이면 발동한 플레이어가 뽑고 
                         //1이면 상대플레이어가 카드를 뽑음
-                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
+                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 0)) || 
+                            (!minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 1)))
                         {
                             SoundManager.instance.PlayMinionSE(minionObject.minion_name, 미니언상태.효과);
                             if (minionObject.minion_name == "내트 페이글")
@@ -2361,15 +2130,11 @@ public class MinionManager : MonoBehaviour
         {
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.각턴_종료 ||
                 (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.상대턴의_종료 && minionObject.enemy != turnEndHero) ||
-                (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.자신의_턴종료 && minionObject.enemy == turnEndHero))
+                (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.내_턴종료 && minionObject.enemy == turnEndHero))
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                    TurnEndEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
-                    TurnEndEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_능력치부여)
-                    TurnEndEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_피해주기)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType != EventType.대상선택 && eventType != EventType.하수인소환 && nowAbility != MinionAbility.Ability.죽음)
                     TurnEndEventList.Add(j);
             }
         }
@@ -2380,9 +2145,11 @@ public class MinionManager : MonoBehaviour
         {
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.각턴_종료 ||
                 (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.상대턴의_종료 && minionObject.enemy != turnEndHero) ||
-                (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.자신의_턴종료 && minionObject.enemy == turnEndHero))
+                (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.내_턴종료 && minionObject.enemy == turnEndHero))
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType == EventType.하수인소환 && nowAbility != MinionAbility.Ability.죽음)
                     TurnEndEventList.Add(j);
             }
         }
@@ -2393,9 +2160,10 @@ public class MinionManager : MonoBehaviour
         {
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.각턴_종료 ||
                 (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.상대턴의_종료 && minionObject.enemy != turnEndHero) ||
-                (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.자신의_턴종료 && minionObject.enemy == turnEndHero))
+                (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.내_턴종료 && minionObject.enemy == turnEndHero))
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.죽음)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                if (nowAbility == MinionAbility.Ability.죽음)
                     TurnEndEventList.Add(j);
             }
         }
@@ -2407,8 +2175,7 @@ public class MinionManager : MonoBehaviour
 
     private IEnumerator TurnEndMinionAbility(MinionObject minionObject, List<int> TurnEndEventList)
     {
-        while (GameEventManager.instance.GetEventValue() > 0.1f)
-            yield return new WaitForSeconds(0.001f);
+        yield return new WaitWhile(() => GameEventManager.instance.GetEventValue() > 0.1f);
         GameEventManager.instance.EventAdd(0.1f);
         int minionNum = 0;
         for (int i = 0; i < TurnEndEventList.Count; i++)
@@ -2418,40 +2185,11 @@ public class MinionManager : MonoBehaviour
 
             int j = TurnEndEventList[i];
 
-            int NowEvent = 0;
-
-            #region[무작위능력치부여 이벤트]
-            if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_능력치부여)
-                NowEvent = 1;
-            #endregion
-
-            #region[자가버프 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                NowEvent = 2;
-            #endregion
-
-            #region[하수인 소환 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
-                NowEvent = 3;
-            #endregion
-
-            #region[카드관련 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
-                NowEvent = 4;
-            #endregion
-
-            #region[무작위 피해 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_피해주기)
-                NowEvent = 5;
-            #endregion
-
-            #region[죽음 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.죽음)
-                NowEvent = 6;
-            #endregion
+            MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+            EventType NowEvent = CheckEvent(nowAbility);
 
             #region[이벤트 처리]
-            if (NowEvent == 1)
+            if (NowEvent == EventType.무작위_능력치부여)
             {
                 List<MinionObject> targetList = new List<MinionObject>();
                 if(minionObject.enemy)
@@ -2474,26 +2212,28 @@ public class MinionManager : MonoBehaviour
                     if (minionObject.minion_name == "검 제작의 대가")
                         EffectManager.instance.SwordEffect(minionObject.transform.position, targetMinion.transform.position);
                     yield return new WaitForSeconds(1.3f);
-                    targetMinion.nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    targetMinion.final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                    targetMinion.nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                    targetMinion.nowAtk += minionObject.abilityList[j].Ability_data[0];
+                    targetMinion.final_hp += minionObject.abilityList[j].Ability_data[1];
+                    targetMinion.nowSpell += minionObject.abilityList[j].Ability_data[2];
                 }
             }
-            else if (NowEvent == 2)
+            else if (NowEvent == EventType.자가버프)
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
                 {
-                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                    minionObject.nowAtk += minionObject.abilityList[j].Ability_data[0];
+                    minionObject.final_hp += minionObject.abilityList[j].Ability_data[1];
+                    minionObject.nowSpell += minionObject.abilityList[j].Ability_data[2];
                 }
             }
-            else if (NowEvent == 3)
+            else if (NowEvent == EventType.하수인소환)
             {
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
-                bool enemy = (int)minionObject.abilityList[j].Ability_data.z == 1 ? false : true;
-                string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
-                string minion_ability = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "명령어");
+                bool enemy = minionObject.abilityList[j].Ability_data[2] == 1 ? false : true;
+                string minion_name = DataMng.instance.ToString(
+                    minionObject.abilityList[j].Ability_data[0], minionObject.abilityList[j].Ability_data[1], "카드이름");
+                string minion_ability = DataMng.instance.ToString(
+                    minionObject.abilityList[j].Ability_data[0], minionObject.abilityList[j].Ability_data[1], "명령어");
                 if ((enemy && !minionObject.enemy) || (!enemy && minionObject.enemy))
                 {
                     int index = EnemyMinionField.instance.minionNum;
@@ -2506,15 +2246,16 @@ public class MinionManager : MonoBehaviour
                 }
                 minionNum++;
             }
-            else if (NowEvent == 4)
+            else if (NowEvent == EventType.카드관련)
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
                 {
-                    for (int draw = 0; draw < minionObject.abilityList[j].Ability_data.x; draw++)
+                    for (int draw = 0; draw < minionObject.abilityList[j].Ability_data[0]; draw++)
                     {
                         //0이면 발동한 플레이어가 뽑고 
                         //1이면 상대플레이어가 카드를 뽑음
-                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
+                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 0)) || 
+                            (!minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
                             CardHand.instance.CardDrawAct();
@@ -2523,7 +2264,7 @@ public class MinionManager : MonoBehaviour
                     }
                 }
             }
-            else if (NowEvent == 5)
+            else if (NowEvent == EventType.무작위_피해)
             {
                 GameEventManager.instance.EventSet(1f);
                 List<int> targetList = new List<int>();
@@ -2547,7 +2288,8 @@ public class MinionManager : MonoBehaviour
                                 yield return new WaitForSeconds(1f);
                             }
                             AttackManager.instance.PopAllDamageObj();
-                            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, (int)minionObject.abilityList[j].Ability_data.x);
+                            AttackManager.instance.AddDamageObj(
+                                HeroManager.instance.heroHpManager.enemyHeroDamage, minionObject.abilityList[j].Ability_data[0]);
                             AttackManager.instance.AttackEffectRun();
                         }
                         else
@@ -2560,7 +2302,8 @@ public class MinionManager : MonoBehaviour
                                 yield return new WaitForSeconds(1f);
                             }
                             AttackManager.instance.PopAllDamageObj();
-                            AttackManager.instance.AddDamageObj(EnemyMinionField.instance.minions[targetList[r]].damageEffect, (int)minionObject.abilityList[j].Ability_data.x);
+                            AttackManager.instance.AddDamageObj(
+                                EnemyMinionField.instance.minions[targetList[r]].damageEffect, minionObject.abilityList[j].Ability_data[0]);
                             AttackManager.instance.AttackEffectRun();
                         }
                        
@@ -2585,7 +2328,7 @@ public class MinionManager : MonoBehaviour
                                 yield return new WaitForSeconds(1f);
                             }
                             AttackManager.instance.PopAllDamageObj();
-                            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, (int)minionObject.abilityList[j].Ability_data.x);
+                            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, minionObject.abilityList[j].Ability_data[0]);
                             AttackManager.instance.AttackEffectRun();
                         }
                         else
@@ -2597,14 +2340,14 @@ public class MinionManager : MonoBehaviour
                                 yield return new WaitForSeconds(1f);
                             }
                             AttackManager.instance.PopAllDamageObj();
-                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[targetList[r]].damageEffect, (int)minionObject.abilityList[j].Ability_data.x);
+                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[targetList[r]].damageEffect, minionObject.abilityList[j].Ability_data[0]);
                             AttackManager.instance.AttackEffectRun();
                         }
 
                     }
                 }
             }
-            else if (NowEvent == 6)
+            else if (NowEvent == EventType.죽음)
             {
                 minionObject.MinionDeath();
                 minionNum++;
@@ -2640,8 +2383,7 @@ public class MinionManager : MonoBehaviour
 
     private IEnumerator DamaeMinionAbility(MinionObject minionObject, List<int> DamageEventList)
     {
-        while (GameEventManager.instance.GetEventValue() > 0.1f)
-            yield return new WaitForSeconds(0.001f);
+        yield return new WaitWhile(() => GameEventManager.instance.GetEventValue() > 0.1f);
         GameEventManager.instance.EventAdd(0.1f);
         int minionNum = 0;
         for (int i = 0; i < DamageEventList.Count; i++)
@@ -2651,21 +2393,17 @@ public class MinionManager : MonoBehaviour
 
             int j = DamageEventList[i];
 
-            int NowEvent = 0;
-
-            #region[자가버프 이벤트]
-           if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                NowEvent = 2;
-            #endregion
+            MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+            EventType NowEvent = CheckEvent(nowAbility);
 
             #region[이벤트 처리]
-            if (NowEvent == 2)
+            if (NowEvent == EventType.자가버프)
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
                 {
-                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data[0];
+                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data[1];
+                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data[2];
                 }
             }          
             #endregion
@@ -2689,11 +2427,9 @@ public class MinionManager : MonoBehaviour
         {
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.하수인이_죽을때마다)
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                    MinionDeadEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
-                    MinionDeadEventList.Add(j);
-                else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_능력치부여)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType != EventType.대상선택 && eventType != EventType.하수인소환)
                     MinionDeadEventList.Add(j);
             }
         }
@@ -2704,7 +2440,9 @@ public class MinionManager : MonoBehaviour
         {
             if (minionObject.abilityList[j].Condition_type == MinionAbility.Condition.하수인이_죽을때마다)
             {
-                if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
+                MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+                EventType eventType = CheckEvent(nowAbility);
+                if (eventType == EventType.하수인소환)
                     MinionDeadEventList.Add(j);
             }
         }
@@ -2716,8 +2454,7 @@ public class MinionManager : MonoBehaviour
 
     private IEnumerator MinionDeadMinionAbility(MinionObject minionObject, List<int> MinionDeadEventList)
     {
-        while (GameEventManager.instance.GetEventValue() > 0.1f)
-            yield return new WaitForSeconds(0.001f);
+        yield return new WaitWhile(() => GameEventManager.instance.GetEventValue() > 0.1f);
         GameEventManager.instance.EventAdd(0.1f);
         int minionNum = 0;
         for (int i = 0; i < MinionDeadEventList.Count; i++)
@@ -2726,30 +2463,12 @@ public class MinionManager : MonoBehaviour
                 break;
 
             int j = MinionDeadEventList[i];
-            int NowEvent = 0;
 
-            #region[무작위능력치부여 이벤트]
-            if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.무작위_능력치부여)
-                NowEvent = 1;
-            #endregion
-
-            #region[자가버프 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
-                NowEvent = 2;
-            #endregion
-
-            #region[하수인 소환 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.하수인소환)
-                NowEvent = 3;
-            #endregion
-
-            #region[카드관련 이벤트]
-            else if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
-                NowEvent = 4;
-            #endregion
+            MinionAbility.Ability nowAbility = minionObject.abilityList[j].Ability_type;
+            EventType NowEvent = CheckEvent(nowAbility);
 
             #region[이벤트 처리]
-            if (NowEvent == 1)
+            if (NowEvent == EventType.무작위_능력치부여)
             {
                 List<MinionObject> minionList = new List<MinionObject>();
                 if (minionObject.enemy)
@@ -2768,26 +2487,28 @@ public class MinionManager : MonoBehaviour
                 if (minionList.Count > 0)
                 {
                     MinionObject targetMinion = minionList[Random.Range(0, minionList.Count)];
-                    targetMinion.nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    targetMinion.final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                    targetMinion.nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                    targetMinion.nowAtk += minionObject.abilityList[j].Ability_data[0];
+                    targetMinion.final_hp += minionObject.abilityList[j].Ability_data[1];
+                    targetMinion.nowSpell += minionObject.abilityList[j].Ability_data[2];
                 }
             }
-            else if (NowEvent == 2)
+            else if (NowEvent == EventType.자가버프)
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.능력치를얻음)
                 {
-                    minionObject.nowAtk += (int)minionObject.abilityList[j].Ability_data.x;
-                    minionObject.final_hp += (int)minionObject.abilityList[j].Ability_data.y;
-                    minionObject.nowSpell += (int)minionObject.abilityList[j].Ability_data.z;
+                    minionObject.nowAtk += minionObject.abilityList[j].Ability_data[0];
+                    minionObject.final_hp += minionObject.abilityList[j].Ability_data[1];
+                    minionObject.nowSpell += minionObject.abilityList[j].Ability_data[2];
                 }
             }
-            else if (NowEvent == 3)
+            else if (NowEvent == EventType.하수인소환)
             {
                 //미니언이 적군 하수인인지 아군 하수인인지 결정(1아군 ,-1적군)
-                bool enemy = (int)minionObject.abilityList[j].Ability_data.z == 1 ? false : true;
-                string minion_name = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "카드이름");
-                string minion_ability = DataMng.instance.ToString((DataMng.TableType)minionObject.abilityList[j].Ability_data.x, (int)minionObject.abilityList[j].Ability_data.y, "명령어");
+                bool enemy = minionObject.abilityList[j].Ability_data[2] == 1 ? false : true;
+                string minion_name = DataMng.instance.ToString(
+                    minionObject.abilityList[j].Ability_data[0], minionObject.abilityList[j].Ability_data[1], "카드이름");
+                string minion_ability = DataMng.instance.ToString(
+                    minionObject.abilityList[j].Ability_data[0], minionObject.abilityList[j].Ability_data[1], "명령어");
                 if ((enemy && !minionObject.enemy) || (!enemy && minionObject.enemy))
                 {
                     int index = EnemyMinionField.instance.minionNum;
@@ -2800,15 +2521,16 @@ public class MinionManager : MonoBehaviour
                 }
                 minionNum++;
             }
-            else if (NowEvent == 4)
+            else if (NowEvent == EventType.카드관련)
             {
                 if (minionObject.abilityList[j].Ability_type == MinionAbility.Ability.카드뽑기)
                 {
-                    for (int draw = 0; draw < minionObject.abilityList[j].Ability_data.x; draw++)
+                    for (int draw = 0; draw < minionObject.abilityList[j].Ability_data[0]; draw++)
                     {
                         //0이면 발동한 플레이어가 뽑고 
                         //1이면 상대플레이어가 카드를 뽑음
-                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 0)) || (!minionObject.enemy && (minionObject.abilityList[j].Ability_data.y == 1)))
+                        if ((minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 0)) ||
+                            (!minionObject.enemy && (minionObject.abilityList[j].Ability_data[1] == 1)))
                             EnemyCardHand.instance.DrawCard();
                         else
                             CardHand.instance.CardDrawAct();

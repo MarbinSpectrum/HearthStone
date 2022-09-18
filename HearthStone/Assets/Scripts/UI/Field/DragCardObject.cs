@@ -90,7 +90,7 @@ public class DragCardObject : MonoBehaviour
                 //명령어를 순회하면서 대상지정효과인지 파악한다.
                 if (SpellManager.instance.CheckEvent(spellList[i]) == SpellManager.EventType.대상선택)
                 {
-                    if (spellList[i].Condition_type == SpellAbility.Condition.선택)
+                    if (spellList[i].ConditionType == SpellAbility.Condition.선택)
                     {
                         //선택효과는 선택을하고나서 대상지정인지 아닌지 결정된다.
                         //대상지정인지 비확정이기 때문에 보류한다.
@@ -99,7 +99,7 @@ public class DragCardObject : MonoBehaviour
 
                     //능력에 따라 효과대상이 지정되어있다.
                     //효과대상을 지정해준다.
-                    SpellManager.instance.SetSelectMask(spellList[i].Ability_type);
+                    SpellManager.instance.SetSelectMask(spellList[i].AbilityType);
 
                     dragSelectCard = true;
 
@@ -112,7 +112,7 @@ public class DragCardObject : MonoBehaviour
             }
 
             for (int i = 0; i < spellList.Count; i++)
-                if (spellList[i].Condition_type == SpellAbility.Condition.피해입지않은하수인)
+                if (spellList[i].ConditionType == SpellAbility.Condition.피해입지않은하수인)
                     checkNotDamageMinion = true;
         }
         else if(dragSelectCard)

@@ -65,8 +65,8 @@ public class CardHand : MonoBehaviour
     //손패 카드 코스트 증감처리
     [HideInInspector] public int[] handCostOffset;
 
-    //마음가짐 발동 처리
-    [HideInInspector] public int UsePreparation;
+    //다음주문카드 비용감소
+    [HideInInspector] public int nextSpellCostOffset;
 
 
     [HideInInspector] public int removeCostOffset = 0;
@@ -119,7 +119,7 @@ public class CardHand : MonoBehaviour
                 card[i].transform.position = drawCardPos.position;
             handCard[i].cardCostOffset = handCostOffset[i];
             if (handCard[i].cardType == CardType.주문)
-                handCard[i].cardCostOffset -= UsePreparation;
+                handCard[i].cardCostOffset -= nextSpellCostOffset;
         }
 
         for (int i = 0; i < card.Count; i++)
@@ -258,7 +258,7 @@ public class CardHand : MonoBehaviour
                     {
                         //무기를 장착중이지 않은 상태
                         //무기관련 효과는 발동 할 수 없다.
-                        switch (sAbility.Ability_type)
+                        switch (sAbility.AbilityType)
                         {
                             case SpellAbility.Ability.무기에_공격력부여:
                             case SpellAbility.Ability.무기파괴:
@@ -292,8 +292,8 @@ public class CardHand : MonoBehaviour
         int cost = handCard[n].GetCost() + handCostOffset[n];
         if (handCard[n].cardType == CardType.주문)
         {
-            //마음가짐 카드 효과처리
-            cost -= UsePreparation;
+            //주문카드 비용감소     처리
+            cost -= nextSpellCostOffset;
         }
         cost = Mathf.Max(0, cost);
         return cost;

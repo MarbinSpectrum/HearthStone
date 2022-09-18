@@ -8,7 +8,7 @@ public enum 입력 { 조건, 능력, 수치 };
 public class MinionAbility
 {
     public MinionAbility() { }
-    public MinionAbility(Condition condition_type, Vector3 condition_data, Ability ability_type, Vector3 ability_data)
+    public MinionAbility(Condition condition_type, ParaData condition_data, Ability ability_type, ParaData ability_data)
     {
         Condition_type = condition_type;
         Condition_data = condition_data;
@@ -19,6 +19,7 @@ public class MinionAbility
     #region[발동 조건]
     public enum Condition
     {
+        조건없음,
         전투의함성,
         죽음의메아리,
         선택,
@@ -28,11 +29,13 @@ public class MinionAbility
         주문시전,
         피해를_받을때마다,
         하수인이_죽을때마다,
-        전체_버프, 양옆_버프, 영구버프,
-        각턴_시작, 내턴의_시작, 상대턴의_시작,
-        각턴_종료, 자신의_턴종료, 상대턴의_종료,
+        각턴_시작, 
+        내턴의_시작, 
+        상대턴의_시작,
+        각턴_종료, 
+        내_턴종료, 
+        상대턴의_종료,
         무기장착시,
-        조건없음,
         조건을_만족하는_하수인선택,
         //data3이 1이면 공격력 -1이면 체력
         //data2이 -1이면 이하   1이면 이상  0이면 같을때
@@ -48,36 +51,36 @@ public class MinionAbility
     /// <summary>
     /// 해당 문자를 [조건데이터]로 바꿔주는 함수입니다.
     /// </summary>
-    public static Condition GetCondition(string s)
+    public static Condition GetCondition(string str)
     {
-        for (Condition i = Condition.전투의함성; i <= Condition.버그; i++)
-        {
-            if (i.ToString().Equals(s))
-                return i;
-        }
-        return Condition.버그;
+        Condition condition = (Condition)System.Enum.Parse(typeof(Condition), str);
+        return condition;
     }
     #endregion
 
     #region[데이터가 필요한 [조건데이터]인지 검사하는 함수입니다.]
-    /// <summary>
-    /// 데이터가 필요한 [조건데이터]인지 검사하는 함수입니다.
-    /// </summary>
+    /// <summary>데이터가 필요한 [조건데이터]인지 검사하는 함수입니다. </summary>
     public static bool CheckDataCondition(Condition c)
     {
-        if (c == Condition.조건을_만족하는_하수인선택)
-            return true;
-        if (c == Condition.필드에_하수인이_일정수일때)
-            return true;
-        if (c == Condition.선택)
-            return true;
-        return false;
+        return GetParameterNum(c) > 0;
+    }
+    public static int GetParameterNum(Condition c)
+    {
+        switch (c)
+        {
+            case Condition.선택:
+                return 2;
+            case Condition.조건을_만족하는_하수인선택:
+            case Condition.필드에_하수인이_일정수일때:
+                return 3;
+        }
+        return 0;
     }
     #endregion
 
     public Condition Condition_type;
     //상세 데이터
-    public Vector3 Condition_data;
+    public ParaData Condition_data;
     #endregion
 
     #region[능력 정보]
@@ -95,208 +98,90 @@ public class MinionAbility
         카드뽑기, 확률_카드뽑기,
         하수인의_생명력회복, 하수인의_생명력설정, 영웅의_생명력회복, 영웅의_생명력설정, 생명력회복,
         능력치를얻음, 능력치부여, 무작위_능력치부여, 해당턴동안_능력치부여,다른모두에게_능력치부여,
-        연계횟수만큼능력치부여,
         대상의_공격력_생명력_교환,
-        무기의_공격력만큼능력부여,
+        연계횟수만큼_능력치획득,
+        무기의_공격력만큼_능력치획득,
         하수인처치, 모든하수인처치,
         아군하수인_주인의패로되돌리기, 적군하수인_주인의패로되돌리기, 모든_하수인_주인의패로되돌리기,
         무작위_패_버리기, 무작위_하수인뺏기,
         변신,
+        전체_버프,양옆_버프,영구_버프,
         버그
     }
 
     public Ability Ability_type;
     //상세 데이터
-    public Vector3 Ability_data;
+    public ParaData Ability_data;
 
     #region[해당 문자를 [능력데이터]로 바꿔주는 함수입니다.]
     /// <summary>
     /// 해당 문자를 [능력데이터]로 바꿔주는 함수입니다.
     /// </summary>
-    public static Ability GetAbility(string s)
+    public static Ability GetAbility(string str)
     {
-        for (Ability i = Ability.하수인에게_피해주기; i <= Ability.버그; i++)
-        {
-            if (i.ToString().Equals(s))
-                return i;
-        }
-        return Ability.버그;
+        Ability ability = (Ability)System.Enum.Parse(typeof(Ability), str);
+        return ability;
     }
     #endregion
 
     #region[데이터가 필요한 [능력데이터]인지 검사하는 함수입니다.]
-    /// <summary>
-    /// 데이터가 필요한 [능력데이터]인지 검사하는 함수입니다.
-    /// </summary>
+    /// <summary> 데이터가 필요한 [능력데이터]인지 검사하는 함수입니다.</summary>
     public static bool CheckDataAbility(Ability a)
     {
-        if (a == Ability.연계횟수만큼능력치부여)
-            return true;
-        if (a == Ability.무작위_피해주기)
-            return true;
-        if (a == Ability.하수인에게_피해주기)
-            return true;
-        if (a == Ability.영웅에게_피해주기)
-            return true;
-        if (a == Ability.피해주기)
-            return true;
-        if (a == Ability.하수인소환)
-            return true;
-        if (a == Ability.카드뽑기)
-            return true;
-        if (a == Ability.확률_카드뽑기)
-            return true;
-        if (a == Ability.무작위_패_버리기)
-            return true;
-        if (a == Ability.하수인의_생명력회복)
-            return true;
-        if (a == Ability.하수인의_생명력설정)
-            return true;
-        if (a == Ability.영웅의_생명력회복)
-            return true;
-        if (a == Ability.영웅의_생명력설정)
-            return true;
-        if (a == Ability.생명력회복)
-            return true;
-        if (a == Ability.하수인에게_피해주기)
-            return true;
-        if (a == Ability.능력치를얻음)
-            return true;
-        if (a == Ability.능력치부여)
-            return true;
-        if (a == Ability.무작위_능력치부여)
-            return true;
-        if (a == Ability.해당턴동안_능력치부여)
-            return true;
-        if (a == Ability.다른모두에게_능력치부여)
-            return true;
-        if (a == Ability.변신)
-            return true;
-        return false;
+        return GetParameterNum(a) > 0;
+    }
+
+    public static int GetParameterNum(Ability a)
+    {
+        switch (a)
+        {
+            case Ability.하수인에게_피해주기:
+            case Ability.영웅에게_피해주기:
+            case Ability.피해주기:
+            case Ability.무작위_피해주기:
+            case Ability.하수인의_생명력회복:
+            case Ability.하수인의_생명력설정:
+            case Ability.영웅의_생명력회복:
+            case Ability.영웅의_생명력설정:
+            case Ability.생명력회복:
+            case Ability.무작위_패_버리기:
+                return 1;
+            case Ability.카드뽑기:
+            case Ability.변신:
+                return 2;
+            case Ability.하수인소환:
+            case Ability.확률_카드뽑기:
+            case Ability.능력치를얻음:
+            case Ability.능력치부여:
+            case Ability.무작위_능력치부여:
+            case Ability.해당턴동안_능력치부여:
+            case Ability.다른모두에게_능력치부여:
+            case Ability.연계횟수만큼_능력치획득:
+            case Ability.무기의_공격력만큼_능력치획득:
+            case Ability.전체_버프:
+            case Ability.양옆_버프:
+            case Ability.영구_버프:
+                return 3;
+            case Ability.돌진:
+            case Ability.도발:
+            case Ability.은신:
+            case Ability.빙결시키기:
+            case Ability.침묵시키기:
+            case Ability.죽음:
+            case Ability.공격불가:
+            case Ability.대상의_공격력_생명력_교환:
+            case Ability.아군하수인_주인의패로되돌리기:
+            case Ability.적군하수인_주인의패로되돌리기:
+            case Ability.모든_하수인_주인의패로되돌리기:
+            case Ability.하수인처치:
+            case Ability.모든하수인처치:
+            case Ability.무작위_하수인뺏기:
+                return 0;
+        }
+        return 0;
     }
     #endregion
 
-    #region[ActAbillity]
-    public void ActAbillity()
-    {
-        switch (Ability_type)
-        {
-            case Ability.하수인에게_피해주기:
-                //하수인선택로직
-                //data1만큼피해
-                break;
-            case Ability.영웅에게_피해주기:
-                //영웅선택로직
-                //data1만큼피해
-                break;
-            case Ability.피해주기:
-                //대상선택로직
-                //data1만큼피해
-                break;
-            case Ability.하수인소환:
-                //하수인소환로직
-                //data1테이블의 data2번 하수인소환
-                break;
-            case Ability.돌진:
-                //돌진로직
-                break;
-            case Ability.도발:
-                //도발로직
-                break;
-            case Ability.은신:
-                //은신로직
-                break;
-            case Ability.빙결시키기:
-                //대상선택로직
-                //빙결로직
-                break;
-            case Ability.침묵시키기:
-                //대상선택로직
-                //침묵로직
-                break;
-            case Ability.공격불가:
-                //공격불가로직
-                break;
-            case Ability.카드뽑기:
-                //data1만큼 카드를 뽑음
-                //data2의 플레이어가
-                break;
-            case Ability.확률_카드뽑기:
-                //data1만큼 카드를 뽑음
-                //data2의 플레이어가
-                //data3의 확률로
-                break;
-            case Ability.하수인의_생명력회복:
-                //하수인선택로직
-                //data1만큼 회복
-                break;
-            case Ability.영웅의_생명력회복:
-                //영웅선택로직
-                //data1만큼 회복
-                break;
-            case Ability.생명력회복:
-                //대상선택로직
-                //data1만큼 회복
-                break;
-            case Ability.능력치를얻음:
-                //data1의 체력부여
-                //data2의 공격력부여
-                //data3의 주문공격력부여
-                break;
-            case Ability.능력치부여:
-                //하수인선택로직
-                //data1의 체력부여
-                //data2의 공격력부여
-                //data3의 주문공격력부여
-                break;
-            case Ability.무작위_능력치부여:
-                //무작위하수인선택로직
-                //data1의 체력부여
-                //data2의 공격력부여
-                //data3의 주문공격력부여
-                break;
-            case Ability.해당턴동안_능력치부여:
-                //하수인선택로직
-                //data1의 체력부여
-                //data2의 공격력부여
-                //data3의 주문공격력부여
-                //턴종료시 능력치부여한게 사라지게 설정
-                break;
-            case Ability.대상의_공격력_생명력_교환:
-                //하수인선택로직
-                //공격력_생명력_교환
-                break;
-            case Ability.무기의_공격력만큼능력부여:
-                //하수인선택로직
-                //무기의 공격력만큼 공격력부여
-                break;
-            case Ability.아군하수인_주인의패로되돌리기:
-                //아군하수인선택로직
-                //주인손으로돌아가는로직
-                break;
-            case Ability.적군하수인_주인의패로되돌리기:
-                //적군하수인선택로직
-                //주인손으로돌아가는로직
-                break;
-            case Ability.모든_하수인_주인의패로되돌리기:
-                //모든하수인선택로직
-                //주인손으로돌아가는로직
-                break;
-            case Ability.하수인처치:
-                //하수인선택로직
-                //하수인처치로직
-                break;
-            case Ability.모든하수인처치:
-                //모든하수인선택로직
-                //하수인처치로직
-                break;
-            case Ability.무작위_패_버리기:
-                //무작위패를 data1만큼선택
-                //패버리기로직
-                break;
-        }
-        #endregion
 
-    }
     #endregion
 }

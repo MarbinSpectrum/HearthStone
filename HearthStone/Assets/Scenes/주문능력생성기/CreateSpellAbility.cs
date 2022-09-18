@@ -41,25 +41,41 @@ public class CreateSpellAbility : MonoBehaviour
     {
         SpellAbility.Condition c = (SpellAbility.Condition)condition.value;
         condition_data.SetActive(SpellAbility.CheckDataCondition(c));
+        int cnum = SpellAbility.GetParameterNum(c);
+        c_data1.gameObject.SetActive(cnum >= 1);
+        c_data2.gameObject.SetActive(cnum >= 2);
+        c_data3.gameObject.SetActive(cnum >= 3);
+
 
         SpellAbility.Ability a = (SpellAbility.Ability)ability.value;
         ability_data.SetActive(SpellAbility.CheckDataAbility(a));
+        int anum = SpellAbility.GetParameterNum(a);
+        a_data1.gameObject.SetActive(anum >= 1);
+        a_data2.gameObject.SetActive(anum >= 2);
+        a_data3.gameObject.SetActive(anum >= 3);
+
 
         string s = "";
         s += "[" + c.ToString() + "]";
         if (condition_data.activeSelf)
         {
-            s += "[" + c_data1.text + "]";
-            s += "[" + c_data2.text + "]";
-            s += "[" + c_data3.text + "]";
+            if (c_data1.gameObject.activeSelf)
+                s += "[" + c_data1.text + "]";
+            if (c_data2.gameObject.activeSelf)
+                s += "[" + c_data2.text + "]";
+            if (c_data3.gameObject.activeSelf)
+                s += "[" + c_data3.text + "]";
         }
 
         s += "[" + a.ToString() + "]";
         if (ability_data.activeSelf)
         {
-            s += "[" + a_data1.text + "]";
-            s += "[" + a_data2.text + "]";
-            s += "[" + a_data3.text + "]";
+            if (a_data1.gameObject.activeSelf)
+                s += "[" + a_data1.text + "]";
+            if (a_data2.gameObject.activeSelf)
+                s += "[" + a_data2.text + "]";
+            if (a_data3.gameObject.activeSelf)
+                s += "[" + a_data3.text + "]";
         }
         outData.text = s;
     }

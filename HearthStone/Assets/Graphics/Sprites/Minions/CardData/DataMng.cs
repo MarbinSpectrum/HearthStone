@@ -334,3 +334,55 @@ public class DataMng : MonoBehaviour
     }
     #endregion
 }
+
+
+public struct ParaData
+{
+    private int aa, bb, cc;
+
+    public ParaData(int a = 0, int b = 0, int c = 0)
+    {
+        aa = a;
+        bb = b;
+        cc = c;
+    }
+
+    public ParaData(ParaData pd)
+    {
+        aa = pd[0];
+        bb = pd[1];
+        cc = pd[2];
+    }
+
+    public int this[int sKey]
+    {
+        get
+        {
+            switch (sKey)
+            {
+                case 0:
+                    return aa;
+                case 1:
+                    return bb;
+                case 2:
+                    return cc;
+            }
+            return 0;
+        }
+        set
+        {
+            switch (sKey)
+            {
+                case 0:
+                    aa = value;
+                    break;
+                case 1:
+                    bb = value;
+                    break;
+                case 2:
+                    cc = value;
+                    break;
+            }
+        }
+    }
+}

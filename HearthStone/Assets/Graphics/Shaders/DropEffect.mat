@@ -38,7 +38,7 @@ Material:
     m_Floats:
     - Vector1_47652A4C: 0.072
     - Vector1_4EACEE9F: 0.539
-    - _Alpha: 1
+    - _Alpha: 0
     - _ColorMask: 15
     - _Lerp: 0
     - _NoiseValue: 0.5
