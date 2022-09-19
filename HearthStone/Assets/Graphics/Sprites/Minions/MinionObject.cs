@@ -408,11 +408,8 @@ public class MinionObject : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         if (!enemy)
         {
-            MinionObject temp = this;
-            for (int i = num; i < MinionField.instance.minionNum - 1; i++)
-                MinionField.instance.minions[i] = MinionField.instance.minions[i + 1];
-            MinionField.instance.minions[MinionField.instance.minionNum - 1] = this;
-            MinionField.instance.minionNum--;
+            MinionManager.instance.DeathMinionAbility(this);
+            MinionField.instance.RemoveMinion(num);
         }
         else
         {
@@ -432,8 +429,14 @@ public class MinionObject : MonoBehaviour
     {
         if(final_hp <= 0)
             SoundManager.instance.PlayMinionSE(minion_name, 미니언상태.죽음);
+
+        //능력제거
         abilityList.Clear();
+
+        //버프제거
         buffList.Clear();
+
+        //상태초기화
         canAttackNum = 0;
         taunt = false;
         stealth = false;
@@ -458,17 +461,23 @@ public class MinionObject : MonoBehaviour
     #region[침묵]
     public void ActSilence()
     {
+        //몬스터효과 제거
         abilityList.Clear();
+
+        //버프효과 제거
         buffList.Clear();
+
+        //능력치를 기본 능력치 기준으로 바꾼다.
         Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(minion_name));
         baseHp = DataMng.instance.ToInteger(pair.x, pair.y, "체력");
         final_hp = Mathf.Min(baseHp, final_hp);
         baseAtk = DataMng.instance.ToInteger(pair.x, pair.y, "공격력");
         nowAtk = Mathf.Min(baseAtk, nowAtk);
+
+        //침묵을 제외한 상태이상 제거
         taunt = false;
         stealth = false;
         freeze = false;
-
         silence = true;
     }
     #endregion

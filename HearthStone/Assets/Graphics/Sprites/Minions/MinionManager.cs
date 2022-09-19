@@ -58,6 +58,7 @@ public class MinionManager : MonoBehaviour
     {
         List<MinionAbility> abilityList = new List<MinionAbility>();
 
+        //괄호 기준으로 분할
         string[] aSplit = ability_string.Split('[', ']');
         List<string> abilityData = new List<string>();
         for (int i = 0; i < aSplit.Length; i++)
@@ -71,25 +72,32 @@ public class MinionManager : MonoBehaviour
 
         for (int i = 0; i < abilityData.Count; i++)
         {
+            //파싱한 명령어를 게임에서 쓸수 있도록 변환
             MinionAbility newAbility = new MinionAbility();
 
+            //조건으로 파싱
             MinionAbility.Condition condition = MinionAbility.GetCondition(abilityData[i]);
             newAbility.Condition_type = condition;
 
+            //조건에 필요한 파라미터수를 구하고
             int cparaNum = MinionAbility.GetParameterNum(condition);
             for (int j = 1; j <= cparaNum; j++)
             {
+                //해당 파라미터를 구한다.
                 int value = int.Parse(abilityData[i + j]);
                 newAbility.Condition_data[j - 1] = value;
             }
             i += cparaNum;
 
+            //효과로 파싱
             MinionAbility.Ability ability = MinionAbility.GetAbility(abilityData[i + 1]);
             newAbility.Ability_type = ability;
 
+            //효과에 필요한 파라미터수를 구하고
             int aparaNum = MinionAbility.GetParameterNum(ability);
             for (int j = 1; j <= aparaNum; j++)
             {
+                //해당 파라미터를 구한다.
                 int value = int.Parse(abilityData[i + 1 + j]);
                 newAbility.Ability_data[j - 1] = value;
             }
@@ -488,6 +496,9 @@ public class MinionManager : MonoBehaviour
                 {
                     if(minionObject.enemy)
                     {
+                        //적이 발동한 효과
+                        //여기선 적이 AI이므로
+                        //AI로 설정된 목표를 선택하게 한다.
                         eventMininon = minionObject;
                         eventNum = j;
                         DruidAI.instance.AI_Select(eventMininon.abilityList[eventNum].Ability_type);
@@ -496,15 +507,20 @@ public class MinionManager : MonoBehaviour
                     {
                         SoundManager.instance.MuteBGM(true);
 
-                        if (DragLineRenderer.instance.CheckMask(타겟.아군영웅) || DragLineRenderer.instance.CheckMask(타겟.적영웅))
+                        if (DragLineRenderer.instance.CheckMask(타겟.아군영웅) ||
+                            DragLineRenderer.instance.CheckMask(타겟.적영웅))
                             CardHand.instance.handAni.SetTrigger("축소");
+
+                        //미니언 선택이벤트 실행
                         selectMinionEvent = true;
                         eventMininon = minionObject;
+
                         eventNum = j;
+
                         BattleUI.instance.grayFilterAni.SetBool("On", true);
                         BattleUI.instance.selectMinion.gameObject.SetActive(true);
-                        DragLineRenderer.instance.activeObj = minionObject.gameObject;
                         BattleUI.instance.selectMinionTxt.text = GetText(minionObject.abilityList[j].Ability_type);
+                        DragLineRenderer.instance.activeObj = minionObject.gameObject;
 
                         while (selectMinionEvent)
                         {

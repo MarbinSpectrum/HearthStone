@@ -5,17 +5,19 @@ using UnityEngine.UI;
 
 public class CreateSpellAbility : MonoBehaviour
 {
-    public Dropdown condition;
-    public GameObject condition_data;
-    public InputField c_data1;
-    public InputField c_data2;
-    public InputField c_data3;
-    public Dropdown ability;
-    public GameObject ability_data;
-    public InputField a_data1;
-    public InputField a_data2;
-    public InputField a_data3;
-    public InputField outData;
+    [SerializeField] private Dropdown condition;
+    [SerializeField] private GameObject condition_data;
+    [SerializeField] private InputField c_data1;
+    [SerializeField] private InputField c_data2;
+    [SerializeField] private InputField c_data3;
+    [SerializeField] private Dropdown ability;
+    [SerializeField] private GameObject ability_data;
+    [SerializeField] private InputField a_data1;
+    [SerializeField] private InputField a_data2;
+    [SerializeField] private InputField a_data3;
+    [SerializeField] private InputField outData;
+    [SerializeField] private Text explainText;
+
     private void Awake()
     {
         List<Dropdown.OptionData> temp = new List<Dropdown.OptionData>();

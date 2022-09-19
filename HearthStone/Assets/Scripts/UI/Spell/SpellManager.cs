@@ -55,6 +55,7 @@ public class SpellManager : MonoBehaviour
     {
         List<SpellAbility> abilityList = new List<SpellAbility>();
 
+        //괄호기준으로 분할
         string[] aSplit = ability_string.Split('[', ']');
         List<string> abilityData = new List<string>();
         for (int i = 0; i < aSplit.Length; i++)
@@ -66,27 +67,37 @@ public class SpellManager : MonoBehaviour
             abilityData.Add(aSplit[i]);
         }
 
+
         for(int i = 0; i < abilityData.Count; i++)
         {
+            //명령어를 게임에 쓸수 있도록 변환
+
+            //주문능력 객체를 생성
             SpellAbility newAbility = new SpellAbility();
 
+            //조건을 확인
             SpellAbility.Condition condition = SpellAbility.GetCondition(abilityData[i]);
             newAbility.ConditionType = condition;
 
+            //조건 명령어의 파라미터 갯수를 가져온다.
             int cparaNum = SpellAbility.GetParameterNum(condition);
             for (int j = 1; j <= cparaNum; j++)
             {
+                //파라미터를 대입
                 int value = int.Parse(abilityData[i + j]);
                 newAbility.ConditionData[j - 1] = value;
             }
             i += cparaNum;
 
+            //능력을 확인
             SpellAbility.Ability ability = SpellAbility.GetAbility(abilityData[i + 1]);
             newAbility.AbilityType = ability;
 
+            //능력 명령어의 파라미터 갯수를 가져온다.
             int aparaNum = SpellAbility.GetParameterNum(ability);
             for (int j = 1; j <= aparaNum; j++)
             {
+                //파라미터를 대입
                 int value = int.Parse(abilityData[i + 1 + j]);
                 newAbility.AbilityData[j - 1] = value;
             }
@@ -1578,17 +1589,25 @@ public class SpellManager : MonoBehaviour
         targetMinion = null;
         targetHero = -1;
         spellSelectCancle = false;
+
+        //명령어 데이터를 읽고 파싱한다.
         Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(name));
         string ability_string = DataMng.instance.ToString(pair.x, pair.y, "명령어");
         List<SpellAbility> spellList = SpellParsing(ability_string);
+
+        //카드이름을 얻고 카드의 비용을 구한다.
         nowSpellName = name;
         int cost = CardHand.instance.GetCardCost(handNum);
 
+        //사용처리
         ManaManager.instance.playerNowMana -= cost;
         CardHand.instance.useCardNum++;
         CardHand.instance.CardRemove(handNum);
+
+        //카드효과 실행
         StartCoroutine(RunSpellTargetHero(spellList, runHero, tarHero));
     }
+
     private IEnumerator RunSpellTargetHero(List<SpellAbility> spellList, bool runHero,bool tarHero)
     {
         bool enemy = runHero;
@@ -1599,6 +1618,7 @@ public class SpellManager : MonoBehaviour
         List<SpellAbility> chooseOneList = new List<SpellAbility>();
         for (int i = 0; i < spellList.Count; i++)
         {
+            //현재 작동이 가능한 이벤트 리스트
             List<SpellAbility> nowEvent = new List<SpellAbility>();
 
             if (spellList[i].ConditionType == SpellAbility.Condition.선택)
@@ -1611,8 +1631,10 @@ public class SpellManager : MonoBehaviour
             #region[조건에 따른 주문처리]
             if (spellList[i].ConditionType == SpellAbility.Condition.선택)
             {
-                if (i + 1 >= spellList.Count || spellList[i + 1].ConditionType != SpellAbility.Condition.선택)
+                if (i == spellList.Count - 1 || //현재가 가장 끝이거나
+                    spellList[i + 1].ConditionType != SpellAbility.Condition.선택) //햔제 항목이 마지막 선택 항목인 경우
                 {
+                    //더이상의 선택 항목이 없다고 판단
                     List<ParaData> chooseOneData = new List<ParaData>();
                     foreach (SpellAbility chooseAbility in chooseOneList)
                     {
@@ -1623,7 +1645,7 @@ public class SpellManager : MonoBehaviour
 
                     BattleUI.instance.chooseOneDruid.SetBool("Hide", false);
 
-                    for (int j = 0; j < 2; j++)
+                    for (int j = 0; j < chooseOneData.Count; j++)
                     {
                         string ChooseName = DataMng.instance.ToString(chooseOneData[j][0], chooseOneData[j][1], "카드이름");
                         CardViewManager.instance.CardShow(ref BattleUI.instance.chooseCardView[j], ChooseName);
@@ -1638,10 +1660,14 @@ public class SpellManager : MonoBehaviour
                         yield return new WaitForSeconds(0.001f);
                     }
 
+                    //선택이 끝났다면
                     foreach (SpellAbility chooseAbility in chooseOneList)
                     {
                         if (chooseAbility.ConditionData[1] == chooseOneData[selectChoose][1])
+                        {
                             nowEvent.Add(chooseAbility);
+                            break;
+                        }
                     }
                 }
             }
@@ -2818,7 +2844,8 @@ public class SpellManager : MonoBehaviour
                 if (nowSpellName == "독칼")
                 {
                     GameEventManager.instance.EventSet(1f);
-                    EffectManager.instance.CutEffect(invokeEnemy ? HeroManager.instance.enemyHero.transform.position : HeroManager.instance.playerHero.transform.position, new Vector2(+1, 1));
+                    EffectManager.instance.CutEffect(invokeEnemy ? HeroManager.instance.enemyHero.transform.position : 
+                        HeroManager.instance.playerHero.transform.position, new Vector2(+1, 1));
                     Invoke("HeroDamage", 1f);
                 }
                 else if (nowSpellName == "절개")

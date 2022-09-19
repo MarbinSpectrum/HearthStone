@@ -378,6 +378,19 @@ public class MinionField : MonoBehaviour
 
     #endregion
 
+    #region[미니언 제거]
+
+    public void RemoveMinion(int idx)
+    {
+        MinionObject removeMinion = minions[idx];
+        for (int i = idx; i < minionNum - 1; i++)
+            minions[i] = minions[i + 1];
+        minions[minionNum - 1] = removeMinion;
+        minionNum--;
+        removeMinion.MinionRemoveProcess();
+    }
+    #endregion
+
     #region[미니언 턴 시작시 처리]
     public void MinionsTurnStartTrigger()
     {
