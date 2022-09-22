@@ -26,7 +26,7 @@ public class HeroPowerManager : MonoBehaviour
     public Image []heroPowerImage;
 
 
-    public void Update()
+    private void Update()
     {
         playerCanUseGlowObj.SetActive(BattleUI.instance.gameStart && 
             TurnManager.instance.turn == Turn.플레이어 && 
@@ -40,46 +40,56 @@ public class HeroPowerManager : MonoBehaviour
         string abilityName = " ";
         if(enemy)
         {
-            if (!enemyCanUse || ManaManager.instance.enemyNowMana < 2)
-                return;
-            ManaManager.instance.enemyNowMana -= 2;
             if (enemyHeroName.Equals("발리라"))
                 abilityName = "단검의 대가";
             else if (enemyHeroName.Equals("말퓨리온"))
                 abilityName = "변신";
+
+            Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(abilityName));
+            int cost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
+
+            if (!enemyCanUse || ManaManager.instance.enemyNowMana < cost)
+                return;
+
+            ManaManager.instance.enemyNowMana -= 2;
             enemyCanUse = false;
             enemyHeroPowerObjAni.SetBool("CanUse", false);
-
-
-            Vector2 pair = DataMng.instance.GetPairByName(DataParse.GetCardName(abilityName));
 
             showHeroPower.SetActive(true);
             heroPowerName.text = abilityName;
             for (int i = 0; i < heroPowerImage.Length; i++)
                 heroPowerImage[i].enabled = heroPowerImage[i].transform.name == abilityName;
-            if(abilityName == "변신")
-                heroPowerExplain.text = "방어도를 + 1 얻고 이번 턴에 내 영웅이 공격력을 +1 얻습니다.";
-            else if (abilityName == "단검의 대가")
-                heroPowerExplain.text = "1/2 무기를 장착합니다.";
+
+            string explain = DataMng.instance.ToString(pair.x, pair.y, "카드설명");
+            heroPowerExplain.text = explain;
+
             Invoke("CloseHeroPower", 1.5f);
 
         }
         else
         {
-            if (!playerCanUse || ManaManager.instance.playerNowMana < 2)
-                return;
-            ManaManager.instance.playerNowMana -= 2;
             if (playerHeroName.Equals("발리라"))
                 abilityName = "단검의 대가";
             else if (playerHeroName.Equals("말퓨리온"))
                 abilityName = "변신";
+
+            Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(abilityName));
+            int cost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
+
+            if (!playerCanUse || ManaManager.instance.playerNowMana < cost)
+            {
+                //마나가 부족하거나 사용할 수 없다.
+                return;
+            }
+            ManaManager.instance.playerNowMana -= cost;
+             
             playerCanUse = false;
             playerHeroPowerObjAni.SetBool("CanUse", false);
-            //DragCardObject.instance.ShowDropEffectSpell(Input.mousePosition, 0);
+
             QuestManager.instance.HeroAbility();
         }
 
-        SpellManager.instance.RunSpell(abilityName, enemy,true);
+        SpellManager.instance.RunSpell(abilityName, enemy, true);
 
     }
 

@@ -2756,14 +2756,17 @@ public class SpellManager : MonoBehaviour
     {
         AttackManager.instance.PopAllDamageObj();
         SoundManager.instance.PlaySpellSE(nowSpellName, 주문상태.효과);
+
+        //총 데미지
+        int damage = nowSpellAbility.AbilityData[0] + (invokeRunEnemy ? enemySpellPower : playerSpellPower);
+
+        //데미지 실행
         if (invokeEnemy)
-            AttackManager.instance.AddDamageObj
-                (HeroManager.instance.heroHpManager.enemyHeroDamage, 
-                nowSpellAbility.AbilityData[0] + (invokeRunEnemy ? enemySpellPower : playerSpellPower));
+            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage,damage);
         else
-            AttackManager.instance.AddDamageObj(
-                HeroManager.instance.heroHpManager.playerHeroDamage, 
-                nowSpellAbility.AbilityData[0] + (invokeRunEnemy ? enemySpellPower : playerSpellPower));
+            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage,damage);
+
+        //데미지 이펙트 실행
         AttackManager.instance.AttackEffectRun();
     }
 
