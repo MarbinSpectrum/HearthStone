@@ -106,7 +106,8 @@ public class MinionSelect : Btn
             DragLineRenderer.instance.dragTargetPos = Vector2.zero;
             select = false;
         }
-        else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적하수인)) || (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군하수인)))
+        else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적하수인)) ||
+            (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군하수인)))
         {
             if (!DragLineRenderer.instance.CheckMask(타겟.실행주체) && DragLineRenderer.instance.CheckActObj(gameObject))
                 return;

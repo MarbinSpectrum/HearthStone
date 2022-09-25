@@ -101,7 +101,7 @@ public class MinionObject : MonoBehaviour
     #endregion
 
     #region[Update]
-    void Update()
+    private void Update()
     {
         Init();
         UpdateTrigger();
