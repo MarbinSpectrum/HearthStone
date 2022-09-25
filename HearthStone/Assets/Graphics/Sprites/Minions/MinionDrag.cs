@@ -94,7 +94,10 @@ public class MinionDrag : Btn
             GameEventManager.instance.EventAdd(2f);
             MinionField.instance.attack_ready = 1f;
             minionObject.stealth = false;
-            MinionField.instance.minions_Attack_pos[n] = new Vector3(DragLineRenderer.instance.dragTargetPos.x, DragLineRenderer.instance.dragTargetPos.y, minionObject.transform.position.z);
+            MinionField.instance.minions_Attack_pos[n] = 
+                new Vector3(DragLineRenderer.instance.dragTargetPos.x, 
+                DragLineRenderer.instance.dragTargetPos.y, 
+                minionObject.transform.position.z);
             SoundManager.instance.PlayMinionSE(minionObject.minion_name, 미니언상태.공격);
         }
     }

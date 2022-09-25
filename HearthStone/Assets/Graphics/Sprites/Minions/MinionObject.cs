@@ -227,19 +227,25 @@ public class MinionObject : MonoBehaviour
     #region[지속적인 처리]
     public void UpdateTrigger()
     {
-        checkCanAtttack = !GameEventManager.instance.EventCheck();
-        checkCanAtttack &= (final_atk != 0);
-        checkCanAtttack &= canAttack;
-        checkCanAtttack &= canAttackNum > 0;
-        checkCanAtttack &= !sleep;
-        checkCanAtttack &= !freeze;
-        checkCanAtttack &= !EnemyMinionField.instance.MinionAttackCheck();
-        checkCanAtttack &= animator.GetCurrentAnimatorStateInfo(0).IsName("하수인소환완료");
+        checkCanAtttack = !GameEventManager.instance.EventCheck(); //이벤트 중인가?
+        checkCanAtttack &= (final_atk > 0); //최종공격력이 0보다 큰가?
+        checkCanAtttack &= canAttack; //공격이 가능한 하수인인가?
+        checkCanAtttack &= canAttackNum > 0; //공격횟수가 남아있는가?
+        checkCanAtttack &= !sleep; //대기상태인가?
+        checkCanAtttack &= !freeze; //빙결상태인가?
+        checkCanAtttack &= SpawnAniEnd(); //해당하수인의 소환이 끝났는가?
+
         if (enemy)
-            checkCanAtttack &= (TurnManager.instance.turn == Turn.상대방);
+        {
+            //상대 하수인이라면
+            checkCanAtttack &= (TurnManager.instance.turn == Turn.상대방); //상대 턴인가?
+            checkCanAtttack &= !EnemyMinionField.instance.MinionAttackCheck(); //공격중인 상태인가?
+        }
         else
         {
-            checkCanAtttack &= (TurnManager.instance.turn == Turn.플레이어);
+            //플레이어 하수인이라면
+            checkCanAtttack &= (TurnManager.instance.turn == Turn.플레이어);  //플레이어 턴인가?
+            checkCanAtttack &= !MinionField.instance.MinionAttackCheck(); //공격중인 상태인가?
             canAttackObj.SetActive(checkCanAtttack);
         }
 

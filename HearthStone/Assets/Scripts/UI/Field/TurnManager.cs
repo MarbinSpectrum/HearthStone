@@ -82,23 +82,43 @@ public class TurnManager : MonoBehaviour
         CheckCanDo();
     }
 
+    private bool CanOther()
+    {
+        //할 것이 있는지 검사
+        for (int i = 0; i < MinionField.instance.minionNum; i++)
+        {
+            if (MinionField.instance.minions[i].checkCanAtttack)
+            {
+                //공격이 가능한 하수인이 존재
+                return true;
+            }
+        }
+
+        if (HeroManager.instance.heroAtkManager.HeroCanAttack())
+        {
+            //플레이어가 공격이 가능
+            return true;
+        }
+
+        for (int i = 0; i < CardHand.instance.nowHandNum; i++)
+        {
+            if (CardHand.instance.canUse[i])
+            {
+                //패에 사용 가능한 카드가 존재
+                return true;
+            }
+        }
+
+        if (HeroManager.instance.heroPowerManager.CanUseHeroAbility(false))
+        {
+            return true;
+        }
+        return false;
+    }
+
     public void CheckCanDo()
     {
-        bool canAttack = false;
-        for (int i = 0; i < MinionField.instance.minionNum; i++)
-            if (MinionField.instance.minions[i].canAttackNum != 0 && !MinionField.instance.minions[i].sleep)
-                canAttack = true;
-        if(HeroManager.instance.heroAtkManager.playerCanAttack.activeSelf)
-            canAttack = true;
-
-        bool canUseCard = false;
-        for (int i = 0; i < CardHand.instance.nowHandNum; i++)
-            if (CardHand.instance.canUse[i])
-                canUseCard = true;
-        if(HeroManager.instance.heroPowerManager.playerCanUse && manaManager.playerNowMana >= 2)
-            canUseCard = true;
-
-        if (canAttack || canUseCard || !BattleUI.instance.gameStart || GameEventManager.instance.EventCheck())
+        if (CanOther() || !BattleUI.instance.gameStart || GameEventManager.instance.EventCheck())
         {
             turnBtnMat.SetColor("_ImgColor", normalStateColor);
             checkTime = 2;

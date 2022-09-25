@@ -89,11 +89,8 @@ public class HeroAtkManager : MonoBehaviour
         HeroAtkUpdate();
         HeroWeaponUpdate();
         HeroAttack_Update();
-        playerAttackGlow.SetActive(!GameEventManager.instance.EventCheck() 
-            && playerCanAttackNum > 0 && playerFinalAtk > 0 && 
-            TurnManager.instance.turn == Turn.플레이어 
-            && BattleUI.instance.gameStart);
-        playerCanAttack.SetActive(playerAttackGlow.activeSelf);
+        playerAttackGlow.SetActive(HeroCanAttack());
+        playerCanAttack.SetActive(HeroCanAttack());
         enemyAttackCheck = !GameEventManager.instance.EventCheck() && 
             enemyCanAttackNum > 0 && enemyFinalAtk > 0 && 
             TurnManager.instance.turn == Turn.상대방 && 
@@ -103,6 +100,14 @@ public class HeroAtkManager : MonoBehaviour
         if (enemyWeaponDurability > 0 && !enemyWeaponFlag)
             enemyWeaponFlag = true;
 
+    }
+
+    public bool HeroCanAttack()
+    {
+        return !GameEventManager.instance.EventCheck()
+            && playerCanAttackNum > 0 && playerFinalAtk > 0 &&
+            TurnManager.instance.turn == Turn.플레이어
+            && BattleUI.instance.gameStart;
     }
 
     public void HeroAttack_Update()

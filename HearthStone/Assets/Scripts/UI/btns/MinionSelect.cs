@@ -109,29 +109,54 @@ public class MinionSelect : Btn
         else if ((enemy && DragLineRenderer.instance.CheckMask(타겟.적하수인)) ||
             (!enemy && DragLineRenderer.instance.CheckMask(타겟.아군하수인)))
         {
-            if (!DragLineRenderer.instance.CheckMask(타겟.실행주체) && DragLineRenderer.instance.CheckActObj(gameObject))
+            if (!DragLineRenderer.instance.CheckMask(타겟.실행주체) && //실행주체는 선택하지 않는상태
+                DragLineRenderer.instance.CheckActObj(gameObject)) //드래그한 대상이 실행주체다.
+            {
+                //실행주체다. 선택불가.
                 return;
-            if (DragCardObject.instance.checkNotDamageMinion && minionObject.baseHp > minionObject.final_hp)
+            }
+            if (DragCardObject.instance.checkNotDamageMinion && //피해입지않은 하수인만 선택하자는 상태
+                minionObject.baseHp > minionObject.final_hp) //하수인이 피해입은 상태이다.
+            {
+                //피해입은 하수인이다. 선택불가.
                 return;
+            }
+            if (DragCardObject.instance.dragSelectCard == false && //카드를 드롭한 상태
+                MinionManager.instance.CheckTaunt(minionObject) == false) //도발 하수인 때문에 공격불가.
+            {
+                //도발 하수인이 있어서 공격실패
+                return;
+            }
             if(minionObject.stealth)
+            {
+                //은신상태이다. 선택불가.
                 return;
-            if (!DragCardObject.instance.dragSelectCard && !MinionManager.instance.CheckTaunt(minionObject))
-                return;
-            if (!DragCardObject.instance.dragSelectCard)
+            }
+            if (DragCardObject.instance.dragSelectCard == false)
             {
                 if (MinionDrag.dragMinionNum != -1)
                 {
+                    //하수인으로 공격
                     DragLineRenderer.instance.selectTarget = true;
                     DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
-                    AttackManager.instance.AddDamageObj(minionObject.damageEffect, MinionField.instance.minions[MinionDrag.dragMinionNum].final_atk);
-                    AttackManager.instance.AddDamageObj(MinionField.instance.minions[MinionDrag.dragMinionNum].damageEffect, minionObject.final_atk);
+
+                    //적과 아군 미니언에게 서로 공격력만큼 주고 받는다.
+                    AttackManager.instance.AddDamageObj(minionObject.damageEffect,
+                        MinionField.instance.minions[MinionDrag.dragMinionNum].final_atk);
+                    AttackManager.instance.AddDamageObj(MinionField.instance.minions[MinionDrag.dragMinionNum].damageEffect, 
+                        minionObject.final_atk);
                 }
                 else
                 {
+                    //영웅으로 공격
                     DragLineRenderer.instance.selectTarget = true;
                     DragLineRenderer.instance.dragTargetPos = new Vector2(transform.position.x, transform.position.y);
-                    AttackManager.instance.AddDamageObj(minionObject.damageEffect, HeroManager.instance.heroAtkManager.playerFinalAtk);
-                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, minionObject.final_atk);
+
+                    //적과 영웅이 서로 공격력만큼 주고받는다.
+                    AttackManager.instance.AddDamageObj(minionObject.damageEffect,
+                        HeroManager.instance.heroAtkManager.playerFinalAtk);
+                    AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage,
+                        minionObject.final_atk);
                 }
             }
             else
