@@ -111,6 +111,7 @@ public class TurnManager : MonoBehaviour
 
         if (HeroManager.instance.heroPowerManager.CanUseHeroAbility(false))
         {
+            //영웅능력이 사용 가능한가?
             return true;
         }
         return false;
