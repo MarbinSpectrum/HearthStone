@@ -87,7 +87,7 @@ public class TurnManager : MonoBehaviour
         //할 것이 있는지 검사
         for (int i = 0; i < MinionField.instance.minionNum; i++)
         {
-            if (MinionField.instance.minions[i].checkCanAtttack)
+            if (MinionField.instance.minions[i].checkCanAttack)
             {
                 //공격이 가능한 하수인이 존재
                 return true;

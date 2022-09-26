@@ -13,20 +13,45 @@ public class DruidAI : MonoBehaviour
         SpawnMinion,  //하수인을 소환할 수 있다면
         SpellRun,     //주문을 사용 할 수 있다면 && 주문을 사용하는 것으로 이득이 생길경우
         AttackMinion, //필드에 공격 할 수 있는 하수인이 존재한다면 && 공격하는 것이 이득인 경우 
-        AttackHero,   //영웅능력을 사용할 수 있다면 && 공격하는것이 이득인 경우
+        UseHero,      //영웅능력을 사용할 수 있다면 && 영웅으로 공격하는것이 이득인 경우
         GameEnd,      //게임이 종료됨
         TurnEnd       //위의 사항이 모두 적용되지않을 경우
     };
-    AI_Act act = AI_Act.TurnEnd;
 
-    public static int caseNum = 9;
-
-    List<string>[] caseByCard = new List<string>[caseNum];
-
-    AI_Act SelectChoice()
+    public class AI_ActData
     {
-        if(!BattleUI.instance.gameStart)
-            return AI_Act.GameEnd;
+        public AI_Act act;
+        public List<string> data = new List<string>();
+        public AI_ActData(AI_Act pAct)
+        {
+            act = pAct;
+        }
+    }
+
+    public enum AI_SpellAct
+    {
+        LowHp,          //자신영웅의 체력이 적을경우
+        StrongEnemy,    //상대필드에 강한 하수인이 있을경우
+        ManyEnemy,      //상대필드에 하수인이 많을경우
+        HandLack,       //패가 부족할경우
+        ManaLack,       //마나수정이 적을경우
+        MinionSpawn,    //마나를 보충하면 하수인을 소환할 수 있다면
+        ManyMyMinion,   //자신필드에 하수인이 많을경우
+        WeakMyMinion,   //하수인의 체력이 적을경우
+        LowEnemyHp,     //상대영웅의 체력이 적을경우
+        MAX
+    }
+    Dictionary<AI_SpellAct, List<string>> caseByCard = new Dictionary<AI_SpellAct, List<string>>();
+
+    private AI_ActData SelectChoice()
+    {
+        AI_ActData aiData = new AI_ActData(AI_Act.GameEnd);
+
+        if (!BattleUI.instance.gameStart)
+        {
+            aiData.act = AI_Act.GameEnd;
+            return aiData;
+        }
 
         #region[하수인이 내는것을 고려]
         if (EnemyMinionField.instance.minionNum < 7)
@@ -41,45 +66,70 @@ public class DruidAI : MonoBehaviour
                 if (cardType != "하수인")
                     continue;
                 if (nowMana >= cardCost)
-                    return AI_Act.SpawnMinion;
+                {
+                    Debug.Log("하수인 내는것을 고려");
+                    aiData.act = AI_Act.SpawnMinion;
+                    aiData.data.Add(i.ToString());
+                    return aiData;
+                }
             }
         #endregion
 
         #region[주문을 쓰는것을 고려]
-        for (int i = 0; i < EnemyCardHand.instance.nowCard.Count; i++)
         {
-            int nowMana = ManaManager.instance.enemyNowMana;
-            string cardName = EnemyCardHand.instance.nowCard[i];
-            Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(cardName));
-            string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
-            int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
-            if (cardType != "주문")
-                continue;
-            if (nowMana < cardCost)
-                continue;
+            AI_SpellAct importantCase = AI_SpellAct.MAX;   //
+            int cardIdx = -1;
+            for (int i = 0; i < EnemyCardHand.instance.nowCard.Count; i++)
+            {
+                int nowMana = ManaManager.instance.enemyNowMana;
+                string cardName = EnemyCardHand.instance.nowCard[i];
+                Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(cardName));
+                string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
+                int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
+                if (cardType != "주문")
+                    continue;
+                if (nowMana < cardCost)
+                    continue;
 
-            for(int c = 0; c < caseNum; c++)
-                if (caseByCard[c].Contains(cardName) && CaseBySpell(cardName,c))
-                    return AI_Act.SpellRun;
+                for (AI_SpellAct aCase = 0; aCase < AI_SpellAct.MAX; aCase++)
+                {
+                    if (caseByCard[aCase].Contains(cardName) && CaseBySpell(cardName, aCase))
+                    {
+                        //주문 발동조건에 해당하는 카드이고
+                        if (cardIdx == -1 || importantCase >= aCase)
+                        {
+                            //발동 우선순위가 높은 카드일 경우
+                            importantCase = aCase;
+                            cardIdx = i;
+                        }
+                    }
+                }
+            }
+            if (cardIdx != -1 && importantCase != AI_SpellAct.MAX)
+            {
+                Debug.Log("주문을 내는것을 고려");
+                aiData.act = AI_Act.SpellRun;
+                aiData.data.Add(cardIdx.ToString());
+                aiData.data.Add(CaseBySpellText(importantCase));
+                return aiData;
+            }
         }
         #endregion
 
         #region[하수인으로 공격하는 것을 고려]
-        //공격하는하수인,타겟번호,돌진여부,우선순위(남은체력)
-        List<Vector4> targetList = new List<Vector4>();
-        List<Vector4> targetTauntList = new List<Vector4>();
+        //도발 하수인을 우선 공격해야된다.
+        //나머지는 우선순위(공격후 남은체력) 맞게 정렬한다.
+        List<Vector3Int> targetList = new List<Vector3Int>();
+        List<Vector3Int> targetTauntList = new List<Vector3Int>();
+
         for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
         {
             if (!EnemyMinionField.instance.minions[i].gameObject.activeSelf)
                 continue;
-            if (!EnemyMinionField.instance.minions[i].checkCanAtttack)
+            if (!EnemyMinionField.instance.minions[i].checkCanAttack)
                 continue;
             int atk = EnemyMinionField.instance.minions[i].final_atk;
             int hp = EnemyMinionField.instance.minions[i].final_hp;
-            bool charge = false;
-            for (int j = 0; j < EnemyMinionField.instance.minions[i].abilityList.Count; j++)
-                if (EnemyMinionField.instance.minions[i].abilityList[j].Ability_type == MinionAbility.Ability.돌진)
-                    charge = true;
 
             for (int j = 0; j < MinionField.instance.minions.Length; j++)
             {
@@ -89,114 +139,89 @@ public class DruidAI : MonoBehaviour
                     continue;
                 int targetAtk = MinionField.instance.minions[j].final_atk;
                 int targetHp = MinionField.instance.minions[j].final_hp;
-                if (targetHp - atk > 0 && !charge)
+                if (targetHp - atk > 0)
                     continue;
                 if (MinionField.instance.minions[j].taunt)
-                    targetTauntList.Add(new Vector4(i, j, charge ? +1 : -1, hp - targetAtk));
+                    targetTauntList.Add(new Vector3Int(hp - targetAtk, i, j));
                 else
-                    targetList.Add(new Vector4(i, j, charge ? +1 : -1, hp - targetAtk));
+                    targetList.Add(new Vector3Int(hp - targetAtk, i, j));
             }
         }
 
-        targetList.Sort(delegate (Vector4 A, Vector4 B)
+        targetList.Sort(delegate (Vector3Int A, Vector3Int B)
         {
-            if (A.z < B.z)
-                return 1;
-            if (A.z == B.z)
-            {
-                if (A.w > B.w)
-                    return 1;
-                else
-                    return -1;
-            }
-            return -1;
+            return B.x.CompareTo(A.x);
         });
-        targetTauntList.Sort(delegate (Vector4 A, Vector4 B)
+        targetTauntList.Sort(delegate (Vector3Int A, Vector3Int B)
         {
-            if (A.z < B.z)
-                return 1;
-            if (A.z == B.z)
-            {
-                if (A.w > B.w)
-                    return 1;
-                else
-                    return -1;
-            }
-            return -1;
+            return B.x.CompareTo(A.x);
         });
 
         if (targetTauntList.Count > 0)
         {
-            if (!MinionManager.instance.CheckTaunt(false))
+            //도발하수인이있다면
+            if (targetTauntList[0].x > 0)
             {
-                if (targetTauntList[0].z > 0)
-                {
-                    Debug.Log("돌진하수인이고 도발하수인존재");
-                    return AI_Act.AttackMinion;
-                }
-                //돌진하수인은 아니고 공격하기 좋은경우
-                else if (targetTauntList[0].w >= 0)
-                {
-                    Debug.Log("(적합한대상공격)돌진하수인은 아니고 도발하수인존재");
-                    return AI_Act.AttackMinion;
-                }
+                Debug.Log("(적합한대상공격)도발하수인존재");
+
+                aiData.act = AI_Act.AttackMinion;
+                aiData.data.Add(targetTauntList[0].y.ToString());
+                aiData.data.Add(targetTauntList[0].z.ToString());
+                return aiData;
+            }
+            else
+            {
+                //공격하기 좋지않다. 최소 교환이다.
             }
         }
         else if (targetList.Count > 0)
         {
             //도발하수인이없다면
-            if (MinionManager.instance.CheckTaunt(false))
-            {
-                if (targetList[0].z > 0)
-                {
-                    Debug.Log("돌진하수인이고 도발하수인이 없음");
-                    return AI_Act.AttackMinion;
-                }
-                else if (targetList[0].w >= 0)
-                {
-                    Debug.Log("(적합한대상공격)돌진하수인이 아니고 도발하수인이 없음");
-                    return AI_Act.AttackMinion;
-                }
-                else
-                {
-                    Debug.Log("(영웅을 공격)돌진하수인이 아니고 도발하수인이 없음");
-                    return AI_Act.AttackMinion;
-                }
-            }
+            Debug.Log("(적합한대상공격)도발하수인이 없음");
+            aiData.act = AI_Act.AttackMinion;
+            aiData.data.Add(targetList[0].y.ToString());
+            aiData.data.Add(targetList[0].z.ToString());
+            return aiData;
         }
-        else if (EnemyMinionField.instance.minionNum > 0)
+        else if (MinionManager.instance.CheckTaunt(false))
         {
-            if (MinionManager.instance.CheckTaunt(false))
+            for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
             {
-                bool canAttackFlag = false;
-                for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
+                if (!EnemyMinionField.instance.minions[i].gameObject.activeSelf)
+                    continue;
+                if (EnemyMinionField.instance.minions[i].checkCanAttack)
                 {
-                    if (!EnemyMinionField.instance.minions[i].gameObject.activeSelf)
-                        continue;
-                    if (EnemyMinionField.instance.minions[i].checkCanAtttack)
-                    {
-                        Debug.Log("필드에 하수인이 없어서 영웅본체공격");
-                        return AI_Act.AttackMinion;
-                    }
+                    Debug.Log("필드에 하수인이 없어서 영웅본체공격");
+                    aiData.act = AI_Act.AttackMinion;
+                    aiData.data.Add(i.ToString());
+                    aiData.data.Add("Hero");
+                    return aiData;
                 }
             }
         }
 
         #endregion
 
-        #region[영웅능력을 사용하는 것을 고려]
+        #region[영웅능력을 사용 및 공격격]
         if (ManaManager.instance.enemyNowMana >= 2 && HeroManager.instance.heroPowerManager.enemyCanUse)
         {
-            return AI_Act.AttackHero;
+            Debug.Log("영웅 능력 사용 고려");
+            aiData.act = AI_Act.UseHero;
+            aiData.data.Add("UseAbility");
+            return aiData;
         }
         else if (HeroManager.instance.heroAtkManager.enemyAttackCheck && !HeroManager.instance.enemyFreezeObj.activeSelf)
         {
-            return AI_Act.AttackHero;
+            Debug.Log("영웅 능력으로 공격");
+            aiData.act = AI_Act.UseHero;
+            aiData.data.Add("AttackHero");
+            return aiData;
         }
 
         #endregion
 
-        return AI_Act.TurnEnd;
+        aiData.act = AI_Act.TurnEnd;
+        return aiData;
     }
 
     #region[Awake]
@@ -204,7 +229,7 @@ public class DruidAI : MonoBehaviour
     {
         instance = this;
 
-        AI_Case_Setting();
+        AI_SpellAct_Setting();
         AI_Deck_Setting();
     }
     #endregion
@@ -224,55 +249,91 @@ public class DruidAI : MonoBehaviour
     }
     #endregion
 
-    #region[AI Case Setting]
-    private void AI_Case_Setting()
+    #region[AI_SpellAct_Setting]
+    private void AI_SpellAct_Setting()
     {
-        for (int i = 0; i < caseNum; i++)
-            caseByCard[i] = new List<string>();
-        //상황0 . 자신영웅의 체력이 적을경우
-        caseByCard[0].Add("치유의 손길");
-        caseByCard[0].Add("할퀴기");
+        //주문에 따른 행동방식 설정
+        for (AI_SpellAct aCase = 0; aCase < AI_SpellAct.MAX; aCase++)
+        {
+            List<string> spellList = new List<string>();
+            switch(aCase)
+            {
+                case AI_SpellAct.LowHp:
+                {
+                    //상황0 . 자신영웅의 체력이 적을경우
+                    spellList.Add("치유의 손길");
+                    spellList.Add("할퀴기");
+                }
+                break;
+                case AI_SpellAct.StrongEnemy:
+                {
+                    //상황1 . 상대필드에 강한 하수인이 있을경우
+                    spellList.Add("자연화");
+                    spellList.Add("별빛섬광");
+                    spellList.Add("별똥별");
+                    spellList.Add("휘둘러치기");
+                }
+                break;
+                case AI_SpellAct.ManyEnemy:
+                    {
+                        //상황2 . 상대필드에 하수인이 많을경우
+                        spellList.Add("달빛 섬광");
+                        spellList.Add("할퀴기");
+                        spellList.Add("휘둘러치기");
+                        spellList.Add("천벌");
+                        spellList.Add("야생성");
+                        spellList.Add("별똥별");
+                        spellList.Add("자연의 군대");
+                    }
+                    break;
+                case AI_SpellAct.HandLack:
+                    {
+                        //상황3 . 패가 부족할경우
+                        spellList.Add("급속 성장");
+                        spellList.Add("넘치는마나");
+                        spellList.Add("육성");
+                    }
+                    break;
+                case AI_SpellAct.ManaLack:
+                    {
+                        //상황4 . 마나수정이 적을경우
+                        spellList.Add("급속 성장");
+                        spellList.Add("육성");
+                    }
+                    break;
+                case AI_SpellAct.MinionSpawn:
+                    {
+                        //상황5 . 마나를 보충하면 하수인을 소환할 수 있다면
+                        spellList.Add("정신 자극");
+                        spellList.Add("동전 한 닢");
+                    }
+                    break;
+                case AI_SpellAct.ManyMyMinion:
+                    {
+                        //상황6 . 자신필드에 하수인이 많을경우
+                        spellList.Add("야생의 징표");
+                        spellList.Add("야생의 힘");
+                        spellList.Add("자연의 징표");
+                        spellList.Add("숲의 영혼");
+                        spellList.Add("야생의 포효");
+                    }
+                    break;
+                case AI_SpellAct.WeakMyMinion:
+                    {
+                        //상황7 . 하수인의 체력이 적을경우
+                        spellList.Add("치유의 손길");
+                    }
+                    break;
+                case AI_SpellAct.LowEnemyHp:
+                    {
+                        //상황8 . 상대영웅의 체력이 적을경우
+                        spellList.Add("자연의 군대");
+                    }
+                    break;
+            }
 
-        //상황1 . 상대필드에 강한 하수인이 있을경우
-        caseByCard[1].Add("자연화");
-        caseByCard[1].Add("별빛섬광");
-        caseByCard[1].Add("별똥별");
-        caseByCard[1].Add("휘둘러치기");
-
-        //상황2 . 상대필드에 하수인이 많을경우
-        caseByCard[2].Add("달빛 섬광");
-        caseByCard[2].Add("할퀴기");
-        caseByCard[2].Add("휘둘러치기");
-        caseByCard[2].Add("천벌");
-        caseByCard[2].Add("야생성");
-        caseByCard[2].Add("별똥별");
-        caseByCard[2].Add("자연의 군대");
-
-        //상황3 . 패가 부족할경우
-        caseByCard[3].Add("급속 성장");
-        caseByCard[3].Add("넘치는마나");
-        caseByCard[3].Add("육성");
-
-        //상황4 . 마나수정이 적을경우
-        caseByCard[4].Add("급속 성장");
-        caseByCard[4].Add("육성");
-
-        //상황5 . 마나를 보충하면 하수인을 소환할 수 있다면
-        caseByCard[5].Add("정신 자극");
-        caseByCard[5].Add("동전 한 닢");
-
-        //상황6 . 자신필드에 하수인이 많을경우
-        caseByCard[6].Add("야생의 징표");
-        caseByCard[6].Add("야생의 힘");
-        caseByCard[6].Add("자연의 징표");
-        caseByCard[6].Add("숲의 영혼");
-        caseByCard[6].Add("야생의 포효");
-
-        //상황7 . 하수인의 체력이 적을경우
-        caseByCard[7].Add("치유의 손길");
-
-        //상황8 . 상대영웅의 체력이 적을경우
-        caseByCard[8].Add("자연의 군대");
+            caseByCard[aCase] = spellList;
+        }
     }
     #endregion
 
@@ -288,219 +349,75 @@ public class DruidAI : MonoBehaviour
 
         while (TurnManager.instance.turn == Turn.상대방)
         {
-            while (GameEventManager.instance.GetEventValue() > 0.001f)
-                yield return new WaitForSeconds(0.001f);
+            yield return new WaitWhile(() => GameEventManager.instance.GetEventValue() > 0.001f);
             GameEventManager.instance.EventAdd(0.1f);
 
             yield return new WaitForSeconds(1f);
 
-            act = SelectChoice();
+            AI_ActData aiData = SelectChoice();
 
             #region[하수인 소환]
-            if (act == AI_Act.SpawnMinion)
+            if (aiData.act == AI_Act.SpawnMinion)
             {
-                int index = -1;
-                int minionCost = -1;
-                for (int i = 0; i < EnemyCardHand.instance.nowCard.Count; i++)
+                int cardIdx = -1;
+                if(int.TryParse(aiData.data[0], out cardIdx))
                 {
-                    int nowMana = ManaManager.instance.enemyNowMana;
-                    string cardName = EnemyCardHand.instance.nowCard[i];
-                    Vector2Int pair = DataMng.instance.GetPairByName(
-                        DataParse.GetCardName(cardName));
-                    string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
-                    int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
-                    if (cardType != "하수인")
-                        continue;
-                    if (cardCost >= minionCost && nowMana >= cardCost)
-                    {
-                        minionCost = cardCost;
-                        index = i;
-                    }
+                    EnemyCardHand.instance.UseCard(cardIdx);
+                    yield return new WaitForSeconds(3f);
                 }
-
-                EnemyCardHand.instance.UseCard(index);
-
-                yield return new WaitForSeconds(3f);
-
+                else
+                {
+                    Debug.LogError("하수인 소환 버그");
+                }
             }
             #endregion
 
             #region[주문 사용]
-            else if (act == AI_Act.SpellRun)
+            else if (aiData.act == AI_Act.SpellRun)
             {
-                int index = -1;
-                int importantCase = int.MaxValue;
-                for (int i = 0; i < EnemyCardHand.instance.nowCard.Count; i++)
+                int cardIdx = -1;
+                if (int.TryParse(aiData.data[0], out cardIdx))
                 {
-                    int nowMana = ManaManager.instance.enemyNowMana;
-                    string cardName = EnemyCardHand.instance.nowCard[i];
-                    Vector2Int pair = DataMng.instance.GetPairByName(
-                        DataParse.GetCardName(cardName));
-                    string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
-                    int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
-                    if (cardType != "주문")
-                        continue;
-                    for(int c = 0; c < caseNum; c++)
-                        if (caseByCard[c].Contains(cardName) && CaseBySpell(cardName, c))
-                            if (importantCase >= c && nowMana >= cardCost)
-                            {
-                                importantCase = c;
-                                index = i;
-                            }
+                    Debug.Log(aiData.data[1] + " : " + EnemyCardHand.instance.nowCard[cardIdx]);
+                    EnemyCardHand.instance.UseCard(cardIdx);
+                    yield return new WaitForSeconds(3f);
                 }
-
-                Debug.Log(CaseBySpellText(importantCase) + " : " + EnemyCardHand.instance.nowCard[index]);
-                EnemyCardHand.instance.UseCard(index);
-
-                yield return new WaitForSeconds(3f);
+                else
+                {
+                    Debug.LogError("주문 발동 버그");
+                }
             }
             #endregion
 
             #region[하수인으로 공격]
-            else if (act == AI_Act.AttackMinion)
+            else if (aiData.act == AI_Act.AttackMinion)
             {
-                //공격하는하수인,타겟번호,돌진여부,우선순위(남은체력)
-                List<Vector4> targetList = new List<Vector4>();
-                List<Vector4> targetTauntList = new List<Vector4>();
-                for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
+                int attackIdx = -1;
+                if (int.TryParse(aiData.data[0], out attackIdx))
                 {
-                    if (!EnemyMinionField.instance.minions[i].gameObject.activeSelf)
-                        continue;
-                    if (!EnemyMinionField.instance.minions[i].checkCanAtttack)
-                        continue;
-                    int atk = EnemyMinionField.instance.minions[i].final_atk;
-                    int hp = EnemyMinionField.instance.minions[i].final_hp;
-                    bool charge = false;
-                    for (int j = 0; j < EnemyMinionField.instance.minions[i].abilityList.Count; j++)
-                        if (EnemyMinionField.instance.minions[i].abilityList[j].Ability_type == MinionAbility.Ability.돌진)
-                            charge = true;
-
-                    for (int j = 0; j < MinionField.instance.minions.Length; j++)
-                    {
-                        if (!MinionField.instance.minions[j].gameObject.activeSelf)
-                            continue;
-                        if (MinionField.instance.minions[j].stealth)
-                            continue;
-                        int targetAtk = MinionField.instance.minions[j].final_atk;
-                        int targetHp = MinionField.instance.minions[j].final_hp;
-                        if (targetHp - atk > 0 && !charge)
-                            continue;
-                        if (MinionField.instance.minions[j].taunt)
-                            targetTauntList.Add(new Vector4(i, j, charge ? +1 : -1, hp - targetAtk));
-                        else
-                            targetList.Add(new Vector4(i, j, charge ? +1 : -1, hp - targetAtk));
-                    }
+                    string targetName = aiData.data[1];
+                    AttackOrder(attackIdx, targetName);
+                    yield return new WaitForSeconds(2f);
                 }
-
-                targetList.Sort(delegate (Vector4 A, Vector4 B)
+                else
                 {
-                    if (A.z < B.z)
-                        return 1;
-                    if (A.z == B.z)
-                    {
-                        if (A.w > B.w)
-                            return 1;
-                        else
-                            return -1;
-                    }
-                    return -1;
-                });
-                targetTauntList.Sort(delegate (Vector4 A, Vector4 B)
-                {
-                    if (A.z < B.z)
-                        return 1;
-                    if (A.z == B.z)
-                    {
-                        if (A.w > B.w)
-                            return 1;
-                        else
-                            return -1;
-                    }
-                    return -1;
-                });
-
-                if (targetTauntList.Count > 0)
-                {
-                    //도발하수인이있다면
-                    if (!MinionManager.instance.CheckTaunt(false))
-                    {
-                        //돌진하수인이면
-                        if (targetTauntList[0].z > 0)
-                        {
-                            string targetName = "" + targetTauntList[0].y;
-                            AttackOrder((int)targetTauntList[0].x, targetName);
-                            yield return new WaitForSeconds(2f);
-                        }
-                        //돌진하수인은 아니고 공격하기 좋은경우
-                        else if (targetTauntList[0].w >= 0)
-                        {
-                            string targetName = "" + targetTauntList[0].y;
-                            AttackOrder((int)targetTauntList[0].x, targetName);
-                            yield return new WaitForSeconds(2f);
-                        }
-                    }
-                }
-                else if (targetList.Count > 0)
-                {
-                    //도발하수인이없다면
-                    if (MinionManager.instance.CheckTaunt(false))
-                    {
-                        //돌진하수인이면
-                        if (targetList[0].z > 0)
-                        {
-                            string targetName = "Hero";
-                            AttackOrder((int)targetList[0].x, targetName);
-                            yield return new WaitForSeconds(2f);
-                        }
-                        //돌진하수인은 아니고 공격하기 좋은경우
-                        else if (targetList[0].w >= 0)
-                        {
-                            string targetName = "" + targetList[0].y;
-                            AttackOrder((int)targetList[0].x, targetName);
-                            yield return new WaitForSeconds(2f);
-                        }
-                        //돌진하수인은 아니고 공격하기 힘든경우
-                        else
-                        {
-                            string targetName = "Hero";
-                            AttackOrder((int)targetList[0].x, targetName);
-                            yield return new WaitForSeconds(2f);
-                        }
-                    }
-                }
-                else if (EnemyMinionField.instance.minionNum > 0)
-                {
-                    if (MinionManager.instance.CheckTaunt(false))
-                    {
-                        bool canAttackFlag = false;
-                        for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
-                        {
-                            if (!EnemyMinionField.instance.minions[i].gameObject.activeSelf)
-                                continue;
-                            if (EnemyMinionField.instance.minions[i].checkCanAtttack)
-                            {
-                                string targetName = "Hero";
-                                AttackOrder(i, targetName);
-                                yield return new WaitForSeconds(2f);
-                                break;
-                            }
-                        }
-                    }
+                    Debug.LogError("공격 버그");
                 }
             }
             #endregion
 
-            #region[영웅능력 사용]
-            else if (act == AI_Act.AttackHero)
+            #region[영웅 사용]
+            else if (aiData.act == AI_Act.UseHero)
             {
-                //영웅능력사용조건
-                if (ManaManager.instance.enemyNowMana >= 2 && HeroManager.instance.heroPowerManager.enemyCanUse)
+                if (aiData.data[0] == "UseAbility")
                 {
+                    //영웅능력사용
                     HeroManager.instance.heroPowerManager.UseHeroAbility(true);
                     yield return new WaitForSeconds(2f);
                 }
-                else if (HeroManager.instance.heroAtkManager.enemyAttackCheck && !HeroManager.instance.enemyFreezeObj.activeSelf)
+                else if (aiData.data[0] == "AttackHero")
                 {
+                    //영웅으로 공격
                     List<int> targetList = new List<int>();
                     for (int i = 0; i < MinionField.instance.minions.Length; i++)
                         if (MinionField.instance.minions[i].gameObject.activeSelf && !MinionField.instance.minions[i].stealth)
@@ -521,7 +438,8 @@ public class DruidAI : MonoBehaviour
 
                     targetList.Sort(delegate (int A, int B)
                     {
-                        if (MinionField.instance.minions[A].baseHp + MinionField.instance.minions[A].baseAtk < MinionField.instance.minions[B].baseHp + MinionField.instance.minions[B].baseAtk)
+                        if (MinionField.instance.minions[A].baseHp + MinionField.instance.minions[A].baseAtk <
+                        MinionField.instance.minions[B].baseHp + MinionField.instance.minions[B].baseAtk)
                             return -1;
                         return +1;
                     });
@@ -549,7 +467,8 @@ public class DruidAI : MonoBehaviour
             }
             #endregion
 
-            else if (act == AI_Act.TurnEnd)
+            #region[턴 종료]
+            else if (aiData.act == AI_Act.TurnEnd)
             {
                 Debug.Log("턴끝냄");
                 SoundManager.instance.PlaySE("상대가턴종료버튼누름");
@@ -557,7 +476,7 @@ public class DruidAI : MonoBehaviour
                 TurnManager.instance.turnEndTrigger = true;
                 break;
             }
-
+            #endregion
 
         }
     }
@@ -1414,10 +1333,10 @@ public class DruidAI : MonoBehaviour
     #endregion
 
     #region[주문 사용 조건]
-    public bool CaseBySpell(string spellName,int n)
+    public bool CaseBySpell(string spellName, AI_SpellAct aCase)
     {
         //상황0 . 자신영웅의 체력이 적을경우
-        if (n == 0)
+        if (aCase == AI_SpellAct.LowHp)
         {
             int sumAtk = 0;
             for (int m = 0; m < MinionField.instance.minions.Length; m++)
@@ -1431,26 +1350,28 @@ public class DruidAI : MonoBehaviour
                 return true;
         }
         //상황1 . 상대필드에 강한 하수인이 있을경우
-        else if (n == 1)
+        else if (aCase == AI_SpellAct.StrongEnemy)
         {
             int sumStat = 0;
             for (int m = 0; m < MinionField.instance.minions.Length; m++)
                 if (MinionField.instance.minions[m].gameObject.activeSelf)
-                    sumStat = Mathf.Max(sumStat,MinionField.instance.minions[m].final_atk + MinionField.instance.minions[m].final_hp);
+                    sumStat = Mathf.Max(sumStat,MinionField.instance.minions[m].final_atk + 
+                        MinionField.instance.minions[m].final_hp);
 
             if (sumStat >= 6)
                 return true;
         }
         //상황2 . 상대필드에 하수인이 많을경우
-        else if (n == 2)
+        else if (aCase == AI_SpellAct.ManyEnemy)
         {
             if (MinionField.instance.minionNum >= 4)
                 return true;
-            if (MinionField.instance.minionNum >= 2 && MinionField.instance.minionNum > EnemyMinionField.instance.minionNum)
+            if (MinionField.instance.minionNum >= 2 && 
+                MinionField.instance.minionNum > EnemyMinionField.instance.minionNum)
                 return true;
         }
         //상황3 . 패가 부족할경우
-        else if (n == 3)
+        else if (aCase == AI_SpellAct.HandLack)
         {
             if (!spellName.Equals("급속 성장"))
                 if (EnemyCardHand.instance.nowHandNum <= 5)
@@ -1461,13 +1382,13 @@ public class DruidAI : MonoBehaviour
                     return true;
         }
         //상황4 . 마나수정이 적을경우
-        else if (n == 4)
+        else if (aCase == AI_SpellAct.ManaLack)
         {
             if (ManaManager.instance.enemyMaxMana <= 4)
                 return true;
         }
         //상황5 . 마나를 보충하면 하수인을 소환할 수 있다면
-        else if (n == 5)
+        else if (aCase == AI_SpellAct.MinionSpawn)
         {
             int addMana = 0;
             if (spellName.Equals("동전 한 닢"))
@@ -1491,27 +1412,29 @@ public class DruidAI : MonoBehaviour
 
         }
         //상황6 . 자신필드에 하수인이 많을경우
-        else if (n == 6)
+        else if (aCase == AI_SpellAct.ManyMyMinion)
         {
             if (EnemyMinionField.instance.minionNum >= 4)
                 return true;
-            if (EnemyMinionField.instance.minionNum >= 2 && EnemyMinionField.instance.minionNum > MinionField.instance.minionNum)
+            if (EnemyMinionField.instance.minionNum >= 2 && 
+                EnemyMinionField.instance.minionNum > MinionField.instance.minionNum)
                 return true;
 
         }
         //상황7 . 하수인의 체력이 적을경우
-        else if (n == 7)
+        else if (aCase == AI_SpellAct.WeakMyMinion)
         {
             int hpAbs = 0;
             for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
                 if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                    Mathf.Max(hpAbs, Mathf.Abs(EnemyMinionField.instance.minions[m].baseHp - EnemyMinionField.instance.minions[m].final_hp));
+                    Mathf.Max(hpAbs, Mathf.Abs(EnemyMinionField.instance.minions[m].baseHp -
+                        EnemyMinionField.instance.minions[m].final_hp));
 
             if(hpAbs > 3)
                 return true;
         }
         //상황8 . 상대영웅의 체력이 적을경우
-        else if (n == 8)
+        else if (aCase == AI_SpellAct.LowEnemyHp)
         {
             int sumAtk = 0;
             for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
@@ -1532,31 +1455,27 @@ public class DruidAI : MonoBehaviour
     }
 
     #region[주문 사용 조건 TEXT]
-    public string CaseBySpellText(int n)
+    public string CaseBySpellText(AI_SpellAct aCase)
     {
-        if (n == 0)
+        if (aCase == AI_SpellAct.LowHp)
             return "자신영웅의 체력이 적음";
-        else if (n == 1)
+        else if (aCase == AI_SpellAct.StrongEnemy)
             return "상대필드에 강한 하수인이 있음";
-        else if (n == 2)
+        else if (aCase == AI_SpellAct.ManyEnemy)
             return "상대필드에 하수인이 많음";
-        else if (n == 3)
+        else if (aCase == AI_SpellAct.HandLack)
             return "패가 부족함음";
-        else if (n == 4)
+        else if (aCase == AI_SpellAct.ManaLack)
             return "마나수정이 적음";
-        else if (n == 5)
+        else if (aCase == AI_SpellAct.MinionSpawn)
             return "하수인 소환을 위해서 마나 회복";
-        //상황6 . 자신필드에 하수인이 많을경우
-        else if (n == 6)
+        else if (aCase == AI_SpellAct.ManyMyMinion)
             return "필드에 하수인이 많음";
-        //상황7 . 하수인의 체력이 적을경우
-        else if (n == 7)
+        else if (aCase == AI_SpellAct.WeakMyMinion)
             return "에이스 하수인의 체력이 적음";
-        //상황8 . 상대영웅의 체력이 적을경우
-        else if (n == 8)
+        else if (aCase == AI_SpellAct.LowEnemyHp)
             return "상대 영웅 체력이 적음";
         return "예외";
-
     }
     #endregion
 
