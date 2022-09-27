@@ -1014,10 +1014,16 @@ public class SpellManager : MonoBehaviour
     private IEnumerator RunSpellTargetMinion(List<SpellAbility> spellList,
         MinionObject minionObject,bool enemy)
     {
+        yield return new WaitWhile(() => GameEventManager.instance.GetEventValue() > 0.1);
+        GameEventManager.instance.EventAdd(0.1f);
+
         bool checkCombo = false;
         List<SpellAbility> chooseOneList = new List<SpellAbility>();
         for (int i = 0; i < spellList.Count; i++)
         {
+            yield return new WaitWhile(() => GameEventManager.instance.GetEventValue() > 0.1);
+            GameEventManager.instance.EventAdd(0.1f);
+
             List<SpellAbility> nowEvent = new List<SpellAbility>();
 
             if (spellList[i].ConditionType == SpellAbility.Condition.선택)
@@ -1618,6 +1624,9 @@ public class SpellManager : MonoBehaviour
         List<SpellAbility> chooseOneList = new List<SpellAbility>();
         for (int i = 0; i < spellList.Count; i++)
         {
+            yield return new WaitWhile(() => GameEventManager.instance.GetEventValue() > 0.1);
+            GameEventManager.instance.EventAdd(0.1f);
+
             //현재 작동이 가능한 이벤트 리스트
             List<SpellAbility> nowEvent = new List<SpellAbility>();
 

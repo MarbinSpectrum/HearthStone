@@ -22,9 +22,12 @@ public class CardDragObject : MonoBehaviour
     #region[Awake]
     public void Awake()
     {
-        instance = this;
-        viewCardEffect.Stop();
-        dragCardEffect.Stop();
+        if(instance == null)
+        {
+            instance = this;
+            viewCardEffect.Stop();
+            dragCardEffect.Stop();
+        }
     }
     #endregion
 

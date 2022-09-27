@@ -101,6 +101,7 @@
     <Compile Include="Assets\Scripts\UI\btns\Btn.cs" />
     <Compile Include="Assets\Scripts\UI\btns\OpenPackToMainBtn.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\ObjectVibration.cs" />
+    <Compile Include="Assets\Scripts\MyLib.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\Pack\PackDrag.cs" />
     <Compile Include="Assets\Scripts\Effect\CurseEffect.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\설정\SoundSettingBtn.cs" />
