@@ -1500,6 +1500,7 @@ public class DruidAI : MonoBehaviour
         //상황0 . 자신영웅의 체력이 적을경우
         if (aCase == AI_SpellAct.LowHp)
         {
+            //상대필드 공격력 합계가 자신의 체력을 넘는지 점검
             int sumAtk = 0;
             for (int m = 0; m < MinionField.instance.minions.Length; m++)
                 if (MinionField.instance.minions[m].gameObject.activeSelf)
@@ -1508,7 +1509,7 @@ public class DruidAI : MonoBehaviour
             if (sumAtk >= HeroManager.instance.heroHpManager.nowEnemyHp)
                 return true;
 
-            if(HeroManager.instance.heroHpManager.nowEnemyHp <= 15)
+            if(HeroManager.instance.heroHpManager.nowEnemyHp <= HeroManager.instance.heroHpManager.maxEnemyHp/2)
                 return true;
         }
         //상황1 . 상대필드에 강한 하수인이 있을경우
