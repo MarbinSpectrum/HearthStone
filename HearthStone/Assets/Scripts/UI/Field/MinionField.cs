@@ -13,7 +13,7 @@ public class MinionField : MonoBehaviour
     }
 
     public static MinionField instance;
-    private const int MINION_SLOT_NUM = 7;
+    public const int MINION_SLOT_NUM = 7;
 
     [Range(0, MINION_SLOT_NUM)]
     public int minionNum;

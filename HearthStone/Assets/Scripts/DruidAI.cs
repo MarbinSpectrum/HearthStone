@@ -117,8 +117,9 @@ public class DruidAI : MonoBehaviour
 
         #region[주문을 쓰는것을 고려]
         {
-            AI_SpellAct importantCase = AI_SpellAct.MAX;   //
+            AI_SpellAct importantCase = AI_SpellAct.MAX;   
             int cardIdx = -1;
+
             for (int i = 0; i < EnemyCardHand.instance.nowCard.Count; i++)
             {
                 int nowMana = ManaManager.instance.enemyNowMana;
@@ -133,19 +134,20 @@ public class DruidAI : MonoBehaviour
 
                 for (AI_SpellAct aCase = 0; aCase < AI_SpellAct.MAX; aCase++)
                 {
-                    if (caseByCard[aCase].Contains(cardName) && CaseBySpell(cardName, aCase))
+                    if (CaseBySpell(cardName, aCase))
                     {
-                        //주문 발동조건에 해당하는 카드이고
+                        //상황에 해당하는 카드이고
                         if (cardIdx == -1 || importantCase >= aCase)
                         {
-                            //발동 우선순위가 높은 카드일 경우
+                            //우선순위가 높은 상황인 경우
                             importantCase = aCase;
                             cardIdx = i;
                         }
                     }
                 }
             }
-            if (cardIdx != -1 && importantCase != AI_SpellAct.MAX)
+
+            if (cardIdx != -1)
             {
                 Debug.Log("주문을 내는것을 고려");
                 aiData.act = AI_Act.SpellRun;
@@ -1495,130 +1497,161 @@ public class DruidAI : MonoBehaviour
     #endregion
 
     #region[주문 사용 조건]
-    public bool CaseBySpell(string spellName, AI_SpellAct aCase)
+    public bool CaseBySpell(string cardName, AI_SpellAct aCase)
     {
-        //상황0 . 자신영웅의 체력이 적을경우
-        if (aCase == AI_SpellAct.LowHp)
+        if(caseByCard[aCase].Contains(cardName) == false)
         {
-            //상대필드 공격력 합계가 자신의 체력을 넘는지 점검
-            int sumAtk = 0;
-            for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                if (MinionField.instance.minions[m].gameObject.activeSelf)
-                    sumAtk += MinionField.instance.minions[m].final_atk;
-
-            if (sumAtk >= HeroManager.instance.heroHpManager.nowEnemyHp)
-                return true;
-
-            if(HeroManager.instance.heroHpManager.nowEnemyHp <= HeroManager.instance.heroHpManager.maxEnemyHp/2)
-                return true;
+            //해당 상황에 포함되지 않는 카드
+            return false;
         }
-        //상황1 . 상대필드에 강한 하수인이 있을경우
-        else if (aCase == AI_SpellAct.StrongEnemy)
-        {
-            int sumStat = 0;
-            for (int m = 0; m < MinionField.instance.minions.Length; m++)
-                if (MinionField.instance.minions[m].gameObject.activeSelf)
-                    sumStat = Mathf.Max(sumStat,MinionField.instance.minions[m].final_atk + 
-                        MinionField.instance.minions[m].final_hp);
 
-            if (sumStat >= 6)
-                return true;
-        }
-        //상황2 . 상대필드에 하수인이 많을경우
-        else if (aCase == AI_SpellAct.ManyEnemy)
+        //spellName주문카드가 aCase에 맞는 카드인지 검사
+        switch (aCase)
         {
-            if (MinionField.instance.minionNum >= 4)
-                return true;
-            if (MinionField.instance.minionNum >= 2 && 
-                MinionField.instance.minionNum > EnemyMinionField.instance.minionNum)
-                return true;
-        }
-        //상황3 . 패가 부족할경우
-        else if (aCase == AI_SpellAct.HandLack)
-        {
-            if(spellName.Equals("급속 성장"))
-            {
-                if (ManaManager.instance.enemyMaxMana >= 10)
+            case AI_SpellAct.LowHp:
+            //상황0 . 자신영웅의 체력이 적을경우
                 {
-                    if (EnemyCardHand.instance.nowHandNum <= 5)
+                    //상대필드 공격력 합계가 자신의 체력을 넘는지 점검
+                    int sumAtk = 0;
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        if (MinionField.instance.minions[m].gameObject.activeSelf)
+                            sumAtk += MinionField.instance.minions[m].final_atk;
+
+                    if (sumAtk >= HeroManager.instance.heroHpManager.nowEnemyHp)
+                        return true;
+
+                    if (HeroManager.instance.heroHpManager.nowEnemyHp <= HeroManager.instance.heroHpManager.maxEnemyHp / 2)
                         return true;
                 }
-            }
-            else
-            {
-                if (EnemyCardHand.instance.nowHandNum <= 5)
-                    return true;
-            }
-        }
-        //상황4 . 마나수정이 적을경우
-        else if (aCase == AI_SpellAct.ManaLack)
-        {
-            if (ManaManager.instance.enemyMaxMana <= 4)
-                return true;
-        }
-        //상황5 . 마나를 보충하면 하수인을 소환할 수 있다면
-        else if (aCase == AI_SpellAct.MinionSpawn)
-        {
-            int addMana = 0;
-            if (spellName.Equals("동전 한 닢"))
-                addMana = 1;
-            else if (spellName.Equals("정신 자극"))
-                addMana = 2;
+                break;
+            case AI_SpellAct.StrongEnemy:
+                //상황1 . 상대필드에 강한 하수인이 있을경우
+                {
 
-            for (int i = 0; i < EnemyCardHand.instance.nowCard.Count; i++)
-            {
-                    int nowMana = ManaManager.instance.enemyNowMana + addMana;
-                string cardName = EnemyCardHand.instance.nowCard[i];
-                Vector2Int pair = DataMng.instance.GetPairByName(
-                    DataParse.GetCardName(cardName));
-                string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
-                int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
-                if (cardType != "하수인")
-                    continue;
-                if (nowMana >= cardCost)
-                    return true;
-            }
+                    for (int m = 0; m < MinionField.instance.minions.Length; m++)
+                        if (MinionField.instance.minions[m].gameObject.activeSelf)
+                        {
+                            int sumStat = MinionField.instance.minions[m].final_atk +
+                                MinionField.instance.minions[m].final_hp;
 
-        }
-        //상황6 . 자신필드에 하수인이 많을경우
-        else if (aCase == AI_SpellAct.ManyMyMinion)
-        {
-            if (EnemyMinionField.instance.minionNum >= 4)
-                return true;
-            if (EnemyMinionField.instance.minionNum >= 2 && 
-                EnemyMinionField.instance.minionNum > MinionField.instance.minionNum)
-                return true;
+                            if (sumStat >= 6)
+                            {
+                                //스텟의 총합이 6이상인 하수인은 강한 하수인이라고 판단.
+                                return true;
+                            }
+                        }
+                }
+                break;
+            case AI_SpellAct.ManyEnemy:
+                //상황2 . 상대필드에 하수인이 많을경우
+                {
 
-        }
-        //상황7 . 하수인의 체력이 적을경우
-        else if (aCase == AI_SpellAct.WeakMyMinion)
-        {
-            int hpAbs = 0;
-            for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                    Mathf.Max(hpAbs, Mathf.Abs(EnemyMinionField.instance.minions[m].baseHp -
-                        EnemyMinionField.instance.minions[m].final_hp));
+                    if (MinionField.instance.minionNum >= MinionField.MINION_SLOT_NUM / 2)
+                    {
+                        //상대필드에 하수인이 절반이상 차있을 경우
+                        return true;
+                    }
+                    if (MinionField.instance.minionNum >= 2 &&
+                        MinionField.instance.minionNum > EnemyMinionField.instance.minionNum)
+                    {
+                        //자신필드보다 하수인이 많을 경우
+                        return true;
+                    }
+                }
+                break;
+            case AI_SpellAct.HandLack:
+                //상황3 . 패가 부족할경우
+                {
+                    if(EnemyCardHand.instance.nowHandNum <= 5)
+                    {
+                        if (cardName == "급속 성장" && ManaManager.instance.enemyMaxMana >= 10)
+                        {
+                            if (ManaManager.instance.enemyMaxMana >= 10)
+                            {
 
-            if(hpAbs > 3)
-                return true;
-        }
-        //상황8 . 상대영웅의 체력이 적을경우
-        else if (aCase == AI_SpellAct.LowEnemyHp)
-        {
-            int sumAtk = 0;
-            for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
-                if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
-                    sumAtk += EnemyMinionField.instance.minions[m].final_atk;
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+                break;
+            case AI_SpellAct.ManaLack:
+                //상황4 . 마나수정이 적을경우
+                {
+                    if (ManaManager.instance.enemyMaxMana <= 4)
+                        return true;
+                }
+                break;
+            case AI_SpellAct.MinionSpawn:
+                //상황5 . 마나를 보충하면 하수인을 소환할 수 있다면
+                {
+                    int addMana = 0;
+                    if (cardName == "동전 한 닢")
+                        addMana = 1;
+                    else if (cardName == "정신 자극")
+                        addMana = 2;
 
-            if (sumAtk >= HeroManager.instance.heroHpManager.nowPlayerHp)
-                return true;
+                    for (int i = 0; i < EnemyCardHand.instance.nowCard.Count; i++)
+                    {
+                        int nowMana = ManaManager.instance.enemyNowMana + addMana;
+                        string nowCardName = EnemyCardHand.instance.nowCard[i];
+                        Vector2Int pair = DataMng.instance.GetPairByName(DataParse.GetCardName(nowCardName));
+                        string cardType = DataMng.instance.ToString(pair.x, pair.y, "카드종류");
+                        int cardCost = DataMng.instance.ToInteger(pair.x, pair.y, "코스트");
+                        if (cardType != "하수인")
+                            continue;
+                        if (nowMana >= cardCost)
+                            return true;
+                    }
+                }
+                break;
+            case AI_SpellAct.ManyMyMinion:
+                //상황6 . 자신필드에 하수인이 많을경우
+                {
+                    if (EnemyMinionField.instance.minionNum >= 4)
+                        return true;
+                    if (EnemyMinionField.instance.minionNum >= 2 &&
+                        EnemyMinionField.instance.minionNum > MinionField.instance.minionNum)
+                        return true;
+                }
+                break;
+            case AI_SpellAct.WeakMyMinion:
+                //상황7 . 하수인의 체력이 적을경우
+                {
+                    int hpAbs = 0;
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                        if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            Mathf.Max(hpAbs, Mathf.Abs(EnemyMinionField.instance.minions[m].baseHp -
+                                EnemyMinionField.instance.minions[m].final_hp));
 
-            if (HeroManager.instance.heroHpManager.nowPlayerHp <= 14)
-                return true;
-        }
-        else
-        {
-            Debug.LogError("사용조건을 적어주세요!!");
+                    if (hpAbs > 3)
+                        return true;
+                }
+                break;
+            case AI_SpellAct.LowEnemyHp:
+                //상황8 . 상대영웅의 체력이 적을경우
+                {
+                    int sumAtk = 0;
+                    for (int m = 0; m < EnemyMinionField.instance.minions.Length; m++)
+                        if (EnemyMinionField.instance.minions[m].gameObject.activeSelf)
+                            sumAtk += EnemyMinionField.instance.minions[m].final_atk;
+
+                    if (sumAtk >= HeroManager.instance.heroHpManager.nowPlayerHp)
+                        return true;
+
+                    if (HeroManager.instance.heroHpManager.nowPlayerHp <= 14)
+                        return true;
+                }
+                break;
+            default:
+                {
+                    Debug.LogError("사용조건을 적어주세요!!");
+                }
+                break;
         }
         return false;
     }
@@ -1626,24 +1659,28 @@ public class DruidAI : MonoBehaviour
     #region[주문 사용 조건 TEXT]
     public string CaseBySpellText(AI_SpellAct aCase)
     {
-        if (aCase == AI_SpellAct.LowHp)
-            return "자신영웅의 체력이 적음";
-        else if (aCase == AI_SpellAct.StrongEnemy)
-            return "상대필드에 강한 하수인이 있음";
-        else if (aCase == AI_SpellAct.ManyEnemy)
-            return "상대필드에 하수인이 많음";
-        else if (aCase == AI_SpellAct.HandLack)
-            return "패가 부족함음";
-        else if (aCase == AI_SpellAct.ManaLack)
-            return "마나수정이 적음";
-        else if (aCase == AI_SpellAct.MinionSpawn)
-            return "하수인 소환을 위해서 마나 회복";
-        else if (aCase == AI_SpellAct.ManyMyMinion)
-            return "필드에 하수인이 많음";
-        else if (aCase == AI_SpellAct.WeakMyMinion)
-            return "에이스 하수인의 체력이 적음";
-        else if (aCase == AI_SpellAct.LowEnemyHp)
-            return "상대 영웅 체력이 적음";
+        switch (aCase)
+        {
+            case AI_SpellAct.LowHp:
+                return "자신영웅의 체력이 적음";
+            case AI_SpellAct.StrongEnemy:
+                return "상대필드에 강한 하수인이 있음";
+            case AI_SpellAct.ManyEnemy:
+                return "상대필드에 하수인이 많음";
+            case AI_SpellAct.HandLack:
+                return "패가 부족함";
+            case AI_SpellAct.ManaLack:
+                return "마나수정이 적음";
+            case AI_SpellAct.MinionSpawn:
+                return "하수인 소환을 위해서 마나 회복";
+            case AI_SpellAct.ManyMyMinion:
+                return "필드에 하수인이 많음";
+            case AI_SpellAct.WeakMyMinion:
+                return "에이스 하수인의 체력이 적음";
+            case AI_SpellAct.LowEnemyHp:
+                return "상대 영웅 체력이 적음";
+
+        }
         return "예외";
     }
     #endregion
