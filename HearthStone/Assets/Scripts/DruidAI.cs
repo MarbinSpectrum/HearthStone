@@ -47,6 +47,11 @@ public class DruidAI : MonoBehaviour
 
     Dictionary<AI_SpellAct, List<string>> caseByCard = new Dictionary<AI_SpellAct, List<string>>();
 
+    private int FieldValue(int num,int atk,int hp)
+    {
+        return num * atk * hp;
+    }
+
     private AI_ActData SelectChoice()
     {
         AI_ActData aiData = new AI_ActData(AI_Act.GameEnd);
@@ -163,6 +168,7 @@ public class DruidAI : MonoBehaviour
             int hpSum = 0;
             int atkSum = 0;
             int minionSum = 0;
+
             List<int> Ai_MinionIdx = new List<int>();
             for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
             {
@@ -180,8 +186,8 @@ public class DruidAI : MonoBehaviour
             int pHpSum = 0;
             int pAtkSum = 0;
             int pMinionSum = 0;
-            List<int> targetList = new List<int>();
-            List<int> targetTauntList = new List<int>();
+            List<int> playerNormalMinions = new List<int>();
+            List<int> playerTauntMinions = new List<int>();
             for (int i = 0; i < MinionField.instance.minions.Length; i++)
             {
                 if (MinionField.instance.minions[i].gameObject.activeSelf == false)
@@ -191,79 +197,96 @@ public class DruidAI : MonoBehaviour
                 //공격대상으로 가능한 하수인 묶음을 미리 구해놓은다.
                 //도발하수인은 먼저 공격해야하므로 먼저 고려
                 if (MinionField.instance.minions[i].taunt)
-                    targetTauntList.Add(i);
+                    playerTauntMinions.Add(i);
                 else
-                    targetList.Add(i);
+                    playerNormalMinions.Add(i);
                 pHpSum += MinionField.instance.minions[i].final_hp;
                 pAtkSum += MinionField.instance.minions[i].final_atk;
                 pMinionSum += 1;
             }
 
-            int baseFieldValue = hpSum * minionSum * atkSum;
-            int basePlayerFieldValue = pHpSum * pMinionSum * pAtkSum;
-            int cmpFieldValue = 0;
+            int baseFieldValue = FieldValue(minionSum, atkSum, hpSum);
+            int basePlayerFieldValue = FieldValue(pMinionSum, pAtkSum, pHpSum);
+            int cmpFieldValue = baseFieldValue - basePlayerFieldValue;
             int cmpPlayerDamage = 0;
 
-            List<string> resultCase0 = null;
-            List<string> resultCase1 = null;
+            List<string> resultCase0 = null; //데미지를 많이 넣은경우
+            List<string> resultCase1 = null; //필드를 유리하게 만드는경우
             for (int bit = 0; bit < (1<< Ai_MinionIdx.Count); bit++)
             {
-                List<int> Ai_MinionList0 = new List<int>();
-                List<int> Ai_MinionList1 = new List<int>();
+                List<int> aiGroupA = new List<int>();
+                List<int> aiGroupB = new List<int>();
                 for (int i = 0; i < Ai_MinionIdx.Count; i++)
                 {
+                    //비트 마스킹을 이용해서
+                    //그룹A와 그룹B로 나눈다.
                     int andBit = bit & (1 << i);
-                    if (andBit == 0)
-                        Ai_MinionList1.Add(Ai_MinionIdx[i]);
+                    if (andBit != 0)
+                        aiGroupA.Add(Ai_MinionIdx[i]);
                     else
-                        Ai_MinionList0.Add(Ai_MinionIdx[i]);
+                        aiGroupB.Add(Ai_MinionIdx[i]);
                 }
 
                 do
                 {
-                    List<int> MinionList = new List<int>(targetList);
+                    //도발하수인은 그룹C
+                    List<int> playerGroupC = new List<int>(playerTauntMinions);
                     do
                     {
-                        List<int> tMinionList = new List<int>(targetTauntList);
+                        //일반하수인은 그룹D
+                        List<int> playerGroupD = new List<int>(playerNormalMinions);
                         do
                         {
+                            //전투 시뮬레이션
+                            //하수인들을 스택에 넣는다.
                             List<string> resultData = new List<string>();
-                            Stack<int> AI_MinionStack = new Stack<int>();
-                            Stack<int> Target_MinionStack = new Stack<int>();
-                            for (int i = 0; i < Ai_MinionList0.Count; i++)
-                                AI_MinionStack.Push(Ai_MinionList0[i]);
+                            Stack<int> aiMinions = new Stack<int>();
+                            Stack<int> playerMinions = new Stack<int>();
+                            for (int i = 0; i < aiGroupA.Count; i++)
+                                aiMinions.Push(aiGroupA[i]);
 
-                            for (int i = 0; i < MinionList.Count; i++)
-                                Target_MinionStack.Push(MinionList[i]);
-                            for (int i = 0; i < tMinionList.Count; i++)
-                                Target_MinionStack.Push(tMinionList[i]);
+                            for (int i = 0; i < playerGroupD.Count; i++)
+                            {
+                                //일반하수인은 나중에 처리하므로 먼저 넣는다.
+                                playerMinions.Push(playerGroupD[i]);
+                            }
+                            for (int i = 0; i < playerGroupC.Count; i++)
+                                playerMinions.Push(playerGroupC[i]);
 
                             int resultAtk = atkSum;
                             int resultHp = hpSum;
                             int resultMinion = minionSum;
-                            int resultPatk = pAtkSum;
-                            int resultPhp = pHpSum;
-                            int resultPminion = pMinionSum;
+                            int pResultAtk = pAtkSum;
+                            int pResultHp = pHpSum;
+                            int pResultMinion = pMinionSum;
 
                             int resultPlayerDamage = 0;
-                            bool destroyMinion = true;
+                            int pIdx = -1;
                             
                             int tatk = -1;
                             int thp = -1;
-                            while (AI_MinionStack.Count > 0)
+                            while (aiMinions.Count > 0)
                             {
-                                int AI_idx = AI_MinionStack.Pop();
-                                int atk = EnemyMinionField.instance.minions[AI_idx].final_atk;
-                                int hp = EnemyMinionField.instance.minions[AI_idx].final_hp;
+                                //ai하수인이 순차적으로 공격한다.
+                                int aIdx = aiMinions.Pop();
+                                int atk = EnemyMinionField.instance.minions[aIdx].final_atk;
+                                int hp = EnemyMinionField.instance.minions[aIdx].final_hp;
 
-                                if (Target_MinionStack.Count > 0)
+                                if (playerMinions.Count > 0)
                                 {
-                                    int Target_idx = Target_MinionStack.Peek();
-                                    if (destroyMinion == true)
+                                    if (pIdx == -1)
                                     {
-                                        destroyMinion = false;
-                                        tatk = EnemyMinionField.instance.minions[Target_idx].final_atk;
-                                        thp = EnemyMinionField.instance.minions[Target_idx].final_hp;
+                                        //전투중인 하수인이 없는경우
+                                        pIdx = playerMinions.Peek();
+                                        tatk = EnemyMinionField.instance.minions[pIdx].final_atk;
+                                        thp = EnemyMinionField.instance.minions[pIdx].final_hp;
+                                    }
+
+                                    //하수인 공격정보 저장
+                                    if(pIdx != -1)
+                                    {
+                                        resultData.Add(aIdx.ToString());
+                                        resultData.Add(pIdx.ToString());
                                     }
 
                                     //AI 하수인 체력 변화
@@ -279,44 +302,46 @@ public class DruidAI : MonoBehaviour
                                     //타겟 하수인 처리
                                     if (thp - atk <= 0)
                                     {
-                                        destroyMinion = true;
-                                        Target_MinionStack.Pop();
-                                        resultPatk -= tatk;
-                                        resultPhp -= thp;
-                                        resultPminion--;
+                                        pIdx = -1;
+                                        playerMinions.Pop();
+                                        pResultAtk -= tatk;
+                                        pResultHp -= thp;
+                                        pResultMinion--;
                                     }
                                     else
                                     {
                                         thp -= atk;
-                                        resultPhp -= atk;
+                                        pResultHp -= atk;
                                     }
 
-                                    resultData.Add(AI_idx.ToString());
-                                    resultData.Add(Target_idx.ToString());
                                 }
                                 else
                                 {
+                                    //하수인이 없으므로 공격
                                     resultPlayerDamage += atk;
-                                    resultData.Add(AI_idx.ToString());
+                                    resultData.Add(aIdx.ToString());
                                     resultData.Add("Hero");
                                 }                             
                             }
 
-                            if(resultPminion <= MinionList.Count)
+                            if(pResultMinion <= playerGroupD.Count)
                             {
-                                for (int i = 0; i < Ai_MinionList1.Count; i++)
+                                //남은 하수인이 그룹D 이하라는것은
+                                //그룹C가 다 소멸했다는것
+                                //즉, 도발하수인이 남지 않았다는것
+                                for (int i = 0; i < aiGroupB.Count; i++)
                                 {
-                                    int AI_idx = Ai_MinionList1[i];
-                                    int atk = EnemyMinionField.instance.minions[AI_idx].final_atk;
-                                    int hp = EnemyMinionField.instance.minions[AI_idx].final_hp;
+                                    //그룹B의 하수인들이 모두 영웅을 공격
+                                    int aidx = aiGroupB[i];
+                                    int atk = EnemyMinionField.instance.minions[aidx].final_atk;
                                     resultPlayerDamage += atk;
-                                    resultData.Add(AI_idx.ToString());
+                                    resultData.Add(aidx.ToString());
                                     resultData.Add("Hero");
                                 }
                             }
 
-                            int resultFieldValue = resultMinion * resultHp * resultAtk;
-                            int resultPlayerFieldValue = resultPminion * resultPhp * resultPatk;
+                            int resultFieldValue = FieldValue(resultMinion, resultAtk, resultHp);
+                            int resultPlayerFieldValue = FieldValue(pResultMinion, pResultAtk, pResultHp);
                             int fieldCmp = resultFieldValue - resultPlayerFieldValue;
                             if (resultData.Count > 0)
                             {
@@ -329,25 +354,22 @@ public class DruidAI : MonoBehaviour
                                         resultCase0 = resultData;
                                     }
                                 }
-                                else if (fieldCmp > 0 && destroyMinion)
+                                else if (cmpFieldValue <= fieldCmp && pIdx == -1)
                                 {
                                     //필드 가치를 높이는 선택지
                                     //상대 필드와 비교해서 부유해지는
                                     //최대한 부유해지는 선택지를 고른다.
                                     //미니언을 처리한 경우만 검사
-                                    if(cmpFieldValue <= fieldCmp)
-                                    {
-                                        cmpFieldValue = fieldCmp;
-                                        resultCase1 = resultData;
-                                    }
+                                    cmpFieldValue = fieldCmp;
+                                    resultCase1 = resultData;
                                 }
                             }
                         }
-                        while (MyLib.Algorithm.Next_Permutation(tMinionList));
+                        while (MyLib.Algorithm.Next_Permutation(playerGroupD)); //그룹 D를 다른 순서로 배치
                     }
-                    while (MyLib.Algorithm.Next_Permutation(MinionList));
+                    while (MyLib.Algorithm.Next_Permutation(playerGroupC)); //그룹 C를 다른 순서로 배치
                 } 
-                while (MyLib.Algorithm.Next_Permutation(Ai_MinionList0));
+                while (MyLib.Algorithm.Next_Permutation(aiGroupA)); //그룹 A를 다른 순서로 배치
             }
 
             if(resultCase0 != null)
@@ -376,10 +398,118 @@ public class DruidAI : MonoBehaviour
         }
         else if (HeroManager.instance.heroAtkManager.enemyAttackCheck && !HeroManager.instance.enemyFreezeObj.activeSelf)
         {
-            Debug.Log("영웅 능력으로 공격");
-            aiData.act = AI_Act.UseHero;
-            aiData.data.Add("AttackHero");
-            return aiData;
+            List<int> playerMinions = new List<int>();
+
+            int hpSum = 0;
+            int atkSum = 0;
+            int minionSum = 0;
+            for (int i = 0; i < EnemyMinionField.instance.minions.Length; i++)
+            {
+                //현재 AI의 필드의 가치를 구한다.
+                if (EnemyMinionField.instance.minions[i].gameObject.activeSelf == false)
+                    continue;
+                if (EnemyMinionField.instance.minions[i].checkCanAttack == false)
+                    continue;
+                hpSum += EnemyMinionField.instance.minions[i].final_hp;
+                atkSum += EnemyMinionField.instance.minions[i].final_atk;
+                minionSum += 1;
+            }
+
+            int pMinionSum = 0;
+            int pAtkSum = 0;
+            int pHpSum = 0;
+            for (int i = 0; i < MinionField.instance.minions.Length; i++)
+            {
+                //공격가능한 하수인들을 가져온다.
+                if (MinionField.instance.minions[i].gameObject.activeSelf == false)
+                    continue;
+                pMinionSum += 1;
+                pAtkSum += MinionField.instance.minions[i].final_atk;
+                pHpSum += MinionField.instance.minions[i].final_hp;
+
+                if (MinionField.instance.minions[i].stealth)
+                {
+                    //은신상태이면 공격하지 못한다.
+                    continue;
+                }
+                if (MinionField.instance.minions[i].final_hp > HeroManager.instance.heroAtkManager.enemyFinalAtk)
+                {
+                    //하수인의 체력이 영웅의 공격보다 높다.
+                    //공격해도 하수인이 죽지않는다. 공격하지 않는다.
+                    continue;
+                }
+
+                if (MinionField.instance.minions[i].final_atk > 5)
+                {
+                    //공격력이 높은 몬스터는 공격하지말자
+                    continue;
+                }
+                if (MinionField.instance.minions[i].final_atk >= HeroManager.instance.heroHpManager.nowEnemyHp +
+                    HeroManager.instance.heroHpManager.enemyShield)
+                {
+                    //공격력이 쉴드+체력보다 높다.
+                    //공격하면 죽는다 공격하지 않는다.
+                    continue;
+                }
+
+                if(MinionManager.instance.CheckTaunt(false))
+                {
+                    //도발하수인이 없다.
+                    //공격가능한 아무 하수인을 목록에 추가
+                    playerMinions.Add(i);
+                }
+                else if (MinionField.instance.minions[i].taunt)
+                {
+                    //도발하수인이다.
+                    //리스트에는 도발하수인만 들어갈것이다.
+                    playerMinions.Add(i);
+                }
+            }
+            int aiFieldValue = FieldValue(minionSum, atkSum, hpSum); //AI의 필드가치
+            int playerFieldValue = FieldValue(pMinionSum, pAtkSum, pHpSum); //플레이어의 현재 필드가치
+            int cmpFieldValue = aiFieldValue - playerFieldValue; //필드의 격차
+
+            int resultAtkIdx = -1;
+            for (int i = 0; i < playerMinions.Count; i++)
+            {
+                int pIdx = playerMinions[i];
+                int tAtk = MinionField.instance.minions[pIdx].final_atk;
+                int tHp = MinionField.instance.minions[pIdx].final_hp;
+                int pResultMinionSum = pMinionSum - 1;
+                int pResultAtk = pAtkSum - tAtk;
+                int pResultHp = pHpSum - tHp;
+                int resultPlayerFieldValue = FieldValue(pResultMinionSum, pResultAtk, pResultHp); //공격했을시 필드가치
+                int fieldCmp = aiFieldValue - resultPlayerFieldValue; //공격했을시 필드의 격차
+
+                if (cmpFieldValue <= fieldCmp)
+                {
+                    //상대 필드와 비교해서 부유해지는
+                    //최대한 부유해지는 선택지를 고른다.
+                    cmpFieldValue = fieldCmp;
+                    resultAtkIdx = pIdx;
+                }
+            }
+
+            if (resultAtkIdx != -1)
+            {
+                Debug.Log("영웅 능력으로 공격");
+                aiData.act = AI_Act.UseHero;
+                aiData.data.Add("AttackHero");
+                aiData.data.Add(resultAtkIdx.ToString());
+                return aiData;
+            }
+            else if (MinionManager.instance.CheckTaunt(false))
+            {
+                Debug.Log("영웅 능력으로 공격");
+                aiData.act = AI_Act.UseHero;
+                aiData.data.Add("AttackHero");
+                aiData.data.Add("Hero");
+                return aiData;
+            }
+            else
+            {
+                //공격을 안하는것이 이득인 경우
+            }
         }
 
         #endregion
@@ -581,52 +711,31 @@ public class DruidAI : MonoBehaviour
                 }
                 else if (aiData.data[0] == "AttackHero")
                 {
-                    //영웅으로 공격
-                    List<int> targetList = new List<int>();
-                    for (int i = 0; i < MinionField.instance.minions.Length; i++)
-                        if (MinionField.instance.minions[i].gameObject.activeSelf && !MinionField.instance.minions[i].stealth)
-                        {
-                            if (MinionField.instance.minions[i].stealth)
-                                continue;
-                            if (MinionField.instance.minions[i].final_hp > HeroManager.instance.heroAtkManager.enemyFinalAtk)
-                                continue;
-                            if(!MinionManager.instance.CheckTaunt(false) && !MinionField.instance.minions[i].taunt)
-                                continue;
-                            if (MinionField.instance.minions[i].final_atk > 5)
-                                continue;
-                            if (MinionField.instance.minions[i].final_atk >= HeroManager.instance.heroHpManager.nowEnemyHp + HeroManager.instance.heroHpManager.enemyShield)
-                                continue;
-
-                            targetList.Add(i);
-                        }
-
-                    targetList.Sort(delegate (int A, int B)
-                    {
-                        if (MinionField.instance.minions[A].baseHp + MinionField.instance.minions[A].baseAtk <
-                        MinionField.instance.minions[B].baseHp + MinionField.instance.minions[B].baseAtk)
-                            return -1;
-                        return +1;
-                    });
-
-
-                    if (targetList.Count > 0)
-                    {
-                        AttackManager.instance.PopAllDamageObj();
-                        AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, MinionField.instance.minions[targetList[0]].final_atk);
-                        AttackManager.instance.AddDamageObj(MinionField.instance.minions[targetList[0]].damageEffect, HeroManager.instance.heroAtkManager.enemyFinalAtk);
-                        HeroManager.instance.heroAtkManager.HeroAttack(true, MinionField.instance.minions[targetList[0]].transform.position);
-                        yield return new WaitForSeconds(2f);
-                    }
-                    else if (MinionManager.instance.CheckTaunt(false))
+                    if (aiData.data[1]== "Hero")
                     {
                         AttackManager.instance.PopAllDamageObj();
                         AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.playerHeroDamage, HeroManager.instance.heroAtkManager.enemyFinalAtk);
                         HeroManager.instance.heroAtkManager.HeroAttack(true, HeroManager.instance.playerHero.transform.position);
                         yield return new WaitForSeconds(2f);
                     }
-                    else
-                        HeroManager.instance.heroAtkManager.enemyCanAttackNum--;
-
+                    else 
+                    {
+                        int attackIdx = -1;
+                        if (int.TryParse(aiData.data[1], out attackIdx))
+                        {
+                            AttackManager.instance.PopAllDamageObj();
+                            AttackManager.instance.AddDamageObj(HeroManager.instance.heroHpManager.enemyHeroDamage, 
+                                MinionField.instance.minions[attackIdx].final_atk);
+                            AttackManager.instance.AddDamageObj(MinionField.instance.minions[attackIdx].damageEffect, 
+                                HeroManager.instance.heroAtkManager.enemyFinalAtk);
+                            HeroManager.instance.heroAtkManager.HeroAttack(true, MinionField.instance.minions[attackIdx].transform.position);
+                            yield return new WaitForSeconds(2f);
+                        }
+                        else
+                        {
+                            Debug.LogError("공격 버그");
+                        }
+                    }
                 }
             }
             #endregion
@@ -1496,7 +1605,7 @@ public class DruidAI : MonoBehaviour
 
     #endregion
 
-    #region[주문 사용 조건]
+     #region[주문 사용 조건]
     public bool CaseBySpell(string cardName, AI_SpellAct aCase)
     {
         if(caseByCard[aCase].Contains(cardName) == false)
@@ -1509,19 +1618,25 @@ public class DruidAI : MonoBehaviour
         switch (aCase)
         {
             case AI_SpellAct.LowHp:
-            //상황0 . 자신영웅의 체력이 적을경우
+                //상황0 . 자신영웅의 체력이 적을경우
                 {
-                    //상대필드 공격력 합계가 자신의 체력을 넘는지 점검
                     int sumAtk = 0;
                     for (int m = 0; m < MinionField.instance.minions.Length; m++)
                         if (MinionField.instance.minions[m].gameObject.activeSelf)
                             sumAtk += MinionField.instance.minions[m].final_atk;
 
                     if (sumAtk >= HeroManager.instance.heroHpManager.nowEnemyHp)
+                    {
+                        //상대필드 공격력 합계가 자신의 체력을 넘는다.
                         return true;
+                    }
 
-                    if (HeroManager.instance.heroHpManager.nowEnemyHp <= HeroManager.instance.heroHpManager.maxEnemyHp / 2)
+                    if (HeroManager.instance.heroHpManager.nowEnemyHp 
+                        <= HeroManager.instance.heroHpManager.maxEnemyHp / 2)
+                    {
+                        //영웅의 체력이 절반이하다.
                         return true;
+                    }
                 }
                 break;
             case AI_SpellAct.StrongEnemy:
