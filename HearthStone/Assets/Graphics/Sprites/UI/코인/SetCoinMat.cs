@@ -6,17 +6,17 @@ using UnityEngine;
 public class SetCoinMat : MonoBehaviour
 {
     public Material coinMat;
-    [ColorUsage(true,true)]
-    public Color fireColor;
+
+    [ColorUsage(true, true)] public Color fireColor;
 
     public float power;
 
-    void Update()
+    private void Update()
     {
-        if (coinMat)
-        {
-            coinMat.SetFloat("Power", power);
-            coinMat.SetColor("FireColor", fireColor);
-        }
+        if (coinMat == null)
+            return;
+
+        coinMat.SetFloat("Power", power);
+        coinMat.SetColor("FireColor", fireColor);
     }
 }

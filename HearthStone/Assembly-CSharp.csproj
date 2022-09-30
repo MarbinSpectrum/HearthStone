@@ -256,6 +256,7 @@
     <Compile Include="Assets\Graphics\52SpecialEffectPack\EffectEditor\ShurikenEffectEditor\csShurikenEffectChanger.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToAdventureBtn.cs" />
     <Compile Include="Assets\Graphics\52SpecialEffectPack\Animation&amp;Script\csDestroyEffect.cs" />
+    <Compile Include="Assets\Graphics\Sprites\Minions\StealthEffect.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
@@ -266,7 +267,7 @@
     <None Include="Assets\Graphics\Shaders\InverseOutLine.shader" />
     <None Include="Assets\Graphics\Particle Ribbon by Moonflower Carnivore\readme_Simple_Particle_Ribbon.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
-    <None Include="Assets\Graphics\Sprites\Minions\미니언.shader" />
+    <None Include="Assets\Graphics\Sprites\Minions\Minion.shader" />
     <None Include="Assets\Resources\AI\AI_Deck.txt" />
     <None Include="Assets\Graphics\JMO Assets\WarFX\_Effects\MuzzleFlashes\!MuzzleFlash Differences.txt" />
     <None Include="Assets\Graphics\Shaders\UI_Gray.shader" />

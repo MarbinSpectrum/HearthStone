@@ -97,3 +97,4 @@ Material:
     - _OutLineColor: {r: 0, g: 5.992157, b: 5.239216, a: 1}
     - _OutlineColor: {r: 0.013655695, g: 2.6082377, b: 0, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []

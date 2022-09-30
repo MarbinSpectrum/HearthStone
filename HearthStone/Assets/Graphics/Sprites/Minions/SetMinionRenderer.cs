@@ -5,14 +5,11 @@ using UnityEngine;
 public class SetMinionRenderer : MonoBehaviour
 {
     public Renderer renderer;
-    [Range(0,1)]
-    public float _GrayPower;
-    // Update is called once per frame
-    void Update()
+    [Range(0, 1)] public float _GrayPower;
+    private void Update()
     {
-        if(renderer)
-        {
-            renderer.material.SetFloat("_GrayPower", _GrayPower);
-        }
+        if(renderer == null)
+            return;
+        renderer.material.SetFloat("_GrayPower", _GrayPower);
     }
 }
