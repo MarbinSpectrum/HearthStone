@@ -104,6 +104,7 @@
     <Compile Include="Assets\Scripts\MyLib.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\Pack\PackDrag.cs" />
     <Compile Include="Assets\Scripts\Effect\CurseEffect.cs" />
+    <Compile Include="Assets\Graphics\Sprites\Minions\StealthEffect.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\설정\SoundSettingBtn.cs" />
     <Compile Include="Assets\Graphics\Sprites\UI\상점\ShopScript.cs" />
     <Compile Include="Assets\Scripts\UI\Field\TurnManager.cs" />
@@ -256,7 +257,6 @@
     <Compile Include="Assets\Graphics\52SpecialEffectPack\EffectEditor\ShurikenEffectEditor\csShurikenEffectChanger.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MainToAdventureBtn.cs" />
     <Compile Include="Assets\Graphics\52SpecialEffectPack\Animation&amp;Script\csDestroyEffect.cs" />
-    <Compile Include="Assets\Graphics\Sprites\Minions\StealthEffect.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
