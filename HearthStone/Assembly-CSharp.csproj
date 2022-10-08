@@ -230,7 +230,7 @@
     <Compile Include="Assets\Graphics\Sprites\UI\영웅초상화\PlayerSet.cs" />
     <Compile Include="Assets\Graphics\Sprites\Minions\CanSelect.cs" />
     <Compile Include="Assets\Scripts\UI\btns\ChangeCardEnd.cs" />
-    <Compile Include="Assets\Graphics\Sprites\Minions\SetMinionRenderer.cs" />
+    <Compile Include="Assets\Graphics\Sprites\Minions\SetGrayPower.cs" />
     <Compile Include="Assets\Graphics\PinwheelFantasyEffect\Script\Spin.cs" />
     <Compile Include="Assets\Scripts\Effect\PortionEffect.cs" />
     <Compile Include="Assets\Scripts\UI\btns\MyCollectionsNextPageBtn.cs" />
